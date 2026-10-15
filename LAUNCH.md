@@ -20,7 +20,7 @@ All of these are **public** values that end up in the page. They are not secrets
 | --- | --- | --- |
 | `PUBLIC_SITE_URL` | `https://tyll.ai` | defaults to `https://tyll.ai` |
 | `PUBLIC_DEMO_URL` | `https://demo.tyll.ai` once the demo is live | every "Explore demo" button is hidden |
-| `PUBLIC_CALENDLY_URL` | your Calendly event link, e.g. `https://calendly.com/<account>/<event>` | booking page offers email instead |
+| `PUBLIC_CALENDLY_URL` | `https://calendly.com/besher-asfari-code/new-meeting` (approved by the owner, 15 Oct 2026) | booking page offers email instead |
 | `PUBLIC_LINKEDIN_URL` | `https://www.linkedin.com/company/tyll.ai/` (taken from the current site) | left out of footer |
 | `PUBLIC_INSTAGRAM_URL` | official Instagram profile | left out of footer |
 | `PUBLIC_ANALYTICS_PROVIDER` | `ga4` or `plausible` | no statistics, no consent banner for them |
@@ -58,14 +58,14 @@ Calendly does not support custom domains for booking pages. So `book.tyll.ai` po
 
 ## 5. Calendly
 
-1. Decide which Calendly account and event to use. The old site used a personal account (`besher-asfari-code`). It has **not** been switched on here without your approval.
+1. Approved event: `https://calendly.com/besher-asfari-code/new-meeting` ("15 min talk with Tyll", host shown as "Tyll Admin"). It is set in the local `.env`. Set the same value in Vercel.
 2. In the event's **Booking questions** (Name and Email are built in), add:
    - **Hotel or company** (required)
    - **Job title** (optional)
    - **What would you like to improve?** (optional)
 3. Make sure Calendly sends its confirmation and calendar invitation emails (the default).
-4. Set `PUBLIC_CALENDLY_URL`.
-5. Test with a real booking you then cancel.
+4. Calendly's own wording follows the visitor's browser language, or the event's language setting. If German visitors should always see German, check the event's language options in Calendly.
+5. Test with a real booking you then cancel. Not done yet: no test booking has been made.
 
 The website shows "Your call is booked" only when Calendly reports the event as scheduled, and counts `booking_confirmed` only then.
 
@@ -99,7 +99,8 @@ Create the Pixel in Tyll's Meta Business account and set `PUBLIC_META_PIXEL_ID`.
 
 - [ ] Legal details supplied in `src/config/legal.ts`, and pages reviewed by a lawyer
 - [ ] `info@tyll.ai` confirmed working
-- [ ] Calendly account and event approved, booking questions added, `PUBLIC_CALENDLY_URL` set, test booking made and cancelled
+- [x] Calendly event approved (`besher-asfari-code/new-meeting`)
+- [ ] Calendly booking questions added, `PUBLIC_CALENDLY_URL` set in Vercel, test booking made and cancelled
 - [ ] Public demo deployed at `demo.tyll.ai` and `PUBLIC_DEMO_URL` set, or a decision to launch without demo buttons
 - [ ] Instagram URL supplied, or a decision to launch without it
 - [ ] Analytics provider and ID chosen (optional)
