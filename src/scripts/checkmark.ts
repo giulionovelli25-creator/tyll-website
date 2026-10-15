@@ -107,7 +107,6 @@ export function initCheckmarks() {
   const singles = [...document.querySelectorAll<SVGSVGElement>('svg[data-check="draw"]')].filter(
     (svg) => !svg.closest('[data-check-group]'),
   );
-  if (!singles.length) return;
   singles.forEach(hideCheck);
   const io = new IntersectionObserver(
     (entries) =>
@@ -119,4 +118,31 @@ export function initCheckmarks() {
     { threshold: 0.6 },
   );
   singles.forEach((svg) => io.observe(svg));
+
+  // Groups draw their marks one after another once the group is in view. A mark inside [data-check-step]
+  // marks that step "is-in" when it settles, which is when CSS reveals the step's text.
+  // Text is only hidden once the group is armed, so without JavaScript or with reduced motion it simply shows.
+  if (reduced()) return;
+  const groups = [...document.querySelectorAll<HTMLElement>('[data-check-group]')];
+  const gio = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        gio.unobserve(e.target);
+        const group = e.target as HTMLElement;
+        const gap = Number(group.dataset.checkGap ?? 220);
+        const duration = Number(group.dataset.checkDuration ?? 700);
+        group.querySelectorAll<SVGSVGElement>('svg[data-check="draw"]').forEach((svg, i) => {
+          setTimeout(() => {
+            drawCheck(svg, duration).then(() => svg.closest('[data-check-step]')?.classList.add('is-in'));
+          }, i * gap);
+        });
+      }),
+    { threshold: 0.35 },
+  );
+  groups.forEach((group) => {
+    group.dataset.armed = 'true';
+    group.querySelectorAll<SVGSVGElement>('svg[data-check="draw"]').forEach(hideCheck);
+    gio.observe(group);
+  });
 }

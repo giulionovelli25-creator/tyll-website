@@ -78,6 +78,7 @@ const year = new Date().getFullYear();
 
 <style>
   .footer {
+    border-top: 1px solid rgba(244, 245, 247, 0.1);
     background: var(--ink);
     color: var(--on-dark);
     padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) 2rem;
@@ -169,7 +170,7 @@ const year = new Date().getFullYear();
 
   @media (max-width: 820px) {
     .footer__top {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 

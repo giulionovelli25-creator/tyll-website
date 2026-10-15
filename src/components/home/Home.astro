@@ -1,6 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Hero from './Hero.astro';
+import Problem from './Problem.astro';
+import HowItWorks from './HowItWorks.astro';
+import Solutions from './Solutions.astro';
+import GetStarted from './GetStarted.astro';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -13,8 +17,8 @@ const d = t(lang);
 
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
   <Hero lang={lang} />
-  <!-- Sections 2–5 (Problem, How It Works, What Tyll Can Do, Final CTA) come in the homepage step. -->
-  <section id="how" class="wrap" style="padding-block: 8rem; color: var(--steel);">
-    <p id="solutions">Foundation preview: sections 2–5 are built in the next step.</p>
-  </section>
+  <Problem lang={lang} />
+  <HowItWorks lang={lang} />
+  <Solutions lang={lang} />
+  <GetStarted lang={lang} />
 </Base>

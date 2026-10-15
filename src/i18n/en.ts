@@ -26,6 +26,136 @@ const en = {
     play: 'Play background video',
     videoLabel: 'A calm, dimly lit luxury hotel reception with warm pendant lights.',
   },
+  problem: {
+    title: 'Running a hotel shouldn’t be this complicated.',
+    intro:
+      'Different departments use different systems. Information gets separated, employees spend time switching between tools, and important problems can be missed.',
+    without: 'Without Tyll',
+    with: 'With Tyll',
+    withoutItems: [
+      'Too many separate systems',
+      'Time spent searching for answers',
+      'Slow communication between departments',
+      'Problems that are difficult to track',
+    ],
+    withItems: [
+      'Important information in one place',
+      'Problems explained clearly',
+      'The right people connected',
+      'Actions and results easy to follow',
+    ],
+    note: 'Tyll works alongside your existing systems. It doesn’t replace them.',
+    evidenceTitle: 'What independent research shows',
+    evidenceNote: 'Industry research, quoted with its source. These are not Tyll results.',
+    source: 'Source',
+    evidence: [
+      {
+        figure: '7:1',
+        text: 'In a study of 42 hotels across 15 countries, the average hotel saved $7 for every $1 invested in reducing kitchen food waste.',
+        context: 'Industry research on food-waste programmes, not a Tyll result.',
+        source: 'WRI and WRAP for Champions 12.3, 2018',
+        url: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
+      },
+      {
+        figure: '42%',
+        text: 'of surveyed US restaurant operators said their restaurants were not profitable in 2025.',
+        context: 'US restaurant data, not an average for hotels or the Middle East.',
+        source: 'National Restaurant Association, 2026',
+        url: 'https://restaurant.org/education-and-resources/resource-library/report-sales-to-hit-$1-55t-in-2026-despite-challenging-business-environment/',
+      },
+    ],
+  },
+  how: {
+    title: 'From problem to solution in four simple steps.',
+    intro: 'Tyll helps your team see what’s happening, understand what needs attention and get things done.',
+    steps: [
+      { name: 'Connect', text: 'Bring information from your existing hotel systems together.' },
+      { name: 'Find', text: 'Spot missing stock, unusual costs and problems that need attention.' },
+      { name: 'Act', text: 'Send tasks and requests to the right people.' },
+      { name: 'Measure', text: 'See what was fixed and what changed.' },
+    ],
+    demoTitle: 'See it happen in the product',
+    demoIntro: 'One example from the Tyll demo: eight cans of Coca-Cola that the sales don’t explain.',
+    demoNote: 'Real screens from the Tyll demo. Hotels, people and figures are fictional.',
+    demoFrames: [
+      {
+        title: 'A stock difference appears',
+        text: 'Tyll flags unexplained Coca-Cola use at The Terrace.',
+        alt: 'Tyll Stock page with a notice: unexplained Coca-Cola usage detected at The Terrace, with an Investigate button.',
+      },
+      {
+        title: 'The manager opens the investigation',
+        text: 'Counts, deliveries and sales side by side: 8 cans unexplained.',
+        alt: 'Investigation page titled “8 cans of Coca-Cola unexplained at The Terrace”, showing where it happened and the potential value involved.',
+      },
+      {
+        title: 'Tyll shows the supporting records',
+        text: 'A Coke was removed from a bill after it was sent to the bar.',
+        alt: 'Timeline of the stock period, including “Coca-Cola removed after it was sent, TRC-1013-198, not on the bill”, and possible explanations to check.',
+      },
+      {
+        title: 'The manager assigns a follow-up',
+        text: 'The F&B director becomes responsible, with a deadline.',
+        alt: 'Manage this case panel: responsible Marco Bellini, deadline Thursday 15 October, with a confirmation that responsibility and deadline were saved.',
+      },
+      {
+        title: 'The right person sees it',
+        text: 'The case is waiting in the F&B director’s own list.',
+        alt: 'Money Back List signed in as Marco Bellini, filtered to his cases, showing the Coca-Cola case assigned to him.',
+      },
+    ],
+    pause: 'Pause the demonstration',
+    play: 'Play the demonstration',
+    step: 'Step',
+  },
+  solutions: {
+    title: 'One place for your hotel to work better together.',
+    intro: 'From restaurant stock to guest services, Tyll helps departments stay connected.',
+    examples: 'Examples',
+    explore: 'Explore in the demo →',
+    categories: [
+      {
+        name: 'Stock & Money',
+        text: 'Find missing stock, track waste and understand unusual costs.',
+        examples: ['Stock investigations', 'Waste and breakage', 'Order exceptions', 'Financial oversight'],
+        path: '/stock?tab=where',
+        alt: 'Tyll Stock “Where did it go?”: items used more than sales and waste explain, such as 8 cans of Coca-Cola.',
+      },
+      {
+        name: 'Purchasing & Forecasting',
+        text: 'Know what to order, what to prepare and who needs to approve it.',
+        examples: ['Ingredient forecasts', 'Purchase requests', 'Purchasing approvals', 'Kitchen preparation'],
+        path: '/forecast?tab=buy',
+        alt: 'Tyll Forecast “What to buy”: suggested quantities for the next three days, flagged where stock runs short before a delivery.',
+      },
+      {
+        name: 'Hotel Operations',
+        text: 'Help your teams manage events, staffing, rooms and guest requests.',
+        examples: ['Events', 'Staff support', 'Housekeeping', 'Guest Connect', 'Bell and luggage tasks'],
+        path: '/rooms?tab=readiness',
+        alt: 'Tyll Room readiness: today’s arrivals, which rooms are ready, and which guests may have to wait.',
+      },
+    ],
+    integrationsTitle: 'Keep the systems you already use.',
+    integrationsText:
+      'Tyll is designed to work alongside your existing hotel software, bringing the important information together without asking you to replace your core systems.',
+    integrationsDetail:
+      'Information from your POS, PMS, inventory and accounting systems can be connected through supported integrations or agreed data exports. What’s possible depends on your systems, so we’ll go through it together.',
+    securityTitle: 'Your hotel. Your information. The right access.',
+    securityText:
+      'Tyll is designed around role-based access: each person sees what their role needs. An outlet manager sees their own outlet, frontline staff see their tasks rather than sales or costs, and management figures sit behind a personal PIN.',
+    securityLink: 'Questions about your data →',
+  },
+  start: {
+    title: 'See what Tyll could do for your hotel.',
+    text: 'Explore our interactive demo or book a call with us to talk about your hotel and what you’d like to improve.',
+    steps: [
+      { name: 'Book a Call', text: 'Tell us about your hotel.' },
+      { name: 'Explore a Pilot', text: 'Choose where Tyll could help first.' },
+      { name: 'Measure the Results', text: 'See whether it makes a real difference.' },
+    ],
+    note: 'A suggested way to begin. Scope and results are agreed with you, never assumed.',
+  },
   footer: {
     tagline: 'One hotel. Many systems. Finally connected.',
     explore: 'Explore',

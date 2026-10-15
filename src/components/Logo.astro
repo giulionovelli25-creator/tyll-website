@@ -2,6 +2,7 @@
 // The official Tyll logo, using the vector paths from the live tyll.ai header. Never redraw these.
 // `mark` renders the checkmark alone. `anim` makes the mark draw itself (see src/scripts/checkmark.ts):
 // "draw" draws once when scrolled into view, "loop" draws, holds and retracts while visible (footer).
+// An empty label makes the mark decorative (hidden from screen readers).
 interface Props {
   mark?: boolean;
   anim?: 'draw' | 'loop';
@@ -30,8 +31,9 @@ const viewBox = mark ? '-1 -1 77 72' : '0 0 224 81';
   class:list={['logo', mark && 'logo--mark', className]}
   viewBox={viewBox}
   fill="currentColor"
-  role="img"
-  aria-label={label}
+  role={label ? 'img' : undefined}
+  aria-label={label || undefined}
+  aria-hidden={label ? undefined : 'true'}
   data-check={anim}
 >
   {

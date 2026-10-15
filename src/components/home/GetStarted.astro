@@ -1,0 +1,157 @@
+---
+import { site } from '../../config/site';
+import { t, href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const s = d.start;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="start on-dark" id="get-started" aria-labelledby="start-title">
+  <div class="start__waves" aria-hidden="true"></div>
+  <div class="wrap start__grid">
+    <div class="start__main">
+      <h2 id="start-title">{s.title}</h2>
+      <p>{s.text}</p>
+      <div class="start__actions">
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="final">{d.cta.book}</a>
+        {
+          site.demoUrl && (
+            <a class="btn btn--line" href={site.demoUrl} data-track="demo_click" data-track-from="final">
+              {d.cta.demoLong}
+            </a>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="start__path">
+      <ol>
+        {
+          s.steps.map((step, i) => (
+            <li>
+              <span class="start__n">{pad(i + 1)}</span>
+              <span>
+                <span class="start__name">{step.name}</span>
+                <span class="start__text">{step.text}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="start__note">{s.note}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .start {
+    position: relative;
+    padding-block: var(--section-y);
+    background: var(--ink);
+    color: var(--on-dark);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* The light wave artwork turned into a faint silver line on the dark ground */
+  .start__waves {
+    position: absolute;
+    inset: auto -10% -35% 30%;
+    z-index: -1;
+    aspect-ratio: 1040 / 667;
+    background: url('/media/tyll-waves.webp') center / cover no-repeat;
+    filter: invert(1) grayscale(1) contrast(1.4);
+    mix-blend-mode: screen;
+    opacity: 0.45;
+    -webkit-mask-image: radial-gradient(closest-side, #000 40%, transparent);
+    mask-image: radial-gradient(closest-side, #000 40%, transparent);
+    pointer-events: none;
+  }
+
+  .start__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+    align-items: end;
+  }
+
+  .start h2 {
+    font-size: var(--fs-h2);
+    max-width: 14ch;
+  }
+
+  .start__main > p {
+    max-width: 32rem;
+    margin-top: 1.25rem;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+
+  .start__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+
+  .start__path ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid rgba(244, 245, 247, 0.14);
+  }
+
+  .start__path li {
+    display: grid;
+    grid-template-columns: 2.75rem 1fr;
+    gap: 0.5rem;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid rgba(244, 245, 247, 0.14);
+  }
+
+  .start__n {
+    color: var(--fog);
+    font-size: var(--fs-small);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.9;
+  }
+
+  .start__name {
+    display: block;
+    font-size: 1.1875rem;
+    letter-spacing: -0.015em;
+  }
+
+  .start__text {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--on-dark-muted);
+    font-size: 0.9375rem;
+  }
+
+  .start__note {
+    margin-top: 1rem;
+    color: var(--fog);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    .start__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .start__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>
