@@ -1,0 +1,415 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Logo from '../Logo.astro';
+import SolutionIcon from '../SolutionIcon.astro';
+import Walkthrough from '../Walkthrough.astro';
+import { solutions } from '../../content/solutions';
+import { demoLink } from '../../config/demo';
+import { t, href, solutionKeys, type Locale, type SolutionKey } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+  solution: SolutionKey;
+}
+
+const { lang, solution } = Astro.props;
+const d = t(lang);
+const p = d.solutionPage;
+const s = solutions[solution];
+const name = s.name[lang];
+const demo = demoLink(solution);
+const others = solutionKeys.filter((k) => k !== solution);
+const fill = (text: string) => text.replace('{name}', name);
+---
+
+<Base lang={lang} page={solution} title={`${name} – Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`} overHero>
+  <!-- 1. Opening -->
+  <section class="open on-dark" data-hero aria-labelledby="sol-title">
+    <Picture
+      src={s.photo}
+      alt={s.photoAlt[lang]}
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      widths={[828, 1280, 1920]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      class="open__photo"
+      style={`object-position:${s.photoFocus}`}
+    />
+    <div class="open__shade" aria-hidden="true"></div>
+    <div class="wrap open__inner">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={href('solutions', lang)}>{p.breadcrumb}</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{name}</span>
+      </nav>
+      <h1 id="sol-title">{s.headline[lang]}</h1>
+      <p class="open__intro">{s.intro[lang]}</p>
+      <div class="open__actions">
+        {
+          demo && (
+            <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-top`}>
+              {p.tryHere}
+              <span class="visually-hidden"> {d.cta.newTab}</span>
+            </a>
+          )
+        }
+        <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href={href('book', lang)} data-track="book_call_click" data-track-from={`${solution}-top`}>
+          {d.cta.book}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. The problem, in one sentence -->
+  <section class="problem" aria-labelledby="sol-problem">
+    <div class="wrap problem__inner">
+      <span class="problem__icon"><SolutionIcon name={s.icon} /></span>
+      <div>
+        <h2 id="sol-problem" class="problem__label">{p.problemLabel}</h2>
+        <p class="problem__text">{s.problem[lang]}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. How Tyll helps, then the walkthrough -->
+  <section class="helps" aria-labelledby="sol-helps">
+    <div class="wrap">
+      <h2 id="sol-helps">{p.helps}</h2>
+      <ul class="helps__list" data-check-group data-check-gap="380" data-check-duration="800">
+        {
+          s.helps[lang].map((h) => (
+            <li data-check-step>
+              <Logo mark anim="draw" label="" class="helps__tick" />
+              <p>{h}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="walk-wrap">
+        <h3>{s.walkTitle[lang]}</h3>
+        <Walkthrough lang={lang} frames={s.frames} note={p.walkIntro} />
+        {s.note && <p class="helps__note">{s.note[lang]}</p>}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Try it -->
+  <section class="final on-dark" aria-labelledby="sol-final">
+    <div class="wrap final__inner">
+      <h2 id="sol-final">{fill(p.finalTitle)}</h2>
+      <p>{demo ? p.finalText : p.finalTextNoDemo}</p>
+      <div class="final__actions">
+        {
+          demo && (
+            <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-final`}>
+              {fill(p.tryNamed)}
+              <span class="visually-hidden"> {d.cta.newTab}</span>
+            </a>
+          )
+        }
+        <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href={href('book', lang)} data-track="book_call_click" data-track-from={`${solution}-final`}>
+          {d.cta.book}
+        </a>
+      </div>
+
+      <nav class="others" aria-labelledby="sol-others">
+        <h3 id="sol-others">{p.others}</h3>
+        <ul>
+          {
+            others.map((k) => (
+              <li>
+                <a href={href(k, lang)}>
+                  <SolutionIcon name={solutions[k].icon} />
+                  {solutions[k].name[lang]}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* 1. Opening */
+  .open {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: clamp(600px, 88vh, 940px);
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--on-dark);
+    isolation: isolate;
+  }
+
+  .open :global(picture),
+  .open :global(.open__photo),
+  .open__shade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .open :global(picture),
+  .open :global(.open__photo) {
+    z-index: -2;
+  }
+
+  .open :global(.open__photo) {
+    object-fit: cover;
+  }
+
+  .open__shade {
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(14, 15, 17, 0.82) 0%, rgba(14, 15, 17, 0.45) 55%, rgba(14, 15, 17, 0.1) 100%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.75) 0%, transparent 60%);
+  }
+
+  .open__inner {
+    padding-top: calc(var(--header-h) + 3rem);
+    padding-bottom: clamp(3.5rem, 2rem + 6vh, 7rem);
+  }
+
+  .crumbs {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+  }
+
+  .crumbs a {
+    color: var(--on-dark-muted);
+    text-underline-offset: 3px;
+  }
+
+  .crumbs a:hover {
+    color: var(--on-dark);
+  }
+
+  .open h1 {
+    max-width: 14ch;
+    font-size: clamp(2.75rem, 1.5rem + 4.6vw, 6rem);
+    font-weight: 380;
+    letter-spacing: -0.042em;
+    line-height: 1;
+  }
+
+  .open__intro {
+    max-width: 34rem;
+    margin-top: clamp(1.25rem, 1rem + 1vw, 2rem);
+    color: rgba(244, 245, 247, 0.84);
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
+    line-height: 1.5;
+  }
+
+  .open__actions,
+  .final__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
+  }
+
+  /* 2. Problem */
+  .problem {
+    padding-block: clamp(4.5rem, 3rem + 5vw, 7.5rem);
+    background: var(--paper);
+  }
+
+  .problem__inner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .problem__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    color: var(--graphite);
+  }
+
+  .problem__icon :global(svg) {
+    width: 26px;
+    height: 26px;
+  }
+
+  .problem__label {
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+
+  .problem__text {
+    max-width: 24ch;
+    margin-top: 0.6rem;
+    font-size: clamp(1.75rem, 1.2rem + 2.1vw, 3rem);
+    font-weight: 380;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+  }
+
+  /* 3. How Tyll helps */
+  .helps {
+    padding-block: var(--section-y);
+    background: linear-gradient(180deg, var(--mist) 0%, var(--cloud) 100%);
+  }
+
+  .helps h2 {
+    font-size: var(--fs-h2);
+  }
+
+  .helps__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem 3rem;
+    margin: clamp(2rem, 1.5rem + 2vw, 3.25rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .helps__list li {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--silver);
+  }
+
+  .helps__list :global(.helps__tick) {
+    width: 24px;
+    height: auto;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+
+  .helps__list p {
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    transition:
+      opacity 0.6s var(--ease),
+      transform 0.6s var(--ease);
+  }
+
+  [data-armed] li:not(.is-in) p {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  .walk-wrap {
+    margin-top: clamp(4rem, 3rem + 4vw, 6.5rem);
+  }
+
+  .walk-wrap h3 {
+    margin-bottom: 1.75rem;
+    font-size: clamp(1.5rem, 1.25rem + 0.9vw, 2rem);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+  }
+
+  .helps__note {
+    max-width: 44rem;
+    margin-top: 2rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--silver);
+    color: var(--graphite);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  /* 4. Final */
+  .final {
+    padding-block: clamp(5rem, 3.5rem + 6vw, 9rem) clamp(3rem, 2rem + 3vw, 4.5rem);
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .final h2 {
+    max-width: 18ch;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+    letter-spacing: -0.035em;
+  }
+
+  .final__inner > p {
+    max-width: 34rem;
+    margin-top: 1.25rem;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-lead);
+  }
+
+  .others {
+    margin-top: clamp(4rem, 3rem + 4vw, 6rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid rgba(244, 245, 247, 0.12);
+  }
+
+  .others h3 {
+    color: var(--fog);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .others ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .others a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.35rem 0;
+    color: var(--on-dark);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    opacity: 0.86;
+  }
+
+  .others a:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .others :global(svg) {
+    width: 18px;
+    height: 18px;
+    color: var(--fog);
+  }
+
+  @media (max-width: 860px) {
+    .helps__list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+
+    .problem__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .open__actions :global(.btn),
+    .final__actions :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+</style>

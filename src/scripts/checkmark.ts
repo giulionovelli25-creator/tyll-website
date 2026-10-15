@@ -105,7 +105,7 @@ export function initCheckmarks() {
   document.querySelectorAll<SVGSVGElement>('svg[data-check="loop"]').forEach(loop);
 
   const singles = [...document.querySelectorAll<SVGSVGElement>('svg[data-check="draw"]')].filter(
-    (svg) => !svg.closest('[data-check-group]'),
+    (svg) => !svg.closest('[data-check-group], [data-check-manual]'),
   );
   singles.forEach(hideCheck);
   const io = new IntersectionObserver(

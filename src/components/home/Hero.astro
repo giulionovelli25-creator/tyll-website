@@ -1,6 +1,5 @@
 ---
 import { Picture } from 'astro:assets';
-import { site } from '../../config/site';
 import poster from '../../assets/hero-reception.jpg';
 import { t, href, type Locale } from '../../i18n';
 
@@ -40,14 +39,10 @@ const d = t(lang);
       {d.hero.body.map((p) => <p>{p}</p>)}
     </div>
     <div class="hero__actions">
-      <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="hero">{d.cta.book}</a>
-      {
-        site.demoUrl && (
-          <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="hero">
-            {d.cta.demoLong}<span class="visually-hidden"> {d.cta.newTab}</span>
-          </a>
-        )
-      }
+      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_call_click" data-track-from="hero">{d.cta.book}</a>
+      <a class="btn btn--line btn--lg" href={href('solutions', lang)} data-open-solutions data-track="explore_solutions_click" data-track-from="hero">
+        {d.cta.solutions}
+      </a>
     </div>
   </div>
 
@@ -114,8 +109,12 @@ const d = t(lang);
     padding-bottom: clamp(3.5rem, 2rem + 6vh, 7rem);
   }
 
+  /* The headline carries the page: large, light and tightly set */
   .hero h1 {
-    font-size: var(--fs-display);
+    font-size: clamp(3.1rem, 1.4rem + 6.4vw, 7.75rem);
+    font-weight: 380;
+    letter-spacing: -0.045em;
+    line-height: 0.98;
   }
 
   /* One sentence per line where there is room */
@@ -124,17 +123,11 @@ const d = t(lang);
   }
 
   .hero__body {
-    display: grid;
-    gap: 0.6em;
-    max-width: 38rem;
-    margin-top: clamp(1.25rem, 0.9rem + 1.2vw, 2rem);
-    color: var(--on-dark-muted);
-    font-size: var(--fs-lead);
+    max-width: 36rem;
+    margin-top: clamp(1.5rem, 1rem + 1.4vw, 2.25rem);
+    color: rgba(244, 245, 247, 0.84);
+    font-size: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);
     line-height: 1.5;
-  }
-
-  .hero__body p:last-child {
-    color: var(--on-dark);
   }
 
   .hero__actions {
@@ -193,7 +186,7 @@ const d = t(lang);
       padding-bottom: 6.5rem;
     }
 
-    .hero__actions .btn {
+    .hero__actions :global(.btn) {
       flex: 1 1 100%;
     }
 

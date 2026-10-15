@@ -219,10 +219,27 @@ a {
   background: rgba(244, 245, 247, 0.06);
 }
 
+.btn--lg {
+  min-height: 54px;
+  padding: 0 1.75rem;
+  font-size: 1.0625rem;
+}
+
 .btn--sm {
   min-height: 40px;
   padding: 0 1.05rem;
   font-size: 0.9375rem;
+}
+
+/* On phones, long labels (German especially) wrap inside the button instead of running off screen */
+@media (max-width: 640px) {
+  .btn {
+    max-width: 100%;
+    padding-block: 0.75rem;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

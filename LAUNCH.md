@@ -19,7 +19,7 @@ All of these are **public** values that end up in the page. They are not secrets
 | Variable | What to put | If empty |
 | --- | --- | --- |
 | `PUBLIC_SITE_URL` | `https://tyll.ai` | defaults to `https://tyll.ai` |
-| `PUBLIC_DEMO_URL` | `https://demo.tyll.ai` once the demo is live | every "Explore demo" button is hidden |
+| `PUBLIC_DEMO_URL` | `https://demo.tyll.ai` once the demo is live | every "Explore demo" and "Try … in the Demo" button is hidden |
 | `PUBLIC_CALENDLY_URL` | `https://calendly.com/besher-asfari-code/new-meeting` (approved by the owner, 15 Oct 2026) | booking page offers email instead |
 | `PUBLIC_LINKEDIN_URL` | `https://www.linkedin.com/company/tyll.ai/` (taken from the current site) | left out of footer |
 | `PUBLIC_INSTAGRAM_URL` | official Instagram profile | left out of footer |
@@ -30,6 +30,8 @@ All of these are **public** values that end up in the page. They are not secrets
 The privacy policy and cookie banner adjust themselves to these settings. Set them for **Production** and redeploy.
 
 Search engines may index **only** the production deployment (`VERCEL_ENV=production`). Every preview and local build is `noindex` with `Disallow: /` in robots.txt, so previews never compete with the real site.
+
+Each solution page's demo button opens a specific area of the demo. The paths are kept in `src/config/demo.ts` (for example Stock & Waste → `/stock?tab=where`). They are real demo routes, and the demo keeps them through sign-in.
 
 ## 2. Create the Vercel project
 
@@ -74,7 +76,7 @@ The website shows "Your call is booked" only when Calendly reports the event as 
 - **GA4:** create a property in **Tyll's own** Google account. Copy the measurement ID (`G-…`). Set `PUBLIC_ANALYTICS_PROVIDER=ga4` and `PUBLIC_ANALYTICS_ID`.
 - **Plausible** (EU-hosted, cookieless, paid): add the site `tyll.ai`. Set `PUBLIC_ANALYTICS_PROVIDER=plausible` and `PUBLIC_ANALYTICS_ID=tyll.ai`.
 
-Events sent (with only a location label and the page language): `book_call_click`, `explore_demo_click`, `booking_calendar_opened`, `booking_started`, `booking_confirmed`, `language_changed`, `video_play`, `video_pause`, `faq_opened`, `email_click`. In GA4, mark `booking_confirmed` as a key event.
+Events sent (with only a location label and the page language): `book_call_click`, `explore_demo_click`, `explore_solutions_click`, `connect_story_played`, `booking_calendar_opened`, `booking_started`, `booking_confirmed`, `language_changed`, `video_play`, `video_pause`, `faq_opened`, `email_click`, `linkedin_click`. In GA4, mark `booking_confirmed` as a key event.
 
 ## 7. Meta Pixel (optional)
 

@@ -1,0 +1,352 @@
+---
+// A short product walkthrough: numbered steps beside large, real demo screens. Advances on its own while in
+// view; visitors can pick a step or pause. With reduced motion nothing advances by itself.
+import { Picture } from 'astro:assets';
+import type { Frame } from '../content/solutions';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  frames: Frame[];
+  note: string;
+}
+
+const { lang, frames, note } = Astro.props;
+const s = t(lang).solutionPage;
+---
+
+<div class="walk" data-walk>
+  <ol class="walk__steps">
+    {
+      frames.map((f, i) => (
+        <li>
+          <button type="button" class="walk__step" aria-current={i === 0 ? 'step' : undefined}>
+            <span class="walk__n">{i + 1}</span>
+            <span>
+              <span class="walk__title">{f.title[lang]}</span>
+              <span class="walk__text">{f.text[lang]}</span>
+            </span>
+            <span class="walk__bar" aria-hidden="true" />
+          </button>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="walk__screen">
+    <div class="walk__frame">
+      {
+        frames.map((f, i) => (
+          <div class:list={['walk__slide', f.phone && 'walk__slide--phone', i === 0 && 'is-active']} data-slide={i} aria-hidden={i === 0 ? undefined : 'true'}>
+            <Picture
+              src={f.img}
+              alt={f.alt[lang]}
+              formats={['avif', 'webp']}
+              fallbackFormat="webp"
+              widths={f.phone ? [390, 780] : [720, 1080, 1440, 2160]}
+              sizes={f.phone ? '320px' : '(max-width: 960px) calc(100vw - 32px), 820px'}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        ))
+      }
+    </div>
+    <div class="walk__controls">
+      <p class="walk__note">{note}</p>
+      <button type="button" class="walk__toggle" aria-pressed="false" data-pause={s.pause} data-play={s.play} hidden>
+        <span class="visually-hidden">{s.pause}</span>
+        <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.25v10H4.5zM9.25 3h2.25v10H9.25z" fill="currentColor" /></svg>
+        <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6L12.6 8z" fill="currentColor" /></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .walk {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 2fr);
+    gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+    align-items: start;
+  }
+
+  .walk__steps {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .walk__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 0.95rem 1rem 1.05rem;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--steel);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .walk__step:hover {
+    color: var(--ink);
+  }
+
+  .walk__step[aria-current] {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .walk__n {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--silver);
+    border-radius: 50%;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [aria-current] .walk__n {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .walk__title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .walk__text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .walk__step:not([aria-current]) .walk__text {
+    display: none;
+  }
+
+  .walk__bar {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0;
+    height: 2px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  [data-walk].is-playing [aria-current] .walk__bar {
+    animation: walk-progress var(--frame-ms, 5000ms) linear forwards;
+  }
+
+  @keyframes walk-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .walk__frame {
+    position: relative;
+    aspect-ratio: 2384 / 1800;
+    border-radius: 18px;
+    background: var(--paper);
+    box-shadow:
+      0 0 0 1px var(--line),
+      0 40px 80px -40px rgba(20, 22, 26, 0.35);
+    overflow: hidden;
+  }
+
+  .walk__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s var(--ease);
+  }
+
+  .walk__slide.is-active {
+    opacity: 1;
+  }
+
+  .walk__slide :global(picture),
+  .walk__slide :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .walk__slide :global(img) {
+    object-fit: cover;
+    object-position: top left;
+  }
+
+  /* A phone screen stands on a silver ground instead of filling the frame */
+  .walk__slide--phone {
+    display: grid;
+    place-items: center;
+    padding: 4% 0;
+    background:
+      radial-gradient(70% 70% at 50% 40%, var(--paper), transparent),
+      url('/media/tyll-waves.webp') center / cover,
+      var(--mist);
+  }
+
+  .walk__slide--phone :global(picture) {
+    width: auto;
+    height: 100%;
+  }
+
+  .walk__slide--phone :global(img) {
+    width: auto;
+    height: 100%;
+    border-radius: 22px;
+    object-fit: contain;
+    box-shadow:
+      0 0 0 1px var(--line),
+      0 30px 60px -30px rgba(20, 22, 26, 0.45);
+  }
+
+  .walk__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+  }
+
+  .walk__note {
+    color: var(--steel);
+    font-size: 0.8125rem;
+  }
+
+  .walk__toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--silver);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .walk__toggle svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .walk__toggle .i-play,
+  .walk__toggle[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+
+  .walk__toggle[aria-pressed='true'] .i-play {
+    display: block;
+  }
+
+  @media (max-width: 960px) {
+    .walk {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Screen first on narrow layouts, the numbered steps underneath */
+    .walk__screen {
+      order: -1;
+    }
+  }
+</style>
+
+<script>
+  const FRAME_MS = 5000;
+  document.querySelectorAll<HTMLElement>('[data-walk]').forEach((walk) => {
+    const steps = [...walk.querySelectorAll<HTMLButtonElement>('.walk__step')];
+    const slides = [...walk.querySelectorAll<HTMLElement>('[data-slide]')];
+    const toggle = walk.querySelector<HTMLButtonElement>('.walk__toggle')!;
+    const label = toggle.querySelector('.visually-hidden')!;
+    walk.style.setProperty('--frame-ms', `${FRAME_MS}ms`);
+
+    let index = 0;
+    let timer = 0;
+    let paused = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let visible = false;
+
+    const eager = (i: number) => slides[i]?.querySelectorAll('img').forEach((img) => (img.loading = 'eager'));
+    const show = (i: number) => {
+      index = (i + steps.length) % steps.length;
+      steps.forEach((s, k) => (k === index ? s.setAttribute('aria-current', 'step') : s.removeAttribute('aria-current')));
+      slides.forEach((sl, k) => {
+        sl.classList.toggle('is-active', k === index);
+        if (k === index) sl.removeAttribute('aria-hidden');
+        else sl.setAttribute('aria-hidden', 'true');
+      });
+      eager(index);
+      eager(index + 1); // the next screen loads before it is needed
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      walk.classList.remove('is-playing');
+      if (paused || !visible) return;
+      void walk.offsetWidth; // restart the progress bar
+      walk.classList.add('is-playing');
+      timer = window.setTimeout(() => {
+        show(index + 1);
+        schedule();
+      }, FRAME_MS);
+    };
+    const syncToggle = () => {
+      toggle.setAttribute('aria-pressed', String(paused));
+      label.textContent = paused ? toggle.dataset.play! : toggle.dataset.pause!;
+    };
+
+    steps.forEach((s, i) =>
+      s.addEventListener('click', () => {
+        show(i);
+        schedule();
+      }),
+    );
+    toggle.hidden = false;
+    toggle.addEventListener('click', () => {
+      paused = !paused;
+      syncToggle();
+      schedule();
+    });
+    // Hovering with a mouse holds the current screen while it is being read
+    walk.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(timer);
+      walk.classList.remove('is-playing');
+    });
+    walk.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && schedule());
+
+    new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible) eager(index);
+        schedule();
+      },
+      { threshold: 0.35 },
+    ).observe(walk.querySelector('.walk__frame')!);
+    syncToggle();
+  });
+</script>

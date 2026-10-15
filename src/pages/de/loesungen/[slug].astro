@@ -1,0 +1,12 @@
+---
+import SolutionPage from '../../../components/pages/SolutionPage.astro';
+import { solutionKeys, slugOf, type SolutionKey } from '../../../i18n/routes';
+
+export function getStaticPaths() {
+  return solutionKeys.map((key) => ({ params: { slug: slugOf(key, 'de') }, props: { key } }));
+}
+
+const { key } = Astro.props as { key: SolutionKey };
+---
+
+<SolutionPage lang="de" solution={key} />

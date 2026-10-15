@@ -27,7 +27,10 @@ The owner provides the official brand assets, website references and research do
 - Demo repo: github.com/giulionovelli25-creator/Demo-Tyll (Next.js). Read-only for this project.
 - Node is at `~/.local/share/node-lts/bin`, not on the default PATH. Prefix commands with `PATH="$HOME/.local/share/node-lts/bin:$PATH"`.
 - The demo's permanent local copy is `~/tyll-demo` (runs on port 3210). Never edit it, and never run `npm init`/`npm install` with the shell's working directory inside it.
-- Stack: Astro 7.3, static output, EN/DE routes in `src/i18n/routes.ts`, all copy in `src/i18n/en.ts` and `de.ts`.
+- Stack: Astro 7.3, static output, EN/DE routes in `src/i18n/routes.ts`, shared copy in `src/i18n/en.ts` and `de.ts`.
+- Architecture (16 Oct 2026, Nory-inspired): short four-section homepage (hero, connect story, one sourced finding, invitation); Solutions menu with six solution pages built from `src/content/solutions.ts`; FAQ in the menu and footer. Keep product detail off the homepage.
+- Demo screenshots live in `src/assets/demo/`. Captures that create records were taken from a throwaway copy of the demo, never the real one. Photo sources are in `src/assets/photos/CREDITS.md`.
+- Per-solution demo deep links: `src/config/demo.ts`.
 - External settings are `PUBLIC_*` variables (see `.env.example` and LAUNCH.md). Legal details live in `src/config/legal.ts` and must never be guessed.
 - `npm run launch-check` lists launch blockers. `npm run test:e2e` runs the browser tests (needs Google Chrome and the dev server).
 

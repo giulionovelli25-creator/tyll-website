@@ -1,0 +1,130 @@
+---
+// Homepage section 3: one sourced finding over one photograph. Industry research, never a Tyll result.
+import { Picture } from 'astro:assets';
+import kitchen from '../../assets/photos/why-kitchen.jpg';
+import { t, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const w = t(lang).home.why;
+---
+
+<section class="why on-dark" aria-labelledby="why-title">
+  <Picture
+    src={kitchen}
+    alt={w.photoAlt}
+    formats={['avif', 'webp']}
+    fallbackFormat="jpg"
+    widths={[828, 1280, 1920, 2400]}
+    sizes="100vw"
+    loading="lazy"
+    decoding="async"
+    class="why__photo"
+  />
+  <div class="why__shade" aria-hidden="true"></div>
+
+  <div class="wrap why__inner">
+    <h2 id="why-title">{w.title}</h2>
+    <figure class="why__figure">
+      <p class="why__number" aria-hidden="true">{w.figure}</p>
+      <figcaption>
+        <p class="why__text"><span class="visually-hidden">{w.figure}: </span>{w.text}</p>
+        <p class="why__context">{w.context}</p>
+        <p class="why__source">
+          {w.source}:{' '}
+          <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
+        </p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .why {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: clamp(560px, 92vh, 900px);
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--on-dark);
+    isolation: isolate;
+  }
+
+  .why :global(picture),
+  .why :global(.why__photo),
+  .why__shade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .why :global(picture),
+  .why :global(.why__photo) {
+    z-index: -2;
+  }
+
+  .why :global(.why__photo) {
+    object-fit: cover;
+    object-position: 60% 50%;
+  }
+
+  .why__shade {
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(14, 15, 17, 0.88) 0%, rgba(14, 15, 17, 0.55) 50%, rgba(14, 15, 17, 0.15) 100%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.7) 0%, transparent 55%);
+  }
+
+  .why__inner {
+    padding-block: var(--section-y);
+  }
+
+  .why h2 {
+    max-width: 15ch;
+    font-size: var(--fs-h2);
+  }
+
+  .why__figure {
+    display: grid;
+    grid-template-columns: auto minmax(0, 26rem);
+    align-items: end;
+    gap: 1.5rem 3rem;
+    margin: clamp(2.5rem, 2rem + 3vw, 5rem) 0 0;
+  }
+
+  /* The one bold number on the homepage */
+  .why__number {
+    font-size: clamp(6rem, 3rem + 13vw, 13rem);
+    font-weight: 200;
+    letter-spacing: -0.06em;
+    line-height: 0.82;
+  }
+
+  .why__text {
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+
+  .why__context,
+  .why__source {
+    margin-top: 0.75rem;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+  }
+
+  .why__source a {
+    color: var(--on-dark);
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 760px) {
+    .why__figure {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

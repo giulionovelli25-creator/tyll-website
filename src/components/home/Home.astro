@@ -1,10 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Hero from './Hero.astro';
-import Problem from './Problem.astro';
-import HowItWorks from './HowItWorks.astro';
-import Solutions from './Solutions.astro';
-import GetStarted from './GetStarted.astro';
+import ConnectStory from './ConnectStory.astro';
+import WhyItMatters from './WhyItMatters.astro';
+import Invitation from './Invitation.astro';
 import { site } from '../../config/site';
 import { t, type Locale } from '../../i18n';
 
@@ -34,8 +33,7 @@ const schema = {
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
   <Hero lang={lang} />
-  <Problem lang={lang} />
-  <HowItWorks lang={lang} />
-  <Solutions lang={lang} />
-  <GetStarted lang={lang} />
+  <ConnectStory lang={lang} />
+  <WhyItMatters lang={lang} />
+  <Invitation lang={lang} />
 </Base>

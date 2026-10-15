@@ -1,23 +1,22 @@
 ---
 import Logo from './Logo.astro';
+import SolutionIcon from './SolutionIcon.astro';
 import { site } from '../config/site';
-import { t, href, pages, locales, type Locale, type PageKey } from '../i18n';
+import { solutions } from '../content/solutions';
+import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
 
 interface Props {
   lang: Locale;
   page: PageKey;
-  /** Start in the white-on-dark treatment, for pages that open on the cinematic hero. */
+  /** Start in the white-on-dark treatment, for pages that open on a dark photo or video. */
   overHero?: boolean;
 }
 
 const { lang, page, overHero = false } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
-const links = [
-  { label: d.nav.how, url: `${home}#how` },
-  { label: d.nav.solutions, url: `${home}#solutions` },
-  { label: d.nav.faq, url: href('faq', lang), current: page === 'faq' },
-];
+const items = solutionKeys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k }));
+const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).includes(page);
 ---
 
 <header class:list={['header', overHero && 'on-dark']} data-tone={overHero ? 'dark' : 'light'} id="site-header">
@@ -27,31 +26,23 @@ const links = [
     </a>
 
     <nav class="header__nav" aria-label={d.nav.label}>
-      <ul>
-        {
-          links.map((l) => (
-            <li>
-              <a href={l.url} aria-current={l.current ? 'page' : undefined}>
-                {l.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      <button
+        type="button"
+        class:list={['header__trigger', inSolutions && 'is-current']}
+        aria-expanded="false"
+        aria-controls="solutions-panel"
+        id="solutions-trigger"
+      >
+        {d.nav.solutions}
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
     </nav>
 
     <div class="header__end">
       <div class="lang" role="group" aria-label={d.nav.language}>
         {
           locales.map((l) => (
-            <a
-              href={pages[page][l]}
-              hreflang={l}
-              lang={l}
-              aria-current={l === lang ? 'true' : undefined}
-              data-track="language_changed"
-              data-track-to={l}
-            >
+            <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_changed" data-track-to={l}>
               <span aria-hidden="true">{l.toUpperCase()}</span>
               <span class="visually-hidden">{t(l).langName}</span>
             </a>
@@ -61,11 +52,12 @@ const links = [
       {
         site.demoUrl && (
           <a class="btn btn--line btn--sm header__demo" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
-            {d.cta.demo}<span class="visually-hidden"> {d.cta.newTab}</span>
+            {d.cta.demo}
+            <span class="visually-hidden"> {d.cta.newTab}</span>
           </a>
         )
       }
-      <a class="btn btn--solid btn--sm" href={href('book', lang)} data-track="book_call_click" data-track-from="header">
+      <a class="btn btn--solid btn--sm header__book" href={href('book', lang)} data-track="book_call_click" data-track-from="header">
         {d.cta.book}
       </a>
       <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -75,27 +67,68 @@ const links = [
     </div>
   </div>
 
-  <div class="mobile-menu" id="mobile-menu" hidden>
-    <nav class="wrap" aria-label={d.nav.label}>
-      <ul class="mobile-menu__links">
+  <!-- Desktop: the Solutions panel -->
+  <div class="panel" id="solutions-panel" role="region" aria-labelledby="solutions-trigger" hidden>
+    <div class="wrap">
+      <ul class="panel__grid">
         {
-          links.map((l) => (
+          items.map(({ key, s, url, current }) => (
             <li>
-              <a href={l.url}>{l.label}</a>
+              <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
+                <span class="panel__icon">
+                  <SolutionIcon name={s.icon} />
+                </span>
+                <span class="panel__text">
+                  <span class="panel__name">
+                    {s.name[lang]}
+                    <span class="panel__arrow" aria-hidden="true">→</span>
+                  </span>
+                  <span class="panel__desc">{s.menu[lang]}</span>
+                </span>
+              </a>
             </li>
           ))
         }
       </ul>
+      <div class="panel__foot">
+        <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
+        <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile: full-screen menu -->
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav class="wrap" aria-label={d.nav.label}>
       <div class="mobile-menu__actions">
         <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="menu">{d.cta.book}</a>
         {
           site.demoUrl && (
             <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
-              {d.cta.demoLong}<span class="visually-hidden"> {d.cta.newTab}</span>
+              {d.cta.demoLong}
+              <span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
           )
         }
       </div>
+      <details class="mobile-menu__group" open={inSolutions || undefined}>
+        <summary>{d.nav.solutions}</summary>
+        <ul>
+          {
+            items.map(({ s, url, current }) => (
+              <li>
+                <a href={url} aria-current={current ? 'page' : undefined}>
+                  <SolutionIcon name={s.icon} />
+                  <span>{s.name[lang]}</span>
+                </a>
+              </li>
+            ))
+          }
+          <li class="mobile-menu__faq">
+            <a href={href('faq', lang)}>{d.nav.faq}</a>
+          </li>
+        </ul>
+      </details>
       <div class="lang mobile-menu__lang" role="group" aria-label={d.nav.language}>
         {
           locales.map((l) => (
@@ -115,7 +148,7 @@ const links = [
     inset: 0 0 auto;
     z-index: 50;
     color: var(--ink);
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.9);
     -webkit-backdrop-filter: saturate(1.5) blur(16px);
     backdrop-filter: saturate(1.5) blur(16px);
     border-bottom: 1px solid var(--line);
@@ -133,7 +166,7 @@ const links = [
     backdrop-filter: none;
   }
 
-  /* Scrolled, but still over the hero: a dark frosted bar so the hero text never shows through */
+  /* Scrolled, but still over the dark opening: a dark frosted bar so text never shows through */
   .header[data-tone='dark'].is-scrolled {
     background: rgba(20, 22, 26, 0.62);
     border-bottom-color: rgba(244, 245, 247, 0.08);
@@ -141,10 +174,27 @@ const links = [
     backdrop-filter: saturate(1.4) blur(16px);
   }
 
+  /* While the Solutions panel is open the bar joins it as one light surface */
+  .header.is-open {
+    color: var(--ink);
+    background: var(--paper);
+    border-bottom-color: var(--line);
+  }
+
+  .header.is-open .btn--solid {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .header.is-open .btn--line {
+    border-color: var(--silver);
+    color: var(--ink);
+  }
+
   .header__bar {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
     height: var(--header-h);
   }
 
@@ -163,29 +213,37 @@ const links = [
     flex: 1;
   }
 
-  .header__nav ul {
-    display: flex;
-    justify-content: center;
-    gap: 2.25rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .header__nav a,
-  .lang a {
+  .header__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 40px;
+    padding: 0 0.85rem;
+    margin-left: -0.85rem;
+    border: 0;
+    border-radius: var(--pill);
+    background: transparent;
+    color: inherit;
+    font: inherit;
     font-size: 0.9375rem;
     font-weight: 450;
-    text-decoration: none;
-    opacity: 0.86;
-    transition: opacity 0.2s var(--ease);
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease);
   }
 
-  .header__nav a:hover,
-  .header__nav a[aria-current],
-  .lang a:hover,
-  .lang a[aria-current] {
-    opacity: 1;
+  .header__trigger:hover,
+  .header__trigger[aria-expanded='true'] {
+    background: rgba(127, 132, 140, 0.14);
+  }
+
+  .header__trigger svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .header__trigger[aria-expanded='true'] svg {
+    transform: rotate(180deg);
   }
 
   .header__end {
@@ -200,14 +258,138 @@ const links = [
     margin-right: 0.5rem;
   }
 
+  .lang a {
+    font-size: 0.9375rem;
+    font-weight: 450;
+    text-decoration: none;
+  }
+
   .lang a:not([aria-current]) {
     opacity: 0.64;
+  }
+
+  .lang a:hover {
+    opacity: 1;
   }
 
   .lang a[aria-current] {
     font-weight: 600;
   }
 
+  /* The Solutions panel */
+  .panel {
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 40px 60px -40px rgba(20, 22, 26, 0.35);
+    animation: panel-in 0.32s var(--ease);
+  }
+
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  .panel__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem 2rem;
+    margin: 0;
+    padding: 1.75rem 0 1.25rem;
+    list-style: none;
+  }
+
+  .panel__item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .panel__item:hover,
+  .panel__item:focus-visible,
+  .panel__item[aria-current] {
+    background: var(--mist);
+  }
+
+  .panel__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--graphite);
+  }
+
+  .panel__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .panel__name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .panel__arrow {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 0.2s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .panel__item:hover .panel__arrow,
+  .panel__item:focus-visible .panel__arrow {
+    opacity: 1;
+    transform: none;
+  }
+
+  .panel__desc {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .panel__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.1rem 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .panel__foot a {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .panel__foot a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .panel__foot .panel__all {
+    color: var(--steel);
+    font-weight: 450;
+  }
+
+  /* Mobile menu */
   .header__burger {
     display: none;
     width: 44px;
@@ -260,58 +442,111 @@ const links = [
   }
 
   .mobile-menu {
-    border-top: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--ink);
     height: calc(100svh - var(--header-h));
     overflow-y: auto;
     overscroll-behavior: contain;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
   }
 
   .mobile-menu nav {
     display: grid;
-    gap: 2rem;
-    padding-block: 1.5rem 2rem;
-  }
-
-  .mobile-menu__links {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .mobile-menu__links a {
-    display: block;
-    padding: 0.7rem 0;
-    font-size: 1.5rem;
-    letter-spacing: -0.02em;
-    text-decoration: none;
+    gap: 1.75rem;
+    padding-block: 1.5rem 2.5rem;
   }
 
   .mobile-menu__actions {
     display: grid;
-    gap: 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .mobile-menu__group summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .mobile-menu__group summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-menu__group summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    font-weight: 300;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .mobile-menu__group[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  .mobile-menu__group ul {
+    margin: 0;
+    padding: 0.5rem 0 0;
+    list-style: none;
+  }
+
+  .mobile-menu__group li a {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.8rem 0;
+    font-size: 1.125rem;
+    text-decoration: none;
+  }
+
+  .mobile-menu__group li a :global(svg) {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    color: var(--steel);
+  }
+
+  .mobile-menu__group li a[aria-current] {
+    font-weight: 600;
+  }
+
+  .mobile-menu__faq {
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-menu__faq a {
+    font-weight: 500;
   }
 
   .mobile-menu__lang a {
     font-size: 1rem;
   }
 
-  /* Menu open: the bar turns light so the panel reads as one surface */
-  .header:has([aria-expanded='true']) {
+  .header:has(.header__burger[aria-expanded='true']) {
     color: var(--ink);
     background: var(--paper);
   }
 
-  .header:has([aria-expanded='true']) .btn--solid {
+  .header:has(.header__burger[aria-expanded='true']) .btn--solid {
     background: var(--ink);
     color: var(--paper);
   }
 
-  @media (max-width: 1080px) {
+  .header:has(.header__burger[aria-expanded='true']) .btn--line {
+    border-color: var(--silver);
+    color: var(--ink);
+  }
+
+  @media (max-width: 960px) {
     .header__nav,
     .header__demo,
-    .header__end > .lang {
+    .header__end > .lang,
+    .panel {
       display: none;
     }
 
@@ -325,51 +560,135 @@ const links = [
   }
 
   @media (max-width: 380px) {
-    .header__end > .btn {
+    .header__book {
       padding-inline: 0.8rem;
       font-size: 0.875rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      animation: none;
     }
   }
 </style>
 
 <script>
   const header = document.getElementById('site-header')!;
+  const trigger = document.getElementById('solutions-trigger') as HTMLButtonElement;
+  const nav = header.querySelector<HTMLElement>('.header__nav')!;
+  const panel = document.getElementById('solutions-panel')!;
   const burger = header.querySelector<HTMLButtonElement>('.header__burger')!;
   const menu = document.getElementById('mobile-menu')!;
   const label = burger.querySelector<HTMLElement>('[data-open-label]')!;
 
-  // Over the hero the header is white-on-dark; once the hero has scrolled past, it turns light.
+  // Over a dark opening the header is white-on-dark; past it, it turns light.
   const hero = document.querySelector('[data-hero]');
   if (hero && header.dataset.tone === 'dark') {
     const setTone = (dark: boolean) => {
       header.dataset.tone = dark ? 'dark' : 'light';
       header.classList.toggle('on-dark', dark);
     };
-    new IntersectionObserver(([e]) => setTone(e.isIntersecting), {
-      rootMargin: `-${header.offsetHeight}px 0px 0px 0px`,
-    }).observe(hero);
+    new IntersectionObserver(([e]) => setTone(e.isIntersecting), { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` }).observe(hero);
   }
-
   const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  const setOpen = (open: boolean) => {
+  // ── Solutions panel: click or keyboard; hover on devices with a real pointer ──
+  let closeTimer = 0;
+  let openTimer = 0;
+  const isOpen = () => trigger.getAttribute('aria-expanded') === 'true';
+  const setPanel = (open: boolean, focusFirst = false) => {
+    clearTimeout(closeTimer);
+    clearTimeout(openTimer);
+    trigger.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+    header.classList.toggle('is-open', open);
+    if (open && focusFirst) panel.querySelector<HTMLElement>('a')?.focus();
+  };
+  trigger.addEventListener('click', () => setPanel(!isOpen()));
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setPanel(true, true);
+    }
+  });
+  // Arrow keys move between the panel's links
+  panel.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const links = [...panel.querySelectorAll<HTMLElement>('a')];
+    const i = links.indexOf(document.activeElement as HTMLElement);
+    links[(i + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length]?.focus();
+  });
+
+  // Hover opens after a short pause and closes after a grace period, so moving the pointer
+  // diagonally from the trigger into the panel never closes it.
+  const hoverable = matchMedia('(hover: hover) and (pointer: fine)');
+  const enter = () => {
+    if (!hoverable.matches) return;
+    clearTimeout(closeTimer);
+    if (!isOpen()) openTimer = window.setTimeout(() => setPanel(true), 120);
+  };
+  const leave = () => {
+    if (!hoverable.matches) return;
+    clearTimeout(openTimer);
+    closeTimer = window.setTimeout(() => setPanel(false), 280);
+  };
+  [trigger, panel].forEach((el) => {
+    el.addEventListener('pointerenter', enter);
+    el.addEventListener('pointerleave', leave);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (isOpen() && !header.contains(e.target as Node)) setPanel(false);
+  });
+  header.addEventListener('focusout', (e) => {
+    const to = e.relatedTarget as Node | null;
+    if (isOpen() && to && !panel.contains(to) && to !== trigger) setPanel(false);
+  });
+
+  // ── Mobile menu ──
+  const setMenu = (open: boolean) => {
     burger.setAttribute('aria-expanded', String(open));
     menu.hidden = !open;
     label.textContent = open ? label.dataset.closeLabel! : label.dataset.openLabel!;
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (open) menu.querySelector<HTMLElement>('a')?.focus();
+    if (open) menu.querySelector<HTMLElement>('a, summary')?.focus();
   };
-  burger.addEventListener('click', () => setOpen(menu.hidden));
+  burger.addEventListener('click', () => setMenu(menu.hidden));
   menu.addEventListener('click', (e) => {
-    if ((e.target as Element).closest('a')) setOpen(false);
+    if ((e.target as Element).closest('a')) setMenu(false);
   });
+
+  // "Explore Solutions" buttons elsewhere on the page: the panel on desktop, the menu on phones.
+  // Without JavaScript they are plain links to the solutions overview page.
+  document.addEventListener('click', (e) => {
+    const opener = (e.target as Element).closest<HTMLElement>('[data-open-solutions]');
+    if (!opener) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (getComputedStyle(nav).display === 'none') {
+      setMenu(true);
+      menu.querySelector('details')?.setAttribute('open', '');
+      return;
+    }
+    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    setPanel(true, (e as MouseEvent).detail === 0);
+  });
+
   addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menu.hidden) {
-      setOpen(false);
+    if (e.key !== 'Escape') return;
+    if (isOpen()) {
+      setPanel(false);
+      trigger.focus();
+    }
+    if (!menu.hidden) {
+      setMenu(false);
       burger.focus();
     }
   });
-  matchMedia('(min-width: 1081px)').addEventListener('change', (e) => e.matches && setOpen(false));
+  matchMedia('(min-width: 961px)').addEventListener('change', (e) => e.matches && setMenu(false));
 </script>

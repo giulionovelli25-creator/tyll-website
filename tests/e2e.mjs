@@ -13,9 +13,14 @@ import { homedir } from 'node:os';
 const BASE = process.env.BASE_URL || 'http://localhost:4321';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const TRACKERS = /googletagmanager\.com|google-analytics\.com|plausible\.io|connect\.facebook\.net|facebook\.com\/tr/;
+const SOL = {
+  en: ['stock-waste', 'finance-money', 'forecasting-purchasing', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/en/solutions/${s}/`),
+  de: ['lager-abfall', 'finanzen', 'prognose-einkauf', 'events-personal', 'zimmer-gaeste', 'vertrieb-performance'].map((s) => `/de/loesungen/${s}/`),
+};
+// Same order in both languages, so index i is the same page
 const PAGES = {
-  en: ['/en/', '/en/book-a-call/', '/en/faq/', '/en/legal-notice/', '/en/privacy/'],
-  de: ['/de/', '/de/gespraech-buchen/', '/de/faq/', '/de/impressum/', '/de/datenschutz/'],
+  en: ['/en/', '/en/book-a-call/', '/en/faq/', '/en/legal-notice/', '/en/privacy/', '/en/solutions/', ...SOL.en],
+  de: ['/de/', '/de/gespraech-buchen/', '/de/faq/', '/de/impressum/', '/de/datenschutz/', '/de/loesungen/', ...SOL.de],
 };
 
 const results = [];
@@ -63,12 +68,38 @@ for (const lang of ['en', 'de']) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/One hotel|Ein Hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    for (const [label, hash] of [['nav how', '#how'], ['nav solutions', '#solutions']]) {
-      await page.evaluate((h) => document.querySelector(`.header__nav a[href$="${h}"]`).click(), hash);
-      await sleep(900);
-      const inView = await page.evaluate((h) => { const r = document.querySelector(h).getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, hash);
-      if (!inView) problems.push(`${label} did not scroll to ${hash}`);
+    // The interactive problem section comes together when asked
+    await page.evaluate(() => document.querySelector('[data-connect-toggle]').click());
+    await sleep(400);
+    if ((await page.$eval('[data-connect]', (e) => e.dataset.state)) !== 'connected') problems.push('problem section did not connect');
+    // "Explore Solutions" in the hero opens the Solutions menu
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.click('.hero__actions [data-open-solutions]');
+    await sleep(500);
+    const menu = await page.evaluate(() => ({ open: !document.getElementById('solutions-panel').hidden, items: [...document.querySelectorAll('#solutions-panel .panel__item')].map((a) => a.getAttribute('href')), faq: [...document.querySelectorAll('#solutions-panel a')].some((a) => /\/faq\/$/.test(a.getAttribute('href'))) }));
+    if (!menu.open) problems.push('Explore Solutions did not open the menu');
+    if (menu.items.join() !== SOL[lang].join()) problems.push(`menu items ${menu.items.join()}`);
+    if (!menu.faq) problems.push('FAQ missing from the Solutions menu');
+    await page.keyboard.press('Escape');
+    // Every solution from the menu: opens, one h1, its walkthrough, and demo buttons that go to the configured demo
+    for (const [i, url] of SOL[lang].entries()) {
+      await page.click('#solutions-trigger');
+      await sleep(250);
+      await Promise.all([page.waitForNavigation(), page.click(`#solutions-panel .panel__item[href="${url}"]`)]);
+      const sol = await page.evaluate(() => ({
+        path: location.pathname,
+        h1: document.querySelectorAll('h1').length,
+        steps: document.querySelectorAll('[data-walk] .walk__step').length,
+        demo: [...document.querySelectorAll('main a[data-track="explore_demo_click"]')].map((a) => a.getAttribute('href')),
+        book: !!document.querySelector('main a[data-track="book_call_click"]'),
+      }));
+      if (sol.path !== url || sol.h1 !== 1 || sol.steps < 4 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
+      if (sol.demo.length && sol.demo.some((h) => !new URL(h).search && !new URL(h).pathname.match(/\/\w/))) problems.push(`${url}: demo link without a solution route`);
+      // The walkthrough steps can be chosen
+      await page.evaluate(() => document.querySelectorAll('[data-walk] .walk__step')[2].click());
+      if (!(await page.$eval('[data-walk] .walk__step:nth-child(1)', () => document.querySelectorAll('[data-walk] .walk__step')[2].hasAttribute('aria-current')))) problems.push(`${url}: walkthrough step did not change`);
     }
+    await go(page, `/${lang}/`);
     // Book a Call from the header lands on the booking page
     await Promise.all([page.waitForNavigation(), page.click('.header__end a[data-track="book_call_click"]')]);
     if (page.url() !== `${BASE}${PAGES[lang][1]}`) problems.push(`Book a Call went to ${page.url()}`);
@@ -120,8 +151,17 @@ for (const lang of ['en', 'de']) {
   const problems = [];
   for (const p of [...PAGES.en, ...PAGES.de]) {
     await go(page, p);
-    const w = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
+    const w = await page.evaluate(() => ({
+      sw: document.documentElement.scrollWidth,
+      iw: innerWidth,
+      // Headings and buttons that are cut off or reach past the screen edge
+      clipped: [...document.querySelectorAll('h1, h2, h3, .btn')].filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 0 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
+      }).map((e) => e.textContent.trim().slice(0, 30)),
+    }));
     if (w.sw > w.iw) problems.push(`${p} scrolls sideways (${w.sw}px)`);
+    if (w.clipped.length) problems.push(`${p} clipped: ${w.clipped.join(' | ')}`);
   }
   await go(page, '/de/');
   const bookVisible = await page.$eval('.header__end > a[data-track="book_call_click"]', (a) => { const r = a.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth; });
@@ -130,6 +170,8 @@ for (const lang of ['en', 'de']) {
   await sleep(300);
   const menu = await page.evaluate(() => ({ open: !document.getElementById('mobile-menu').hidden, focused: document.activeElement?.closest('#mobile-menu') != null, links: document.querySelectorAll('#mobile-menu a').length }));
   if (!menu.open || !menu.focused) problems.push('mobile menu did not open with focus inside');
+  const mobileSolutions = await page.evaluate(() => document.querySelectorAll('#mobile-menu details li a').length);
+  if (mobileSolutions !== 7) problems.push(`mobile menu has ${mobileSolutions} solution/FAQ links`);
   await page.keyboard.press('Escape');
   if (!(await page.$eval('#mobile-menu', (m) => m.hidden))) problems.push('Escape did not close the menu');
   // Heading and buttons fit on a phone
@@ -160,7 +202,7 @@ for (const lang of ['en', 'de']) {
     await sleep(800);
     if (await page.$eval('#consent-banner', (b) => !b.hidden)) p1.push('banner shown again after rejecting');
     if (page.trackerHits.length) p1.push(`tracker requested after rejecting: ${page.trackerHits[0]}`);
-    const cookies = (await page.cookies()).map((c) => c.name).filter((n) => /^_ga|^_fb/.test(n));
+    const cookies = (await page.browserContext().cookies()).map((c) => c.name).filter((n) => /^_ga|^_fb/.test(n));
     if (cookies.length) p1.push(`tracking cookies set: ${cookies}`);
     record('D', 'Cookie rejection: nothing loads, choice remembered', p1.length ? 'FAIL' : 'PASS', p1.join('; '));
     await page.ctx.close();
