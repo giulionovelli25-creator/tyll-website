@@ -1,0 +1,181 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../config/site';
+import { t, href, pages, locales, type Locale, type PageKey } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  page: PageKey;
+}
+
+const { lang, page } = Astro.props;
+const d = t(lang);
+const home = href('home', lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer on-dark">
+  <div class="wrap footer__top">
+    <div class="footer__brand">
+      <a href={home} class="footer__logo" aria-label="Tyll – home">
+        <Logo anim="loop" label="Tyll" />
+      </a>
+      <p>{d.footer.tagline}</p>
+    </div>
+
+    <nav class="footer__cols" aria-label="Footer">
+      <div>
+        <h2>{d.footer.explore}</h2>
+        <ul>
+          <li><a href={`${home}#how`}>{d.nav.how}</a></li>
+          <li><a href={`${home}#solutions`}>{d.nav.solutions}</a></li>
+          <li><a href={href('faq', lang)}>{d.nav.faq}</a></li>
+          {
+            site.demoUrl && (
+              <li>
+                <a href={site.demoUrl} data-track="demo_click" data-track-from="footer">
+                  {d.cta.demo}
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+      <div>
+        <h2>{d.footer.contact}</h2>
+        <ul>
+          <li>
+            <a href={href('book', lang)} data-track="book_click" data-track-from="footer">{d.cta.book}</a>
+          </li>
+          <li><a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>
+          {site.social.linkedin && <li><a href={site.social.linkedin} rel="noopener" target="_blank">LinkedIn</a></li>}
+          {site.social.instagram && <li><a href={site.social.instagram} rel="noopener" target="_blank">Instagram</a></li>}
+        </ul>
+      </div>
+      <div>
+        <h2>{d.footer.company}</h2>
+        <ul>
+          <li><a href={href('legal', lang)}>{d.footer.legal}</a></li>
+          <li><a href={href('privacy', lang)}>{d.footer.privacy}</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="wrap footer__base">
+    <p>© {year} {d.footer.rights}. {d.footer.demoNote}</p>
+    <div class="footer__lang" role="group" aria-label={d.nav.language}>
+      {
+        locales.map((l) => (
+          <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_switch" data-track-to={l}>
+            {t(l).langName}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: var(--on-dark);
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) 2rem;
+  }
+
+  .footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 3rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .footer__logo {
+    display: inline-block;
+    border-radius: 6px;
+  }
+
+  .footer__logo :global(.logo) {
+    height: 34px;
+    width: auto;
+  }
+
+  .footer__brand p {
+    margin-top: 1.25rem;
+    max-width: 22ch;
+    color: var(--on-dark-muted);
+    font-size: 1.0625rem;
+    line-height: 1.45;
+  }
+
+  .footer__cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  .footer h2 {
+    margin-bottom: 1rem;
+    color: var(--fog);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .footer ul {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer a {
+    color: var(--on-dark);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    opacity: 0.86;
+  }
+
+  .footer a:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(244, 245, 247, 0.12);
+    color: var(--fog);
+    font-size: var(--fs-small);
+  }
+
+  .footer__lang {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  .footer__lang a {
+    font-size: var(--fs-small);
+  }
+
+  .footer__lang a:not([aria-current]) {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 820px) {
+    .footer__top {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .footer__cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

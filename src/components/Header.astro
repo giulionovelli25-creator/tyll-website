@@ -1,0 +1,374 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../config/site';
+import { t, href, pages, locales, type Locale, type PageKey } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  page: PageKey;
+  /** Start in the white-on-dark treatment, for pages that open on the cinematic hero. */
+  overHero?: boolean;
+}
+
+const { lang, page, overHero = false } = Astro.props;
+const d = t(lang);
+const home = href('home', lang);
+const links = [
+  { label: d.nav.how, url: `${home}#how` },
+  { label: d.nav.solutions, url: `${home}#solutions` },
+  { label: d.nav.faq, url: href('faq', lang), current: page === 'faq' },
+];
+---
+
+<header class:list={['header', overHero && 'on-dark']} data-tone={overHero ? 'dark' : 'light'} id="site-header">
+  <div class="wrap header__bar">
+    <a class="header__logo" href={home} aria-label="Tyll – home">
+      <Logo label="Tyll" />
+    </a>
+
+    <nav class="header__nav" aria-label={d.nav.label}>
+      <ul>
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.url} aria-current={l.current ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header__end">
+      <div class="lang" role="group" aria-label={d.nav.language}>
+        {
+          locales.map((l) => (
+            <a
+              href={pages[page][l]}
+              hreflang={l}
+              lang={l}
+              aria-current={l === lang ? 'true' : undefined}
+              data-track="language_switch"
+              data-track-to={l}
+            >
+              <span aria-hidden="true">{l.toUpperCase()}</span>
+              <span class="visually-hidden">{t(l).langName}</span>
+            </a>
+          ))
+        }
+      </div>
+      {
+        site.demoUrl && (
+          <a class="btn btn--line btn--sm header__demo" href={site.demoUrl} data-track="demo_click" data-track-from="header">
+            {d.cta.demo}
+          </a>
+        )
+      }
+      <a class="btn btn--solid btn--sm" href={href('book', lang)} data-track="book_click" data-track-from="header">
+        {d.cta.book}
+      </a>
+      <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="visually-hidden" data-open-label={d.nav.menu} data-close-label={d.nav.close}>{d.nav.menu}</span>
+        <span class="burger-lines" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav class="wrap" aria-label={d.nav.label}>
+      <ul class="mobile-menu__links">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.url}>{l.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mobile-menu__actions">
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="menu">{d.cta.book}</a>
+        {
+          site.demoUrl && (
+            <a class="btn btn--line" href={site.demoUrl} data-track="demo_click" data-track-from="menu">
+              {d.cta.demoLong}
+            </a>
+          )
+        }
+      </div>
+      <div class="lang mobile-menu__lang" role="group" aria-label={d.nav.language}>
+        {
+          locales.map((l) => (
+            <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_switch" data-track-to={l}>
+              {t(l).langName}
+            </a>
+          ))
+        }
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: saturate(1.5) blur(16px);
+    backdrop-filter: saturate(1.5) blur(16px);
+    border-bottom: 1px solid var(--line);
+    transition:
+      background-color 0.45s var(--ease),
+      color 0.45s var(--ease),
+      border-color 0.45s var(--ease);
+  }
+
+  .header[data-tone='dark'] {
+    color: var(--on-dark);
+    background: transparent;
+    border-bottom-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Scrolled, but still over the hero: a dark frosted bar so the hero text never shows through */
+  .header[data-tone='dark'].is-scrolled {
+    background: rgba(20, 22, 26, 0.62);
+    border-bottom-color: rgba(244, 245, 247, 0.08);
+    -webkit-backdrop-filter: saturate(1.4) blur(16px);
+    backdrop-filter: saturate(1.4) blur(16px);
+  }
+
+  .header__bar {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: var(--header-h);
+  }
+
+  .header__logo {
+    flex: none;
+    display: block;
+    border-radius: 6px;
+  }
+
+  .header__logo :global(.logo) {
+    width: auto;
+    height: 26px;
+  }
+
+  .header__nav {
+    flex: 1;
+  }
+
+  .header__nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 2.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .header__nav a,
+  .lang a {
+    font-size: 0.9375rem;
+    font-weight: 450;
+    text-decoration: none;
+    opacity: 0.86;
+    transition: opacity 0.2s var(--ease);
+  }
+
+  .header__nav a:hover,
+  .header__nav a[aria-current],
+  .lang a:hover,
+  .lang a[aria-current] {
+    opacity: 1;
+  }
+
+  .header__end {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .lang {
+    display: flex;
+    gap: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  .lang a:not([aria-current]) {
+    opacity: 0.55;
+  }
+
+  .lang a[aria-current] {
+    font-weight: 600;
+  }
+
+  .header__burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .burger-lines,
+  .burger-lines::before,
+  .burger-lines::after {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    margin: auto;
+    background: currentColor;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .burger-lines {
+    position: relative;
+    background: transparent;
+  }
+
+  .burger-lines::before,
+  .burger-lines::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .burger-lines::before {
+    transform: translateY(-4px);
+  }
+
+  .burger-lines::after {
+    transform: translateY(4px);
+  }
+
+  [aria-expanded='true'] .burger-lines::before {
+    transform: rotate(45deg);
+  }
+
+  [aria-expanded='true'] .burger-lines::after {
+    transform: rotate(-45deg);
+  }
+
+  .mobile-menu {
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    height: calc(100svh - var(--header-h));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-menu nav {
+    display: grid;
+    gap: 2rem;
+    padding-block: 1.5rem 2rem;
+  }
+
+  .mobile-menu__links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-menu__links a {
+    display: block;
+    padding: 0.7rem 0;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .mobile-menu__actions {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .mobile-menu__lang a {
+    font-size: 1rem;
+  }
+
+  /* Menu open: the bar turns light so the panel reads as one surface */
+  .header:has([aria-expanded='true']) {
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  .header:has([aria-expanded='true']) .btn--solid {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  @media (max-width: 1080px) {
+    .header__nav,
+    .header__demo,
+    .header__end > .lang {
+      display: none;
+    }
+
+    .header__end {
+      margin-left: auto;
+    }
+
+    .header__burger {
+      display: block;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .header__end > .btn {
+      padding-inline: 0.8rem;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const burger = header.querySelector<HTMLButtonElement>('.header__burger')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const label = burger.querySelector<HTMLElement>('[data-open-label]')!;
+
+  // Over the hero the header is white-on-dark; once the hero has scrolled past, it turns light.
+  const hero = document.querySelector('[data-hero]');
+  if (hero && header.dataset.tone === 'dark') {
+    const setTone = (dark: boolean) => {
+      header.dataset.tone = dark ? 'dark' : 'light';
+      header.classList.toggle('on-dark', dark);
+    };
+    new IntersectionObserver(([e]) => setTone(e.isIntersecting), {
+      rootMargin: `-${header.offsetHeight}px 0px 0px 0px`,
+    }).observe(hero);
+  }
+
+  const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  const setOpen = (open: boolean) => {
+    burger.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+    label.textContent = open ? label.dataset.closeLabel! : label.dataset.openLabel!;
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  };
+  burger.addEventListener('click', () => setOpen(menu.hidden));
+  menu.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('a')) setOpen(false);
+  });
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) {
+      setOpen(false);
+      burger.focus();
+    }
+  });
+  matchMedia('(min-width: 1081px)').addEventListener('change', (e) => e.matches && setOpen(false));
+</script>

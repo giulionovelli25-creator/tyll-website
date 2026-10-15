@@ -1,0 +1,68 @@
+---
+// The official Tyll logo, using the vector paths from the live tyll.ai header. Never redraw these.
+// `mark` renders the checkmark alone. `anim` makes the mark draw itself (see src/scripts/checkmark.ts):
+// "draw" draws once when scrolled into view, "loop" draws, holds and retracts while visible (footer).
+interface Props {
+  mark?: boolean;
+  anim?: 'draw' | 'loop';
+  label?: string;
+  class?: string;
+}
+
+const { mark = false, anim, label = 'Tyll', class: className } = Astro.props;
+
+const SHORT =
+  'M17.0355 68.4862L0.43289 39.6292C-0.799691 37.4869 0.746682 34.8131 3.2183 34.8131H19.4402C20.5517 34.8131 21.5843 35.3876 22.1705 36.332L29.9621 48.8851C30.5283 49.7973 30.6016 50.9321 30.1573 51.9096L22.7464 68.2134C21.6637 70.5954 18.3404 70.7541 17.0355 68.4862Z';
+const LONG =
+  'M53.9312 48.2028H33.5463L53.0695 1.96355C53.572 0.773501 54.7382 0 56.03 0H72.034C74.3466 0 75.9021 2.36931 74.9826 4.49124L56.8798 46.267C56.3705 47.4422 55.212 48.2028 53.9312 48.2028Z';
+const WORDMARK = [
+  'M136.089 5.99569V14.7385H121.698V60H110.867V14.7385H96.4758V5.99569H136.089Z',
+  'M184.999 17.137L158.461 80.271H146.933L156.217 58.9168L139.041 17.137H151.188L162.252 47.0792L173.471 17.137H184.999Z',
+  'M201.67 2.74615V60H190.838V2.74615H201.67Z',
+  'M223.203 2.74615V60H212.371V2.74615H223.203Z',
+];
+
+const id = `ck${Math.random().toString(36).slice(2, 8)}`;
+const viewBox = mark ? '-1 -1 77 72' : '0 0 224 81';
+---
+
+<svg
+  class:list={['logo', mark && 'logo--mark', className]}
+  viewBox={viewBox}
+  fill="currentColor"
+  role="img"
+  aria-label={label}
+  data-check={anim}
+>
+  {
+    anim ? (
+      <>
+        <defs>
+          <clipPath id={`${id}-s`}>
+            <path d={SHORT} />
+          </clipPath>
+          <clipPath id={`${id}-l`}>
+            <path d={LONG} />
+          </clipPath>
+        </defs>
+        <g clip-path={`url(#${id}-s)`}>
+          <path class="ck-s" d={SHORT} />
+        </g>
+        <g clip-path={`url(#${id}-l)`}>
+          <path class="ck-l" d={LONG} />
+        </g>
+      </>
+    ) : (
+      <>
+        <path d={SHORT} />
+        <path d={LONG} />
+      </>
+    )
+  }
+  {!mark && WORDMARK.map((d) => <path d={d} />)}
+</svg>
+
+<script>
+  import { initCheckmarks } from '../scripts/checkmark';
+  initCheckmarks();
+</script>

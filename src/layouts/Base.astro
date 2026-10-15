@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config/site';
+import { t, pages, locales, type Locale, type PageKey } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  page: PageKey;
+  title: string;
+  description: string;
+  /** The page opens on the dark cinematic hero, so the header starts white-on-dark. */
+  overHero?: boolean;
+  /** Keep search engines away (e.g. legal pages still missing required details). */
+  noindex?: boolean;
+}
+
+const { lang, page, title, description, overHero = false, noindex = false } = Astro.props;
+const d = t(lang);
+const abs = (path: string) => new URL(path, site.url).href;
+const canonical = abs(pages[page][lang]);
+const ogImage = abs('/media/hero-reception.jpg');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={abs(pages[page][l])} />)}
+    <link rel="alternate" hreflang="x-default" href={abs(pages[page].en)} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Tyll" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_GB'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/media/tyll-icon-512.png" />
+    <meta name="theme-color" content="#14161a" />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{d.skip}</a>
+    <Header lang={lang} page={page} overHero={overHero} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} page={page} />
+  </body>
+</html>

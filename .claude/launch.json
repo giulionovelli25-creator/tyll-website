@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tyll-website",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": ["-c", "export PATH=\"$HOME/.local/share/node-lts/bin:$PATH\"; exec node node_modules/astro/bin/astro.mjs dev --port 4321"],
+      "port": 4321
+    }
+  ]
+}
