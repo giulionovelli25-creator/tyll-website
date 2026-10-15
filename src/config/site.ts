@@ -14,6 +14,8 @@ if (demoUrl && env.PROD && isLocal(demoUrl)) {
 
 export const site = {
   url: value(env.PUBLIC_SITE_URL) ?? 'https://tyll.ai',
+  /** True only for the production deployment (see astro.config.mjs). Everything else is noindex. */
+  indexable: env.DEPLOY_ENV === 'production',
   email: 'info@tyll.ai',
   demoUrl: demoUrl && !(env.PROD && isLocal(demoUrl)) ? demoUrl : undefined,
   calendlyUrl: value(env.PUBLIC_CALENDLY_URL),

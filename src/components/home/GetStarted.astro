@@ -19,11 +19,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <h2 id="start-title">{s.title}</h2>
       <p>{s.text}</p>
       <div class="start__actions">
-        <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="final">{d.cta.book}</a>
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="final">{d.cta.book}</a>
         {
           site.demoUrl && (
-            <a class="btn btn--line" href={site.demoUrl} data-track="demo_click" data-track-from="final">
-              {d.cta.demoLong}
+            <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="final">
+              {d.cta.demoLong}<span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
           )
         }

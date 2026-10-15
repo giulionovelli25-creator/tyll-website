@@ -33,8 +33,8 @@ const year = new Date().getFullYear();
           {
             site.demoUrl && (
               <li>
-                <a href={site.demoUrl} data-track="demo_click" data-track-from="footer">
-                  {d.cta.demo}
+                <a href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="footer">
+                  {d.cta.demo}<span class="visually-hidden"> {d.cta.newTab}</span>
                 </a>
               </li>
             )
@@ -45,7 +45,7 @@ const year = new Date().getFullYear();
         <h2>{d.footer.contact}</h2>
         <ul>
           <li>
-            <a href={href('book', lang)} data-track="book_click" data-track-from="footer">{d.cta.book}</a>
+            <a href={href('book', lang)} data-track="book_call_click" data-track-from="footer">{d.cta.book}</a>
           </li>
           <li><a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>
           {site.social.linkedin && <li><a href={site.social.linkedin} rel="noopener" target="_blank">LinkedIn</a></li>}
@@ -57,6 +57,7 @@ const year = new Date().getFullYear();
         <ul>
           <li><a href={href('legal', lang)}>{d.footer.legal}</a></li>
           <li><a href={href('privacy', lang)}>{d.footer.privacy}</a></li>
+          <li><button type="button" class="footer__linkbtn" data-consent-open>{d.footer.cookies}</button></li>
         </ul>
       </div>
     </nav>
@@ -67,7 +68,7 @@ const year = new Date().getFullYear();
     <div class="footer__lang" role="group" aria-label={d.nav.language}>
       {
         locales.map((l) => (
-          <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_switch" data-track-to={l}>
+          <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_changed" data-track-to={l}>
             {t(l).langName}
           </a>
         ))
@@ -138,6 +139,19 @@ const year = new Date().getFullYear();
     opacity: 0.86;
   }
 
+  .footer__linkbtn {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--on-dark);
+    font: inherit;
+    font-size: 0.9375rem;
+    text-align: left;
+    opacity: 0.86;
+    cursor: pointer;
+  }
+
+  .footer__linkbtn:hover,
   .footer a:hover {
     opacity: 1;
     text-decoration: underline;

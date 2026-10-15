@@ -11,13 +11,15 @@
     "build": "astro build",
     "preview": "astro preview --port 4321",
     "check": "astro check",
-    "launch-check": "node scripts/launch-check.mjs"
+    "launch-check": "node scripts/launch-check.mjs",
+    "test:e2e": "node tests/e2e.mjs"
   },
   "dependencies": {
     "astro": "7.3.5"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "puppeteer-core": "25.12.0",
     "typescript": "5.9.3"
   }
 }

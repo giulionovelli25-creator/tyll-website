@@ -52,8 +52,8 @@ const demoLink = (path: string) => (site.demoUrl ? new URL(path, site.demoUrl).h
                 </ul>
               </details>
               {demoLink(c.path) && (
-                <a class="cat__link" href={demoLink(c.path)} data-track="demo_click" data-track-from={`solutions-${i + 1}`}>
-                  {d.explore}
+                <a class="cat__link" href={demoLink(c.path)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`solutions-${i + 1}`}>
+                  {d.explore}<span class="visually-hidden"> {t(lang).cta.newTab}</span>
                 </a>
               )}
             </div>

@@ -1,0 +1,365 @@
+---
+// Cookie consent: a small banner on first visit (only when an optional service is configured) and a
+// preferences dialog that the footer's "Cookie preferences" button opens at any time.
+// Accept and Reject are the same size and weight, so rejecting is as easy as accepting.
+import { site } from '../config/site';
+import { t, href, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const c = t(lang).consent;
+const hasAnalytics = Boolean(site.analytics.provider && site.analytics.id);
+const hasMarketing = Boolean(site.metaPixelId);
+const hasOptional = hasAnalytics || hasMarketing;
+---
+
+{
+  hasOptional && (
+    <section class="consent" id="consent-banner" aria-labelledby="consent-title" hidden>
+      <h2 id="consent-title">{c.title}</h2>
+      <p>
+        {c.text} <a href={href('privacy', lang, '#cookies')}>{c.privacy}</a>
+      </p>
+      <div class="consent__actions">
+        <button type="button" class="btn btn--line btn--sm" data-consent="accept">{c.accept}</button>
+        <button type="button" class="btn btn--line btn--sm" data-consent="reject">{c.reject}</button>
+        <button type="button" class="consent__manage" data-consent-open>{c.manage}</button>
+      </div>
+    </section>
+  )
+}
+
+<dialog class="prefs" id="consent-dialog" aria-labelledby="prefs-title">
+  <form method="dialog">
+    <div class="prefs__head">
+      <h2 id="prefs-title">{c.dialogTitle}</h2>
+      <button type="submit" class="prefs__close" value="cancel" aria-label={c.close}>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      </button>
+    </div>
+    <p class="prefs__intro">{hasOptional ? c.dialogIntro : c.none}</p>
+
+    <ul class="prefs__list">
+      <li>
+        <div>
+          <span class="prefs__name">{c.necessary}</span>
+          <span class="prefs__text">{c.necessaryText}</span>
+        </div>
+        <span class="prefs__always">{c.alwaysOn}</span>
+      </li>
+      {
+        hasAnalytics && (
+          <li>
+            <label for="consent-analytics">
+              <span class="prefs__name">{c.analytics}</span>
+              <span class="prefs__text">{c.analyticsText}</span>
+            </label>
+            <input type="checkbox" role="switch" id="consent-analytics" name="analytics" />
+          </li>
+        )
+      }
+      {
+        hasMarketing && (
+          <li>
+            <label for="consent-marketing">
+              <span class="prefs__name">{c.marketing}</span>
+              <span class="prefs__text">{c.marketingText}</span>
+            </label>
+            <input type="checkbox" role="switch" id="consent-marketing" name="marketing" />
+          </li>
+        )
+      }
+    </ul>
+
+    <div class="prefs__actions">
+      {
+        hasOptional ? (
+          <>
+            <button type="submit" class="btn btn--solid btn--sm" value="save">{c.save}</button>
+            <button type="submit" class="btn btn--line btn--sm" value="reject">{c.reject}</button>
+            <button type="submit" class="btn btn--line btn--sm" value="accept">{c.accept}</button>
+          </>
+        ) : (
+          <button type="submit" class="btn btn--solid btn--sm" value="cancel">{c.close}</button>
+        )
+      }
+    </div>
+    <a class="prefs__privacy" href={href('privacy', lang, '#cookies')}>{c.privacy}</a>
+  </form>
+</dialog>
+
+<style>
+  /* Bottom right, clear of the hero's text and buttons on the left */
+  .consent {
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 60;
+    width: min(420px, calc(100vw - 32px));
+    padding: 1.25rem 1.25rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.97);
+    color: var(--ink);
+    box-shadow: 0 24px 60px -24px rgba(20, 22, 26, 0.35);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .consent h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .consent p {
+    margin-top: 0.4rem;
+    color: var(--steel);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .consent p a {
+    color: var(--ink);
+    text-underline-offset: 3px;
+  }
+
+  .consent__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .consent__actions .btn {
+    border-color: var(--ink);
+  }
+
+  .consent__manage,
+  .prefs__close {
+    padding: 0.5rem 0.4rem;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .prefs {
+    width: min(520px, calc(100vw - 32px));
+    max-height: calc(100svh - 32px);
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 40px 80px -30px rgba(20, 22, 26, 0.45);
+  }
+
+  .prefs::backdrop {
+    background: rgba(20, 22, 26, 0.45);
+  }
+
+  .prefs form {
+    padding: 1.5rem;
+  }
+
+  .prefs__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .prefs h2 {
+    font-size: 1.25rem;
+    font-weight: 450;
+    letter-spacing: -0.015em;
+  }
+
+  .prefs__close {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-right: -0.5rem;
+    border-radius: 50%;
+  }
+
+  .prefs__close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .prefs__intro {
+    margin-top: 0.5rem;
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .prefs__list {
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .prefs__list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .prefs__list label {
+    cursor: pointer;
+  }
+
+  .prefs__name {
+    display: block;
+    font-weight: 500;
+  }
+
+  .prefs__text {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--steel);
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .prefs__always {
+    flex: none;
+    color: var(--steel);
+    font-size: 0.8125rem;
+  }
+
+  /* A quiet switch built on a real checkbox */
+  .prefs input[type='checkbox'] {
+    flex: none;
+    appearance: none;
+    position: relative;
+    width: 44px;
+    height: 26px;
+    margin: 0;
+    border-radius: 999px;
+    background: var(--silver);
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .prefs input[type='checkbox']::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: 0 1px 2px rgba(20, 22, 26, 0.25);
+    transition: transform 0.2s var(--ease);
+  }
+
+  .prefs input[type='checkbox']:checked {
+    background: var(--ink);
+  }
+
+  .prefs input[type='checkbox']:checked::after {
+    transform: translateX(18px);
+  }
+
+  .prefs input[type='checkbox']:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  .prefs__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .prefs__privacy {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--steel);
+    font-size: 0.875rem;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 480px) {
+    .consent__actions .btn {
+      flex: 1 1 40%;
+    }
+
+    .prefs__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  import { readConsent, saveConsent } from '../scripts/consent';
+  import { initTracking } from '../scripts/tracking';
+
+  initTracking();
+
+  const banner = document.getElementById('consent-banner');
+  const dialog = document.getElementById('consent-dialog') as HTMLDialogElement;
+  const boxes = {
+    analytics: dialog.querySelector<HTMLInputElement>('#consent-analytics'),
+    marketing: dialog.querySelector<HTMLInputElement>('#consent-marketing'),
+  };
+
+  // While the banner shows, its height is published so the hero's pause button can sit above it
+  const setBannerSpace = () =>
+    document.documentElement.style.setProperty('--consent-space', banner && !banner.hidden ? `${banner.offsetHeight + 16}px` : '0px');
+
+  const decide = (analytics: boolean, marketing: boolean) => {
+    saveConsent({ analytics: analytics && !!boxes.analytics, marketing: marketing && !!boxes.marketing });
+    if (banner) banner.hidden = true;
+    setBannerSpace();
+  };
+
+  // First visit, or the stored choice has expired
+  if (banner && !readConsent()) {
+    banner.hidden = false;
+    setBannerSpace();
+    addEventListener('resize', setBannerSpace);
+  }
+
+  banner?.querySelector('[data-consent="accept"]')?.addEventListener('click', () => decide(true, true));
+  banner?.querySelector('[data-consent="reject"]')?.addEventListener('click', () => decide(false, false));
+
+  // Any [data-consent-open] (banner, footer) opens the preferences with the current choice filled in
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('[data-consent-open]')) return;
+    const current = readConsent();
+    if (boxes.analytics) boxes.analytics.checked = !!current?.analytics;
+    if (boxes.marketing) boxes.marketing.checked = !!current?.marketing;
+    dialog.showModal();
+  });
+
+  dialog.addEventListener('close', () => {
+    const v = dialog.returnValue;
+    if (v === 'accept') decide(true, true);
+    else if (v === 'reject') decide(false, false);
+    else if (v === 'save') decide(!!boxes.analytics?.checked, !!boxes.marketing?.checked);
+    dialog.returnValue = '';
+  });
+  // Clicking the backdrop closes without changing anything
+  dialog.addEventListener('click', (e) => e.target === dialog && dialog.close('cancel'));
+</script>

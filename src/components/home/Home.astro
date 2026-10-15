@@ -5,6 +5,7 @@ import Problem from './Problem.astro';
 import HowItWorks from './HowItWorks.astro';
 import Solutions from './Solutions.astro';
 import GetStarted from './GetStarted.astro';
+import { site } from '../../config/site';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -13,9 +14,25 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${site.url}/#organization`,
+      name: 'Tyll',
+      url: site.url,
+      logo: new URL('/media/tyll-icon-512.png', site.url).href,
+      email: site.email,
+      sameAs: [site.social.linkedin, site.social.instagram].filter(Boolean),
+    },
+    { '@type': 'WebSite', '@id': `${site.url}/#website`, url: site.url, name: 'Tyll', inLanguage: ['en', 'de'], publisher: { '@id': `${site.url}/#organization` } },
+  ],
+};
 ---
 
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
   <Hero lang={lang} />
   <Problem lang={lang} />
   <HowItWorks lang={lang} />

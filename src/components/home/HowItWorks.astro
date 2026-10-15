@@ -101,8 +101,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
       {
         site.demoUrl && (
           <div class="story__cta">
-            <a class="btn btn--solid" href={site.demoUrl} data-track="demo_click" data-track-from="how">
-              {d.cta.tryDemo}
+            <a class="btn btn--solid" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="how">
+              {d.cta.tryDemo}<span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
           </div>
         )
@@ -175,7 +175,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
 
   .step__num {
-    color: var(--fog);
+    color: var(--steel);
     font-size: var(--fs-small);
     font-variant-numeric: tabular-nums;
   }

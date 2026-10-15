@@ -1,5 +1,7 @@
 ---
+import { Picture } from 'astro:assets';
 import { site } from '../../config/site';
+import poster from '../../assets/hero-reception.jpg';
 import { t, href, type Locale } from '../../i18n';
 
 interface Props {
@@ -12,8 +14,19 @@ const d = t(lang);
 
 <section class="hero on-dark" data-hero aria-labelledby="hero-title">
   <div class="hero__media">
-    <img src="/media/hero-reception.jpg" alt={d.hero.videoLabel} width="2000" height="1125" fetchpriority="high" decoding="async" />
-    <video muted loop playsinline preload="none" poster="/media/hero-reception.jpg" aria-hidden="true" tabindex="-1">
+    <Picture
+      src={poster}
+      alt={d.hero.videoLabel}
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      widths={[828, 1280, 1920, 2000]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <!-- No poster attribute: the still image above already shows until the video is actually playing -->
+    <video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
       <source src="/media/hero-reception.mp4" type="video/mp4" />
     </video>
   </div>
@@ -27,11 +40,11 @@ const d = t(lang);
       {d.hero.body.map((p) => <p>{p}</p>)}
     </div>
     <div class="hero__actions">
-      <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="hero">{d.cta.book}</a>
+      <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="hero">{d.cta.book}</a>
       {
         site.demoUrl && (
-          <a class="btn btn--line" href={site.demoUrl} data-track="demo_click" data-track-from="hero">
-            {d.cta.demoLong}
+          <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="hero">
+            {d.cta.demoLong}<span class="visually-hidden"> {d.cta.newTab}</span>
           </a>
         )
       }
@@ -59,7 +72,8 @@ const d = t(lang);
   }
 
   .hero__media,
-  .hero__media img,
+  .hero__media :global(picture),
+  .hero__media :global(img),
   .hero__media video,
   .hero__shade {
     position: absolute;
@@ -72,7 +86,7 @@ const d = t(lang);
     z-index: -2;
   }
 
-  .hero__media img,
+  .hero__media :global(img),
   .hero__media video {
     object-fit: cover;
     /* Keeps the receptionist in frame as the screen narrows */
@@ -133,7 +147,7 @@ const d = t(lang);
   .hero__toggle {
     position: absolute;
     right: var(--gut);
-    bottom: clamp(1.5rem, 1rem + 2vh, 3rem);
+    bottom: calc(clamp(1.5rem, 1rem + 2vh, 3rem) + var(--consent-space, 0px));
     display: grid;
     place-items: center;
     width: 44px;
@@ -198,7 +212,9 @@ const d = t(lang);
   if (hero && video && toggle) {
     const label = toggle.querySelector('.visually-hidden')!;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    let userPaused = reduce.matches;
+    // With reduced motion, or a phone's data saver on, the still image stays until the visitor presses play
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    let userPaused = reduce.matches || saveData;
 
     const sync = () => {
       const paused = video.paused;

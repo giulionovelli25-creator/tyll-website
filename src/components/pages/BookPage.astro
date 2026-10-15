@@ -199,7 +199,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(lang === 'de' 
 
     const open = () => {
       setState('loading');
-      track('booking_open');
+      track('booking_calendar_opened');
       const url = new URL(root.dataset.url!);
       url.searchParams.set('embed_domain', location.host);
       url.searchParams.set('embed_type', 'Inline');
@@ -234,7 +234,7 @@ const mailto = `mailto:${site.email}?subject=${encodeURIComponent(lang === 'de' 
       }
       if (name === 'calendly.date_and_time_selected' && !started) {
         started = true;
-        track('booking_start');
+        track('booking_started');
       }
       if (name === 'calendly.event_scheduled') {
         track('booking_confirmed');

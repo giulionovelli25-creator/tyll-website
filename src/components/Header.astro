@@ -49,7 +49,7 @@ const links = [
               hreflang={l}
               lang={l}
               aria-current={l === lang ? 'true' : undefined}
-              data-track="language_switch"
+              data-track="language_changed"
               data-track-to={l}
             >
               <span aria-hidden="true">{l.toUpperCase()}</span>
@@ -60,12 +60,12 @@ const links = [
       </div>
       {
         site.demoUrl && (
-          <a class="btn btn--line btn--sm header__demo" href={site.demoUrl} data-track="demo_click" data-track-from="header">
-            {d.cta.demo}
+          <a class="btn btn--line btn--sm header__demo" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
+            {d.cta.demo}<span class="visually-hidden"> {d.cta.newTab}</span>
           </a>
         )
       }
-      <a class="btn btn--solid btn--sm" href={href('book', lang)} data-track="book_click" data-track-from="header">
+      <a class="btn btn--solid btn--sm" href={href('book', lang)} data-track="book_call_click" data-track-from="header">
         {d.cta.book}
       </a>
       <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -87,11 +87,11 @@ const links = [
         }
       </ul>
       <div class="mobile-menu__actions">
-        <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="menu">{d.cta.book}</a>
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="menu">{d.cta.book}</a>
         {
           site.demoUrl && (
-            <a class="btn btn--line" href={site.demoUrl} data-track="demo_click" data-track-from="menu">
-              {d.cta.demoLong}
+            <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
+              {d.cta.demoLong}<span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
           )
         }
@@ -99,7 +99,7 @@ const links = [
       <div class="lang mobile-menu__lang" role="group" aria-label={d.nav.language}>
         {
           locales.map((l) => (
-            <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_switch" data-track-to={l}>
+            <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_changed" data-track-to={l}>
               {t(l).langName}
             </a>
           ))
@@ -201,7 +201,7 @@ const links = [
   }
 
   .lang a:not([aria-current]) {
-    opacity: 0.55;
+    opacity: 0.64;
   }
 
   .lang a[aria-current] {
@@ -359,6 +359,7 @@ const links = [
     menu.hidden = !open;
     label.textContent = open ? label.dataset.closeLabel! : label.dataset.openLabel!;
     document.documentElement.style.overflow = open ? 'hidden' : '';
+    if (open) menu.querySelector<HTMLElement>('a')?.focus();
   };
   burger.addEventListener('click', () => setOpen(menu.hidden));
   menu.addEventListener('click', (e) => {

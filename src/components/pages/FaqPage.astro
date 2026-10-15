@@ -11,6 +11,8 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const f = d.faq;
+// Answers that depend on the public demo being online use their alternative text until it is.
+const answer = (i: (typeof f.items)[number]) => (!site.demoUrl && i.aNoDemo ? i.aNoDemo : i.a);
 
 // FAQPage structured data, built from exactly the questions and answers shown on the page.
 const schema = {
@@ -20,7 +22,7 @@ const schema = {
   mainEntity: f.items.map((i) => ({
     '@type': 'Question',
     name: i.q,
-    acceptedAnswer: { '@type': 'Answer', text: i.a.join(' ') },
+    acceptedAnswer: { '@type': 'Answer', text: answer(i).join(' ') },
   })),
 };
 ---
@@ -38,7 +40,7 @@ const schema = {
               <h2>{i.q}</h2>
             </summary>
             <div class="faq__answer">
-              {i.a.map((p) => (
+              {answer(i).map((p) => (
                 <p>{p}</p>
               ))}
             </div>
@@ -51,7 +53,7 @@ const schema = {
       <h2>{f.more}</h2>
       <p>{f.moreText}</p>
       <div class="faq__actions">
-        <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="faq">{d.cta.book}</a>
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="faq">{d.cta.book}</a>
         <a class="btn btn--line" href={`mailto:${site.email}`} data-track="email_click">{site.email}</a>
       </div>
     </aside>
@@ -157,6 +159,16 @@ const schema = {
 </style>
 
 <script>
+  // Opening a question is counted (once per question per page view), if statistics are allowed
+  document.querySelectorAll<HTMLDetailsElement>('.faq__item').forEach((el) => {
+    let counted = false;
+    el.addEventListener('toggle', () => {
+      if (!el.open || counted) return;
+      counted = true;
+      document.dispatchEvent(new CustomEvent('tyll:track', { detail: { event: 'faq_opened', question: el.id } }));
+    });
+  });
+
   // A link to /faq/#question opens that answer.
   const open = () => {
     const el = location.hash && document.getElementById(location.hash.slice(1));
