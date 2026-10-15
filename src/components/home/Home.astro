@@ -37,3 +37,14 @@ const schema = {
   <WhyItMatters lang={lang} />
   <Invitation lang={lang} />
 </Base>
+
+<style is:global>
+  /* The homepage reads as four chapters: on desktop each one fills the screen. Scroll snapping was tried
+     and removed: next to the pinned story it pulled the page past the end of the animation. */
+  @media (min-width: 1024px) and (min-height: 700px) {
+    .why,
+    .invite {
+      min-height: 100svh;
+    }
+  }
+</style>

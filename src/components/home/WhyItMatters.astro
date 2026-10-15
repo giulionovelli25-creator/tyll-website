@@ -12,7 +12,7 @@ const { lang } = Astro.props;
 const w = t(lang).home.why;
 ---
 
-<section class="why on-dark" aria-labelledby="why-title">
+<section class="why on-dark" data-dark aria-labelledby="why-title">
   <Picture
     src={kitchen}
     alt={w.photoAlt}
@@ -47,7 +47,7 @@ const w = t(lang).home.why;
     position: relative;
     display: flex;
     align-items: flex-end;
-    min-height: clamp(560px, 92vh, 900px);
+    min-height: clamp(560px, 92svh, 900px);
     overflow: hidden;
     background: var(--ink);
     color: var(--on-dark);
@@ -81,7 +81,7 @@ const w = t(lang).home.why;
   }
 
   .why__inner {
-    padding-block: var(--section-y);
+    padding-block: calc(var(--header-h) + 2rem) var(--section-y);
   }
 
   .why h2 {

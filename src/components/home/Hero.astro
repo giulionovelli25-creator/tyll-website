@@ -1,6 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import poster from '../../assets/hero-reception.jpg';
+import Logo from '../Logo.astro';
 import { t, href, type Locale } from '../../i18n';
 
 interface Props {
@@ -33,7 +34,18 @@ const d = t(lang);
 
   <div class="wrap hero__inner">
     <h1 id="hero-title">
-      {d.hero.title.split(/(?<=\.)\s+/).map((line) => <span>{line} </span>)}
+      {
+        d.hero.title.split(/(?<=\.)\s+/).map((line, i, all) => (
+          <span class="hero__line" style={`--d:${i}`}>
+            {line}
+            {i === all.length - 1 && (
+              <span class="hero__seal" data-check-manual>
+                <Logo mark anim="draw" label="" />
+              </span>
+            )}{' '}
+          </span>
+        ))
+      }
     </h1>
     <div class="hero__body">
       {d.hero.body.map((p) => <p>{p}</p>)}
@@ -118,8 +130,53 @@ const d = t(lang);
   }
 
   /* One sentence per line where there is room */
-  .hero h1 span {
+  .hero__line {
     display: block;
+  }
+
+  /* The Tyll checkmark closes the headline: "Finally connected." */
+  .hero__seal {
+    display: inline-block;
+    width: 0.42em;
+    margin-left: 0.18em;
+    vertical-align: 0.02em;
+  }
+
+  .hero__seal :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* One orchestrated entrance: the lines rise in turn, then the copy and buttons settle */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__line {
+      animation: hero-rise 0.9s var(--ease) both;
+      animation-delay: calc(0.08s + var(--d) * 0.14s);
+    }
+
+    .hero__body,
+    .hero__actions {
+      animation: hero-fade 0.9s var(--ease) both;
+      animation-delay: 0.5s;
+    }
+
+    .hero__actions {
+      animation-delay: 0.62s;
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.35em);
+    }
+  }
+
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
   }
 
   .hero__body {
@@ -197,6 +254,14 @@ const d = t(lang);
 </style>
 
 <script>
+  // The headline's checkmark draws once the three lines have risen in
+  import { drawCheck, hideCheck } from '../../scripts/checkmark';
+  const seal = document.querySelector<SVGSVGElement>('.hero__seal svg');
+  if (seal && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    hideCheck(seal);
+    setTimeout(() => drawCheck(seal, 900), 750);
+  }
+
   // The text is plain HTML and shows at once; the video only fades in over the poster once it is actually playing.
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const video = hero?.querySelector('video');

@@ -4,9 +4,9 @@
 import type { ImageMetadata } from 'astro';
 import type { Locale, SolutionKey } from '../i18n/routes';
 
-import stockBar from '../assets/photos/stock-bar.jpg';
-import forecastKitchen from '../assets/photos/forecast-kitchen.jpg';
-import eventsDining from '../assets/photos/events-dining.jpg';
+import stockChef from '../assets/photos/stock-chef.jpg';
+import forecastProduce from '../assets/photos/forecast-produce.jpg';
+import eventsBanquet from '../assets/photos/events-banquet.jpg';
 import roomsSuite from '../assets/photos/rooms-suite.jpg';
 import receipts from '../assets/photos/tyll-problem-1.jpg';
 import laptop from '../assets/photos/tyll-stats-2.jpg';
@@ -44,9 +44,9 @@ export const solutions: Record<SolutionKey, Solution> = {
   stock: {
     key: 'stock',
     icon: 'stock',
-    photo: stockBar,
-    photoAlt: t('A dimly lit hotel bar with bottles on warmly lit shelves.', 'Eine gedämpft beleuchtete Hotelbar mit Flaschen auf warm beleuchteten Regalen.'),
-    photoFocus: '50% 45%',
+    photo: stockChef,
+    photoAlt: t('Chefs seasoning and plating dishes under copper heat lamps in a hotel kitchen.', 'Köche würzen und richten Gerichte unter kupfernen Wärmelampen in einer Hotelküche an.'),
+    photoFocus: '40% 72%',
     name: t('Stock & Waste', 'Lager & Abfall'),
     menu: t('Find missing stock and understand waste.', 'Fehlenden Bestand finden und Abfall verstehen.'),
     headline: t('Know where your stock is going.', 'Wissen, wohin Ihr Bestand geht.'),
@@ -180,9 +180,9 @@ export const solutions: Record<SolutionKey, Solution> = {
   forecasting: {
     key: 'forecasting',
     icon: 'forecast',
-    photo: forecastKitchen,
-    photoAlt: t('A professional kitchen pass under red heat lamps.', 'Ein Küchenpass unter roten Wärmelampen.'),
-    photoFocus: '50% 40%',
+    photo: forecastProduce,
+    photoAlt: t('A chef chopping fresh herbs beside trays of lemons and greens.', 'Ein Koch hackt frische Kräuter neben Schalen mit Zitronen und Grün.'),
+    photoFocus: '60% 45%',
     name: t('Forecasting & Purchasing', 'Prognose & Einkauf'),
     menu: t('Know what to buy, prepare and approve.', 'Wissen, was gekauft, vorbereitet und freigegeben werden muss.'),
     headline: t('Know what to buy before you run out.', 'Wissen, was Sie kaufen müssen, bevor es ausgeht.'),
@@ -241,9 +241,9 @@ export const solutions: Record<SolutionKey, Solution> = {
   events: {
     key: 'events',
     icon: 'events',
-    photo: eventsDining,
-    photoAlt: t('A dining room set for service under rows of hanging lights.', 'Ein für den Service eingedeckter Speisesaal unter hängenden Leuchten.'),
-    photoFocus: '50% 50%',
+    photo: eventsBanquet,
+    photoAlt: t('Banquet staff setting a long table with flowers before an event.', 'Bankettpersonal deckt vor einer Veranstaltung eine lange Tafel mit Blumen ein.'),
+    photoFocus: '72% 40%',
     name: t('Events & Staffing', 'Events & Personal'),
     menu: t('Plan events and coordinate your team.', 'Veranstaltungen planen und Ihr Team koordinieren.'),
     headline: t('Great events need great coordination.', 'Gute Veranstaltungen brauchen gute Abstimmung.'),

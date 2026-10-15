@@ -68,10 +68,25 @@ for (const lang of ['en', 'de']) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/One hotel|Ein Hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // The interactive problem section comes together when asked
-    await page.evaluate(() => document.querySelector('[data-connect-toggle]').click());
-    await sleep(400);
-    if ((await page.$eval('[data-connect]', (e) => e.dataset.state)) !== 'connected') problems.push('problem section did not connect');
+    // The Before → With Tyll story follows scroll position, reverses, and lets the page continue afterwards
+    const story = await page.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const track = document.querySelector('.story__track');
+      const top = track.getBoundingClientRect().top + scrollY;
+      const op = (sel) => +getComputedStyle(document.querySelector(sel)).opacity;
+      const at = async (y) => { scrollTo({ top: y, behavior: 'instant' }); await wait(500); return { before: op('.label--before'), after: op('.label--after'), view: op('.view') }; };
+      const start = await at(top - 72);
+      const end = await at(top - 72 + track.offsetHeight - (innerHeight - 72));
+      const back = await at(top - 72);
+      scrollTo({ top: top + track.offsetHeight + 200, behavior: 'instant' }); await wait(300);
+      const beyond = scrollY > top + track.offsetHeight;
+      return { scrolly: document.querySelector('.story').classList.contains('is-scrolly'), start, end, back, beyond };
+    });
+    if (!story.scrolly) problems.push('story is not scroll-driven');
+    if (!(story.start.before > 0.9 && story.start.after < 0.1)) problems.push(`story start ${JSON.stringify(story.start)}`);
+    if (!(story.end.after > 0.9 && story.end.view > 0.9 && story.end.before < 0.1)) problems.push(`story end ${JSON.stringify(story.end)}`);
+    if (!(story.back.before > 0.9 && story.back.after < 0.1)) problems.push('story did not reverse when scrolling back');
+    if (!story.beyond) problems.push('page did not continue past the story');
     // "Explore Solutions" in the hero opens the Solutions menu
     await page.evaluate(() => scrollTo(0, 0));
     await page.click('.hero__actions [data-open-solutions]');
@@ -293,6 +308,8 @@ for (const lang of ['en', 'de']) {
     hiddenText: [...document.querySelectorAll('.step__text')].filter((e) => getComputedStyle(e).opacity !== '1').length,
     toggle: !!document.querySelector('.hero__toggle:not([hidden])'),
   }));
+  const still = await page.evaluate(() => ({ scrolly: document.querySelector('.story').classList.contains('is-scrolly'), before: getComputedStyle(document.querySelector('.label--before')).opacity, after: getComputedStyle(document.querySelector('.label--after')).opacity }));
+  if (still.scrolly || still.before !== '1' || still.after !== '1') p.push(`story not shown as still pictures: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   if (motion.hiddenMarks || motion.hiddenText) p.push('content hidden under reduced motion');
   if (!motion.toggle) p.push('no video play/pause control');

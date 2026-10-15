@@ -12,7 +12,7 @@ const d = t(lang);
 const v = d.home.invite;
 ---
 
-<section class="invite on-dark" aria-labelledby="invite-title">
+<section class="invite on-dark" data-dark aria-labelledby="invite-title">
   <div class="invite__waves" aria-hidden="true"></div>
   <div class="wrap invite__inner">
     <Logo mark anim="draw" label="" class="invite__mark" />
@@ -30,6 +30,8 @@ const v = d.home.invite;
 <style>
   .invite {
     position: relative;
+    display: flex;
+    align-items: center;
     padding-block: clamp(6rem, 4rem + 8vw, 11rem);
     background: var(--ink);
     color: var(--on-dark);
@@ -53,6 +55,7 @@ const v = d.home.invite;
   }
 
   .invite__inner {
+    width: 100%;
     display: grid;
     justify-items: center;
   }

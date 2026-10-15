@@ -31,6 +31,9 @@ The owner provides the official brand assets, website references and research do
 - Architecture (16 Oct 2026, Nory-inspired): short four-section homepage (hero, connect story, one sourced finding, invitation); Solutions menu with six solution pages built from `src/content/solutions.ts`; FAQ in the menu and footer. Keep product detail off the homepage.
 - Demo screenshots live in `src/assets/demo/`. Captures that create records were taken from a throwaway copy of the demo, never the real one. Photo sources are in `src/assets/photos/CREDITS.md`.
 - Per-solution demo deep links: `src/config/demo.ts`.
+- Homepage chapter 2 (`src/components/home/ConnectStory.astro`) is a scroll-driven sticky story (Before Tyll → With Tyll); with reduced motion it renders two still pictures. Do not add scroll snapping: it fought the pinned story and was removed.
+- Marketing photos must not feature alcohol (Gulf market). Sources in `src/assets/photos/CREDITS.md`. The hero film stays until a better one exists; see `docs/hero-video-brief.md`.
+- Walkthrough screens are full 1440×900 demo captures shown with object-fit: contain, plus a viewer; never crop them.
 - External settings are `PUBLIC_*` variables (see `.env.example` and LAUNCH.md). Legal details live in `src/config/legal.ts` and must never be guessed.
 - `npm run launch-check` lists launch blockers. `npm run test:e2e` runs the browser tests (needs Google Chrome and the dev server).
 
