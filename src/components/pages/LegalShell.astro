@@ -1,0 +1,144 @@
+---
+// Shared frame for the Legal Notice and Privacy pages: title, the "incomplete" notice listing required
+// details that are still missing, and readable long-form text styles.
+import { legal, legalMissing } from '../../config/legal';
+import { t, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+  title: string;
+}
+
+const { lang, title } = Astro.props;
+const d = t(lang).legalPage;
+const missing = legalMissing();
+const updated = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' }).format(new Date(legal.updated));
+---
+
+<article class="wrap legal">
+  <header>
+    <h1>{title}</h1>
+    <p class="legal__meta">{d.updated}: {updated}. {d.review}</p>
+  </header>
+
+  {
+    missing.length > 0 && (
+      <aside class="legal__missing" role="note">
+        <h2>{d.incompleteTitle}</h2>
+        <p>{d.incompleteText}</p>
+        <ul>
+          {missing.map((m) => (
+            <li>{m[lang]}</li>
+          ))}
+        </ul>
+      </aside>
+    )
+  }
+
+  <div class="legal__body">
+    <slot />
+  </div>
+</article>
+
+<style>
+  .legal {
+    max-width: calc(46rem + var(--gut) * 2);
+    margin-inline: 0;
+    padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 4vw, 6rem));
+    padding-bottom: var(--section-y);
+  }
+
+  @media (min-width: 1100px) {
+    .legal {
+      margin-left: max(0px, calc((100vw - var(--wrap)) / 2 - var(--gut)));
+    }
+  }
+
+  h1 {
+    font-size: var(--fs-h2);
+  }
+
+  .legal__meta {
+    margin-top: 1rem;
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  .legal__missing {
+    margin-top: 2rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #e3c98f;
+    border-radius: var(--radius-sm);
+    background: #fbf5e7;
+    color: #5c430e;
+    font-size: 0.9375rem;
+  }
+
+  .legal__missing h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .legal__missing p {
+    margin-top: 0.4rem;
+  }
+
+  .legal__missing ul {
+    margin: 0.6rem 0 0;
+    padding-left: 1.2rem;
+  }
+
+  .legal__body {
+    margin-top: 2.5rem;
+    color: var(--graphite);
+    line-height: 1.7;
+  }
+
+  .legal__body :global(h2) {
+    margin-top: 2.75rem;
+    color: var(--ink);
+    font-size: 1.375rem;
+    font-weight: 450;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+  }
+
+  .legal__body :global(h3) {
+    margin-top: 1.75rem;
+    color: var(--ink);
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  .legal__body :global(p),
+  .legal__body :global(ul),
+  .legal__body :global(address) {
+    margin-top: 0.85rem;
+  }
+
+  .legal__body :global(address) {
+    font-style: normal;
+  }
+
+  .legal__body :global(ul) {
+    padding-left: 1.2rem;
+  }
+
+  .legal__body :global(li + li) {
+    margin-top: 0.35rem;
+  }
+
+  .legal__body :global(a) {
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+
+  .legal__body :global(.missing) {
+    padding: 0.05em 0.35em;
+    border-radius: 4px;
+    background: #fbf0d6;
+    color: #6b4d0f;
+    font-size: 0.9375em;
+  }
+</style>

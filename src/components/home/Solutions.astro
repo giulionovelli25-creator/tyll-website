@@ -71,7 +71,7 @@ const demoLink = (path: string) => (site.demoUrl ? new URL(path, site.demoUrl).h
       <div class="note" id="security">
         <h3>{d.securityTitle}</h3>
         <p>{d.securityText}</p>
-        <a class="note__link" href={href('faq', lang)}>{d.securityLink}</a>
+        <a class="note__link" href={href('faq', lang, '#data')}>{d.securityLink}</a>
       </div>
     </div>
   </div>

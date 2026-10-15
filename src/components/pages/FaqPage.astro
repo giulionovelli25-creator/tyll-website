@@ -1,0 +1,167 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../PageIntro.astro';
+import { site } from '../../config/site';
+import { t, href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const f = d.faq;
+
+// FAQPage structured data, built from exactly the questions and answers shown on the page.
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: lang,
+  mainEntity: f.items.map((i) => ({
+    '@type': 'Question',
+    name: i.q,
+    acceptedAnswer: { '@type': 'Answer', text: i.a.join(' ') },
+  })),
+};
+---
+
+<Base lang={lang} page="faq" title={d.meta.faqTitle} description={d.meta.faqDescription}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
+  <PageIntro title={f.title} intro={f.intro} />
+
+  <section class="wrap faq" aria-label={f.title}>
+    <div class="faq__list">
+      {
+        f.items.map((i) => (
+          <details id={i.id} class="faq__item">
+            <summary>
+              <h2>{i.q}</h2>
+            </summary>
+            <div class="faq__answer">
+              {i.a.map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+
+    <aside class="faq__more">
+      <h2>{f.more}</h2>
+      <p>{f.moreText}</p>
+      <div class="faq__actions">
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_click" data-track-from="faq">{d.cta.book}</a>
+        <a class="btn btn--line" href={`mailto:${site.email}`} data-track="email_click">{site.email}</a>
+      </div>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+    align-items: start;
+    padding-bottom: var(--section-y);
+  }
+
+  .faq__list {
+    border-top: 1px solid var(--line);
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .faq__item summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.4rem 0;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__item summary::after {
+    content: '';
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-3px) rotate(45deg);
+    transition: transform 0.3s var(--ease);
+  }
+
+  .faq__item[open] summary::after {
+    transform: translateY(3px) rotate(-135deg);
+  }
+
+  .faq__item h2 {
+    font-size: 1.1875rem;
+    font-weight: 450;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+  }
+
+  .faq__answer {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 40rem;
+    padding-bottom: 1.5rem;
+    color: var(--graphite);
+    line-height: 1.65;
+  }
+
+  .faq__more {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    background: var(--cloud);
+    border: 1px solid var(--line);
+  }
+
+  .faq__more h2 {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+  }
+
+  .faq__more p {
+    margin-top: 0.6rem;
+    color: var(--steel);
+  }
+
+  .faq__actions {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 860px) {
+    .faq {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .faq__more {
+      position: static;
+    }
+  }
+</style>
+
+<script>
+  // A link to /faq/#question opens that answer.
+  const open = () => {
+    const el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el instanceof HTMLDetailsElement) el.open = true;
+  };
+  open();
+  addEventListener('hashchange', open);
+</script>

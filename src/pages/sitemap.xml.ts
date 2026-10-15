@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
 import { site } from '../config/site';
-import { pages, locales } from '../i18n/routes';
+import { legalMissing } from '../config/legal';
+import { pages, locales, type PageKey } from '../i18n/routes';
 
-// Pages that exist so far. Legal pages are left out until their required details are filled in.
-const listed = ['home'] as const;
+// Legal pages stay out of the sitemap (and carry noindex) until their required details are filled in.
+const listed: PageKey[] = ['home', 'book', 'faq', ...(legalMissing().length ? [] : (['legal', 'privacy'] as const))];
 
 export const GET: APIRoute = () => {
   const abs = (p: string) => new URL(p, site.url).href;

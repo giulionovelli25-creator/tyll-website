@@ -1,0 +1,35 @@
+---
+// Title block for the inner pages, which open on white under the light header.
+interface Props {
+  title: string;
+  intro?: string;
+}
+
+const { title, intro } = Astro.props;
+---
+
+<header class="intro wrap">
+  <h1>{title}</h1>
+  {intro && <p>{intro}</p>}
+  <slot />
+</header>
+
+<style>
+  .intro {
+    padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 4vw, 6rem));
+    padding-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  }
+
+  h1 {
+    max-width: 18ch;
+    font-size: var(--fs-h2);
+  }
+
+  p {
+    max-width: 36rem;
+    margin-top: 1.1rem;
+    color: var(--steel);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+</style>

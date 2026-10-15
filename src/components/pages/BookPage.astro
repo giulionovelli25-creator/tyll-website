@@ -1,0 +1,247 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../PageIntro.astro';
+import { site } from '../../config/site';
+import { t, href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const b = d.book;
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent(lang === 'de' ? 'Gesprächsanfrage – Tyll' : 'Call request – Tyll')}`;
+---
+
+<Base lang={lang} page="book" title={d.meta.bookTitle} description={d.meta.bookDescription}>
+  <PageIntro title={b.title} intro={b.intro} />
+
+  <section class="wrap book" aria-label={b.consentTitle}>
+    {
+      site.calendlyUrl ? (
+        <div class="booking" data-booking data-url={site.calendlyUrl} data-state="consent">
+          <div class="booking__panel booking__consent">
+            <h2>{b.consentTitle}</h2>
+            <p>{b.consentText}</p>
+            <div class="booking__actions">
+              <button type="button" class="btn btn--solid" data-booking-open>
+                {b.consentButton}
+              </button>
+              <a href={href('privacy', lang, '#calendly')}>{b.consentPrivacy}</a>
+            </div>
+          </div>
+
+          <p class="booking__panel booking__loading" role="status">
+            {b.loading}
+          </p>
+
+          <div class="booking__panel booking__failed" role="alert">
+            <h2>{b.failedTitle}</h2>
+            <p>{b.failedText}</p>
+            <div class="booking__actions">
+              <button type="button" class="btn btn--solid" data-booking-open>
+                {b.retry}
+              </button>
+              <a class="btn btn--line" href={mailto} data-track="email_click">
+                {b.emailUs}
+              </a>
+            </div>
+          </div>
+
+          <div class="booking__panel booking__confirmed" role="status" tabindex="-1">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12.5l4.2 4L19 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <h2>{b.confirmedTitle}</h2>
+            <p>{b.confirmedText}</p>
+          </div>
+
+          <div class="booking__frame" />
+        </div>
+      ) : (
+        <div class="booking__panel booking__unavailable">
+          <h2>{b.unavailableTitle}</h2>
+          <p>{b.unavailableText}</p>
+          <div class="booking__actions">
+            <a class="btn btn--solid" href={mailto} data-track="email_click">
+              {b.emailUs}
+            </a>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      site.calendlyUrl && (
+        <p class="book__email">
+          {b.orEmail} <a href={mailto} data-track="email_click">{site.email}</a>
+        </p>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .book {
+    padding-bottom: var(--section-y);
+  }
+
+  .booking__panel {
+    max-width: 44rem;
+    padding: clamp(1.5rem, 1.1rem + 1.5vw, 2.5rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--cloud);
+  }
+
+  .booking__panel h2 {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .booking__panel p {
+    max-width: 36rem;
+    margin-top: 0.75rem;
+    color: var(--steel);
+    line-height: 1.6;
+  }
+
+  .booking__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .booking__actions > a:not(.btn) {
+    color: var(--steel);
+    font-size: 0.9375rem;
+    text-underline-offset: 3px;
+  }
+
+  /* Exactly one state shows at a time */
+  .booking > * {
+    display: none;
+  }
+
+  .booking[data-state='consent'] .booking__consent,
+  .booking[data-state='loading'] .booking__loading,
+  .booking[data-state='loading'] .booking__frame,
+  .booking[data-state='ready'] .booking__frame,
+  .booking[data-state='failed'] .booking__failed,
+  .booking[data-state='confirmed'] .booking__confirmed {
+    display: block;
+  }
+
+  .booking__loading {
+    color: var(--steel);
+  }
+
+  /* The calendar loads invisibly behind the "Loading" note and appears once Calendly reports in */
+  .booking[data-state='loading'] .booking__frame {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .booking__frame {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--paper);
+  }
+
+  .booking__frame :global(iframe) {
+    display: block;
+    width: 100%;
+    min-height: 700px;
+    border: 0;
+  }
+
+  .booking__confirmed svg {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 1rem;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .book__email {
+    margin-top: 1.5rem;
+    color: var(--steel);
+    font-size: 0.9375rem;
+  }
+
+  .book__email a {
+    color: var(--ink);
+    text-underline-offset: 3px;
+  }
+</style>
+
+<script>
+  // Calendly runs in an iframe (no Calendly script on this site) and only after the visitor chooses to open it.
+  // Calendly reports progress to this page with postMessage; a booking is shown as confirmed only when
+  // Calendly itself says the event was scheduled.
+  const track = (event: string) => document.dispatchEvent(new CustomEvent('tyll:track', { detail: { event } }));
+
+  document.querySelectorAll<HTMLElement>('[data-booking]').forEach((root) => {
+    const frame = root.querySelector<HTMLElement>('.booking__frame')!;
+    const setState = (s: string) => (root.dataset.state = s);
+    let timer = 0;
+    let started = false;
+
+    const open = () => {
+      setState('loading');
+      track('booking_open');
+      const url = new URL(root.dataset.url!);
+      url.searchParams.set('embed_domain', location.host);
+      url.searchParams.set('embed_type', 'Inline');
+      url.searchParams.set('hide_gdpr_banner', '1');
+      url.searchParams.set('primary_color', '14161a');
+      frame.replaceChildren();
+      const iframe = document.createElement('iframe');
+      iframe.src = url.href;
+      iframe.title = root.querySelector('.booking__consent h2')?.textContent ?? 'Calendly';
+      iframe.allow = 'payment';
+      frame.append(iframe);
+      // No word from Calendly within 15 seconds means it was blocked or the network failed.
+      clearTimeout(timer);
+      timer = window.setTimeout(() => root.dataset.state === 'loading' && setState('failed'), 15000);
+    };
+
+    root.querySelectorAll('[data-booking-open]').forEach((b) => b.addEventListener('click', open));
+
+    addEventListener('message', (e) => {
+      if (!/^https:\/\/([a-z0-9-]+\.)?calendly\.com$/.test(e.origin)) return;
+      const name: string | undefined = e.data?.event;
+      if (!name?.startsWith('calendly.')) return;
+      if (name === 'calendly.page_height') {
+        const h = parseInt(e.data.payload?.height, 10);
+        const iframe = frame.querySelector('iframe');
+        if (iframe && h > 0) iframe.style.height = `${h}px`;
+        return;
+      }
+      if (root.dataset.state === 'loading') {
+        clearTimeout(timer);
+        setState('ready');
+      }
+      if (name === 'calendly.date_and_time_selected' && !started) {
+        started = true;
+        track('booking_start');
+      }
+      if (name === 'calendly.event_scheduled') {
+        track('booking_confirmed');
+        setState('confirmed');
+        root.querySelector<HTMLElement>('.booking__confirmed')?.focus();
+        frame.replaceChildren();
+      }
+    });
+  });
+</script>

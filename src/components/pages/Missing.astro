@@ -1,0 +1,9 @@
+---
+// Inline marker for a required legal detail that has not been supplied yet.
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<span class="missing">[{label}]</span>
