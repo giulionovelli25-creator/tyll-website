@@ -695,7 +695,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 <script>
   const header = document.getElementById('site-header')!;
   const trigger = document.getElementById('solutions-trigger') as HTMLButtonElement;
-  const nav = header.querySelector<HTMLElement>('.header__nav')!;
   const panel = document.getElementById('solutions-panel')!;
   const burger = header.querySelector<HTMLButtonElement>('.header__burger')!;
   const menu = document.getElementById('mobile-menu')!;
@@ -805,23 +804,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   burger.addEventListener('click', () => setMenu(menu.hidden));
   menu.addEventListener('click', (e) => {
     if ((e.target as Element).closest('a')) setMenu(false);
-  });
-
-  // "Explore Solutions" buttons elsewhere on the page: the panel on desktop, the menu on phones.
-  // Without JavaScript they are plain links to the solutions overview page.
-  document.addEventListener('click', (e) => {
-    const opener = (e.target as Element).closest<HTMLElement>('[data-open-solutions]');
-    if (!opener) return;
-    e.preventDefault();
-    e.stopPropagation();
-    if (getComputedStyle(nav).display === 'none') {
-      setMenu(true);
-      menu.querySelector('details')?.setAttribute('open', '');
-      return;
-    }
-    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
-    setPanel(true, (e as MouseEvent).detail === 0);
   });
 
   addEventListener('keydown', (e) => {

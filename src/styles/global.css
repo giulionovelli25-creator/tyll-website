@@ -14,6 +14,8 @@
   font-display: swap;
   src: url('/fonts/noto-sans-arabic-var.woff2') format('woff2');
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF;
+  /* Arabic letters draw smaller than Inter at the same size; this evens out the visual size, mostly for small text */
+  size-adjust: 106%;
 }
 
 /* The letters of العربية only (about 9 KB), for the language switch on every page */
@@ -24,13 +26,15 @@
   font-display: swap;
   src: url('/fonts/noto-sans-arabic-label.woff2') format('woff2');
   unicode-range: U+0600-06FF, U+FB50-FDFF, U+FE70-FEFF;
+  size-adjust: 106%;
 }
 
 :root {
   /* Colour: the demo's cool silver and charcoal, no accent colour */
   --ink: #14161a;
   --graphite: #343840;
-  --steel: #666c75;
+  /* Secondary text: a touch darker than before for more comfortable reading of descriptions (6.1:1 on white) */
+  --steel: #5d636c;
   --fog: #9299a3;
   --silver: #c8cdd4;
   --line: #e2e5e9;
@@ -38,7 +42,7 @@
   --cloud: #f8f9fa;
   --paper: #ffffff;
   --on-dark: #f4f5f7;
-  --on-dark-muted: rgba(244, 245, 247, 0.72);
+  --on-dark-muted: rgba(244, 245, 247, 0.78);
 
   /* Type: Inter only. Light, tightly tracked headlines; calm body */
   --font: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -287,6 +291,19 @@ html[lang='ar'] :is(h1, h2) {
 
 html[lang='ar'] h3 {
   line-height: 1.5;
+}
+
+/* Large Arabic display text set in components with tight Latin line heights: room for stacked marks */
+html[lang='ar'] .hero h1 {
+  line-height: 1.22;
+}
+
+html[lang='ar'] .label__msg {
+  line-height: 1.35;
+}
+
+html[lang='ar'] .problem__text {
+  line-height: 1.4;
 }
 
 /* Arrows and chevrons that mean "forward" point left in right-to-left pages */

@@ -1,13 +1,12 @@
 ---
 // Homepage chapter 2: "Before Tyll → With Tyll", driven by scroll.
-// Four fragments from different hotel systems sit scattered over a sunlit hotel interior. As the visitor scrolls,
-// the two related ones (a POS order and a stock difference) lift slightly, everything moves together, and the
-// scene settles into one Tyll view: one coherent stock issue with its evidence, owner and next step, and the
-// other matters listed as separate tasks. Scrolling back reverses it.
+// Four fragments from different hotel systems sit scattered, slightly tilted, in a pearl-and-silver space lit from
+// one side. As the visitor scrolls they gather, straighten and dock into their own places in one Tyll overview:
+// the POS order and the stock count become the two pieces of evidence for one issue, the room and the invoice
+// become quieter tasks below. Then the issue comes into focus with its owner and next step, and the light evens
+// out. Every step follows the scroll position, so scrolling back reverses it.
 // Without JavaScript or with reduced motion, both states are shown as two still pictures.
-import { getImage } from 'astro:assets';
 import Logo from '../Logo.astro';
-import arches from '../../assets/photos/story-arches.jpg';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -18,11 +17,9 @@ const { lang } = Astro.props;
 const p = t(lang).home.problem;
 const f = p.frags;
 const v = p.view;
-// Sunlit hotel architecture behind the fragments: kept quiet with a light veil so the cards stay the focus
-const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality: 70 });
 ---
 
-<section class="story" id="story" aria-labelledby="story-title" data-story style={`--stage-photo:url(${photo.src})`}>
+<section class="story" id="story" aria-labelledby="story-title" data-story>
   <div class="wrap story__grid">
     <header class="story__head">
       <h2 id="story-title">{p.title}</h2>
@@ -49,18 +46,25 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
           </div>
 
           <div class="stage">
-            <div class="stage__photo" aria-hidden="true"></div>
-            <div class="stage__veil" aria-hidden="true"></div>
+            <!-- An art-directed space for the cards: fluted pearl wall, a floor plane, light from one side -->
+            <div class="env" aria-hidden="true">
+              <div class="env__wall"></div>
+              <div class="env__floor"></div>
+              <div class="env__beam"></div>
+              <div class="env__glow"></div>
+              <div class="env__shade"></div>
+              <div class="env__grain"></div>
+            </div>
 
             <!-- Before: fragments from five systems -->
             <ul class="frags" aria-label={p.before}>
-              <li class="frag frag--pos" data-frag="issue">
+              <li class="frag frag--pos" data-frag="ev-pos">
                 <span class="frag__sys"><i aria-hidden="true"></i>{f.pos.sys}</span>
                 <span class="frag__title">{f.pos.title}</span>
                 <span class="frag__row frag__row--struck"><span>{f.pos.rows[0][0]}</span><span>{f.pos.rows[0][1]}</span></span>
                 <span class="frag__flag">{f.pos.flag}</span>
               </li>
-              <li class="frag frag--stock" data-frag="issue">
+              <li class="frag frag--stock" data-frag="ev-stock">
                 <span class="frag__sys"><i aria-hidden="true"></i>{f.stock.sys}</span>
                 <span class="frag__title">{f.stock.title}</span>
                 <span class="frag__table">
@@ -92,16 +96,23 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
               </div>
               <div class="view__body">
                 <p class="view__heading">{v.attention} <span>{v.tasks.length + 1}</span></p>
-                <article class="issue" data-target="issue">
+                <article class="issue">
                   <span class="issue__status">{v.status}</span>
                   <h3>{v.issue}</h3>
                   <p class="issue__line">{v.issueLine}</p>
+                  <!-- The evidence, each piece still labelled with the system it came from -->
                   <ul class="issue__evidence">
                     {
-                      v.evidence.map((e) => (
-                        <li>
-                          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4 6.6 11.3 12.5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                          {e}
+                      [
+                        { key: 'pos', sys: f.pos.sys, text: v.evidence[1] },
+                        { key: 'stock', sys: f.stock.sys, text: v.evidence[0] },
+                      ].map((e) => (
+                        <li class={`source source--${e.key}`} data-target={`ev-${e.key}`}>
+                          <span class="source__sys"><i aria-hidden="true"></i>{e.sys}</span>
+                          <span class="source__text">
+                            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4 6.6 11.3 12.5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                            {e.text}
+                          </span>
                         </li>
                       ))
                     }
@@ -116,6 +127,7 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
                   {
                     v.tasks.map((task, i) => (
                       <li class="task" data-target={`task-${i}`}>
+                        <i class={`task__mark task__mark--${i === 0 ? 'pms' : 'finance'}`} aria-hidden="true"></i>
                         <span class="task__title">{task.title}</span>
                         <span class="task__team">{task.team}</span>
                         <span class="task__status">{task.status}</span>
@@ -206,7 +218,8 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
   .stage {
     position: relative;
     border-radius: 26px;
-    background: #f3eee6;
+    background: #eef0f2;
+    perspective: 1600px;
     box-shadow:
       inset 0 0 0 1px rgba(20, 22, 26, 0.05),
       0 50px 90px -60px rgba(20, 22, 26, 0.35);
@@ -214,28 +227,63 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     isolation: isolate;
   }
 
-  /* A sunlit hotel interior (cream stone arches), softened by a warm veil. As the scene settles into the
-     Tyll view the photo eases back and the veil thickens, so the organised state is visibly calmer. */
-  .stage__photo,
-  .stage__veil {
+  /* The space: a pearl wall of fine vertical fluting meeting a softly shaded floor, lit from the upper left.
+     Before, the light is directional and the edges fall into soft charcoal; as the overview forms, the
+     light evens out and the shade lifts. Only opacity changes during the scroll. */
+  .env,
+  .env > div {
     position: absolute;
     inset: 0;
-    z-index: -1;
     pointer-events: none;
   }
 
-  .stage__photo {
-    background: var(--stage-photo) 50% 62% / cover no-repeat;
-    transform: scale(1.08);
-    will-change: transform;
+  .env {
+    z-index: -1;
+    overflow: hidden;
+    border-radius: inherit;
   }
 
-  .stage__veil {
+  .env__wall {
     background:
-      radial-gradient(70% 60% at 50% 48%, rgba(252, 250, 246, 0.7) 0%, rgba(252, 250, 246, 0.38) 70%, rgba(252, 250, 246, 0.22) 100%),
-      linear-gradient(180deg, rgba(252, 250, 246, 0.2), rgba(243, 238, 230, 0.35));
-    opacity: 0.75;
-    will-change: opacity;
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0 1px, transparent 1px 30px, rgba(20, 22, 26, 0.05) 30px 31px, transparent 31px 60px),
+      linear-gradient(180deg, #f8f8f7 0%, #eef0f1 70%);
+  }
+
+  .env .env__floor {
+    top: auto;
+    height: 30%;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0, rgba(255, 255, 255, 0) 2px),
+      linear-gradient(180deg, rgba(20, 22, 26, 0.06) 0, rgba(20, 22, 26, 0) 18px),
+      linear-gradient(180deg, #eceef0 0%, #e1e4e8 100%);
+  }
+
+  /* Daylight from the upper left, falling across the wall in two soft bands */
+  .env__beam {
+    background:
+      linear-gradient(118deg, transparent 8%, rgba(255, 255, 255, 0.85) 22%, rgba(255, 255, 255, 0) 40%),
+      linear-gradient(118deg, transparent 34%, rgba(255, 255, 255, 0.55) 46%, rgba(255, 255, 255, 0) 60%),
+      /* the soft shadows of window frames, falling across wall and floor */
+      linear-gradient(118deg, transparent 39%, rgba(36, 40, 46, 0.07) 42%, transparent 47%),
+      linear-gradient(118deg, transparent 60%, rgba(36, 40, 46, 0.06) 64%, transparent 70%);
+  }
+
+  .env__glow {
+    background: radial-gradient(60% 55% at 50% 50%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 75%);
+    opacity: 0;
+  }
+
+  .env__shade {
+    background:
+      radial-gradient(120% 95% at 35% 30%, transparent 50%, rgba(36, 40, 46, 0.2) 100%),
+      linear-gradient(118deg, transparent 55%, rgba(36, 40, 46, 0.08) 100%);
+  }
+
+  /* A whisper of stone-like grain so the surfaces don't look flat */
+  .env__grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.12 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.16;
+    mix-blend-mode: multiply;
   }
 
   .frags {
@@ -298,6 +346,26 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     width: 8px;
     height: 8px;
     border: 1.5px solid var(--graphite);
+  }
+
+  .frag--pos {
+    --tilt-x: 7deg;
+    --tilt-y: -9deg;
+  }
+
+  .frag--stock {
+    --tilt-x: 5deg;
+    --tilt-y: 8deg;
+  }
+
+  .frag--pms {
+    --tilt-x: -6deg;
+    --tilt-y: 7deg;
+  }
+
+  .frag--finance {
+    --tilt-x: -5deg;
+    --tilt-y: -8deg;
   }
 
   .frag--pos .frag__sys i {
@@ -474,10 +542,12 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     font-size: 0.875rem;
   }
 
+  /* Two evidence tiles, side by side: the places where the POS and Stock cards land */
   .issue__evidence {
     display: grid;
-    gap: 0.3rem;
-    margin: 0.25rem 0 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0.35rem 0 0;
     padding: 0;
     list-style: none;
     color: var(--graphite);
@@ -485,16 +555,61 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     line-height: 1.4;
   }
 
-  .issue__evidence li {
+  .source {
     display: grid;
-    grid-template-columns: 16px 1fr;
-    gap: 0.5rem;
+    align-content: start;
+    gap: 0.35rem;
+    padding: 0.6rem 0.7rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
   }
 
-  .issue__evidence svg {
-    width: 16px;
-    height: 16px;
+  .source__sys {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--steel);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .source__sys i,
+  .task__mark {
+    width: 7px;
+    height: 7px;
+    border: 1.5px solid var(--graphite);
+  }
+
+  .source--pos .source__sys i {
+    border-radius: 2px;
+  }
+
+  .source--stock .source__sys i {
+    border-radius: 50%;
+  }
+
+  .source__text {
+    display: grid;
+    grid-template-columns: 15px 1fr;
+    gap: 0.4rem;
+  }
+
+  .source__text svg {
+    width: 15px;
+    height: 15px;
+    margin-top: 1px;
     color: #1b7a50;
+  }
+
+  .task__mark--pms {
+    transform: rotate(45deg);
+  }
+
+  .task__mark--finance {
+    border-radius: 2px 50% 50% 2px;
   }
 
   .issue__foot {
@@ -546,7 +661,7 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
 
   .task {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 0.75rem;
     padding: 0.6rem 0.85rem;
@@ -591,8 +706,9 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     order: 2;
     border-radius: 22px;
     background:
-      linear-gradient(rgba(252, 250, 246, 0.6), rgba(252, 250, 246, 0.6)),
-      var(--stage-photo) 50% 62% / cover no-repeat #f3eee6;
+      linear-gradient(118deg, rgba(255, 255, 255, 0.7) 10%, rgba(255, 255, 255, 0) 45%),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0 1px, transparent 1px 34px, rgba(20, 22, 26, 0.045) 34px 35px, transparent 35px 70px),
+      linear-gradient(180deg, #f7f7f6 0%, #e6e9ec 100%);
   }
 
   .story:not(.is-scrolly) .label--after {
@@ -605,8 +721,7 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     margin: 0;
   }
 
-  .story:not(.is-scrolly) .stage__photo,
-  .story:not(.is-scrolly) .stage__veil {
+  .story:not(.is-scrolly) .env {
     display: none;
   }
 
@@ -666,7 +781,26 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
 
   .story.is-scrolly .frag {
     position: absolute;
+    z-index: 1;
     width: min(290px, 42%);
+    backface-visibility: hidden;
+  }
+
+  /* While the overview forms, the issue starts neutral; it comes into focus once its evidence has landed */
+  .story.is-scrolly .issue {
+    transition:
+      border-color 0.5s var(--ease),
+      box-shadow 0.5s var(--ease),
+      background-color 0.5s var(--ease);
+  }
+
+  .story.is-scrolly .issue:not(.is-focused) {
+    border-color: var(--line);
+    background: #fff;
+  }
+
+  .story.is-scrolly .issue.is-focused {
+    box-shadow: 0 0 0 4px rgba(227, 201, 143, 0.22);
   }
 
   /* Desktop, controlled chaos: about 20% larger cards at different heights and angles, drawn in toward the
@@ -697,28 +831,28 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     }
 
     .story.is-scrolly .frag--pos {
-      left: 5%;
+      inset-inline-start: 5%;
       top: 19%;
       z-index: 1;
       rotate: -3deg;
     }
 
     .story.is-scrolly .frag--stock {
-      left: 49%;
+      inset-inline-start: 49%;
       top: 10%;
       z-index: 2;
       rotate: 2.5deg;
     }
 
     .story.is-scrolly .frag--pms {
-      left: 52%;
+      inset-inline-start: 52%;
       top: 46%;
       z-index: 3;
       rotate: -1.5deg;
     }
 
     .story.is-scrolly .frag--finance {
-      left: 7%;
+      inset-inline-start: 7%;
       top: 60%;
       z-index: 2;
       rotate: 2deg;
@@ -735,28 +869,29 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     }
 
     .story.is-scrolly .frag--pos {
-      left: 3%;
+      inset-inline-start: 3%;
       top: 13%;
     }
 
     .story.is-scrolly .frag--stock {
-      left: 52%;
+      inset-inline-start: 52%;
       top: 4%;
     }
 
     .story.is-scrolly .frag--pms {
-      left: 53%;
+      inset-inline-start: 53%;
       top: 45%;
     }
 
     .story.is-scrolly .frag--finance {
-      left: 5%;
+      inset-inline-start: 5%;
       top: 58%;
     }
   }
 
   .story.is-scrolly .view {
     position: absolute;
+    z-index: 0;
     left: 50%;
     top: 50%;
     width: min(560px, calc(100% - 2.5rem));
@@ -788,29 +923,33 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     }
 
     .story.is-scrolly .frag--pos {
-      left: 3%;
+      inset-inline-start: 3%;
       top: 4%;
     }
 
     .story.is-scrolly .frag--stock {
-      left: auto;
-      right: 3%;
+      inset-inline-start: auto;
+      inset-inline-end: 3%;
       top: 27%;
     }
 
     .story.is-scrolly .frag--pms {
-      left: 5%;
+      inset-inline-start: 5%;
       top: 54%;
     }
 
     .story.is-scrolly .frag--finance {
-      left: auto;
-      right: 4%;
+      inset-inline-start: auto;
+      inset-inline-end: 4%;
       top: 74%;
     }
 
     .issue__caution {
       display: none;
+    }
+
+    .issue__evidence {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
@@ -881,23 +1020,27 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
     const track = section.querySelector<HTMLElement>('.story__track')!;
     const stage = section.querySelector<HTMLElement>('.stage')!;
     const view = section.querySelector<HTMLElement>('.view')!;
+    const issue = section.querySelector<HTMLElement>('.issue')!;
     const before = section.querySelector<HTMLElement>('.label--before')!;
     const after = section.querySelector<HTMLElement>('.label--after')!;
     const tick = section.querySelector<SVGSVGElement>('.label__tick')!;
-    const photo = section.querySelector<HTMLElement>('.stage__photo')!;
-    const veil = section.querySelector<HTMLElement>('.stage__veil')!;
+    const env = Object.fromEntries(['beam', 'glow', 'shade'].map((k) => [k, section.querySelector<HTMLElement>(`.env__${k}`)!]));
     const frags = [...section.querySelectorAll<HTMLElement>('[data-frag]')];
-    const related = frags.filter((el) => el.dataset.frag === 'issue');
-    const issueExtras = [...section.querySelectorAll<HTMLElement>('.issue__evidence, .issue__foot, .issue__caution')];
+    const related = frags.filter((el) => el.dataset.frag!.startsWith('ev-'));
+    // The overview's own words appear in two waves: its headline while the cards travel, the owner and next step after
+    const issueHead = [...section.querySelectorAll<HTMLElement>('.issue__status, .issue h3, .issue__line')];
+    const issueExtras = [...section.querySelectorAll<HTMLElement>('.issue__foot, .issue__caution')];
     hideCheck(tick);
 
     const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
     const seg = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
     const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+    const easeOut = (t: number) => 1 - (1 - t) ** 3;
     const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
-    // Where each fragment starts and where it lands in the Tyll view, measured in stage coordinates
-    type Move = { el: HTMLElement; dx: number; dy: number; sx: number; rot: number; target: HTMLElement };
+    // Each card's start and its place in the overview, in stage coordinates. A card shrinks uniformly (never
+    // squashed) until it sits inside its place, then dissolves into the place's own content.
+    type Move = { el: HTMLElement; dx: number; dy: number; s: number; rot: number; tx: number; ty: number; slot: HTMLElement[] };
     let moves: Move[] = [];
     const measure = () => {
       const saved = frags.map((el) => [el.style.transform, el.style.rotate]);
@@ -917,8 +1060,17 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
         const target = section.querySelector<HTMLElement>(`[data-target="${el.dataset.frag}"]`)!;
         const a = el.getBoundingClientRect();
         const b = target.getBoundingClientRect();
-        const rot = parseFloat(getComputedStyle(el).rotate) || 0;
-        return { el, target, rot, dx: b.left + b.width / 2 - (a.left + a.width / 2), dy: b.top + b.height / 2 - (a.top + a.height / 2), sx: Math.min(1.2, b.width / a.width) };
+        const cs = getComputedStyle(el);
+        return {
+          el,
+          slot: [...target.children] as HTMLElement[],
+          rot: parseFloat(cs.rotate) || 0,
+          tx: parseFloat(cs.getPropertyValue('--tilt-x')) || 0,
+          ty: parseFloat(cs.getPropertyValue('--tilt-y')) || 0,
+          dx: b.left + b.width / 2 - (a.left + a.width / 2),
+          dy: b.top + b.height / 2 - (a.top + a.height / 2),
+          s: Math.min(b.width / a.width, b.height / a.height),
+        };
       });
       frags.forEach((el, i) => ([el.style.transform, el.style.rotate] = saved[i]));
       [view.style.opacity, view.style.transform] = savedView;
@@ -931,25 +1083,38 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
       const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
       const p = clamp((hh - r.top) / Math.max(1, r.height - (innerHeight - hh)));
 
-      // 1. The two related fragments lift slightly
-      related.forEach((el) => el.classList.toggle('is-related', p > 0.1 && p < 0.5));
+      // Stage 1, disconnected: the two related cards lift a little as scrolling begins
+      related.forEach((el) => el.classList.toggle('is-related', p > 0.06 && p < 0.3));
 
-      // 2. Everything moves together and lands in the Tyll view
-      const m = ease(seg(p, 0.28, 0.62));
-      const fade = 1 - seg(p, 0.54, 0.66);
-      moves.forEach(({ el, dx, dy, sx, rot, target }) => {
-        el.style.transform = `translate(${dx * m}px, ${dy * m}px) scale(${mix(1, sx, m)})`;
-        el.style.rotate = `${rot * (1 - m)}deg`;
-        el.style.opacity = String(fade);
-        target.style.opacity = String(seg(p, 0.54, 0.66));
+      // Stage 2, gathering: tilts and angles straighten first, then the cards travel toward their places.
+      // Stage 3, connected: they shrink into their places in the overview and become its content.
+      const g = easeOut(seg(p, 0.08, 0.34));
+      moves.forEach(({ el, dx, dy, s, rot, tx, ty, slot }, i) => {
+        // The evidence (POS, Stock) leads; the room and the invoice follow a moment later
+        const d = el.dataset.frag!.startsWith('ev-') ? i * 0.02 : 0.04 + (i - 2) * 0.04;
+        const m = ease(seg(p, 0.12 + d, 0.5 + d));
+        const k = ease(seg(p, 0.16 + d, 0.46 + d));
+        // Out, then in: the card has nearly gone before its place's own words appear, so text never doubles
+        const card = 1 - seg(p, 0.46 + d, 0.52 + d);
+        const content = seg(p, 0.5 + d, 0.56 + d);
+        el.style.transform = `translate3d(${dx * m}px, ${dy * m}px, 0) rotateX(${tx * (1 - g)}deg) rotateY(${ty * (1 - g)}deg) scale(${mix(1, s, k)})`;
+        el.style.rotate = `${rot * (1 - g)}deg`;
+        el.style.opacity = String(card);
+        slot.forEach((c) => (c.style.opacity = String(content)));
       });
-      const vt = seg(p, 0.4, 0.58);
-      view.style.opacity = String(vt);
-      view.style.transform = `translateY(${mix(18, 0, ease(vt))}px)`;
-      issueExtras.forEach((el, i) => (el.style.opacity = String(seg(p, 0.64 + i * 0.03, 0.74 + i * 0.03))));
 
-      // 3. The stage messages cross over
-      const bt = seg(p, 0.46, 0.56);
+      // The overview's frame builds around the arriving cards
+      const vt = seg(p, 0.24, 0.42);
+      view.style.opacity = String(vt);
+      view.style.transform = `translateY(${mix(14, 0, ease(vt))}px) scale(${mix(0.965, 1, ease(vt))})`;
+      issueHead.forEach((el, i) => (el.style.opacity = String(seg(p, 0.46 + i * 0.03, 0.56 + i * 0.03))));
+
+      // Stage 4, clarity: the issue comes into focus with its owner and next step
+      issue.classList.toggle('is-focused', p > 0.62);
+      issueExtras.forEach((el, i) => (el.style.opacity = String(seg(p, 0.62 + i * 0.04, 0.72 + i * 0.04))));
+
+      // The stage messages cross over
+      const bt = seg(p, 0.44, 0.54);
       before.style.opacity = String(1 - bt);
       before.style.transform = `translateY(${-10 * bt}px)`;
       const at = seg(p, 0.52, 0.62);
@@ -963,10 +1128,11 @@ const photo = await getImage({ src: arches, width: 1600, format: 'webp', quality
         hideCheck(tick);
       }
 
-      // The hotel behind settles and quietens as everything comes together
-      const w = ease(seg(p, 0.15, 0.65));
-      photo.style.transform = `scale(${mix(1.08, 1, w)})`;
-      veil.style.opacity = String(mix(0.75, 1, w));
+      // The light: directional and shadowed at first, even and calm once everything is in place
+      const w = ease(seg(p, 0.12, 0.66));
+      env.beam.style.opacity = String(mix(1, 0.35, w));
+      env.shade.style.opacity = String(mix(1, 0.15, w));
+      env.glow.style.opacity = String(mix(0, 0.85, w));
     };
 
     let frame = 0;

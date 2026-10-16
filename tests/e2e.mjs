@@ -94,12 +94,20 @@ for (const lang of LANGS) {
     if (!(story.end.after > 0.9 && story.end.view > 0.9 && story.end.before < 0.1)) problems.push(`story end ${JSON.stringify(story.end)}`);
     if (!(story.back.before > 0.9 && story.back.after < 0.1)) problems.push('story did not reverse when scrolling back');
     if (!story.beyond) problems.push('page did not continue past the story');
-    // "Explore Solutions" in the hero opens the Solutions menu
-    await page.evaluate(() => scrollTo(0, 0));
-    await page.click('.hero__actions [data-open-solutions]');
+    // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
+    for (const sel of ['.hero__actions a[data-track="explore_solutions_click"]', '.invite__actions a[data-track="explore_solutions_click"]']) {
+      await go(page, `/${lang}/`);
+      await page.$eval(sel, (a) => a.scrollIntoView({ block: 'center' }));
+      await Promise.all([page.waitForNavigation(), page.click(sel)]);
+      const overview = await page.evaluate(() => ({ path: location.pathname, tiles: [...document.querySelectorAll('.tiles a')].map((a) => a.getAttribute('href')) }));
+      if (overview.path !== PAGES[lang][5] || overview.tiles.join() !== SOL[lang].join()) problems.push(`Explore Solutions (${sel.split(' ')[0]}) → ${JSON.stringify(overview)}`);
+    }
+    // The Solutions dropdown in the header still opens with all six solutions and the FAQ
+    await go(page, `/${lang}/`);
+    await page.click('#solutions-trigger');
     await sleep(500);
     const menu = await page.evaluate(() => ({ open: !document.getElementById('solutions-panel').hidden, items: [...document.querySelectorAll('#solutions-panel .panel__item')].map((a) => a.getAttribute('href')), faq: [...document.querySelectorAll('#solutions-panel a')].some((a) => /\/faq\/$/.test(a.getAttribute('href'))) }));
-    if (!menu.open) problems.push('Explore Solutions did not open the menu');
+    if (!menu.open) problems.push('the Solutions dropdown did not open');
     if (menu.items.join() !== SOL[lang].join()) problems.push(`menu items ${menu.items.join()}`);
     if (!menu.faq) problems.push('FAQ missing from the Solutions menu');
     await page.keyboard.press('Escape');
@@ -280,7 +288,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
       connector: document.querySelectorAll('.story .link, .story svg path[d=""]').length,
-      photo: /url\(/.test(getComputedStyle(document.querySelector('.story')).getPropertyValue('--stage-photo')) && !!document.querySelector('.stage__photo'),
+      env: !!document.querySelector('.stage .env__wall') && !document.querySelector('.stage__photo, .stage__veil'),
+      slots: [...document.querySelectorAll('.view [data-target]')].map((e) => e.dataset.target).sort().join(),
       frags: document.querySelectorAll('.story [data-frag]').length,
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
@@ -290,7 +299,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     }));
     if (home.connector) p.push(`${lang}: the POS–Stock connector is still in the story`);
     if (home.frags !== 4) p.push(`${lang}: story has ${home.frags} fragments`);
-    if (!home.photo) p.push(`${lang}: story has no hotel photograph behind the cards`);
+    if (!home.env) p.push(`${lang}: story background is not the new pearl environment`);
+    if (home.slots !== 'ev-pos,ev-stock,task-0,task-1') p.push(`${lang}: overview places ${home.slots}`);
     // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
     await go(page, PAGES[lang][1]);
     const book = await page.evaluate(() => {
@@ -304,6 +314,19 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
+  // The closing silver wave flows while on screen, on a 16-second cycle that ends where it starts
+  await go(page, '/en/');
+  await page.$eval('.invite', (el) => el.scrollIntoView({ block: 'center' }));
+  await sleep(1200);
+  const wave = await page.evaluate(async () => {
+    const svg = document.querySelector('.invite__waves');
+    const t0 = svg.getCurrentTime();
+    await new Promise((r) => setTimeout(r, 700));
+    const a = [...svg.querySelectorAll('animate')];
+    const v = a[0]?.getAttribute('values').split(';') ?? [];
+    return { lines: a.length, moving: svg.getCurrentTime() > t0 && !svg.animationsPaused(), dur: a[0]?.getAttribute('dur'), seamless: v.length > 2 && v[0] === v[v.length - 1] };
+  });
+  if (wave.lines < 9 || !wave.moving || wave.dur !== '16s' || !wave.seamless) p.push(`closing wave ${JSON.stringify(wave)}`);
   // The video actually plays (when motion is allowed) and can be paused
   await go(page, '/en/');
   await sleep(1500);
@@ -351,7 +374,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     }
   }
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
-  record('N', `Refinements on ${where}: story photo and cards, hero footage, three steps, العربية label, booking layout`, p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('N', `Refinements on ${where}: wave, story environment and places, hero footage, three steps, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
@@ -470,6 +493,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   const still = await page.evaluate(() => ({ scrolly: document.querySelector('.story').classList.contains('is-scrolly'), before: getComputedStyle(document.querySelector('.label--before')).opacity, after: getComputedStyle(document.querySelector('.label--after')).opacity }));
   if (still.scrolly || still.before !== '1' || still.after !== '1') p.push(`story not shown as still pictures: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
+  const wavePaused = await page.evaluate(() => document.querySelector('.invite__waves').animationsPaused());
+  if (!wavePaused) p.push('closing wave moves despite reduced motion');
   if (motion.hiddenMarks || motion.hiddenText) p.push('content hidden under reduced motion');
   if (!motion.toggle) p.push('no video play/pause control');
   // Images have alt text, buttons and links have names

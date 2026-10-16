@@ -13,7 +13,6 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | problem/problem-events.jpg | https://unsplash.com/photos/elegant-banquet-hall-set-for-an-event-with-round-tables-cQxEJoQZ_-E | Unsplash License |
 | problem/problem-rooms.jpg | https://unsplash.com/photos/white-and-black-hallway-with-lights-turned-on-in-the-middle-I1bcW_t4mPU | Unsplash License |
 | problem/problem-sales.jpg | https://unsplash.com/photos/three-women-sitting-and-facing-each-other-3ALW9V3jNkc | Unsplash License |
-| story-arches.jpg | https://unsplash.com/photos/a-hallway-with-arched-ceilings-x9PTjqAfqj8 (homepage Before Tyll background) | Unsplash License |
 | book-lobby.jpg | https://unsplash.com/photos/elegant-interior-with-a-stunning-outdoor-view-2emvg3WMluM (Book a Call; cropped to the left part so a shop sign outside the window is not in frame) | Unsplash License |
 | stock-chef.jpg | https://unsplash.com/photos/chef-preparing-foods-0sYLBZjgTTw | Unsplash License |
 | forecast-produce.jpg | https://unsplash.com/photos/person-slicing-parsleys-_SC2X6gphkg | Unsplash License |
@@ -25,6 +24,8 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg, why-kitchen.jpg (replaced by the brighter why-chef.jpg).
 
 tyll-stats-3.jpg is kept in the folder but not used on the site (a dark bar counter).
+
+Removed on 16 Oct 2026: story-arches.jpg (the homepage Before Tyll background is now drawn in CSS).
 
 ## Hero video
 
