@@ -11,6 +11,12 @@ import eventsBanquet from '../assets/photos/events-banquet.jpg';
 import roomsSuite from '../assets/photos/rooms-suite.jpg';
 import receipts from '../assets/photos/tyll-problem-1.jpg';
 import laptop from '../assets/photos/tyll-stats-2.jpg';
+import probStock from '../assets/photos/problem/problem-stock.jpg';
+import probFinance from '../assets/photos/problem/problem-finance.jpg';
+import probForecast from '../assets/photos/problem/problem-forecasting.jpg';
+import probEvents from '../assets/photos/problem/problem-events.jpg';
+import probRooms from '../assets/photos/problem/problem-rooms.jpg';
+import probSales from '../assets/photos/problem/problem-sales.jpg';
 
 const screens = import.meta.glob<{ default: ImageMetadata }>('../assets/demo/*.png', { eager: true });
 const screen = (name: string) => {
@@ -21,6 +27,8 @@ const screen = (name: string) => {
 
 type Text = Record<Locale, string>;
 export type Frame = { img: ImageMetadata; phone?: boolean; title: Text; text: Text; alt: Text };
+/** One step of "How Tyll helps": a short label, the matching sentence from `helps`, and a walkthrough screen (by index) that shows it. */
+export type Step = { label: Text; frame: number };
 export type Solution = {
   key: SolutionKey;
   icon: 'stock' | 'finance' | 'forecast' | 'events' | 'rooms' | 'sales';
@@ -33,7 +41,13 @@ export type Solution = {
   headline: Text;
   intro: Text;
   problem: Text;
+  /** A photograph beside the problem statement, different from the opening photo */
+  problemPhoto: ImageMetadata;
+  problemPhotoAlt: Text;
+  problemFocus: string;
   helps: Record<Locale, string[]>;
+  /** Three steps, in the same order as `helps` */
+  steps: [Step, Step, Step];
   walkTitle: Text;
   frames: Frame[];
   note?: Text;
@@ -73,6 +87,14 @@ export const solutions: Record<SolutionKey, Solution> = {
       'جرد المخزون في مطعم الفندق لا يطابق ما بيع أو سُجّل. ومعرفة السبب تستغرق وقتًا.',
       'L’inventario del ristorante di un hotel non corrisponde a ciò che è stato venduto o registrato. Capire perché richiede tempo.',
     ),
+    problemPhoto: probStock,
+    problemPhotoAlt: t('A cook at a busy kitchen station with stacked plates, containers and an order screen.', 'Ein Koch an einem belebten Küchenposten mit gestapelten Tellern, Behältern und einem Bestellbildschirm.', 'طاهٍ في محطة مطبخ مزدحمة بأطباق مكدّسة وحاويات وشاشة طلبات.', 'Un cuoco a una postazione di cucina affollata, con piatti impilati, contenitori e uno schermo degli ordini.'),
+    problemFocus: '55% 50%',
+    steps: [
+      { label: t('Find', 'Erkennen', 'الاكتشاف', 'Individua'), frame: 1 },
+      { label: t('Investigate', 'Prüfen', 'التحقيق', 'Verifica'), frame: 2 },
+      { label: t('Follow up', 'Nachverfolgen', 'المتابعة', 'Segui'), frame: 3 },
+    ],
     helps: {
       en: [
         'Tyll compares counts, deliveries, sales and recorded waste, and shows what doesn’t add up.',
@@ -222,6 +244,14 @@ export const solutions: Record<SolutionKey, Solution> = {
       'قد تتوزع المدفوعات ورسوم الغرف والفواتير والإيداعات المصرفية على أنظمة مختلفة.',
       'Pagamenti, addebiti in camera, fatture e versamenti in banca possono trovarsi in sistemi diversi.',
     ),
+    problemPhoto: probFinance,
+    problemPhotoAlt: t('A manager checking receipts at a sunlit counter beside a computer.', 'Eine Mitarbeiterin prüft Belege an einem sonnigen Tresen neben dem Computer.', 'موظفة تراجع الإيصالات على منضدة مشمسة بجانب الحاسوب.', 'Una responsabile controlla le ricevute a un bancone soleggiato accanto al computer.'),
+    problemFocus: '50% 55%',
+    steps: [
+      { label: t('Flag', 'Markieren', 'الرصد', 'Segnala'), frame: 1 },
+      { label: t('Check', 'Prüfen', 'التحقق', 'Controlla'), frame: 2 },
+      { label: t('Resolve', 'Klären', 'المعالجة', 'Risolvi'), frame: 4 },
+    ],
     helps: {
       en: [
         'Unusual voids, discounts, refunds and free items are flagged together with the order they belong to.',
@@ -381,6 +411,14 @@ export const solutions: Record<SolutionKey, Solution> = {
       'يصعب تخطيط الطلبات عندما تُتابَع الاحتياجات والمخزون المتاح والفعاليات القادمة كلٌّ على حدة.',
       'Gli ordini sono più difficili da pianificare quando domanda, giacenze disponibili ed eventi in arrivo sono gestiti separatamente.',
     ),
+    problemPhoto: probForecast,
+    problemPhotoAlt: t('A chef plating a long row of dishes before a large event.', 'Ein Koch richtet vor einer großen Veranstaltung eine lange Reihe von Tellern an.', 'طاهٍ يجهّز صفًا طويلًا من الأطباق قبل فعالية كبيرة.', 'Uno chef impiatta una lunga fila di piatti prima di un grande evento.'),
+    problemFocus: '50% 45%',
+    steps: [
+      { label: t('Plan', 'Planen', 'التخطيط', 'Pianifica'), frame: 0 },
+      { label: t('Order', 'Bestellen', 'الطلب', 'Ordina'), frame: 1 },
+      { label: t('Approve', 'Freigeben', 'الاعتماد', 'Approva'), frame: 3 },
+    ],
     helps: {
       en: [
         'Expected guests come from reservations, occupancy and confirmed events – and any figure can be adjusted.',
@@ -529,6 +567,14 @@ export const solutions: Record<SolutionKey, Solution> = {
       'تؤثر الفعالية القادمة في المطبخ والمشتريات وتوزيع الموظفين وأقسام أخرى.',
       'Un evento in arrivo coinvolge cucina, acquisti, personale e altri reparti.',
     ),
+    problemPhoto: probEvents,
+    problemPhotoAlt: t('A bright banquet hall set with round tables before an event.', 'Ein heller Bankettsaal mit runden Tischen, eingedeckt vor einer Veranstaltung.', 'قاعة مآدب مشرقة مجهّزة بطاولات مستديرة قبل فعالية.', 'Una sala banchetti luminosa allestita con tavoli rotondi prima di un evento.'),
+    problemFocus: '40% 55%',
+    steps: [
+      { label: t('Plan', 'Planen', 'التخطيط', 'Pianifica'), frame: 1 },
+      { label: t('Coordinate', 'Abstimmen', 'التنسيق', 'Coordina'), frame: 2 },
+      { label: t('Confirm', 'Bestätigen', 'الموافقة', 'Conferma'), frame: 3 },
+    ],
     helps: {
       en: [
         'Each event shows what it needs: food, drinks, ingredients to buy and staff.',
@@ -661,6 +707,14 @@ export const solutions: Record<SolutionKey, Solution> = {
       'عندما يعمل الاستقبال والتدبير الفندقي والأقسام الأخرى كلٌّ على حدة، قد تستغرق الطلبات البسيطة وقتًا أطول.',
       'Quando ricevimento, housekeeping e altri reparti lavorano separatamente, anche le richieste semplici possono richiedere più tempo.',
     ),
+    problemPhoto: probRooms,
+    problemPhotoAlt: t('A bright hotel corridor with guest room doors.', 'Ein heller Hotelflur mit Zimmertüren.', 'ممر فندقي مشرق بأبواب غرف الضيوف.', 'Un corridoio d’albergo luminoso con le porte delle camere.'),
+    problemFocus: '50% 50%',
+    steps: [
+      { label: t('Spot', 'Erkennen', 'الرصد', 'Individua'), frame: 0 },
+      { label: t('Request', 'Anfragen', 'الطلب', 'Richiedi'), frame: 2 },
+      { label: t('Update', 'Aktualisieren', 'التحديث', 'Aggiorna'), frame: 4 },
+    ],
     helps: {
       en: [
         'Front office sees which arriving guests may have to wait, and why.',
@@ -805,6 +859,14 @@ export const solutions: Record<SolutionKey, Solution> = {
       'غالبًا ما تكون فرص المبيعات ومعلومات أداء الفندق في أماكن مختلفة.',
       'Le opportunità di vendita e i dati sulle performance dell’hotel si trovano spesso in posti diversi.',
     ),
+    problemPhoto: probSales,
+    problemPhotoAlt: t('Three colleagues reviewing plans together at a bright meeting table.', 'Drei Kolleginnen besprechen Pläne an einem hellen Besprechungstisch.', 'ثلاث زميلات يراجعن الخطط معًا على طاولة اجتماعات مشرقة.', 'Tre colleghe esaminano insieme i piani a un tavolo riunioni luminoso.'),
+    problemFocus: '50% 45%',
+    steps: [
+      { label: t('Review', 'Überblicken', 'المراجعة', 'Osserva'), frame: 0 },
+      { label: t('Pursue', 'Verfolgen', 'المتابعة', 'Segui'), frame: 1 },
+      { label: t('Confirm', 'Bestätigen', 'التأكيد', 'Conferma'), frame: 3 },
+    ],
     helps: {
       en: [
         'Owners and general managers see revenue, estimated contribution and open issues together.',

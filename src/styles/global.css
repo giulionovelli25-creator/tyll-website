@@ -16,6 +16,16 @@
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF;
 }
 
+/* The letters of العربية only (about 9 KB), for the language switch on every page */
+@font-face {
+  font-family: 'Tyll Arabic Label';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/noto-sans-arabic-label.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
 :root {
   /* Colour: the demo's cool silver and charcoal, no accent colour */
   --ink: #14161a;

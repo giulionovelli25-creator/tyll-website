@@ -1,6 +1,16 @@
 # Hero video: replacement brief
 
-**Status (16 Oct 2026): the current reception film stays.** No free clip was good enough for a genuinely better "hotel in motion" opening, and nothing was bought. The three options below are ready for the owner to choose from.
+**Status (16 Oct 2026): replaced.** The homepage now opens on a 9.5-second "hotel in motion" edit in three scenes:
+
+1. a chef seasoning a long row of plates at a bright kitchen pass
+2. a housekeeper preparing a bed in a daylit room
+3. a white-gloved server pouring coffee at a breakfast table with pastries and flowers
+
+All three clips are free Pexels footage under the Pexels License; sources are in `src/assets/photos/CREDITS.md`. The scenes cross-fade gently over 0.8 seconds, and the last frame dissolves back into the first so the loop has no visible cut.
+
+- **Encoding:** H.264 with no audio. 1920×1080 at about 2.1 MB for desktop, 1280×720 at about 0.94 MB for phones (chosen with `media`), plus a poster still.
+- **Rejected:** a room-service trolley clip, because wine glasses are visible on it.
+- **Still open:** the shots are free stock, so the same footage can appear on other sites. For an opening only Tyll uses, the options below still apply.
 
 ## The goal
 

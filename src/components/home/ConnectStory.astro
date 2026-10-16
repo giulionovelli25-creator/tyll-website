@@ -1,7 +1,7 @@
 ---
 // Homepage chapter 2: "Before Tyll → With Tyll", driven by scroll.
 // Four fragments from different hotel systems sit scattered across a silver stage. As the visitor scrolls,
-// the two related ones (a POS order and a stock difference) are linked, everything moves together, and the
+// the two related ones (a POS order and a stock difference) lift slightly, everything moves together, and the
 // scene settles into one Tyll view: one coherent stock issue with its evidence, owner and next step, and the
 // other matters listed as separate tasks. Scrolling back reverses it.
 // Without JavaScript or with reduced motion, both states are shown as two still pictures.
@@ -53,13 +53,13 @@ const v = p.view;
               <li class="frag frag--pos" data-frag="issue">
                 <span class="frag__sys"><i aria-hidden="true"></i>{f.pos.sys}</span>
                 <span class="frag__title">{f.pos.title}</span>
-                <span class="frag__row frag__row--struck" data-anchor="pos"><span>{f.pos.rows[0][0]}</span><span>{f.pos.rows[0][1]}</span></span>
+                <span class="frag__row frag__row--struck"><span>{f.pos.rows[0][0]}</span><span>{f.pos.rows[0][1]}</span></span>
                 <span class="frag__flag">{f.pos.flag}</span>
               </li>
               <li class="frag frag--stock" data-frag="issue">
                 <span class="frag__sys"><i aria-hidden="true"></i>{f.stock.sys}</span>
                 <span class="frag__title">{f.stock.title}</span>
-                <span class="frag__table" data-anchor="stock">
+                <span class="frag__table">
                   <span>{f.stock.head[0]}</span><span>{f.stock.head[1]}</span><span>{f.stock.head[2]}</span>
                   <span></span><b>{f.stock.vals[1]}</b><b>{f.stock.vals[2]}</b>
                 </span>
@@ -78,9 +78,6 @@ const v = p.view;
                 <span class="frag__flag">{f.finance.flag}</span>
               </li>
             </ul>
-
-            <!-- The two related fragments are the same story: drawn as a quiet link once scrolling starts -->
-            <svg class="link" aria-hidden="true"><path d=""></path><circle r="3"></circle><circle r="3"></circle></svg>
 
             <!-- With Tyll: one view, one coherent issue, separate tasks -->
             <div class="view" aria-label={p.after}>
@@ -262,12 +259,11 @@ const v = p.view;
     will-change: transform, opacity;
   }
 
-  /* The two fragments that belong to the same story, while they are being linked */
+  /* The two fragments that belong to the same story lift a little before everything moves. No connector:
+     they read as separate systems, related only by their content. */
   .frag.is-related {
-    border-color: #e3c98f;
-    box-shadow:
-      0 0 0 3px rgba(227, 201, 143, 0.25),
-      0 22px 40px -26px rgba(20, 22, 26, 0.4);
+    border-color: var(--silver);
+    box-shadow: 0 28px 48px -26px rgba(20, 22, 26, 0.45);
   }
 
   .frag {
@@ -375,27 +371,6 @@ const v = p.view;
     font-size: 0.75rem;
   }
 
-  .link {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    overflow: visible;
-    pointer-events: none;
-  }
-
-  .link path {
-    fill: none;
-    stroke: var(--graphite);
-    stroke-width: 1.25;
-  }
-
-  .link circle {
-    fill: var(--paper);
-    stroke: var(--graphite);
-    stroke-width: 1.5;
-  }
 
   /* The Tyll view */
   .view {
@@ -618,8 +593,7 @@ const v = p.view;
     margin: 0;
   }
 
-  .story:not(.is-scrolly) .stage__waves,
-  .story:not(.is-scrolly) .link {
+  .story:not(.is-scrolly) .stage__waves {
     display: none;
   }
 
@@ -705,10 +679,6 @@ const v = p.view;
     left: 9%;
     top: 55%;
     rotate: 1.5deg;
-  }
-
-  .story.is-scrolly .link {
-    display: block;
   }
 
   .story.is-scrolly .view {
@@ -805,9 +775,6 @@ const v = p.view;
     const tick = section.querySelector<SVGSVGElement>('.label__tick')!;
     const wavesA = section.querySelector<HTMLElement>('.stage__waves--a')!;
     const wavesB = section.querySelector<HTMLElement>('.stage__waves--b')!;
-    const link = section.querySelector<SVGSVGElement>('.link')!;
-    const linkPath = link.querySelector('path')!;
-    const [dotA, dotB] = [...link.querySelectorAll('circle')];
     const frags = [...section.querySelectorAll<HTMLElement>('[data-frag]')];
     const related = frags.filter((el) => el.dataset.frag === 'issue');
     const issueExtras = [...section.querySelectorAll<HTMLElement>('.issue__evidence, .issue__foot, .issue__caution')];
@@ -821,7 +788,6 @@ const v = p.view;
     // Where each fragment starts and where it lands in the Tyll view, measured in stage coordinates
     type Move = { el: HTMLElement; dx: number; dy: number; sx: number; rot: number; target: HTMLElement };
     let moves: Move[] = [];
-    let linkLen = 0;
     const measure = () => {
       const saved = frags.map((el) => [el.style.transform, el.style.rotate]);
       frags.forEach((el) => {
@@ -843,21 +809,6 @@ const v = p.view;
         const rot = parseFloat(getComputedStyle(el).rotate) || 0;
         return { el, target, rot, dx: b.left + b.width / 2 - (a.left + a.width / 2), dy: b.top + b.height / 2 - (a.top + a.height / 2), sx: Math.min(1.2, b.width / a.width) };
       });
-      // The link between the POS row and the stock table
-      const pa = section.querySelector<HTMLElement>('[data-anchor="pos"]')!.getBoundingClientRect();
-      const pb = section.querySelector<HTMLElement>('[data-anchor="stock"]')!.getBoundingClientRect();
-      const x1 = pa.right - sr.left + 6, y1 = pa.top + pa.height / 2 - sr.top;
-      const x2 = pb.left - sr.left - 6, y2 = pb.top + pb.height / 2 - sr.top;
-      const narrow = pb.left < pa.right;
-      const d = narrow
-        ? `M ${pa.left + pa.width * 0.7 - sr.left} ${pa.bottom - sr.top + 4} C ${pa.left + pa.width * 0.7 - sr.left} ${(pa.bottom + pb.top) / 2 - sr.top}, ${pb.left + pb.width * 0.3 - sr.left} ${(pa.bottom + pb.top) / 2 - sr.top}, ${pb.left + pb.width * 0.3 - sr.left} ${pb.top - sr.top - 4}`
-        : `M ${x1} ${y1} C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`;
-      linkPath.setAttribute('d', d);
-      linkLen = linkPath.getTotalLength();
-      linkPath.style.strokeDasharray = `${linkLen}`;
-      const start = linkPath.getPointAtLength(0), end = linkPath.getPointAtLength(linkLen);
-      dotA.setAttribute('cx', String(start.x)); dotA.setAttribute('cy', String(start.y));
-      dotB.setAttribute('cx', String(end.x)); dotB.setAttribute('cy', String(end.y));
       frags.forEach((el, i) => ([el.style.transform, el.style.rotate] = saved[i]));
       [view.style.opacity, view.style.transform] = savedView;
     };
@@ -869,12 +820,8 @@ const v = p.view;
       const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
       const p = clamp((hh - r.top) / Math.max(1, r.height - (innerHeight - hh)));
 
-      // 1. The related fragments are linked
-      const lt = seg(p, 0.08, 0.26);
-      const lf = 1 - seg(p, 0.36, 0.46);
+      // 1. The two related fragments lift slightly
       related.forEach((el) => el.classList.toggle('is-related', p > 0.1 && p < 0.5));
-      linkPath.style.strokeDashoffset = String(linkLen * (1 - lt));
-      link.style.opacity = String(Math.min(lt * 2, 1) * lf);
 
       // 2. Everything moves together and lands in the Tyll view
       const m = ease(seg(p, 0.28, 0.62));

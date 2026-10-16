@@ -1,6 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
-import poster from '../../assets/hero-reception.jpg';
+import poster from '../../assets/hero-operations.jpg';
 import Logo from '../Logo.astro';
 import { t, href, type Locale } from '../../i18n';
 
@@ -27,7 +27,9 @@ const d = t(lang);
     />
     <!-- No poster attribute: the still image above already shows until the video is actually playing -->
     <video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
-      <source src="/media/hero-reception.mp4" type="video/mp4" />
+      <!-- A hotel in motion: kitchen pass, housekeeping, room service (Pexels License; see docs/hero-video-brief.md) -->
+      <source src="/media/hero-operations-720.mp4" type="video/mp4" media="(max-width: 760px)" />
+      <source src="/media/hero-operations.mp4" type="video/mp4" />
     </video>
   </div>
   <div class="hero__shade" aria-hidden="true"></div>
@@ -96,15 +98,10 @@ const d = t(lang);
   .hero__media :global(img),
   .hero__media video {
     object-fit: cover;
-    /* Keeps the receptionist in frame as the screen narrows */
-    object-position: 66% 50%;
+    /* Keeps the plates, the bed and the corridor in frame as the screen narrows */
+    object-position: 60% 50%;
   }
 
-  /* Arabic reads from the right, so the film is mirrored: the receptionist stays clear of the headline.
-     The footage has no text or signage, so nothing reads backwards. */
-  :global([dir='rtl']) .hero__media {
-    transform: scaleX(-1);
-  }
 
   .hero__media video {
     opacity: 0;
@@ -115,21 +112,23 @@ const d = t(lang);
     opacity: 1;
   }
 
+  /* Just enough shade on the text side for white type; the footage keeps its daylight colour elsewhere */
   .hero__shade {
     z-index: -1;
     background:
-      linear-gradient(90deg, rgba(14, 15, 17, 0.72) 0%, rgba(14, 15, 17, 0.38) 45%, rgba(14, 15, 17, 0) 75%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.78) 0%, rgba(14, 15, 17, 0.2) 45%, rgba(14, 15, 17, 0.35) 100%);
+      linear-gradient(90deg, rgba(14, 15, 17, 0.66) 0%, rgba(14, 15, 17, 0.3) 45%, rgba(14, 15, 17, 0) 70%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.6) 0%, rgba(14, 15, 17, 0.08) 50%, rgba(14, 15, 17, 0.08) 80%, rgba(14, 15, 17, 0.62) 100%);
   }
 
   /* Right-to-left: the text sits on the right, so the shade does too */
   :global([dir='rtl']) .hero__shade {
     background:
-      linear-gradient(270deg, rgba(14, 15, 17, 0.72) 0%, rgba(14, 15, 17, 0.38) 45%, rgba(14, 15, 17, 0) 75%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.78) 0%, rgba(14, 15, 17, 0.2) 45%, rgba(14, 15, 17, 0.35) 100%);
+      linear-gradient(270deg, rgba(14, 15, 17, 0.66) 0%, rgba(14, 15, 17, 0.3) 45%, rgba(14, 15, 17, 0) 70%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.6) 0%, rgba(14, 15, 17, 0.08) 50%, rgba(14, 15, 17, 0.08) 80%, rgba(14, 15, 17, 0.62) 100%);
   }
 
   .hero__inner {
+    text-shadow: 0 1px 28px rgba(14, 15, 17, 0.28);
     padding-top: calc(var(--header-h) + 3rem);
     padding-bottom: clamp(3.5rem, 2rem + 6vh, 7rem);
   }

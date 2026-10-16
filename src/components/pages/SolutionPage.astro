@@ -1,9 +1,9 @@
 ---
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import Logo from '../Logo.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import Walkthrough from '../Walkthrough.astro';
+import HelpSteps from '../HelpSteps.astro';
 import { solutions } from '../../content/solutions';
 import { demoLink } from '../../config/demo';
 import { t, href, solutionKeys, type Locale, type SolutionKey } from '../../i18n';
@@ -64,14 +64,26 @@ const fill = (text: string) => text.replace('{name}', name);
     </div>
   </section>
 
-  <!-- 2. The problem, in one sentence -->
+  <!-- 2. The problem, in one sentence, beside a photograph of where it happens -->
   <section class="problem" aria-labelledby="sol-problem">
     <div class="wrap problem__inner">
-      <span class="problem__icon"><SolutionIcon name={s.icon} /></span>
-      <div>
+      <div class="problem__copy">
+        <span class="problem__icon"><SolutionIcon name={s.icon} /></span>
         <h2 id="sol-problem" class="problem__label">{p.problemLabel}</h2>
         <p class="problem__text">{s.problem[lang]}</p>
       </div>
+      <Picture
+        src={s.problemPhoto}
+        alt={s.problemPhotoAlt[lang]}
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        widths={[640, 960, 1280]}
+        sizes="(max-width: 860px) 100vw, 46vw"
+        loading="lazy"
+        decoding="async"
+        class="problem__photo"
+        style={`object-position:${s.problemFocus}`}
+      />
     </div>
   </section>
 
@@ -79,16 +91,7 @@ const fill = (text: string) => text.replace('{name}', name);
   <section class="helps" aria-labelledby="sol-helps">
     <div class="wrap">
       <h2 id="sol-helps">{p.helps}</h2>
-      <ul class="helps__list" data-check-group data-check-gap="380" data-check-duration="800">
-        {
-          s.helps[lang].map((h) => (
-            <li data-check-step>
-              <Logo mark anim="draw" label="" class="helps__tick" />
-              <p>{h}</p>
-            </li>
-          ))
-        }
-      </ul>
+      <HelpSteps lang={lang} solution={s} />
 
       <div class="walk-wrap">
         <h3>{s.walkTitle[lang]}</h3>
@@ -233,11 +236,36 @@ const fill = (text: string) => text.replace('{name}', name);
     background: var(--paper);
   }
 
+  /* Editorial split: the statement on one side, a photograph of where it happens on the other.
+     A short silver line under the statement leads on to "How Tyll helps". */
   .problem__inner {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 2rem;
-    align-items: start;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(2rem, 1rem + 4vw, 6rem);
+    align-items: center;
+  }
+
+  .problem__copy {
+    position: relative;
+    padding-bottom: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+
+  .problem__copy::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 28px;
+    bottom: 0;
+    height: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    border-inline-start: 1px solid var(--silver);
+  }
+
+  .problem__inner :global(.problem__photo) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: 20px;
+    object-fit: cover;
   }
 
   .problem__icon {
@@ -256,6 +284,7 @@ const fill = (text: string) => text.replace('{name}', name);
   }
 
   .problem__label {
+    margin-top: 2rem;
     color: var(--steel);
     font-size: var(--fs-small);
     font-weight: 500;
@@ -282,39 +311,6 @@ const fill = (text: string) => text.replace('{name}', name);
     font-size: var(--fs-h2);
   }
 
-  .helps__list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2rem 3rem;
-    margin: clamp(2rem, 1.5rem + 2vw, 3.25rem) 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .helps__list li {
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--silver);
-  }
-
-  .helps__list :global(.helps__tick) {
-    width: 24px;
-    height: auto;
-    margin-bottom: 1rem;
-    color: var(--ink);
-  }
-
-  .helps__list p {
-    font-size: 1.0625rem;
-    line-height: 1.5;
-    transition:
-      opacity 0.6s var(--ease),
-      transform 0.6s var(--ease);
-  }
-
-  [data-armed] li:not(.is-in) p {
-    opacity: 0;
-    transform: translateY(6px);
-  }
 
   .walk-wrap {
     margin-top: clamp(4rem, 3rem + 4vw, 6.5rem);
@@ -402,14 +398,21 @@ const fill = (text: string) => text.replace('{name}', name);
   }
 
   @media (max-width: 860px) {
-    .helps__list {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1.5rem;
-    }
-
     .problem__inner {
       grid-template-columns: minmax(0, 1fr);
-      gap: 1.25rem;
+      gap: 2.5rem;
+    }
+
+    .problem__copy {
+      padding-bottom: 0;
+    }
+
+    .problem__copy::after {
+      display: none;
+    }
+
+    .problem__inner :global(.problem__photo) {
+      aspect-ratio: 4 / 3;
     }
   }
 

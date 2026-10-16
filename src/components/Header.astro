@@ -45,8 +45,17 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         {
           locales.map((l) => (
             <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_changed" data-track-to={l}>
-              <span aria-hidden="true">{l.toUpperCase()}</span>
-              <span class="visually-hidden">{t(l).langName}</span>
+              {
+                // Arabic is named in Arabic; the other languages by their short code
+                l === 'ar' ? (
+                  <span class="lang__ar" dir="rtl">{t(l).langName}</span>
+                ) : (
+                  <>
+                    <span aria-hidden="true">{l.toUpperCase()}</span>
+                    <span class="visually-hidden">{t(l).langName}</span>
+                  </>
+                )
+              }
             </a>
           ))
         }
@@ -300,6 +309,18 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .lang a[aria-current] {
     font-weight: 600;
+  }
+
+  /* A small subset of Noto Sans Arabic with only the letters of العربية, so every page can show the word
+     in the brand's Arabic face without loading the full font */
+  .lang :global(.lang__ar),
+  .mobile-menu__lang a[hreflang='ar'] {
+    font-family: 'Tyll Arabic Label', 'Tyll Arabic', var(--font);
+    letter-spacing: 0;
+  }
+
+  .lang :global(.lang__ar) {
+    font-size: 1rem;
   }
 
   /* The Solutions panel */

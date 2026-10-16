@@ -26,7 +26,7 @@ const de: Dict = {
     body: ['Ihr Hotel arbeitet mit vielen Systemen. Tyll bringt die wichtigen Informationen und Teams zusammen – damit zwischen Abteilungen nichts verloren geht.'],
     pause: 'Hintergrundvideo anhalten',
     play: 'Hintergrundvideo abspielen',
-    videoLabel: 'Eine ruhige, gedämpft beleuchtete Luxushotel-Rezeption mit warmen Pendelleuchten.',
+    videoLabel: 'Ein Hotel bei der Arbeit: ein Koch würzt Teller am Pass, eine Zimmerkraft bereitet ein helles Zimmer vor, und der Zimmerservice ist im Flur unterwegs.',
   },
   home: {
     problem: {

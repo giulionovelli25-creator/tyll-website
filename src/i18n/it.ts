@@ -27,7 +27,7 @@ const it: Dict = {
     body: ['Il tuo hotel funziona con sistemi diversi. Tyll riunisce le informazioni importanti e i team, così nulla si perde tra un reparto e l’altro.'],
     pause: 'Metti in pausa il video di sfondo',
     play: 'Riproduci il video di sfondo',
-    videoLabel: 'La reception di un hotel di lusso, tranquilla e soffusa, illuminata da calde lampade a sospensione.',
+    videoLabel: 'Un hotel al lavoro: uno chef condisce i piatti al pass, una cameriera ai piani prepara una camera luminosa e il servizio in camera percorre il corridoio.',
   },
   home: {
     problem: {

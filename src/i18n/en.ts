@@ -26,7 +26,7 @@ const en = {
     body: ['Your hotel runs on different systems. Tyll brings the important information and teams together, so nothing gets lost between departments.'],
     pause: 'Pause background video',
     play: 'Play background video',
-    videoLabel: 'A calm, dimly lit luxury hotel reception with warm pendant lights.',
+    videoLabel: 'A hotel at work: a chef seasoning plates at the pass, a housekeeper preparing a bright room, and room service on its way down a corridor.',
   },
   home: {
     problem: {

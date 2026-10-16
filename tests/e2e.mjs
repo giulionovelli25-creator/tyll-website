@@ -1,4 +1,5 @@
-// Browser tests for the visitor journeys in the Step 2 brief (tests A–J), plus Arabic and Italian (K–M).
+// Browser tests for the visitor journeys in the Step 2 brief (tests A–J), plus Arabic and Italian (K–M) and the
+// four targeted refinements (N: story without connector, hero footage, three-step "How Tyll helps", العربية label).
 // Runs against a running dev or preview server (default http://localhost:4321) using the installed Google Chrome.
 //   npm run dev            (in one terminal)
 //   npm run test:e2e       (in another)
@@ -179,11 +180,12 @@ for (const lang of LANGS) {
       // Headings and buttons that are cut off or reach past the screen edge
       clipped: [...document.querySelectorAll('h1, h2, h3, .btn')].filter((e) => {
         const r = e.getBoundingClientRect();
-        return r.width > 0 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
+        // Visually hidden headings (1px boxes for screen readers) are not on screen
+        return r.width > 1 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
       }).map((e) => e.textContent.trim().slice(0, 30)),
       // Every walkthrough screen fits inside its frame (never cropped)
-      cropped: [...document.querySelectorAll('.walk__slide img')].filter((img) => {
-        const f = img.closest('.walk__frame').getBoundingClientRect();
+      cropped: [...document.querySelectorAll('.walk__slide img, .steps__frame img')].filter((img) => {
+        const f = img.closest('.walk__frame, .steps__frame').getBoundingClientRect();
         const r = img.getBoundingClientRect();
         return r.top < f.top - 1 || r.bottom > f.bottom + 1 || r.left < f.left - 1 || r.right > f.right + 1;
       }).map((img) => img.getAttribute('src').split('?')[0].split('/').pop().slice(0, 30)),
@@ -266,6 +268,81 @@ for (const lang of LANGS) {
   if (!book.mail || !book.h1) p.push('Arabic booking page incomplete');
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
   record('M', 'Arabic right-to-left on a phone: header, font, arrows, menu, story, viewer keys', p.length ? 'FAIL' : 'PASS', p.join('; '));
+  await page.ctx.close();
+}
+
+// ── N: the four targeted refinements ──────────────────────────────────────────────────────────────
+for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
+  const page = await freshPage({ width: w, height: h, mobile });
+  const p = [];
+  const where = mobile ? 'phone' : 'desktop';
+  for (const lang of LANGS) {
+    await go(page, `/${lang}/`);
+    const home = await page.evaluate(() => ({
+      connector: document.querySelectorAll('.story .link, .story svg path[d=""]').length,
+      frags: document.querySelectorAll('.story [data-frag]').length,
+      sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
+      h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
+      ctas: document.querySelectorAll('.hero__actions .btn').length,
+      ar: document.querySelector('.lang a[hreflang="ar"]')?.textContent.trim(),
+      codes: [...document.querySelectorAll('.header__end .lang a')].map((a) => a.querySelector('[aria-hidden="true"], .lang__ar').textContent.trim()).join(' '),
+    }));
+    if (home.connector) p.push(`${lang}: the POS–Stock connector is still in the story`);
+    if (home.frags !== 4) p.push(`${lang}: story has ${home.frags} fragments`);
+    if (!home.sources.some((s) => /hero-operations/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
+    if (lang === 'en' && home.h1 !== 'One hotel. Many systems. Finally connected.') p.push(`hero headline changed: "${home.h1}"`);
+    if (home.ctas !== 2) p.push(`${lang}: hero has ${home.ctas} buttons`);
+    if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
+    if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
+  }
+  // The video actually plays (when motion is allowed) and can be paused
+  await go(page, '/en/');
+  await sleep(1500);
+  const video = await page.evaluate(async () => {
+    const v = document.querySelector('.hero video');
+    const playing = !v.paused && v.currentTime > 0;
+    document.querySelector('.hero__toggle').click();
+    await new Promise((r) => setTimeout(r, 200));
+    return { playing, src: v.currentSrc.split('/').pop(), pausedAfter: v.paused, w: v.videoWidth };
+  });
+  if (!video.playing || !video.pausedAfter) p.push(`hero video ${JSON.stringify(video)}`);
+  if (mobile ? video.w !== 1280 : video.w !== 1920) p.push(`hero video on ${where} is ${video.w}px wide (${video.src})`);
+  // Three steps on every solution page: click or tap, keyboard, one panel at a time, nothing cropped
+  for (const lang of ['en', 'ar']) {
+    for (const url of SOL[lang]) {
+      await go(page, url);
+      await page.evaluate(() => document.querySelector('.steps').scrollIntoView({ block: 'center' }));
+      const tabs = await page.$$('.steps__tab');
+      if (tabs.length !== 3) { p.push(`${url}: ${tabs.length} steps`); continue; }
+      const state = () => page.evaluate(() => ({
+        selected: [...document.querySelectorAll('.steps__tab')].findIndex((t) => t.getAttribute('aria-selected') === 'true'),
+        visible: [...document.querySelectorAll('.steps__panel')].filter((x) => getComputedStyle(x).visibility === 'visible').length,
+        inert: [...document.querySelectorAll('.steps__panel')].filter((x) => x.inert).length,
+        text: document.querySelector('.steps__panel.is-active .steps__text')?.textContent.trim().length,
+      }));
+      if (mobile) await tabs[1].tap(); else await tabs[1].click();
+      await sleep(600);
+      const a = await state();
+      await page.focus('.steps__tab[aria-selected="true"]');
+      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
+      await sleep(600);
+      const b = await state();
+      await page.keyboard.press('Home');
+      await sleep(600);
+      const c = await state();
+      if (a.selected !== 1 || b.selected !== 2 || c.selected !== 0) p.push(`${url}: steps selected ${a.selected}/${b.selected}/${c.selected}`);
+      if (a.visible !== 1 || a.inert !== 2 || !a.text) p.push(`${url}: panels ${JSON.stringify(a)}`);
+      const shot = await page.evaluate(() => {
+        const img = document.querySelector('.steps__panel.is-active .steps__frame img');
+        const f = img.closest('.steps__frame').getBoundingClientRect();
+        const r = img.getBoundingClientRect();
+        return { fits: r.top >= f.top - 1 && r.bottom <= f.bottom + 1 && r.left >= f.left - 1 && r.right <= f.right + 1, fit: getComputedStyle(img).objectFit, loaded: img.complete && img.naturalWidth > 0 };
+      });
+      if (!shot.fits || shot.fit !== 'contain' || !shot.loaded) p.push(`${url}: step screen ${JSON.stringify(shot)}`);
+    }
+  }
+  if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
+  record('N', `Refinements on ${where}: no connector, hero footage, three steps, العربية label`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
