@@ -38,7 +38,7 @@ const it: Dict = {
       before: 'Informazioni ovunque.',
       afterLabel: 'Con Tyll',
       after: 'Tutto ciò che conta. In un unico posto.',
-      cue: 'Guarda cosa cambia',
+      replay: 'Riproduci di nuovo',
       note: 'Un’illustrazione con dati fittizi. Quali sistemi collegare viene concordato con ogni hotel.',
       frags: {
         pos: { sys: 'Cassa', title: 'Ordine TRC-1013-198 · Tavolo 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Rimossa dopo l’invio al bar' },

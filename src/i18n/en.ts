@@ -37,7 +37,7 @@ const en = {
       before: 'Information everywhere.',
       afterLabel: 'With Tyll',
       after: 'Everything important. One place.',
-      cue: 'See what changes',
+      replay: 'Replay',
       note: 'An illustration with fictional data. Which systems connect is agreed with each hotel.',
       frags: {
         pos: { sys: 'POS', title: 'Order TRC-1013-198 · Table 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Removed after it went to the bar' },

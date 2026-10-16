@@ -37,7 +37,7 @@ const de: Dict = {
       before: 'Informationen überall.',
       afterLabel: 'Mit Tyll',
       after: 'Alles Wichtige. An einem Ort.',
-      cue: 'Sehen Sie, was sich ändert',
+      replay: 'Erneut abspielen',
       note: 'Eine Illustration mit fiktiven Daten. Welche Systeme angebunden werden, wird mit jedem Hotel vereinbart.',
       frags: {
         pos: { sys: 'Kasse', title: 'Bestellung TRC-1013-198 · Tisch 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Nach Bestellung an der Bar entfernt' },

@@ -1,11 +1,11 @@
 ---
-// Homepage chapter 2: "Before Tyll → With Tyll", driven by scroll.
-// Four fragments from different hotel systems sit scattered, slightly tilted, in a pearl-and-silver space lit from
-// one side. As the visitor scrolls they gather, straighten and dock into their own places in one Tyll overview:
-// the POS order and the stock count become the two pieces of evidence for one issue, the room and the invoice
-// become quieter tasks below. Then the issue comes into focus with its owner and next step, and the light evens
-// out. Every step follows the scroll position, so scrolling back reverses it.
-// Without JavaScript or with reduced motion, both states are shown as two still pictures.
+// Homepage chapter 2: hotel systems → Tyll → a clear next step.
+// Left, the hotel's existing systems, each holding a piece of the picture. Thin silver paths carry that
+// information into the Tyll overview in the centre, which shows what needs attention across departments. On the
+// right, the one issue that matters most: its evidence from POS and Stock, who is responsible and what to review
+// next. When the section comes into view the sequence plays once (about four seconds) and then stays still; a
+// small button replays it. Without JavaScript or with reduced motion the finished picture is shown at once.
+// All data is fictional and matches the simulated Tyll demo.
 import Logo from '../Logo.astro';
 import { t, type Locale } from '../../i18n';
 
@@ -17,1189 +17,917 @@ const { lang } = Astro.props;
 const p = t(lang).home.problem;
 const f = p.frags;
 const v = p.view;
+const fwd = lang === 'ar' ? '←' : '→';
+
+// The rows in the Tyll overview, and which systems feed each of them
+const rows = [
+  { id: 'issue', marks: ['pos', 'stock'], title: v.issue, team: '', status: v.status, focus: true },
+  { id: 'room', marks: ['pms'], title: v.tasks[0].title, team: v.tasks[0].team, status: v.tasks[0].status, focus: false },
+  { id: 'invoice', marks: ['finance'], title: v.tasks[1].title, team: v.tasks[1].team, status: v.tasks[1].status, focus: false },
+];
 ---
 
 <section class="story" id="story" aria-labelledby="story-title" data-story>
-  <div class="wrap story__grid">
+  <div class="wrap">
     <header class="story__head">
       <h2 id="story-title">{p.title}</h2>
-      <p>{p.text}</p>
-      <p class="story__note">{p.note}</p>
+      <div class="story__intro">
+        <p>{p.text}</p>
+        <p class="story__note">{p.note}</p>
+      </div>
     </header>
 
-    <div class="story__track">
-      <div class="story__sticky">
-        <div class="scene">
-          <!-- The two stage messages; they cross over as the scene changes -->
-          <div class="labels">
-            <p class="label label--before">
-              <span class="label__kicker">{p.beforeLabel}</span>
-              <span class="label__msg">{p.before}</span>
-            </p>
-            <p class="label label--after" data-check-manual>
-              <span class="label__kicker">
-                <Logo mark anim="draw" label="" class="label__tick" />
-                {p.afterLabel}
-              </span>
-              <span class="label__msg">{p.after}</span>
-            </p>
+    <div class="flow" data-flow data-stage="done">
+      <svg class="flow__paths" aria-hidden="true"></svg>
+
+      <!-- 1. The hotel's systems: separate places, each with part of the story -->
+      <div class="flow__col flow__col--systems">
+        <p class="flow__caption">
+          <span class="flow__kicker">{p.beforeLabel}</span>
+          <span class="flow__msg">{p.before}</span>
+        </p>
+        <ul class="systems" aria-label={p.before}>
+          <li class="sys" data-src="pos" style="--i:0">
+            <span class="sys__name"><i class="mark mark--pos" aria-hidden="true"></i>{f.pos.sys}</span>
+            <span class="sys__title">{f.pos.title}</span>
+            <span class="sys__data"><s>{f.pos.rows[0][0]}</s><s>{f.pos.rows[0][1]}</s></span>
+            <span class="sys__flag sys__flag--amber">{f.pos.flag}</span>
+          </li>
+          <li class="sys" data-src="stock" style="--i:1">
+            <span class="sys__name"><i class="mark mark--stock" aria-hidden="true"></i>{f.stock.sys}</span>
+            <span class="sys__title">{f.stock.title}</span>
+            <span class="sys__data">
+              <span>{f.stock.head[1]} <b>{f.stock.vals[1]}</b></span>
+              <span>{f.stock.head[2]} <b>{f.stock.vals[2]}</b></span>
+            </span>
+            <span class="sys__flag sys__flag--amber">{f.stock.flag}</span>
+          </li>
+          <li class="sys" data-src="pms" style="--i:2">
+            <span class="sys__name"><i class="mark mark--pms" aria-hidden="true"></i>{f.pms.sys}</span>
+            <span class="sys__title">{f.pms.title}</span>
+            <span class="sys__data"><span class="sys__chip">{f.pms.status}</span><span>{f.pms.line}</span></span>
+          </li>
+          <li class="sys" data-src="finance" style="--i:3">
+            <span class="sys__name"><i class="mark mark--finance" aria-hidden="true"></i>{f.finance.sys}</span>
+            <span class="sys__title">{f.finance.title}</span>
+            <span class="sys__data">
+              <span>{f.finance.rows[0][0]} <b>{f.finance.rows[0][1]}</b></span>
+              <span>{f.finance.rows[1][0]} <b>{f.finance.rows[1][1]}</b></span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 2. Tyll: the important things from every department, in one overview -->
+      <div class="flow__col flow__col--tyll">
+        <p class="flow__caption flow__caption--after">
+          <span class="flow__kicker"><Logo mark label="" class="flow__tick" />{p.afterLabel}</span>
+          <span class="flow__msg">{p.after}</span>
+        </p>
+        <div class="tyll" role="group" aria-label="Tyll">
+          <div class="tyll__bar">
+            <Logo mark label="" class="tyll__mark" />
+            <span>Tyll</span>
+            <span class="tyll__place">{v.place}</span>
           </div>
-
-          <div class="stage">
-            <!-- An art-directed space for the cards: fluted pearl wall, a floor plane, light from one side -->
-            <div class="env" aria-hidden="true">
-              <div class="env__wall"></div>
-              <div class="env__floor"></div>
-              <div class="env__beam"></div>
-              <div class="env__glow"></div>
-              <div class="env__shade"></div>
-              <div class="env__grain"></div>
-            </div>
-
-            <!-- One quiet invitation to scroll; it fades as soon as the change begins -->
-            <p class="cue" aria-hidden="true">{p.cue} <span>↓</span></p>
-
-            <!-- Before: fragments from five systems -->
-            <ul class="frags" aria-label={p.before}>
-              <li class="frag frag--pos" data-frag="ev-pos">
-                <span class="frag__sys"><i aria-hidden="true"></i>{f.pos.sys}</span>
-                <span class="frag__title">{f.pos.title}</span>
-                <span class="frag__row frag__row--struck"><span>{f.pos.rows[0][0]}</span><span>{f.pos.rows[0][1]}</span></span>
-                <span class="frag__flag">{f.pos.flag}</span>
-              </li>
-              <li class="frag frag--stock" data-frag="ev-stock">
-                <span class="frag__sys"><i aria-hidden="true"></i>{f.stock.sys}</span>
-                <span class="frag__title">{f.stock.title}</span>
-                <span class="frag__table">
-                  <span>{f.stock.head[0]}</span><span>{f.stock.head[1]}</span><span>{f.stock.head[2]}</span>
-                  <span></span><b>{f.stock.vals[1]}</b><b>{f.stock.vals[2]}</b>
-                </span>
-                <span class="frag__flag frag__flag--amber">{f.stock.flag}</span>
-              </li>
-              <li class="frag frag--pms" data-frag="task-0">
-                <span class="frag__sys"><i aria-hidden="true"></i>{f.pms.sys}</span>
-                <span class="frag__title">{f.pms.title}</span>
-                <span class="frag__line"><span class="frag__chip">{f.pms.status}</span>{f.pms.line}</span>
-              </li>
-              <li class="frag frag--finance" data-frag="task-1">
-                <span class="frag__sys"><i aria-hidden="true"></i>{f.finance.sys}</span>
-                <span class="frag__title">{f.finance.title}</span>
-                <span class="frag__row"><span>{f.finance.rows[0][0]}</span><b>{f.finance.rows[0][1]}</b></span>
-                <span class="frag__row"><span>{f.finance.rows[1][0]}</span><b>{f.finance.rows[1][1]}</b></span>
-                <span class="frag__flag">{f.finance.flag}</span>
-              </li>
-            </ul>
-
-            <!-- With Tyll: one view, one coherent issue, separate tasks -->
-            <div class="view" aria-label={p.after}>
-              <div class="view__bar">
-                <Logo mark label="" class="view__mark" />
-                <span>Tyll</span>
-                <span class="view__place">{v.place}</span>
-              </div>
-              <div class="view__body">
-                <p class="view__heading">{v.attention} <span>{v.tasks.length + 1}</span></p>
-                <article class="issue">
-                  <span class="issue__status">{v.status}</span>
-                  <h3>{v.issue}</h3>
-                  <p class="issue__line">{v.issueLine}</p>
-                  <!-- The evidence, each piece still labelled with the system it came from -->
-                  <ul class="issue__evidence">
-                    {
-                      [
-                        { key: 'pos', sys: f.pos.sys, text: v.evidence[1] },
-                        { key: 'stock', sys: f.stock.sys, text: v.evidence[0] },
-                      ].map((e) => (
-                        <li class={`source source--${e.key}`} data-target={`ev-${e.key}`}>
-                          <span class="source__sys"><i aria-hidden="true"></i>{e.sys}</span>
-                          <span class="source__text">
-                            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4 6.6 11.3 12.5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                            {e.text}
-                          </span>
-                        </li>
-                      ))
-                    }
-                  </ul>
-                  <div class="issue__foot">
-                    <p class="issue__owner"><span>{v.owner}</span>{v.ownerName}</p>
-                    <span class="issue__next">{v.next} {lang === 'ar' ? '←' : '→'}</span>
-                  </div>
-                  <p class="issue__caution">{v.caution}</p>
-                </article>
-                <ul class="tasks">
-                  {
-                    v.tasks.map((task, i) => (
-                      <li class="task" data-target={`task-${i}`}>
-                        <i class={`task__mark task__mark--${i === 0 ? 'pms' : 'finance'}`} aria-hidden="true"></i>
-                        <span class="task__title">{task.title}</span>
-                        <span class="task__team">{task.team}</span>
-                        <span class="task__status">{task.status}</span>
-                      </li>
-                    ))
-                  }
-                </ul>
-              </div>
-            </div>
-          </div>
+          <p class="tyll__heading">{v.attention} <span>{rows.length}</span></p>
+          <ul class="tyll__rows">
+            {
+              rows.map((r, i) => (
+                <li class:list={['row', r.focus && 'row--focus']} data-row={r.id} style={`--i:${i}`}>
+                  <span class="row__marks" aria-hidden="true">
+                    {r.marks.map((m) => (
+                      <i class={`mark mark--${m}`} />
+                    ))}
+                  </span>
+                  <span class="row__title">{r.title}</span>
+                  <span class="row__meta">
+                    {r.team && <span class="row__team">{r.team}</span>}
+                    <span class:list={['row__status', r.focus && 'row__status--amber']}>{r.status}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
         </div>
       </div>
+
+      <!-- 3. What the manager can do: one issue, its evidence, the person responsible and the next step -->
+      <div class="flow__col flow__col--next">
+        <article class="next" aria-labelledby="flow-issue">
+          <span class="next__status">{v.status}</span>
+          <h3 id="flow-issue">{v.issue}</h3>
+          <p class="next__line">{v.issueLine}</p>
+          <ul class="next__evidence">
+            <li style="--i:0">
+              <span class="next__src"><i class="mark mark--stock" aria-hidden="true"></i>{f.stock.sys}</span>
+              <span>{v.evidence[0]}</span>
+            </li>
+            <li style="--i:1">
+              <span class="next__src"><i class="mark mark--pos" aria-hidden="true"></i>{f.pos.sys}</span>
+              <span>{v.evidence[1]}</span>
+            </li>
+          </ul>
+          <div class="next__foot">
+            <p class="next__owner"><span>{v.owner}</span>{v.ownerName}</p>
+            <span class="next__action">{v.next} {fwd}</span>
+          </div>
+          <p class="next__caution">{v.caution}</p>
+        </article>
+      </div>
+
+      <button type="button" class="flow__replay" data-replay hidden>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5M3 2.6v2.6h2.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        {p.replay}
+      </button>
     </div>
   </div>
 </section>
 
 <style>
   .story {
-    position: relative;
+    padding-block: var(--section-y);
     background: var(--paper);
   }
 
-  /* ── Static layout (no JavaScript, or reduced motion): two pictures, before and after ── */
-  .story__grid {
+  /* Headline on one side, the explanation and the disclaimer on the other */
+  .story__head {
     display: grid;
-    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.62fr);
-    gap: 0 clamp(2rem, 1rem + 3vw, 4.5rem);
-    padding-block: var(--section-y);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.5rem clamp(2rem, 1rem + 4vw, 6rem);
+    align-items: end;
   }
 
   .story__head h2 {
-    max-width: 12ch;
+    max-width: 13ch;
     font-size: var(--fs-h2);
   }
 
-  .story__head > p:not(.story__note) {
-    max-width: 30rem;
-    margin-top: 1.25rem;
+  .story__intro > p:first-child {
+    max-width: 34rem;
     color: var(--steel);
     font-size: var(--fs-lead);
     line-height: 1.55;
   }
 
   .story__note {
-    max-width: 24rem;
-    margin-top: 2rem;
+    max-width: 30rem;
+    margin-top: 1rem;
     color: var(--steel);
     font-size: 0.8125rem;
     line-height: 1.5;
   }
 
-  .scene {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .labels {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .label__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--graphite);
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .label__kicker :global(.label__tick) {
-    width: 18px;
-    height: auto;
-    color: var(--ink);
-  }
-
-  .label__msg {
-    display: block;
-    margin-top: 0.4rem;
-    font-size: clamp(2rem, 1.3rem + 2.4vw, 3.25rem);
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    line-height: 1.08;
-  }
-
-  .stage {
+  /* ── The stage: a deep charcoal surface on which the white interfaces sit like real screens ── */
+  .flow {
+    --gap: clamp(3rem, 1rem + 5vw, 6.5rem);
     position: relative;
-    border-radius: 26px;
-    background: #eef0f2;
-    perspective: 1600px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.2fr) minmax(0, 1fr);
+    column-gap: var(--gap);
+    align-items: center;
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding: clamp(2rem, 1.25rem + 2.5vw, 3.5rem) clamp(1.5rem, 0.75rem + 2.5vw, 3.25rem) clamp(3.25rem, 2.5rem + 2.5vw, 4.5rem);
+    border-radius: 28px;
+    background:
+      radial-gradient(70% 90% at 50% 45%, rgba(200, 205, 212, 0.12), transparent 70%),
+      linear-gradient(160deg, #1d2025 0%, #14161a 55%, #101114 100%);
     box-shadow:
-      inset 0 0 0 1px rgba(20, 22, 26, 0.05),
-      0 50px 90px -60px rgba(20, 22, 26, 0.35);
-    overflow: hidden;
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 60px 120px -60px rgba(20, 22, 26, 0.55);
+    color: var(--on-dark);
     isolation: isolate;
   }
 
-  /* The space: a pearl wall of fine vertical fluting meeting a softly shaded floor, lit from the upper left.
-     Before, the light is directional and the edges fall into soft charcoal; as the overview forms, the
-     light evens out and the shade lifts. Only opacity changes during the scroll. */
-  .env,
-  .env > div {
+  .flow__paths {
     position: absolute;
     inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
     pointer-events: none;
   }
 
-  .env {
-    z-index: -1;
-    overflow: hidden;
-    border-radius: inherit;
+  .flow__paths :global(.path) {
+    fill: none;
+    stroke: rgba(200, 205, 212, 0.38);
+    stroke-width: 1.2;
+    stroke-linecap: round;
   }
 
-  .env__wall {
-    background:
-      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0 1px, transparent 1px 30px, rgba(20, 22, 26, 0.05) 30px 31px, transparent 31px 60px),
-      linear-gradient(180deg, #f8f8f7 0%, #eef0f1 70%);
-  }
-
-  .env .env__floor {
-    top: auto;
-    height: 30%;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0, rgba(255, 255, 255, 0) 2px),
-      linear-gradient(180deg, rgba(20, 22, 26, 0.06) 0, rgba(20, 22, 26, 0) 18px),
-      linear-gradient(180deg, #eceef0 0%, #e1e4e8 100%);
-  }
-
-  /* Daylight from the upper left, falling across the wall in two soft bands */
-  .env__beam {
-    background:
-      linear-gradient(118deg, transparent 8%, rgba(255, 255, 255, 0.85) 22%, rgba(255, 255, 255, 0) 40%),
-      linear-gradient(118deg, transparent 34%, rgba(255, 255, 255, 0.55) 46%, rgba(255, 255, 255, 0) 60%),
-      /* the soft shadows of window frames, falling across wall and floor */
-      linear-gradient(118deg, transparent 39%, rgba(36, 40, 46, 0.07) 42%, transparent 47%),
-      linear-gradient(118deg, transparent 60%, rgba(36, 40, 46, 0.06) 64%, transparent 70%);
-  }
-
-  .env__glow {
-    background: radial-gradient(60% 55% at 50% 50%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 75%);
+  .flow__paths :global(.pulse) {
+    fill: none;
+    stroke: url(#flow-pulse);
+    stroke-width: 2;
+    stroke-linecap: round;
     opacity: 0;
   }
 
-  .env__shade {
-    background:
-      radial-gradient(120% 95% at 35% 30%, transparent 50%, rgba(36, 40, 46, 0.2) 100%),
-      linear-gradient(118deg, transparent 55%, rgba(36, 40, 46, 0.08) 100%);
-  }
-
-  /* A whisper of stone-like grain so the surfaces don't look flat */
-  .env__grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.12 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.16;
-    mix-blend-mode: multiply;
-  }
-
-  .frags {
+  .flow__col {
+    position: relative;
+    z-index: 1;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 1.25rem;
+    align-content: center;
+  }
+
+  .flow__caption {
+    display: grid;
+    gap: 0.3rem;
     margin: 0;
-    padding: 1.5rem;
+  }
+
+  .flow__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--fog);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .flow__kicker :global(.flow__tick) {
+    width: 16px;
+    height: auto;
+    color: var(--on-dark);
+  }
+
+  .flow__msg {
+    color: var(--on-dark);
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+
+  /* Small shape markers, one per system, carried into the overview so the source of each item stays visible */
+  .mark {
+    display: inline-block;
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid currentColor;
+  }
+
+  .mark--pos {
+    border-radius: 2px;
+  }
+
+  .mark--stock {
+    border-radius: 50%;
+  }
+
+  .mark--pms {
+    transform: rotate(45deg) scale(0.9);
+  }
+
+  .mark--finance {
+    border-radius: 2px 50% 50% 2px;
+  }
+
+  /* 1. Systems */
+  .systems {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
     list-style: none;
   }
 
-  /* An interface fragment: system badge, title, a little real data */
-  .frag {
+  .sys {
     display: grid;
-    gap: 0.35rem;
-    padding: 0.9rem 1rem 1rem;
-    border: 1px solid rgba(20, 22, 26, 0.07);
+    gap: 0.3rem;
+    padding: 0.85rem 1rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
-    background: #fff;
-    /* Layered shadow: a tight contact shadow and a soft, longer one, like a card lifted off a surface */
-    box-shadow:
-      0 1px 1px rgba(20, 22, 26, 0.05),
-      0 6px 14px -6px rgba(20, 22, 26, 0.16),
-      0 28px 56px -28px rgba(60, 44, 24, 0.42);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 18px 36px -24px rgba(0, 0, 0, 0.6);
+    color: var(--ink);
     font-size: 0.875rem;
     line-height: 1.35;
-    transform-origin: 50% 50%;
-    will-change: transform, opacity;
   }
 
-  /* The two fragments that belong to the same story lift a little before everything moves. No connector:
-     they read as separate systems, related only by their content. */
-  .frag.is-related {
-    border-color: var(--silver);
-    box-shadow:
-      0 1px 1px rgba(20, 22, 26, 0.05),
-      0 10px 20px -8px rgba(20, 22, 26, 0.2),
-      0 40px 70px -30px rgba(60, 44, 24, 0.5);
+  /* A little unevenness: separate systems, not a tidy list */
+  .sys:nth-child(2) {
+    margin-inline-start: 1.25rem;
   }
 
-  .frag {
-    transition:
-      border-color 0.4s var(--ease),
-      box-shadow 0.4s var(--ease);
+  .sys:nth-child(3) {
+    margin-inline-start: 0.4rem;
   }
 
-  .frag__sys {
+  .sys:nth-child(4) {
+    margin-inline-start: 1.6rem;
+  }
+
+  .sys__name {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
     color: var(--steel);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  /* Each system keeps a different quiet marker shape */
-  .frag__sys i {
-    width: 8px;
-    height: 8px;
-    border: 1.5px solid var(--graphite);
+  .sys__name .mark {
+    color: var(--graphite);
   }
 
-  .frag--pos {
-    --tilt-x: 7deg;
-    --tilt-y: -9deg;
-  }
-
-  .frag--stock {
-    --tilt-x: 5deg;
-    --tilt-y: 8deg;
-  }
-
-  .frag--pms {
-    --tilt-x: -6deg;
-    --tilt-y: 7deg;
-  }
-
-  .frag--finance {
-    --tilt-x: -5deg;
-    --tilt-y: -8deg;
-  }
-
-  .frag--pos .frag__sys i {
-    border-radius: 2px;
-  }
-
-  .frag--stock .frag__sys i {
-    border-radius: 50%;
-  }
-
-  .frag--pms .frag__sys i {
-    transform: rotate(45deg);
-  }
-
-  .frag--finance .frag__sys i {
-    border-radius: 2px 50% 50% 2px;
-  }
-
-  .frag__title {
+  .sys__title {
     font-weight: 500;
-    color: var(--ink);
   }
 
-  .frag__row {
+  .sys__data {
     display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
     color: var(--graphite);
     font-variant-numeric: tabular-nums;
   }
 
-  .frag__row--struck span {
-    text-decoration: line-through;
+  .sys__data s {
+    color: var(--steel);
     text-decoration-color: rgba(176, 53, 43, 0.7);
-    color: var(--steel);
   }
 
-  .frag__table {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 0.15rem 1rem;
-    color: var(--steel);
-    font-size: 0.75rem;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .frag__table b {
+  .sys__data b {
     color: var(--ink);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    text-align: end;
+    font-weight: 600;
   }
 
-  .frag__flag {
-    justify-self: start;
-    margin-top: 0.15rem;
-    padding: 0.15rem 0.55rem;
+  .sys__chip,
+  .row__status,
+  .row__team {
+    padding: 0.1rem 0.55rem;
+    border: 1px solid var(--line);
     border-radius: 999px;
-    background: var(--mist);
-    color: var(--graphite);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .sys__flag {
+    justify-self: start;
+    padding: 0.12rem 0.55rem;
+    border-radius: 999px;
     font-size: 0.75rem;
   }
 
-  .frag--pos .frag__flag,
-  .frag__flag--amber {
+  .sys__flag--amber,
+  .row__status--amber,
+  .next__status {
+    border-color: transparent;
     background: #fbf2df;
     color: #7a4b08;
   }
 
-  .frag__line {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--graphite);
-  }
-
-  .frag__chip {
-    padding: 0.1rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    font-size: 0.75rem;
-  }
-
-
-  /* "See what changes ↓": shown only in the scroll-driven version, on the Before picture */
-  .cue {
-    display: none;
-  }
-
-  .story.is-scrolly .cue {
-    position: absolute;
-    inset-inline: 0;
-    bottom: clamp(0.9rem, 2.4vh, 1.6rem);
-    z-index: 4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.4rem;
-    margin: 0;
-    color: var(--graphite);
-    font-size: 0.875rem;
-    font-weight: 500;
-    pointer-events: none;
-  }
-
-  .story.is-scrolly .cue span {
-    display: inline-block;
-  }
-
-  /* On phones the cards fill the stage and visitors are already scrolling through it; no cue there */
-  @media (max-width: 960px) {
-    .story.is-scrolly .cue {
-      display: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .story.is-scrolly .cue span {
-      animation: cue-nudge 2.4s var(--ease) infinite;
-    }
-  }
-
-  @keyframes cue-nudge {
-    50% {
-      transform: translateY(3px);
-    }
-  }
-
-  /* The Tyll view */
-  .view {
-    margin: 0 1.5rem 1.5rem;
-    border: 1px solid rgba(20, 22, 26, 0.08);
+  /* 2. The Tyll overview */
+  .tyll {
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.98);
+    background: #fff;
     box-shadow:
-      0 1px 2px rgba(20, 22, 26, 0.05),
-      0 60px 100px -50px rgba(20, 22, 26, 0.45);
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 40px 80px -36px rgba(0, 0, 0, 0.75),
+      0 0 120px -30px rgba(200, 205, 212, 0.18);
+    color: var(--ink);
     overflow: hidden;
   }
 
-  .view__bar {
+  .tyll__bar {
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    padding: 0.85rem 1.1rem;
+    padding: 0.9rem 1.15rem;
     border-bottom: 1px solid var(--line);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .tyll :global(.tyll__mark) {
+    width: 17px;
+    height: auto;
+  }
+
+  .tyll__place {
+    margin-inline-start: auto;
+    color: var(--steel);
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .tyll__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.15rem 0.6rem;
+    color: var(--graphite);
     font-size: 0.875rem;
     font-weight: 600;
   }
 
-  .view :global(.view__mark) {
-    width: 16px;
-    height: auto;
-  }
-
-  .view__place {
-    margin-inline-start: auto;
-    color: var(--steel);
-    font-weight: 400;
-    font-size: 0.8125rem;
-  }
-
-  .view__body {
-    display: grid;
-    gap: 0.75rem;
-    padding: 1rem 1.1rem 1.15rem;
-  }
-
-  .view__heading {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--graphite);
-  }
-
-  .view__heading span {
+  .tyll__heading span {
     display: grid;
     place-items: center;
-    min-width: 20px;
-    height: 20px;
+    min-width: 21px;
+    height: 21px;
     padding: 0 6px;
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
   }
 
-  /* The one issue, with evidence, owner and next step */
-  .issue {
+  .tyll__rows {
     display: grid;
-    gap: 0.45rem;
-    padding: 1rem 1.1rem 1.05rem;
-    border: 1px solid #e3c98f;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #fffcf5 0%, #ffffff 70%);
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0 0.75rem 0.9rem;
+    list-style: none;
   }
 
-  .issue__status {
+  .row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'marks title'
+      '. meta';
+    gap: 0.35rem 0.7rem;
+    padding: 0.75rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    transition:
+      background-color 0.6s var(--ease),
+      border-color 0.6s var(--ease),
+      box-shadow 0.6s var(--ease);
+  }
+
+  .row + .row {
+    border-top-color: var(--line);
+    border-radius: 0 0 12px 12px;
+  }
+
+  .row__marks {
+    grid-area: marks;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding-top: 0.35rem;
+    color: var(--graphite);
+  }
+
+  .row__title {
+    grid-area: title;
+    font-weight: 500;
+  }
+
+  .row__meta {
+    grid-area: meta;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    color: var(--steel);
+  }
+
+  /* The issue that needs attention first */
+  .row--focus {
+    border-color: #e3c98f;
+    background: linear-gradient(180deg, #fffcf5, #fff);
+    box-shadow: 0 0 0 4px rgba(227, 201, 143, 0.18);
+  }
+
+  /* 3. The next step */
+  .next {
+    display: grid;
+    gap: 0.55rem;
+    padding: 1.2rem 1.25rem 1.15rem;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 40px 80px -40px rgba(0, 0, 0, 0.75);
+    color: var(--ink);
+  }
+
+  .next__status {
     justify-self: start;
     padding: 0.15rem 0.6rem;
     border-radius: 999px;
-    background: #fbf2df;
-    color: #7a4b08;
     font-size: 0.75rem;
     font-weight: 500;
   }
 
-  .issue h3 {
-    font-size: 1.0625rem;
+  .next h3 {
+    font-size: 1.125rem;
     font-weight: 500;
     letter-spacing: -0.01em;
+    line-height: 1.3;
   }
 
-  .issue__line {
+  .next__line {
     color: var(--graphite);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
 
-  /* Two evidence tiles, side by side: the places where the POS and Stock cards land */
-  .issue__evidence {
+  .next__evidence {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
     margin: 0.35rem 0 0;
     padding: 0;
     list-style: none;
+  }
+
+  .next__evidence li {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
     color: var(--graphite);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     line-height: 1.4;
   }
 
-  .source {
-    display: grid;
-    align-content: start;
-    gap: 0.35rem;
-    padding: 0.6rem 0.7rem 0.7rem;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: #fff;
-  }
-
-  .source__sys {
+  .next__src {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     color: var(--steel);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  .source__sys i,
-  .task__mark {
-    width: 7px;
-    height: 7px;
-    border: 1.5px solid var(--graphite);
-  }
-
-  .source--pos .source__sys i {
-    border-radius: 2px;
-  }
-
-  .source--stock .source__sys i {
-    border-radius: 50%;
-  }
-
-  .source__text {
-    display: grid;
-    grid-template-columns: 15px 1fr;
-    gap: 0.4rem;
-  }
-
-  .source__text svg {
-    width: 15px;
-    height: 15px;
-    margin-top: 1px;
-    color: #1b7a50;
-  }
-
-  .task__mark--pms {
-    transform: rotate(45deg);
-  }
-
-  .task__mark--finance {
-    border-radius: 2px 50% 50% 2px;
-  }
-
-  .issue__foot {
+  .next__foot {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 0.6rem 1rem;
     margin-top: 0.35rem;
-    padding-top: 0.7rem;
+    padding-top: 0.75rem;
     border-top: 1px solid var(--line);
   }
 
-  .issue__owner {
-    font-size: 0.8125rem;
+  .next__owner {
+    font-size: 0.875rem;
   }
 
-  .issue__owner span {
+  .next__owner span {
     display: block;
     color: var(--steel);
-    font-size: 0.6875rem;
-    letter-spacing: 0.04em;
+    font-size: 0.75rem;
   }
 
-  .issue__next {
-    padding: 0.45rem 0.9rem;
+  .next__action {
+    padding: 0.5rem 0.95rem;
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 500;
     white-space: nowrap;
   }
 
-  .issue__caution {
+  .next__caution {
     color: var(--steel);
-    font-size: 0.75rem;
-  }
-
-  .tasks {
-    display: grid;
-    gap: 0;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-  }
-
-  .task {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0.85rem;
     font-size: 0.8125rem;
+    line-height: 1.45;
   }
 
-  .task + .task {
-    border-top: 1px solid var(--line);
-  }
-
-  .task__title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .task__team {
-    color: var(--steel);
-    font-size: 0.75rem;
-  }
-
-  .task__status {
-    padding: 0.1rem 0.5rem;
+  .flow__replay {
+    position: absolute;
+    inset-inline-end: clamp(1rem, 0.5rem + 1.5vw, 2rem);
+    bottom: clamp(0.9rem, 0.6rem + 1vw, 1.4rem);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 36px;
+    padding: 0 0.85rem;
+    border: 1px solid rgba(244, 245, 247, 0.2);
     border-radius: 999px;
-    border: 1px solid var(--line);
-    color: var(--graphite);
-    font-size: 0.6875rem;
-    white-space: nowrap;
+    background: transparent;
+    color: var(--on-dark-muted);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition:
+      border-color 0.2s var(--ease),
+      color 0.2s var(--ease);
   }
 
-  /* Still pictures: Before label, fragments, With label, the Tyll view, in reading order */
-  .story:not(.is-scrolly) .labels,
-  .story:not(.is-scrolly) .stage {
-    display: contents;
-  }
-
-  .story:not(.is-scrolly) .label--before {
-    order: 1;
-  }
-
-  .story:not(.is-scrolly) .frags {
-    order: 2;
-    border-radius: 22px;
-    background:
-      linear-gradient(118deg, rgba(255, 255, 255, 0.7) 10%, rgba(255, 255, 255, 0) 45%),
-      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0 1px, transparent 1px 34px, rgba(20, 22, 26, 0.045) 34px 35px, transparent 35px 70px),
-      linear-gradient(180deg, #f7f7f6 0%, #e6e9ec 100%);
-  }
-
-  .story:not(.is-scrolly) .label--after {
-    order: 3;
-    margin-top: 1rem;
-  }
-
-  .story:not(.is-scrolly) .view {
-    order: 4;
-    margin: 0;
-  }
-
-  .story:not(.is-scrolly) .env {
+  .flow__replay[hidden] {
     display: none;
   }
 
-  /* ── Scroll-driven layout (JavaScript, motion allowed) ── */
-  .story.is-scrolly .story__grid {
-    padding-block: 0;
-    align-items: start;
+  .flow__replay:hover {
+    border-color: rgba(244, 245, 247, 0.5);
+    color: var(--on-dark);
   }
 
-  .story.is-scrolly .story__head {
-    position: sticky;
-    top: var(--header-h);
-    height: calc(100svh - var(--header-h));
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .flow__replay svg {
+    width: 14px;
+    height: 14px;
   }
 
-  .story.is-scrolly .story__track {
-    height: 290svh;
-  }
-
-  .story.is-scrolly .story__sticky {
-    position: sticky;
-    top: var(--header-h);
-    height: calc(100svh - var(--header-h));
-    display: flex;
-    align-items: center;
-    padding-block: clamp(1.25rem, 3vh, 2.5rem);
-  }
-
-  .story.is-scrolly .scene {
-    width: 100%;
-    height: 100%;
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: clamp(1rem, 2.4vh, 1.75rem);
-  }
-
-  .story.is-scrolly .labels {
-    display: grid;
-    grid-template-areas: 'label';
-  }
-
-  .story.is-scrolly .label {
-    grid-area: label;
-    will-change: opacity, transform;
-  }
-
-  .story.is-scrolly .stage {
-    min-height: 0;
-  }
-
-  .story.is-scrolly .frags {
-    display: block;
-    padding: 0;
-  }
-
-  .story.is-scrolly .frag {
-    position: absolute;
-    z-index: 1;
-    width: min(290px, 42%);
-    backface-visibility: hidden;
-  }
-
-  /* While the overview forms, the issue starts neutral; it comes into focus once its evidence has landed */
-  .story.is-scrolly .issue {
+  /* ── The sequence. data-stage moves 0 → 1 → 2 → 3 → 4 (or is "done" from the start) ──
+     1 systems appear · 2 information travels to Tyll · 3 the overview fills · 4 the next step comes forward */
+  .flow .sys,
+  .flow .tyll,
+  .flow .row,
+  .flow .next,
+  .flow .next__evidence li,
+  .flow .next__foot,
+  .flow .next__caution,
+  .flow .flow__caption {
     transition:
-      border-color 0.5s var(--ease),
-      box-shadow 0.5s var(--ease),
-      background-color 0.5s var(--ease);
+      opacity 0.7s var(--ease),
+      transform 0.7s var(--ease),
+      background-color 0.6s var(--ease),
+      border-color 0.6s var(--ease),
+      box-shadow 0.6s var(--ease);
   }
 
-  .story.is-scrolly .issue:not(.is-focused) {
-    border-color: var(--line);
+  .flow[data-stage='0'] .sys,
+  .flow[data-stage='0'] .flow__col--systems .flow__caption {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .flow:is([data-stage='0'], [data-stage='1']) .tyll,
+  .flow:is([data-stage='0'], [data-stage='1']) .flow__caption--after {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  .flow:is([data-stage='0'], [data-stage='1'], [data-stage='2']) .row {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  .flow:is([data-stage='0'], [data-stage='1'], [data-stage='2'], [data-stage='3']) .row--focus {
+    border-color: transparent;
     background: #fff;
+    box-shadow: none;
   }
 
-  .story.is-scrolly .issue.is-focused {
-    box-shadow: 0 0 0 4px rgba(227, 201, 143, 0.22);
+  .flow:is([data-stage='0'], [data-stage='1'], [data-stage='2'], [data-stage='3']) :is(.next, .next__evidence li, .next__foot, .next__caution) {
+    opacity: 0;
+    transform: translateX(var(--from, 14px));
   }
 
-  /* Desktop, controlled chaos: about 20% larger cards at different heights and angles, drawn in toward the
-     centre. Where two cards touch, only their padding overlaps, never their text. */
-  @media (min-width: 961px) {
-    .story.is-scrolly .frag {
-      width: min(348px, 47%);
-      padding: 1.05rem 1.2rem 1.15rem;
-      gap: 0.4rem;
-      font-size: 1rem;
-    }
-
-    .story.is-scrolly .frag__sys {
-      font-size: 0.75rem;
-    }
-
-    .story.is-scrolly .frag__table {
-      font-size: 0.8125rem;
-    }
-
-    .story.is-scrolly .frag__table b {
-      font-size: 1.0625rem;
-    }
-
-    .story.is-scrolly .frag__flag,
-    .story.is-scrolly .frag__chip {
-      font-size: 0.8125rem;
-    }
-
-    .story.is-scrolly .frag--pos {
-      inset-inline-start: 5%;
-      top: 19%;
-      z-index: 1;
-      rotate: -3deg;
-    }
-
-    .story.is-scrolly .frag--stock {
-      inset-inline-start: 49%;
-      top: 10%;
-      z-index: 2;
-      rotate: 2.5deg;
-    }
-
-    .story.is-scrolly .frag--pms {
-      inset-inline-start: 52%;
-      top: 46%;
-      z-index: 3;
-      rotate: -1.5deg;
-    }
-
-    .story.is-scrolly .frag--finance {
-      inset-inline-start: 7%;
-      top: 60%;
-      z-index: 2;
-      rotate: 2deg;
-    }
+  :global([dir='rtl']) .flow {
+    --from: -14px;
   }
 
-  /* Short desktop windows: slightly smaller cards, spread wider so nothing overlaps text */
-  @media (min-width: 961px) and (max-height: 820px) {
-    .story.is-scrolly .frag {
-      width: min(320px, 46%);
-      padding: 0.85rem 1rem 0.95rem;
-      gap: 0.3rem;
-      font-size: 0.9375rem;
-    }
+  /* Staggering, so each step reads in turn */
+  .flow .sys {
+    transition-delay: calc(var(--i) * 120ms);
+  }
 
-    .story.is-scrolly .frag--pos {
-      inset-inline-start: 3%;
-      top: 13%;
-    }
+  .flow .tyll {
+    transition-delay: 0.35s;
+  }
 
-    .story.is-scrolly .frag--stock {
-      inset-inline-start: 52%;
-      top: 4%;
-    }
+  .flow .row {
+    transition-delay: calc(var(--i) * 180ms);
+  }
 
-    .story.is-scrolly .frag--pms {
-      inset-inline-start: 53%;
-      top: 45%;
-    }
+  .flow .next__evidence li {
+    transition-delay: calc(0.15s + var(--i) * 140ms);
+  }
 
-    .story.is-scrolly .frag--finance {
-      inset-inline-start: 5%;
-      top: 58%;
+  .flow .next__foot {
+    transition-delay: 0.45s;
+  }
+
+  .flow .next__caution {
+    transition-delay: 0.6s;
+  }
+
+  .flow[data-reset] *,
+  .flow[data-reset] :global(*) {
+    transition: none !important;
+  }
+
+  /* Measuring the paths: cards at their final positions for that instant */
+  .flow[data-measure] :is(.sys, .tyll, .row, .next, .next__evidence li, .next__foot, .next__caution, .flow__caption) {
+    transform: none !important;
+  }
+
+  /* Paths draw in stage 2 and stay; one soft light travels along each once */
+  .flow__paths :global(.path) {
+    stroke-dasharray: var(--len) var(--len);
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.1s var(--ease);
+    transition-delay: calc(var(--i) * 140ms);
+  }
+
+  .flow:is([data-stage='0'], [data-stage='1']) :global(.path) {
+    stroke-dashoffset: var(--len);
+  }
+
+  .flow:is([data-stage='0'], [data-stage='1'], [data-stage='2'], [data-stage='3']) :global(.path--next) {
+    stroke-dashoffset: var(--len);
+  }
+
+  .flow[data-stage='2'] :global(.pulse:not(.pulse--next)),
+  .flow[data-stage='4'] :global(.pulse--next) {
+    animation: flow-pulse 1.5s var(--ease) both;
+    animation-delay: calc(0.25s + var(--i) * 140ms);
+  }
+
+  @keyframes flow-pulse {
+    0% {
+      opacity: 0;
+      stroke-dashoffset: 40;
+    }
+    15% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      stroke-dashoffset: calc(var(--len) * -1);
     }
   }
 
-  .story.is-scrolly .view {
-    position: absolute;
-    z-index: 0;
-    left: 50%;
-    top: 50%;
-    width: min(560px, calc(100% - 2.5rem));
-    margin: 0;
-    translate: -50% -50%;
-    scale: var(--fit, 1);
-    will-change: opacity, transform;
-  }
-
-  /* Phones and narrow windows: the head scrolls past normally and only the scene is pinned */
-  @media (max-width: 960px) {
-    .story__grid {
+  /* ── Narrow screens: a vertical sequence. Systems, then Tyll, then the next step ── */
+  @media (max-width: 1000px) {
+    .story__head {
       grid-template-columns: minmax(0, 1fr);
+      align-items: start;
     }
 
-    .story.is-scrolly .story__head {
-      position: static;
-      height: auto;
-      padding-top: var(--section-y);
+    .flow {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 3.5rem;
+      padding-bottom: 4.5rem;
     }
 
-    .story.is-scrolly .story__track {
-      height: 260svh;
+    .systems {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem;
     }
 
-    .story.is-scrolly .frag {
-      width: min(320px, 80%);
+    .sys:nth-child(n) {
+      margin-inline-start: 0;
+    }
+
+    .flow__col--next {
+      margin-top: -1rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .flow {
+      padding-inline: 1rem;
+      border-radius: 22px;
+    }
+
+    .sys {
+      padding: 0.7rem 0.75rem 0.75rem;
       font-size: 0.8125rem;
     }
 
-    .story.is-scrolly .frag--pos {
-      inset-inline-start: 3%;
-      top: 4%;
+    .sys__data {
+      gap: 0.2rem 0.6rem;
     }
 
-    .story.is-scrolly .frag--stock {
-      inset-inline-start: auto;
-      inset-inline-end: 3%;
-      top: 27%;
+    .flow__replay {
+      inset-inline-end: 1rem;
     }
+  }
 
-    .story.is-scrolly .frag--pms {
-      inset-inline-start: 5%;
-      top: 54%;
-    }
-
-    .story.is-scrolly .frag--finance {
-      inset-inline-start: auto;
-      inset-inline-end: 4%;
-      top: 74%;
-    }
-
-    .issue__caution {
+  @media (prefers-reduced-motion: reduce) {
+    .flow__paths :global(.pulse) {
       display: none;
-    }
-
-    .issue__evidence {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .task {
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 0.15rem 0.75rem;
-    }
-
-    .task__title {
-      grid-column: 1 / -1;
-      white-space: normal;
-    }
-  }
-
-  /* Small, short phones: more compact cards so all four fit the stage without covering each other */
-  @media (max-width: 960px) and (max-height: 700px) {
-    .story.is-scrolly .frag {
-      gap: 0.15rem;
-      padding: 0.6rem 0.8rem 0.65rem;
-      font-size: 0.75rem;
-      line-height: 1.3;
-    }
-
-    .story.is-scrolly .frag__sys,
-    .story.is-scrolly .frag__table,
-    .story.is-scrolly .frag__flag,
-    .story.is-scrolly .frag__chip {
-      font-size: 0.6875rem;
-    }
-
-    .story.is-scrolly .frag__table b {
-      font-size: 0.8125rem;
-    }
-
-    .story.is-scrolly .frag--pos {
-      top: 1%;
-    }
-
-    .story.is-scrolly .frag--stock {
-      top: 25%;
-    }
-
-    .story.is-scrolly .frag--pms {
-      top: 52%;
-    }
-
-    .story.is-scrolly .frag--finance {
-      top: 72%;
-    }
-  }
-
-  @media (max-width: 960px) and (min-width: 600px) {
-    .story.is-scrolly .frag {
-      width: min(320px, 46%);
     }
   }
 </style>
 
 <script>
-  import { drawCheck, hideCheck } from '../../scripts/checkmark';
+  // Draw the silver paths between the actual positions of the cards, then play the sequence once when the
+  // section comes into view. Everything is still afterwards; the replay button runs it again.
+  const flow = document.querySelector<HTMLElement>('[data-flow]');
 
-  const section = document.querySelector<HTMLElement>('[data-story]');
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  if (flow) {
+    const svg = flow.querySelector<SVGSVGElement>('.flow__paths')!;
+    const tyll = flow.querySelector<HTMLElement>('.tyll')!;
+    const next = flow.querySelector<HTMLElement>('.next')!;
+    const replay = flow.querySelector<HTMLButtonElement>('[data-replay]')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const NS = 'http://www.w3.org/2000/svg';
+    // Which overview row each system feeds
+    const feeds: Record<string, string> = { pos: 'issue', stock: 'issue', pms: 'room', finance: 'invoice' };
 
-  if (section && !reduce.matches) {
-    section.classList.add('is-scrolly');
-    const track = section.querySelector<HTMLElement>('.story__track')!;
-    const stage = section.querySelector<HTMLElement>('.stage')!;
-    const view = section.querySelector<HTMLElement>('.view')!;
-    const issue = section.querySelector<HTMLElement>('.issue')!;
-    const cue = section.querySelector<HTMLElement>('.cue')!;
-    const before = section.querySelector<HTMLElement>('.label--before')!;
-    const after = section.querySelector<HTMLElement>('.label--after')!;
-    const tick = section.querySelector<SVGSVGElement>('.label__tick')!;
-    const env = Object.fromEntries(['beam', 'glow', 'shade'].map((k) => [k, section.querySelector<HTMLElement>(`.env__${k}`)!]));
-    const frags = [...section.querySelectorAll<HTMLElement>('[data-frag]')];
-    const related = frags.filter((el) => el.dataset.frag!.startsWith('ev-'));
-    // The overview's own words appear in two waves: its headline while the cards travel, the owner and next step after
-    const issueHead = [...section.querySelectorAll<HTMLElement>('.issue__status, .issue h3, .issue__line')];
-    const issueExtras = [...section.querySelectorAll<HTMLElement>('.issue__foot, .issue__caution')];
-    hideCheck(tick);
+    const draw = () => {
+      flow.setAttribute('data-reset', '');
+      flow.setAttribute('data-measure', '');
+      const box = flow.getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+      const rel = (r: DOMRect) => ({ l: r.left - box.left, r: r.right - box.left, t: r.top - box.top, b: r.bottom - box.top, cx: r.left - box.left + r.width / 2, cy: r.top - box.top + r.height / 2 });
+      const t = rel(tyll.getBoundingClientRect());
+      const n = rel(next.getBoundingClientRect());
+      const rtl = document.documentElement.dir === 'rtl';
+      const stacked = t.t > rel(flow.querySelector('.sys')!.getBoundingClientRect()).b; // narrow layout: one column
+      const items: { d: string; next?: boolean }[] = [];
+      const curve = (x1: number, y1: number, x2: number, y2: number, vertical: boolean) =>
+        vertical
+          ? `M ${x1} ${y1} C ${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`
+          : `M ${x1} ${y1} C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`;
 
-    const clamp = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-    const seg = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
-    const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
-    const easeOut = (t: number) => 1 - (1 - t) ** 3;
-    const mix = (a: number, b: number, t: number) => a + (b - a) * t;
-
-    // Each card's start and its place in the overview, in stage coordinates. A card shrinks uniformly (never
-    // squashed) until it sits inside its place, then dissolves into the place's own content.
-    type Move = { el: HTMLElement; dx: number; dy: number; s: number; rot: number; tx: number; ty: number; slot: HTMLElement[] };
-    let moves: Move[] = [];
-    const measure = () => {
-      const saved = frags.map((el) => [el.style.transform, el.style.rotate]);
-      frags.forEach((el) => {
-        el.style.transform = 'none';
-        el.style.rotate = '';
+      flow.querySelectorAll<HTMLElement>('[data-src]').forEach((card, _i, all) => {
+        const c = rel(card.getBoundingClientRect());
+        const row = rel(flow.querySelector<HTMLElement>(`[data-row="${feeds[card.dataset.src!]}"]`)!.getBoundingClientRect());
+        if (stacked) {
+          // Phones: every path leaves from the bottom of the systems grid (two per column), so no line crosses
+          // a card, and they gather into the top of the Tyll overview
+          const grid = rel(flow.querySelector('.systems')!.getBoundingClientRect());
+          const x1 = c.cx + (c.t < grid.t + 4 ? -10 : 10);
+          const cap = rel(flow.querySelector('.flow__caption--after')!.getBoundingClientRect());
+          // End points in the same left-to-right order as the start points, gathered toward the centre
+          const starts = [...all].map((el) => { const r = rel(el.getBoundingClientRect()); return r.cx + (r.t < grid.t + 4 ? -10 : 10); }).sort((a, b) => a - b);
+          const x2 = t.cx + (starts.indexOf(x1) - (all.length - 1) / 2) * 22;
+          items.push({ d: curve(x1, grid.b + 6, x2, cap.t - 10, true) });
+        } else {
+          const x1 = rtl ? c.l - 6 : c.r + 6;
+          const x2 = rtl ? t.r + 6 : t.l - 6;
+          items.push({ d: curve(x1, c.cy, x2, row.cy, false) });
+        }
       });
-      const savedView = [view.style.opacity, view.style.transform];
-      view.style.transform = 'none';
-      // Fit the finished view inside the stage
-      const sr = stage.getBoundingClientRect();
-      view.style.setProperty('--fit', '1');
-      const natural = view.getBoundingClientRect();
-      const fit = Math.min(1, (sr.height - 24) / natural.height, (sr.width - 24) / natural.width);
-      view.style.setProperty('--fit', String(fit));
-      moves = frags.map((el) => {
-        const target = section.querySelector<HTMLElement>(`[data-target="${el.dataset.frag}"]`)!;
-        const a = el.getBoundingClientRect();
-        const b = target.getBoundingClientRect();
-        const cs = getComputedStyle(el);
-        return {
-          el,
-          slot: [...target.children] as HTMLElement[],
-          rot: parseFloat(cs.rotate) || 0,
-          tx: parseFloat(cs.getPropertyValue('--tilt-x')) || 0,
-          ty: parseFloat(cs.getPropertyValue('--tilt-y')) || 0,
-          dx: b.left + b.width / 2 - (a.left + a.width / 2),
-          dy: b.top + b.height / 2 - (a.top + a.height / 2),
-          s: Math.min(b.width / a.width, b.height / a.height),
-        };
-      });
-      frags.forEach((el, i) => ([el.style.transform, el.style.rotate] = saved[i]));
-      [view.style.opacity, view.style.transform] = savedView;
-    };
-
-    let ticked = false;
-    const render = () => {
-      // Progress through the pinned stretch: 0 when the scene pins under the header, 1 when it lets go
-      const r = track.getBoundingClientRect();
-      const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
-      const p = clamp((hh - r.top) / Math.max(1, r.height - (innerHeight - hh)));
-
-      // The invitation to scroll goes as soon as it has been answered
-      cue.style.opacity = String(1 - seg(p, 0.01, 0.07));
-
-      // Stage 1, disconnected: the two related cards lift a little as scrolling begins
-      related.forEach((el) => el.classList.toggle('is-related', p > 0.06 && p < 0.3));
-
-      // Stage 2, gathering: tilts and angles straighten first, then the cards travel toward their places.
-      // Stage 3, connected: they shrink into their places in the overview and become its content.
-      const g = easeOut(seg(p, 0.08, 0.34));
-      moves.forEach(({ el, dx, dy, s, rot, tx, ty, slot }, i) => {
-        // The evidence (POS, Stock) leads; the room and the invoice follow a moment later
-        const d = el.dataset.frag!.startsWith('ev-') ? i * 0.02 : 0.04 + (i - 2) * 0.04;
-        const m = ease(seg(p, 0.12 + d, 0.5 + d));
-        const k = ease(seg(p, 0.16 + d, 0.46 + d));
-        // Out, then in: the card has nearly gone before its place's own words appear, so text never doubles
-        const card = 1 - seg(p, 0.46 + d, 0.52 + d);
-        const content = seg(p, 0.5 + d, 0.56 + d);
-        el.style.transform = `translate3d(${dx * m}px, ${dy * m}px, 0) rotateX(${tx * (1 - g)}deg) rotateY(${ty * (1 - g)}deg) scale(${mix(1, s, k)})`;
-        el.style.rotate = `${rot * (1 - g)}deg`;
-        el.style.opacity = String(card);
-        slot.forEach((c) => (c.style.opacity = String(content)));
+      // From the issue in the overview to the next step
+      const issue = rel(flow.querySelector<HTMLElement>('[data-row="issue"]')!.getBoundingClientRect());
+      flow.removeAttribute('data-measure');
+      void flow.offsetWidth;
+      flow.removeAttribute('data-reset');
+      items.push({
+        d: stacked
+          ? curve(t.cx, t.b + 6, n.cx, n.t - 6, true)
+          : curve(rtl ? t.l - 6 : t.r + 6, issue.cy, rtl ? n.r + 6 : n.l - 6, n.t + 48, false),
+        next: true,
       });
 
-      // The overview's frame builds around the arriving cards
-      const vt = seg(p, 0.24, 0.42);
-      view.style.opacity = String(vt);
-      view.style.transform = `translateY(${mix(14, 0, ease(vt))}px) scale(${mix(0.965, 1, ease(vt))})`;
-      issueHead.forEach((el, i) => (el.style.opacity = String(seg(p, 0.46 + i * 0.03, 0.56 + i * 0.03))));
-
-      // Stage 4, clarity: the issue comes into focus with its owner and next step
-      issue.classList.toggle('is-focused', p > 0.62);
-      issueExtras.forEach((el, i) => (el.style.opacity = String(seg(p, 0.62 + i * 0.04, 0.72 + i * 0.04))));
-
-      // The stage messages cross over
-      const bt = seg(p, 0.44, 0.54);
-      before.style.opacity = String(1 - bt);
-      before.style.transform = `translateY(${-10 * bt}px)`;
-      const at = seg(p, 0.52, 0.62);
-      after.style.opacity = String(at);
-      after.style.transform = `translateY(${10 * (1 - at)}px)`;
-      if (p > 0.64 && !ticked) {
-        ticked = true;
-        drawCheck(tick, 700);
-      } else if (p < 0.54 && ticked) {
-        ticked = false;
-        hideCheck(tick);
-      }
-
-      // The light: directional and shadowed at first, even and calm once everything is in place
-      const w = ease(seg(p, 0.12, 0.66));
-      env.beam.style.opacity = String(mix(1, 0.35, w));
-      env.shade.style.opacity = String(mix(1, 0.15, w));
-      env.glow.style.opacity = String(mix(0, 0.85, w));
+      svg.replaceChildren();
+      const defs = document.createElementNS(NS, 'defs');
+      defs.innerHTML =
+        '<linearGradient id="flow-pulse" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.6" stop-color="#fff" stop-opacity="0.9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>';
+      svg.append(defs);
+      items.forEach((it, i) => {
+        for (const cls of ['path', 'pulse']) {
+          const el = document.createElementNS(NS, 'path');
+          el.setAttribute('d', it.d);
+          el.setAttribute('class', `${cls}${it.next ? ` ${cls}--next` : ''}`);
+          svg.append(el);
+          const len = (el as SVGPathElement).getTotalLength();
+          el.style.setProperty('--len', String(Math.ceil(len)));
+          el.style.setProperty('--i', String(it.next ? 0 : i));
+          if (cls === 'pulse') el.style.strokeDasharray = `40 ${Math.ceil(len) + 40}`;
+        }
+      });
     };
 
-    let frame = 0;
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(() => ((frame = 0), render()));
+    let timers: number[] = [];
+    const play = () => {
+      timers.forEach(clearTimeout);
+      // Jump back to the start without animating, then step through the four stages
+      flow.setAttribute('data-reset', '');
+      flow.dataset.stage = '0';
+      void flow.offsetWidth;
+      flow.removeAttribute('data-reset');
+      timers = [
+        window.setTimeout(() => (flow.dataset.stage = '1'), 80),
+        window.setTimeout(() => (flow.dataset.stage = '2'), 900),
+        window.setTimeout(() => (flow.dataset.stage = '3'), 2000),
+        window.setTimeout(() => (flow.dataset.stage = '4'), 3000),
+      ];
     };
-    const remeasure = () => {
-      measure();
-      render();
-    };
-    addEventListener('scroll', schedule, { passive: true });
-    addEventListener('resize', remeasure);
-    document.fonts?.ready.then(remeasure);
-    remeasure();
 
-    // If the visitor switches to reduced motion, fall back to the still pictures
-    reduce.addEventListener('change', (e) => e.matches && location.reload());
+    draw();
+    addEventListener('resize', draw);
+    document.fonts?.ready.then(draw);
+
+    if (!reduce.matches) {
+      flow.dataset.stage = '0';
+      replay.hidden = false;
+      replay.addEventListener('click', play);
+      new IntersectionObserver(
+        ([e], io) => {
+          if (!e.isIntersecting) return;
+          io.disconnect();
+          play();
+        },
+        { threshold: 0.35 },
+      ).observe(flow);
+    }
   }
 </script>

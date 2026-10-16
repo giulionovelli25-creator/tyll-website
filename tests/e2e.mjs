@@ -1,5 +1,5 @@
 // Browser tests for the visitor journeys in the Step 2 brief (tests A–J), plus Arabic and Italian (K–M) and the
-// four targeted refinements (N: story without connector, hero footage, three-step "How Tyll helps", العربية label).
+// later refinements (N: systems → Tyll → next step, wave, hero, three-step "How Tyll helps", العربية label, booking).
 // Runs against a running dev or preview server (default http://localhost:4321) using the installed Google Chrome.
 //   npm run dev            (in one terminal)
 //   npm run test:e2e       (in another)
@@ -75,25 +75,24 @@ for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/One hotel|Ein Hotel|فندق واحد|Un hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // The Before → With Tyll story follows scroll position, reverses, and lets the page continue afterwards
+    // Systems → Tyll → next step: plays once when in view, ends on the full picture, and never holds the page
     const story = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-      const track = document.querySelector('.story__track');
-      const top = track.getBoundingClientRect().top + scrollY;
-      const op = (sel) => +getComputedStyle(document.querySelector(sel)).opacity;
-      const at = async (y) => { scrollTo({ top: y, behavior: 'instant' }); await wait(500); return { before: op('.label--before'), after: op('.label--after'), view: op('.view') }; };
-      const start = await at(top - 72);
-      const end = await at(top - 72 + track.offsetHeight - (innerHeight - 72));
-      const back = await at(top - 72);
-      scrollTo({ top: top + track.offsetHeight + 200, behavior: 'instant' }); await wait(300);
-      const beyond = scrollY > top + track.offsetHeight;
-      return { scrolly: document.querySelector('.story').classList.contains('is-scrolly'), start, end, back, beyond };
+      const flow = document.querySelector('[data-flow]');
+      const before = scrollY;
+      flow.scrollIntoView({ block: 'center', behavior: 'instant' });
+      await wait(250);
+      const early = flow.dataset.stage;
+      await wait(4800);
+      const op = (sel) => +getComputedStyle(flow.querySelector(sel)).opacity;
+      const end = { stage: flow.dataset.stage, systems: flow.querySelectorAll('[data-src]').length, rows: flow.querySelectorAll('[data-row]').length, tyll: op('.tyll'), next: op('.next'), paths: flow.querySelectorAll('.flow__paths .path').length };
+      scrollTo({ top: flow.getBoundingClientRect().bottom + scrollY + 200, behavior: 'instant' });
+      await wait(200);
+      return { early, end, moved: scrollY > before };
     });
-    if (!story.scrolly) problems.push('story is not scroll-driven');
-    if (!(story.start.before > 0.9 && story.start.after < 0.1)) problems.push(`story start ${JSON.stringify(story.start)}`);
-    if (!(story.end.after > 0.9 && story.end.view > 0.9 && story.end.before < 0.1)) problems.push(`story end ${JSON.stringify(story.end)}`);
-    if (!(story.back.before > 0.9 && story.back.after < 0.1)) problems.push('story did not reverse when scrolling back');
-    if (!story.beyond) problems.push('page did not continue past the story');
+    if (!['0', '1', '2'].includes(story.early)) problems.push(`story did not start from the beginning (${story.early})`);
+    if (!(story.end.stage === '4' && story.end.systems === 4 && story.end.rows === 3 && story.end.tyll > 0.95 && story.end.next > 0.95 && story.end.paths === 5)) problems.push(`story end ${JSON.stringify(story.end)}`);
+    if (!story.moved) problems.push('page did not continue past the story');
     // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
     for (const sel of ['.hero__actions a[data-track="explore_solutions_click"]', '.invite__actions a[data-track="explore_solutions_click"]']) {
       await go(page, `/${lang}/`);
@@ -243,20 +242,15 @@ for (const lang of LANGS) {
   const menu = await page.evaluate(() => ({ open: !document.getElementById('mobile-menu').hidden, links: [...document.querySelectorAll('#mobile-menu details li a')].map((a) => a.getAttribute('href')) }));
   if (!menu.open || menu.links.length !== 7 || !menu.links.every((h) => h.startsWith('/ar/'))) p.push(`mobile menu ${JSON.stringify(menu)}`);
   await page.keyboard.press('Escape');
-  // The story labels stay inside the screen at start and end
+  // The systems → Tyll → next step picture stays inside the screen, in a vertical sequence
   const story = await page.evaluate(async () => {
-    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-    const t = document.querySelector('.story__track');
-    const top = t.getBoundingClientRect().top + scrollY;
+    const flow = document.querySelector('[data-flow]');
+    flow.scrollIntoView({ block: 'start', behavior: 'instant' });
+    await new Promise((r) => setTimeout(r, 4800));
     const out = [];
-    for (const f of [0.05, 1]) {
-      scrollTo({ top: top + (t.offsetHeight - innerHeight) * f, behavior: 'instant' });
-      await wait(500);
-      document.querySelectorAll('.story .label, .story h2, .story .frag, .story .view').forEach((e) => {
-        const r = e.getBoundingClientRect();
-        if (+getComputedStyle(e).opacity > 0.5 && r.width && (r.left < -1 || r.right > innerWidth + 1)) out.push(e.className.split(' ')[0]);
-      });
-    }
+    flow.querySelectorAll('.sys, .tyll, .next, .flow__caption').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    const order = ['.systems', '.tyll', '.next'].map((sel) => flow.querySelector(sel).getBoundingClientRect().top);
+    if (!(order[0] < order[1] && order[1] < order[2])) out.push('not systems → Tyll → next step');
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
@@ -287,20 +281,17 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
-      connector: document.querySelectorAll('.story .link, .story svg path[d=""]').length,
-      env: !!document.querySelector('.stage .env__wall') && !document.querySelector('.stage__photo, .stage__veil'),
-      slots: [...document.querySelectorAll('.view [data-target]')].map((e) => e.dataset.target).sort().join(),
-      frags: document.querySelectorAll('.story [data-frag]').length,
+      flowSources: [...document.querySelectorAll('[data-flow] [data-src]')].map((e) => e.dataset.src).join(),
+      rows: [...document.querySelectorAll('[data-flow] [data-row]')].map((e) => e.dataset.row).join(),
+      connectedCards: document.querySelectorAll('.story .link, .frag').length,
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
       ctas: document.querySelectorAll('.hero__actions .btn').length,
       ar: document.querySelector('.lang a[hreflang="ar"]')?.textContent.trim(),
       codes: [...document.querySelectorAll('.header__end .lang a')].map((a) => a.querySelector('[aria-hidden="true"], .lang__ar').textContent.trim()).join(' '),
     }));
-    if (home.connector) p.push(`${lang}: the POS–Stock connector is still in the story`);
-    if (home.frags !== 4) p.push(`${lang}: story has ${home.frags} fragments`);
-    if (!home.env) p.push(`${lang}: story background is not the new pearl environment`);
-    if (home.slots !== 'ev-pos,ev-stock,task-0,task-1') p.push(`${lang}: overview places ${home.slots}`);
+    if (home.flowSources !== 'pos,stock,pms,finance' || home.rows !== 'issue,room,invoice') p.push(`${lang}: flow ${home.flowSources} → ${home.rows}`);
+    if (home.connectedCards) p.push(`${lang}: old scattered cards or connector still present`);
     // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
     await go(page, PAGES[lang][1]);
     const book = await page.evaluate(() => {
@@ -326,16 +317,20 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
-  // "See what changes ↓" invites the first scroll on wide screens and disappears once the change starts
-  if (!mobile) {
-    await go(page, '/en/');
-    const cue = await page.evaluate(async () => {
-      const t = document.querySelector('.story__track'); const c = document.querySelector('.cue');
-      const at = async (f) => { scrollTo({ top: t.getBoundingClientRect().top + scrollY - 72 + (t.offsetHeight - innerHeight + 72) * f, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 400)); return +getComputedStyle(c).opacity; };
-      return { start: await at(0), later: await at(0.2) };
-    });
-    if (!(cue.start > 0.9 && cue.later < 0.05)) p.push(`story cue ${JSON.stringify(cue)}`);
-  }
+  // The replay button runs the sequence again from the start
+  await go(page, '/en/');
+  const replay = await page.evaluate(async () => {
+    const flow = document.querySelector('[data-flow]');
+    flow.scrollIntoView({ block: 'center', behavior: 'instant' });
+    await new Promise((r) => setTimeout(r, 4500));
+    const btn = flow.querySelector('[data-replay]');
+    btn.click();
+    await new Promise((r) => setTimeout(r, 200));
+    const during = flow.dataset.stage;
+    await new Promise((r) => setTimeout(r, 4200));
+    return { visible: getComputedStyle(btn).display !== 'none', during, after: flow.dataset.stage };
+  });
+  if (!replay.visible || !['0', '1'].includes(replay.during) || replay.after !== '4') p.push(`replay ${JSON.stringify(replay)}`);
   // The closing silver wave flows while on screen as one formation: every line changes, and all lines keep the
   // same shape (the gaps between neighbouring lines stay nearly constant along the ribbon)
   await go(page, '/en/');
@@ -400,7 +395,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     }
   }
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
-  record('N', `Refinements on ${where}: wave, story environment and places, hero footage, three steps, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('N', `Refinements on ${where}: wave, systems → Tyll → next step, hero, three steps, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
@@ -516,8 +511,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     hiddenText: [...document.querySelectorAll('.step__text')].filter((e) => getComputedStyle(e).opacity !== '1').length,
     toggle: !!document.querySelector('.hero__toggle:not([hidden])'),
   }));
-  const still = await page.evaluate(() => ({ scrolly: document.querySelector('.story').classList.contains('is-scrolly'), before: getComputedStyle(document.querySelector('.label--before')).opacity, after: getComputedStyle(document.querySelector('.label--after')).opacity }));
-  if (still.scrolly || still.before !== '1' || still.after !== '1') p.push(`story not shown as still pictures: ${JSON.stringify(still)}`);
+  const still = await page.evaluate(() => { const f = document.querySelector('[data-flow]'); return { stage: f.dataset.stage, replay: getComputedStyle(f.querySelector('[data-replay]')).display === 'none', next: getComputedStyle(f.querySelector('.next')).opacity }; });
+  if (still.stage !== 'done' || !still.replay || still.next !== '1') p.push(`story not shown complete under reduced motion: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   const wavePaused = await page.evaluate(async () => {
     const path = document.querySelector('.invite__waves path');
