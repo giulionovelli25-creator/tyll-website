@@ -20,10 +20,11 @@ const de: Dict = {
     demo: 'Demo ansehen →',
     demoLong: 'Interaktive Demo ansehen →',
     solutions: 'Lösungen entdecken →',
+    allSolutions: 'Alle Lösungen ansehen →',
   },
   hero: {
     title: 'Ein Hotel. Viele Systeme. Endlich verbunden.',
-    body: ['Ihr Hotel arbeitet mit vielen Systemen. Tyll bringt die wichtigen Informationen und Teams zusammen – damit zwischen Abteilungen nichts verloren geht.'],
+    body: ['Tyll bringt die wichtigen Informationen und Teams Ihres Hotels zusammen – ohne die Systeme zu ersetzen, die Sie bereits nutzen.'],
     pause: 'Hintergrundvideo anhalten',
     play: 'Hintergrundvideo abspielen',
     videoLabel: 'Ein Hotel bei der Arbeit: ein Koch würzt Teller am Pass, eine Zimmerkraft bereitet ein helles Zimmer vor, und der Zimmerservice ist im Flur unterwegs.',
@@ -36,6 +37,7 @@ const de: Dict = {
       before: 'Informationen überall.',
       afterLabel: 'Mit Tyll',
       after: 'Alles Wichtige. An einem Ort.',
+      cue: 'Sehen Sie, was sich ändert',
       note: 'Eine Illustration mit fiktiven Daten. Welche Systeme angebunden werden, wird mit jedem Hotel vereinbart.',
       frags: {
         pos: { sys: 'Kasse', title: 'Bestellung TRC-1013-198 · Tisch 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Nach Bestellung an der Bar entfernt' },
@@ -106,6 +108,7 @@ const de: Dict = {
     consentText:
       'Der Kalender wird von Calendly bereitgestellt. Wenn Sie ihn öffnen, verbindet sich Ihr Browser mit Calendly; dabei können Daten in den USA verarbeitet werden. Ihre Eingaben gehen direkt an Calendly, um den Termin zu vereinbaren.',
     consentButton: 'Buchungskalender öffnen',
+    callPurpose: 'Ein kurzes Kennenlerngespräch über Ihr Hotel und das, was Ihre Teams brauchen. Unverbindlich.',
     consentPrivacy: 'Datenschutzerklärung',
     loading: 'Buchungskalender wird geladen …',
     failedTitle: 'Der Buchungskalender konnte nicht geladen werden.',

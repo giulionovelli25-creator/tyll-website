@@ -21,10 +21,11 @@ const it: Dict = {
     demo: 'Esplora la demo →',
     demoLong: 'Esplora la demo interattiva →',
     solutions: 'Scopri le soluzioni →',
+    allSolutions: 'Esplora tutte le soluzioni →',
   },
   hero: {
     title: 'Un hotel. Tanti sistemi. Finalmente connessi.',
-    body: ['Il tuo hotel funziona con sistemi diversi. Tyll riunisce le informazioni importanti e i team, così nulla si perde tra un reparto e l’altro.'],
+    body: ['Tyll riunisce le informazioni importanti e i team del tuo hotel, senza sostituire i sistemi che usi già.'],
     pause: 'Metti in pausa il video di sfondo',
     play: 'Riproduci il video di sfondo',
     videoLabel: 'Un hotel al lavoro: uno chef condisce i piatti al pass, una cameriera ai piani prepara una camera luminosa e il servizio in camera percorre il corridoio.',
@@ -37,6 +38,7 @@ const it: Dict = {
       before: 'Informazioni ovunque.',
       afterLabel: 'Con Tyll',
       after: 'Tutto ciò che conta. In un unico posto.',
+      cue: 'Guarda cosa cambia',
       note: 'Un’illustrazione con dati fittizi. Quali sistemi collegare viene concordato con ogni hotel.',
       frags: {
         pos: { sys: 'Cassa', title: 'Ordine TRC-1013-198 · Tavolo 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Rimossa dopo l’invio al bar' },
@@ -107,6 +109,7 @@ const it: Dict = {
     consentText:
       'Il calendario è fornito da Calendly. Quando lo apri, il tuo browser si collega a Calendly, che può trattare i tuoi dati negli Stati Uniti. I dati che inserisci vanno direttamente a Calendly per organizzare la chiamata.',
     consentButton: 'Apri il calendario delle prenotazioni',
+    callPurpose: 'Una breve chiamata conoscitiva sul tuo hotel e su ciò di cui hanno bisogno i tuoi team. Senza impegno.',
     consentPrivacy: 'Informativa sulla privacy',
     loading: 'Caricamento del calendario…',
     failedTitle: 'Il calendario non si è caricato.',

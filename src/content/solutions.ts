@@ -322,10 +322,10 @@ export const solutions: Record<SolutionKey, Solution> = {
         img: screen('fin-3'),
         title: t('Room charges checked', 'Zimmerbelastungen geprüft', 'التحقق من رسوم الغرف', 'Addebiti in camera verificati'),
         text: t(
-          'Charges that didn’t reach the guest bill are counted and listed.',
-          'Belastungen, die nicht auf der Gästerechnung ankamen, werden gezählt und aufgelistet.',
-          'تُحصى الرسوم التي لم تصل إلى فاتورة الضيف وتُدرج في قائمة.',
-          'Gli addebiti non arrivati sul conto dell’ospite vengono contati ed elencati.',
+          '1,882 charges checked in a week; 17 postings flagged and sorted by where they came from.',
+          '1.882 Belastungen in einer Woche geprüft; 17 Buchungen markiert und nach Herkunft sortiert.',
+          'فحص 1,882 رسمًا خلال أسبوع؛ ورصد 17 قيدًا مرتبة حسب مصدرها.',
+          '1.882 addebiti verificati in una settimana; 17 registrazioni segnalate e ordinate per provenienza.',
         ),
         alt: t(
           'Room charges: charges checked, what should be on guest bills, what was posted, and postings flagged by source.',
@@ -468,10 +468,10 @@ export const solutions: Record<SolutionKey, Solution> = {
         img: screen('fc-2'),
         title: t('What to buy', 'Was gekauft werden muss', 'ما يجب شراؤه', 'Cosa comprare'),
         text: t(
-          'Suggested quantities, flagged where stock runs short before a delivery.',
-          'Empfohlene Mengen, markiert, wo der Bestand vor einer Lieferung knapp wird.',
-          'كميات مقترحة، مع تنبيه حيث ينفد المخزون قبل التوريد.',
-          'Quantità suggerite, con un avviso dove le scorte finiscono prima di una consegna.',
+          '15 items need ordering this week, each with a suggested amount and an order-by date.',
+          '15 Artikel müssen diese Woche bestellt werden, jeweils mit empfohlener Menge und Bestellfrist.',
+          '15 صنفًا تحتاج إلى طلب هذا الأسبوع، لكلٍّ منها كمية مقترحة وموعد أقصى للطلب.',
+          'Questa settimana vanno ordinati 15 articoli, ognuno con una quantità suggerita e una data entro cui ordinare.',
         ),
         alt: t(
           'What to buy: items with suggested quantities and prices, several marked “runs short before a delivery”.',
@@ -916,10 +916,10 @@ export const solutions: Record<SolutionKey, Solution> = {
         img: screen('sl-2'),
         title: t('Opportunities', 'Chancen', 'الفرص', 'Opportunità'),
         text: t(
-          'Potential business and enquiries. Expected values are estimates, not revenue.',
-          'Mögliches Geschäft und Anfragen. Erwartete Werte sind Schätzungen, kein Umsatz.',
-          'أعمال محتملة واستفسارات. القيم المتوقعة تقديرات وليست إيرادات.',
-          'Business potenziale e richieste. I valori attesi sono stime, non ricavi.',
+          'Three open opportunities, each with its expected value.',
+          'Drei offene Chancen, jeweils mit ihrem erwarteten Wert.',
+          'ثلاث فرص مفتوحة، لكلٍّ منها قيمتها المتوقعة.',
+          'Tre opportunità aperte, ognuna con il suo valore atteso.',
         ),
         alt: t(
           'Opportunities: three open opportunities with expected values marked as sales estimates.',
@@ -932,10 +932,10 @@ export const solutions: Record<SolutionKey, Solution> = {
         img: screen('sl-3'),
         title: t('Proposals', 'Angebote', 'العروض', 'Proposte'),
         text: t(
-          'Offers sent to customers. A proposal is never counted as confirmed.',
-          'An Kunden gesendete Angebote. Ein Angebot zählt nie als bestätigt.',
-          'عروض أُرسلت إلى العملاء. ولا يُحتسب العرض مؤكدًا أبدًا.',
-          'Offerte inviate ai clienti. Una proposta non viene mai contata come confermata.',
+          'A wedding proposal, sent and waiting for the customer’s decision.',
+          'Ein Hochzeitsangebot, gesendet und in Erwartung der Kundenentscheidung.',
+          'عرض حفل زفاف أُرسل وينتظر قرار العميل.',
+          'Una proposta per un matrimonio, inviata e in attesa della decisione del cliente.',
         ),
         alt: t(
           'Proposals: one wedding proposal sent and awaiting the customer’s decision.',

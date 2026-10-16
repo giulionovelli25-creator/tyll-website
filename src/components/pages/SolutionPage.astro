@@ -52,7 +52,7 @@ const fill = (text: string) => text.replace('{name}', name);
         {
           demo && (
             <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-top`}>
-              {p.tryHere}
+              {fill(p.tryNamed)}
               <span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
           )
@@ -121,7 +121,10 @@ const fill = (text: string) => text.replace('{name}', name);
       </div>
 
       <nav class="others" aria-labelledby="sol-others">
-        <h3 id="sol-others">{p.others}</h3>
+        <div class="others__head">
+          <h3 id="sol-others">{p.others}</h3>
+          <a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a>
+        </div>
         <ul>
           {
             others.map((k) => (
@@ -357,6 +360,21 @@ const fill = (text: string) => text.replace('{name}', name);
     margin-top: clamp(4rem, 3rem + 4vw, 6rem);
     padding-top: 1.75rem;
     border-top: 1px solid rgba(244, 245, 247, 0.12);
+  }
+
+  .others__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .others__all {
+    color: var(--on-dark);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-underline-offset: 4px;
   }
 
   .others h3 {

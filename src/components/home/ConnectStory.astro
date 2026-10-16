@@ -56,6 +56,9 @@ const v = p.view;
               <div class="env__grain"></div>
             </div>
 
+            <!-- One quiet invitation to scroll; it fades as soon as the change begins -->
+            <p class="cue" aria-hidden="true">{p.cue} <span>↓</span></p>
+
             <!-- Before: fragments from five systems -->
             <ul class="frags" aria-label={p.before}>
               <li class="frag frag--pos" data-frag="ev-pos">
@@ -449,6 +452,50 @@ const v = p.view;
     font-size: 0.75rem;
   }
 
+
+  /* "See what changes ↓": shown only in the scroll-driven version, on the Before picture */
+  .cue {
+    display: none;
+  }
+
+  .story.is-scrolly .cue {
+    position: absolute;
+    inset-inline: 0;
+    bottom: clamp(0.9rem, 2.4vh, 1.6rem);
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--graphite);
+    font-size: 0.875rem;
+    font-weight: 500;
+    pointer-events: none;
+  }
+
+  .story.is-scrolly .cue span {
+    display: inline-block;
+  }
+
+  /* On phones the cards fill the stage and visitors are already scrolling through it; no cue there */
+  @media (max-width: 960px) {
+    .story.is-scrolly .cue {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .story.is-scrolly .cue span {
+      animation: cue-nudge 2.4s var(--ease) infinite;
+    }
+  }
+
+  @keyframes cue-nudge {
+    50% {
+      transform: translateY(3px);
+    }
+  }
 
   /* The Tyll view */
   .view {
@@ -1021,6 +1068,7 @@ const v = p.view;
     const stage = section.querySelector<HTMLElement>('.stage')!;
     const view = section.querySelector<HTMLElement>('.view')!;
     const issue = section.querySelector<HTMLElement>('.issue')!;
+    const cue = section.querySelector<HTMLElement>('.cue')!;
     const before = section.querySelector<HTMLElement>('.label--before')!;
     const after = section.querySelector<HTMLElement>('.label--after')!;
     const tick = section.querySelector<SVGSVGElement>('.label__tick')!;
@@ -1082,6 +1130,9 @@ const v = p.view;
       const r = track.getBoundingClientRect();
       const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
       const p = clamp((hh - r.top) / Math.max(1, r.height - (innerHeight - hh)));
+
+      // The invitation to scroll goes as soon as it has been answered
+      cue.style.opacity = String(1 - seg(p, 0.01, 0.07));
 
       // Stage 1, disconnected: the two related cards lift a little as scrolling begins
       related.forEach((el) => el.classList.toggle('is-related', p > 0.06 && p < 0.3));

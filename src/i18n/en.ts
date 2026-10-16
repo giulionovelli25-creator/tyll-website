@@ -20,10 +20,11 @@ const en = {
     demo: 'Explore Demo →',
     demoLong: 'Explore Interactive Demo →',
     solutions: 'Explore Solutions →',
+    allSolutions: 'Explore All Solutions →',
   },
   hero: {
     title: 'One hotel. Many systems. Finally connected.',
-    body: ['Your hotel runs on different systems. Tyll brings the important information and teams together, so nothing gets lost between departments.'],
+    body: ['Tyll brings your hotel’s important information and teams together, without replacing the systems you already use.'],
     pause: 'Pause background video',
     play: 'Play background video',
     videoLabel: 'A hotel at work: a chef seasoning plates at the pass, a housekeeper preparing a bright room, and room service on its way down a corridor.',
@@ -36,6 +37,7 @@ const en = {
       before: 'Information everywhere.',
       afterLabel: 'With Tyll',
       after: 'Everything important. One place.',
+      cue: 'See what changes',
       note: 'An illustration with fictional data. Which systems connect is agreed with each hotel.',
       frags: {
         pos: { sys: 'POS', title: 'Order TRC-1013-198 · Table 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Removed after it went to the bar' },
@@ -106,6 +108,7 @@ const en = {
     consentText:
       'The calendar is provided by Calendly. When you open it, your browser connects to Calendly, which may process your data in the USA. The details you enter go directly to Calendly to arrange the call.',
     consentButton: 'Open the booking calendar',
+    callPurpose: 'A short introductory call about your hotel and what your teams need. No commitment.',
     consentPrivacy: 'Privacy policy',
     loading: 'Loading the booking calendar…',
     failedTitle: 'The booking calendar didn’t load.',

@@ -305,28 +305,54 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     await go(page, PAGES[lang][1]);
     const book = await page.evaluate(() => {
       const btn = document.querySelector('[data-booking-open]')?.getBoundingClientRect();
-      return { first: btn && btn.bottom <= innerHeight, mail: !!document.querySelector('.book__email a[href^="mailto:info@tyll.ai"]'), privacy: document.querySelector('.booking__privacy a')?.getAttribute('href'), photo: !!document.querySelector('.book__photo img') };
+      return { first: btn && btn.bottom <= innerHeight, purpose: !!document.querySelector('.booking__purpose')?.textContent.trim(), mail: !!document.querySelector('.book__email a[href^="mailto:info@tyll.ai"]'), privacy: document.querySelector('.booking__privacy a')?.getAttribute('href'), photo: !!document.querySelector('.book__photo img') };
     });
-    if (!book.first || !book.mail || !/#calendly$/.test(book.privacy || '') || !book.photo) p.push(`${lang}: booking page ${JSON.stringify(book)}`);
+    if (!book.first || !book.purpose || !book.mail || !/#calendly$/.test(book.privacy || '') || !book.photo) p.push(`${lang}: booking page ${JSON.stringify(book)}`);
+    // Hero: headline fits on screen, one supporting sentence
+    await go(page, `/${lang}/`);
+    const hero = await page.evaluate(() => {
+      const h1 = document.querySelector('.hero h1'); const rg = document.createRange(); rg.selectNodeContents(h1);
+      const rects = [...rg.getClientRects()].filter((x) => x.width > 0);
+      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), sentences: document.querySelector('.hero__body').textContent.trim().split(/[.!?。]\s|\.$/).filter(Boolean).length };
+    });
+    if (!hero.fits || hero.fs > 100 || hero.sentences !== 1) p.push(`${lang}: hero ${JSON.stringify(hero)}`);
+    // Each solution page ends with a link to all solutions
+    await go(page, SOL[lang][0]);
+    const all = await page.$eval('.others__all', (a) => a.getAttribute('href')).catch(() => null);
+    if (all !== PAGES[lang][5]) p.push(`${lang}: All Solutions link ${all}`);
     if (!home.sources.some((s) => /hero-operations/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
     if (lang === 'en' && home.h1 !== 'One hotel. Many systems. Finally connected.') p.push(`hero headline changed: "${home.h1}"`);
     if (home.ctas !== 2) p.push(`${lang}: hero has ${home.ctas} buttons`);
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
-  // The closing silver wave flows while on screen, on a 16-second cycle that ends where it starts
+  // "See what changes ↓" invites the first scroll on wide screens and disappears once the change starts
+  if (!mobile) {
+    await go(page, '/en/');
+    const cue = await page.evaluate(async () => {
+      const t = document.querySelector('.story__track'); const c = document.querySelector('.cue');
+      const at = async (f) => { scrollTo({ top: t.getBoundingClientRect().top + scrollY - 72 + (t.offsetHeight - innerHeight + 72) * f, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 400)); return +getComputedStyle(c).opacity; };
+      return { start: await at(0), later: await at(0.2) };
+    });
+    if (!(cue.start > 0.9 && cue.later < 0.05)) p.push(`story cue ${JSON.stringify(cue)}`);
+  }
+  // The closing silver wave flows while on screen as one formation: every line changes, and all lines keep the
+  // same shape (the gaps between neighbouring lines stay nearly constant along the ribbon)
   await go(page, '/en/');
   await page.$eval('.invite', (el) => el.scrollIntoView({ block: 'center' }));
   await sleep(1200);
   const wave = await page.evaluate(async () => {
-    const svg = document.querySelector('.invite__waves');
-    const t0 = svg.getCurrentTime();
-    await new Promise((r) => setTimeout(r, 700));
-    const a = [...svg.querySelectorAll('animate')];
-    const v = a[0]?.getAttribute('values').split(';') ?? [];
-    return { lines: a.length, moving: svg.getCurrentTime() > t0 && !svg.animationsPaused(), dur: a[0]?.getAttribute('dur'), seamless: v.length > 2 && v[0] === v[v.length - 1] };
+    const paths = [...document.querySelectorAll('.invite__waves path')];
+    const before = paths.map((x) => x.getAttribute('d'));
+    await new Promise((r) => setTimeout(r, 900));
+    const after = paths.map((x) => x.getAttribute('d'));
+    // Sample each line's height at the same x positions and compare neighbouring lines
+    const ys = paths.map((path) => [0.2, 0.4, 0.6, 0.8].map((f) => { const L = path.getTotalLength(); let lo = 0, hi = L; const box = path.getBBox(); const x = box.x + box.width * f; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (path.getPointAtLength(m).x < x) lo = m; else hi = m; } return path.getPointAtLength(lo).y; }));
+    const gaps = ys.slice(1).map((row, i) => row.map((y, j) => y - ys[i][j]));
+    const coherent = gaps.every((g) => g.every((v) => v > 0));
+    return { lines: paths.length, changed: before.filter((d, i) => d !== after[i]).length, coherent };
   });
-  if (wave.lines < 9 || !wave.moving || wave.dur !== '16s' || !wave.seamless) p.push(`closing wave ${JSON.stringify(wave)}`);
+  if (wave.lines < 9 || wave.changed !== wave.lines || !wave.coherent) p.push(`closing wave ${JSON.stringify(wave)}`);
   // The video actually plays (when motion is allowed) and can be paused
   await go(page, '/en/');
   await sleep(1500);
@@ -493,7 +519,12 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   const still = await page.evaluate(() => ({ scrolly: document.querySelector('.story').classList.contains('is-scrolly'), before: getComputedStyle(document.querySelector('.label--before')).opacity, after: getComputedStyle(document.querySelector('.label--after')).opacity }));
   if (still.scrolly || still.before !== '1' || still.after !== '1') p.push(`story not shown as still pictures: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
-  const wavePaused = await page.evaluate(() => document.querySelector('.invite__waves').animationsPaused());
+  const wavePaused = await page.evaluate(async () => {
+    const path = document.querySelector('.invite__waves path');
+    const d = path.getAttribute('d');
+    await new Promise((r) => setTimeout(r, 600));
+    return path.getAttribute('d') === d;
+  });
   if (!wavePaused) p.push('closing wave moves despite reduced motion');
   if (motion.hiddenMarks || motion.hiddenText) p.push('content hidden under reduced motion');
   if (!motion.toggle) p.push('no video play/pause control');

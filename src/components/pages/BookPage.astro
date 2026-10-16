@@ -40,6 +40,7 @@ const fwd = lang === 'ar' ? '←' : '→';
                   {b.consentButton}
                   <span aria-hidden="true">{fwd}</span>
                 </button>
+                <p class="booking__purpose">{b.callPurpose}</p>
                 <p class="book__email">
                   {b.orEmail} <a href={mailto} data-track="email_click" dir="ltr">{site.email}</a>
                 </p>
@@ -176,8 +177,16 @@ const fwd = lang === 'ar' ? '←' : '→';
     flex: none;
   }
 
+  .booking__purpose {
+    max-width: 30rem;
+    margin-top: 0.9rem;
+    color: var(--graphite);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
   .book__email {
-    margin-top: 1.25rem;
+    margin-top: 1rem;
     color: var(--steel);
     font-size: 1rem;
   }
