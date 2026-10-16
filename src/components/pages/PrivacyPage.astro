@@ -26,7 +26,7 @@ const and = L(' and ', ' und ', ' و', ' e ');
 ---
 
 <Base lang={lang} page="privacy" title={d.meta.privacyTitle} description={d.meta.privacyDescription} noindex={incomplete}>
-  <LegalShell lang={lang} title={L('Privacy policy', 'Datenschutzerklärung', 'سياسة الخصوصية', 'Informativa sulla privacy')}>
+  <LegalShell lang={lang} title={L('Privacy policy', 'Datenschutzerklärung', 'سياسة الخصوصية', 'Informativa sulla privacy')} toc>
     <p>
       {
         L(
@@ -130,8 +130,13 @@ const and = L(' and ', ' und ', ' و', ' e ');
     <h2 id="hosting">{L('Hosting and server log files', 'Hosting und Server-Logfiles', 'الاستضافة وسجلات الخادم', 'Hosting e file di log del server')}</h2>
     <p>
       {L('This website is hosted by ', 'Diese Website wird gehostet von ', 'يستضيف هذا الموقع ', 'Questo sito è ospitato da ')}
-      {legal.hosting.name ?? <Missing label={L('Missing: hosting provider', 'Fehlt: Hosting-Anbieter', 'ناقص: مزوّد الاستضافة', 'Mancante: fornitore di hosting')} />}
-      {legal.hosting.address && <span dir="ltr">, {legal.hosting.address}</span>}
+      {
+        legal.hosting.name ? (
+          <bdi dir="ltr">{legal.hosting.address ? `${legal.hosting.name}, ${legal.hosting.address}` : legal.hosting.name}</bdi>
+        ) : (
+          <Missing label={L('Missing: hosting provider', 'Fehlt: Hosting-Anbieter', 'ناقص: مزوّد الاستضافة', 'Mancante: fornitore di hosting')} />
+        )
+      }
       {
         L(
           ', which processes data on our behalf under a data processing agreement (Art. 28 GDPR). Content is delivered through a worldwide network, so servers in the USA may be involved. Transfers to the USA are based on the EU-U.S. Data Privacy Framework (Art. 45 GDPR), in which the provider participates, and on standard contractual clauses (Art. 46(2)(c) GDPR).',
@@ -295,6 +300,15 @@ const and = L(' and ', ' und ', ' و', ' e ');
               'Se prenoti una chiamata, Calendly tratta i dati che inserisci, come nome, indirizzo email, hotel o azienda e le tue risposte, insieme all’orario scelto, per permetterci di svolgere la chiamata (art. 6, par. 1, lett. b) GDPR). Calendly aderisce all’EU-U.S. Data Privacy Framework, che è la base per il trasferimento negli Stati Uniti (art. 45 GDPR).',
             )}
           </p>
+          <p>
+            {L(
+              'Calendly’s booking page also uses services that Calendly chooses itself, for example for statistics, payment handling and spam protection, and may ask for your consent to its own optional cookies. Calendly is responsible for that processing; details are in ',
+              'Die Buchungsseite von Calendly nutzt außerdem Dienste, die Calendly selbst auswählt, etwa für Statistik, Zahlungsabwicklung und Spam-Schutz, und kann Sie um Einwilligung in eigene optionale Cookies bitten. Für diese Verarbeitung ist Calendly verantwortlich; Einzelheiten finden Sie in der ',
+              'تستخدم صفحة الحجز في Calendly أيضًا خدمات يختارها Calendly بنفسه، مثل الإحصاءات ومعالجة المدفوعات والحماية من الرسائل غير المرغوب فيها، وقد تطلب موافقتك على ملفات تعريف الارتباط الاختيارية الخاصة بها. ويتحمل Calendly المسؤولية عن هذه المعالجة؛ وتجد التفاصيل في ',
+              'La pagina di prenotazione di Calendly utilizza anche servizi scelti da Calendly stesso, ad esempio per statistiche, gestione dei pagamenti e protezione dallo spam, e può chiederti il consenso ai propri cookie facoltativi. Di questo trattamento risponde Calendly; i dettagli sono nella ',
+            )}
+            <a href="https://calendly.com/privacy" target="_blank" rel="noopener">{L('Calendly’s privacy notice', 'Datenschutzerklärung von Calendly', 'إشعار الخصوصية لدى Calendly', 'informativa sulla privacy di Calendly')}</a>.
+          </p>
         </>
       ) : (
         <p>
@@ -375,6 +389,18 @@ const and = L(' and ', ' und ', ' و', ' e ');
         </>
       )
     }
+
+    <h2 id="product">{L('Tyll’s product and hotel data', 'Das Tyll-Produkt und Hoteldaten', 'منتج Tyll وبيانات الفنادق', 'Il prodotto Tyll e i dati degli hotel')}</h2>
+    <p>
+      {
+        L(
+          'This policy covers visits to this website. It does not describe how data would be handled when a hotel uses Tyll. Tyll is being developed to work with information from hotel systems. Before any hotel’s data is connected, how it is processed, where it is stored and how it is protected is set out with that hotel in a separate agreement. The interactive demo uses only fictional data.',
+          'Diese Erklärung gilt für den Besuch dieser Website. Sie beschreibt nicht, wie Daten verarbeitet würden, wenn ein Hotel Tyll nutzt. Tyll wird entwickelt, um mit Informationen aus Hotelsystemen zu arbeiten. Bevor Daten eines Hotels angebunden werden, wird mit dem jeweiligen Hotel in einer gesonderten Vereinbarung festgelegt, wie sie verarbeitet, wo sie gespeichert und wie sie geschützt werden. Die interaktive Demo verwendet ausschließlich fiktive Daten.',
+          'تغطي هذه السياسة زيارة هذا الموقع، ولا تصف كيفية التعامل مع البيانات عندما يستخدم فندقٌ Tyll. يجري تطوير Tyll ليعمل مع المعلومات الواردة من أنظمة الفنادق. وقبل ربط بيانات أي فندق، يُتفق مع ذلك الفندق في اتفاقية منفصلة على كيفية معالجتها ومكان تخزينها وطريقة حمايتها. ولا يستخدم العرض التوضيحي التفاعلي إلا بيانات وهمية.',
+          'Questa informativa riguarda le visite a questo sito. Non descrive come verrebbero trattati i dati quando un hotel utilizza Tyll. Tyll è in fase di sviluppo per lavorare con le informazioni provenienti dai sistemi alberghieri. Prima di collegare i dati di un hotel, come vengono trattati, dove vengono conservati e come vengono protetti viene stabilito con quell’hotel in un accordo separato. La demo interattiva utilizza solo dati fittizi.',
+        )
+      }
+    </p>
 
     <h2 id="rights">{L('Your rights', 'Ihre Rechte', 'حقوقك', 'I tuoi diritti')}</h2>
     <p>

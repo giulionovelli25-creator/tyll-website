@@ -8,6 +8,12 @@ import type { Locale } from '../i18n/routes';
 type Text = Record<Locale, string>;
 
 export const legal = {
+  /**
+   * Country where the operating company is registered. The Legal Notice and Privacy Policy are drafted for a
+   * German operator (DDG, MStV, UStG, TDDDG); if the company is registered elsewhere, both must be reworked by a
+   * lawyer for that jurisdiction.
+   */
+  country: null as string | null,
   /** Registered company name with legal form (e.g. "Tyll GmbH"), or the full name of the person operating the site. */
   operator: null as string | null,
   /** Postal address lines for service of documents. A P.O. box is not enough. */
@@ -35,7 +41,7 @@ export const legal = {
   /** How long booking enquiries and emails are kept after the conversation, in plain words. */
   enquiryRetention: null as Text | null,
   /** Date of the current version of the legal pages. */
-  updated: '2026-10-15',
+  updated: '2026-10-16',
 };
 
 export type MissingItem = { key: string } & Text;
@@ -43,6 +49,8 @@ export type MissingItem = { key: string } & Text;
 /** Required details that are still missing. Optional ones (register, VAT ID, phone) are listed as "if applicable". */
 export function legalMissing(): MissingItem[] {
   const m: MissingItem[] = [];
+  if (!legal.country)
+    m.push({ key: 'country', en: 'Country where the operating company is registered (these pages are drafted for Germany; another country needs different legal texts)', de: 'Land, in dem das betreibende Unternehmen eingetragen ist (diese Seiten sind für Deutschland entworfen; ein anderes Land erfordert andere Rechtstexte)', ar: 'الدولة المسجّلة فيها الشركة المشغّلة (صيغت هذه الصفحات لألمانيا؛ وتتطلب دولة أخرى نصوصًا قانونية مختلفة)', it: 'Paese in cui è registrata la società che gestisce il sito (queste pagine sono redatte per la Germania; un altro Paese richiede testi legali diversi)' });
   if (!legal.operator)
     m.push({ key: 'operator', en: 'Name of the operator: registered company name and legal form, or full name of the person', de: 'Name des Anbieters: Firma mit Rechtsform oder vollständiger Name der Person', ar: 'اسم المشغّل: الاسم التجاري المسجّل والشكل القانوني، أو الاسم الكامل للشخص', it: 'Nome del gestore: ragione sociale con forma giuridica, oppure nome completo della persona' });
   if (!legal.address) m.push({ key: 'address', en: 'Postal address of the operator', de: 'Ladungsfähige Anschrift des Anbieters', ar: 'العنوان البريدي للمشغّل', it: 'Indirizzo postale del gestore' });

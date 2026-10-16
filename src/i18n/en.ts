@@ -38,6 +38,9 @@ const en = {
       afterLabel: 'With Tyll',
       after: 'Everything important. One place.',
       replay: 'Replay',
+      investigateLabel: 'Investigate',
+      investigate: 'What needs attention, with its evidence.',
+      hideEvidence: 'Hide the evidence',
       note: 'An illustration with fictional data. Which systems connect is agreed with each hotel.',
       frags: {
         pos: { sys: 'POS', title: 'Order TRC-1013-198 · Table 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Removed after it went to the bar' },
@@ -106,7 +109,7 @@ const en = {
     intro: 'Tell us a little about your property, and we’ll explore how Tyll could help.',
     consentTitle: 'Choose a time in our booking calendar',
     consentText:
-      'The calendar is provided by Calendly. When you open it, your browser connects to Calendly, which may process your data in the USA. The details you enter go directly to Calendly to arrange the call.',
+      'The calendar is provided by Calendly. When you open it, your browser connects to Calendly, which may process your data in the USA and uses its own services, for example for statistics and spam protection. The details you enter go directly to Calendly to arrange the call.',
     consentButton: 'Open the booking calendar',
     callPurpose: 'A short introductory call about your hotel and what your teams need. No commitment.',
     consentPrivacy: 'Privacy policy',

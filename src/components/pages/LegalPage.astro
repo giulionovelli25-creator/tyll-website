@@ -31,76 +31,83 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
         )
       }
     </h2>
-    <address>
-      {legal.operator ?? <Missing label={miss('operator name', 'Name des Anbieters', 'اسم المشغّل', 'nome del gestore')} />}
-      <br />
-      {legal.address ? legal.address.map((l) => <>{l}<br /></>) : <Missing label={miss('postal address', 'Anschrift', 'العنوان البريدي', 'indirizzo postale')} />}
-    </address>
-
-    <h3>{L('Represented by', 'Vertreten durch', 'يمثّلها', 'Rappresentata da')}</h3>
-    <p>
-      {
-        legal.representative ?? (
-          <Missing
-            label={miss(
-              'legal representative, if a company',
-              'Vertretung, falls Gesellschaft',
-              'الممثل القانوني، إذا كان المشغّل شركة',
-              'rappresentante legale, se società',
-            )}
-          />
-        )
-      }
-    </p>
-
-    <h3>{L('Contact', 'Kontakt', 'التواصل', 'Contatti')}</h3>
-    <p>
-      {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>
-      {legal.phone && <><br />{L('Phone', 'Telefon', 'الهاتف', 'Telefono')}: <span dir="ltr">{legal.phone}</span></>}
-    </p>
-
-    <h3>{L('Register entry', 'Registereintrag', 'القيد في السجل التجاري', 'Iscrizione al registro delle imprese')}</h3>
-    <p>
-      {
-        legal.register ?? (
-          <Missing
-            label={miss(
-              'register court and number, if registered',
-              'Registergericht und -nummer, falls eingetragen',
-              'محكمة السجل ورقم القيد، إن وُجد تسجيل',
-              'tribunale e numero di iscrizione, se iscritta',
-            )}
-          />
-        )
-      }
-    </p>
-
-    <h3>{L('VAT ID', 'Umsatzsteuer-ID', 'رقم ضريبة القيمة المضافة', 'Partita IVA')}</h3>
-    <p>
-      {
-        L(
-          'VAT identification number under § 27a UStG: ',
-          'Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: ',
-          'رقم التعريف الضريبي لضريبة القيمة المضافة بموجب المادة 27a من UStG: ',
-          'Numero di identificazione IVA ai sensi del § 27a UStG: ',
-        )
-      }
-      {legal.vatId ?? <Missing label={miss('VAT ID, if one exists', 'USt-IdNr., falls vorhanden', 'الرقم الضريبي، إن وُجد', 'partita IVA, se esistente')} />}
-    </p>
-
-    <h3>
-      {
-        L(
-          'Responsible for content under § 18 (2) MStV',
-          'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV',
-          'المسؤول عن المحتوى بموجب المادة 18 (2) من MStV',
-          'Responsabile dei contenuti ai sensi del § 18 (2) MStV',
-        )
-      }
-    </h3>
-    <p>
-      {legal.contentResponsible ?? <Missing label={miss('responsible person', 'verantwortliche Person', 'الشخص المسؤول', 'persona responsabile')} />}
-    </p>
+    <dl class="facts">
+      <div>
+        <dt>{L('Operator', 'Anbieter', 'المشغّل', 'Gestore')}</dt>
+        <dd>{legal.operator ?? <Missing label={miss('operator name and legal form', 'Name und Rechtsform des Anbieters', 'اسم المشغّل وشكله القانوني', 'nome e forma giuridica del gestore')} />}</dd>
+      </div>
+      <div>
+        <dt>{L('Address', 'Anschrift', 'العنوان', 'Indirizzo')}</dt>
+        <dd>
+          <address>
+            {
+              legal.address ? (
+                legal.address.map((l, i) => <>{i > 0 && <br />}{l}</>)
+              ) : (
+                <Missing label={miss('postal address', 'Anschrift', 'العنوان البريدي', 'indirizzo postale')} />
+              )
+            }
+          </address>
+        </dd>
+      </div>
+      <div>
+        <dt>{L('Represented by', 'Vertreten durch', 'يمثّلها', 'Rappresentata da')}</dt>
+        <dd>
+          {
+            legal.representative ?? (
+              <Missing
+                label={miss(
+                  'legal representative, if a company',
+                  'Vertretung, falls Gesellschaft',
+                  'الممثل القانوني، إذا كان المشغّل شركة',
+                  'rappresentante legale, se società',
+                )}
+              />
+            )
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>{L('Contact', 'Kontakt', 'التواصل', 'Contatti')}</dt>
+        <dd>
+          {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>
+          {legal.phone && <><br />{L('Phone', 'Telefon', 'الهاتف', 'Telefono')}: <span dir="ltr">{legal.phone}</span></>}
+        </dd>
+      </div>
+      <div>
+        <dt>{L('Register entry', 'Registereintrag', 'القيد في السجل التجاري', 'Iscrizione al registro delle imprese')}</dt>
+        <dd>
+          {
+            legal.register ?? (
+              <Missing
+                label={miss(
+                  'register court and number, if registered',
+                  'Registergericht und -nummer, falls eingetragen',
+                  'محكمة السجل ورقم القيد، إن وُجد تسجيل',
+                  'tribunale e numero di iscrizione, se iscritta',
+                )}
+              />
+            )
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>
+          {L('VAT ID', 'Umsatzsteuer-ID', 'رقم ضريبة القيمة المضافة', 'Partita IVA')}
+          <span class="facts__law">{L('§ 27a UStG', '§ 27a UStG', 'المادة 27a من UStG', '§ 27a UStG')}</span>
+        </dt>
+        <dd>{legal.vatId ?? <Missing label={miss('VAT ID, if one exists', 'USt-IdNr., falls vorhanden', 'الرقم الضريبي، إن وُجد', 'partita IVA, se esistente')} />}</dd>
+      </div>
+      <div>
+        <dt>
+          {L('Responsible for content', 'Verantwortlich für den Inhalt', 'المسؤول عن المحتوى', 'Responsabile dei contenuti')}
+          <span class="facts__law">{L('§ 18 (2) MStV', '§ 18 Abs. 2 MStV', 'المادة 18 (2) من MStV', '§ 18 (2) MStV')}</span>
+        </dt>
+        <dd>
+          {legal.contentResponsible ?? <Missing label={miss('responsible person and address', 'verantwortliche Person mit Anschrift', 'الشخص المسؤول وعنوانه', 'persona responsabile e indirizzo')} />}
+        </dd>
+      </div>
+    </dl>
 
     <h2>{L('Consumer dispute resolution', 'Verbraucherstreitbeilegung', 'تسوية نزاعات المستهلكين', 'Risoluzione delle controversie dei consumatori')}</h2>
     <p>
@@ -142,12 +149,53 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
     <p>
       {
         L(
-          'The content of this website, including text, images, video and the Tyll logo, is protected by copyright. Any use beyond what the law permits requires our prior consent. Research we quote remains the property of its respective authors.',
-          'Die Inhalte dieser Website, einschließlich Texten, Bildern, Videos und des Tyll-Logos, unterliegen dem Urheberrecht. Jede Verwertung außerhalb der gesetzlichen Grenzen bedarf unserer vorherigen Zustimmung. Zitierte Studien sind Eigentum ihrer jeweiligen Urheber.',
-          'محتوى هذا الموقع، بما في ذلك النصوص والصور والفيديو وشعار Tyll، محمي بموجب حقوق النشر. ويتطلب أي استخدام يتجاوز ما يسمح به القانون موافقتنا المسبقة. وتبقى الأبحاث التي نقتبس منها ملكًا لمؤلفيها.',
-          'I contenuti di questo sito, inclusi testi, immagini, video e il logo Tyll, sono protetti dal diritto d’autore. Qualsiasi utilizzo oltre i limiti di legge richiede il nostro consenso preventivo. Le ricerche citate restano di proprietà dei rispettivi autori.',
+          'The text and design of this website and the Tyll logo are protected by copyright. Any use beyond what the law permits requires our prior consent. Photographs and video are used under their providers’ licences and remain the property of their creators. Research we quote remains the property of its respective authors.',
+          'Die Texte und die Gestaltung dieser Website sowie das Tyll-Logo unterliegen dem Urheberrecht. Jede Verwertung außerhalb der gesetzlichen Grenzen bedarf unserer vorherigen Zustimmung. Fotos und Videos werden unter den Lizenzen ihrer Anbieter genutzt und bleiben Eigentum ihrer Urheber. Zitierte Studien sind Eigentum ihrer jeweiligen Urheber.',
+          'نصوص هذا الموقع وتصميمه وشعار Tyll محمية بموجب حقوق النشر. ويتطلب أي استخدام يتجاوز ما يسمح به القانون موافقتنا المسبقة. وتُستخدم الصور ومقاطع الفيديو بموجب تراخيص مزوّديها، وتبقى ملكًا لمبدعيها. وتبقى الأبحاث التي نقتبس منها ملكًا لمؤلفيها.',
+          'I testi e la grafica di questo sito e il logo Tyll sono protetti dal diritto d’autore. Qualsiasi utilizzo oltre i limiti di legge richiede il nostro consenso preventivo. Fotografie e video sono utilizzati in base alle licenze dei rispettivi fornitori e restano di proprietà dei loro autori. Le ricerche citate restano di proprietà dei rispettivi autori.',
         )
       }
     </p>
   </LegalShell>
 </Base>
+
+<style>
+  .facts {
+    margin: 1.25rem 0 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .facts > div {
+    display: grid;
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+    gap: 0.25rem 2rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .facts dt {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .facts__law {
+    display: block;
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 400;
+  }
+
+  .facts dd {
+    margin: 0;
+  }
+
+  .facts address {
+    margin: 0;
+  }
+
+  @media (max-width: 600px) {
+    .facts > div {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -39,6 +39,9 @@ const it: Dict = {
       afterLabel: 'Con Tyll',
       after: 'Tutto ciò che conta. In un unico posto.',
       replay: 'Riproduci di nuovo',
+      investigateLabel: 'Approfondisci',
+      investigate: 'Ciò che richiede attenzione, con le prove.',
+      hideEvidence: 'Nascondi le prove',
       note: 'Un’illustrazione con dati fittizi. Quali sistemi collegare viene concordato con ogni hotel.',
       frags: {
         pos: { sys: 'Cassa', title: 'Ordine TRC-1013-198 · Tavolo 14', rows: [['Coca-Cola', 'AED 22']], flag: 'Rimossa dopo l’invio al bar' },
@@ -107,7 +110,7 @@ const it: Dict = {
     intro: 'Raccontaci qualcosa della tua struttura e vedremo insieme come Tyll potrebbe aiutarti.',
     consentTitle: 'Scegli un orario nel nostro calendario',
     consentText:
-      'Il calendario è fornito da Calendly. Quando lo apri, il tuo browser si collega a Calendly, che può trattare i tuoi dati negli Stati Uniti. I dati che inserisci vanno direttamente a Calendly per organizzare la chiamata.',
+      'Il calendario è fornito da Calendly. Quando lo apri, il tuo browser si collega a Calendly, che può trattare i tuoi dati negli Stati Uniti e utilizza servizi propri, ad esempio per statistiche e protezione dallo spam. I dati che inserisci vanno direttamente a Calendly per organizzare la chiamata.',
     consentButton: 'Apri il calendario delle prenotazioni',
     callPurpose: 'Una breve chiamata conoscitiva sul tuo hotel e su ciò di cui hanno bisogno i tuoi team. Senza impegno.',
     consentPrivacy: 'Informativa sulla privacy',

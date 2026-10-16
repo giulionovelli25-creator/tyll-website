@@ -7,9 +7,20 @@ import { t, intlLocale, type Locale } from '../../i18n';
 interface Props {
   lang: Locale;
   title: string;
+  /** List the page's sections under "On this page" (used on the long privacy policy). */
+  toc?: boolean;
 }
 
-const { lang, title } = Astro.props;
+const { lang, title, toc = false } = Astro.props;
+// The contents list is read from the rendered sections, so it always matches the sections that are actually shown.
+const body = await Astro.slots.render('default');
+const sections = toc
+  ? [...body.matchAll(/<h2 id="([^"]+)"[^>]*>([\s\S]*?)<\/h2>/g)].map(([, id, html]) => ({
+      id,
+      html: html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(),
+    }))
+  : [];
+const onThisPage = { en: 'On this page', de: 'Auf dieser Seite', ar: 'في هذه الصفحة', it: 'In questa pagina' }[lang];
 const d = t(lang).legalPage;
 const missing = legalMissing();
 const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' }).format(new Date(legal.updated));
@@ -35,9 +46,22 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     )
   }
 
-  <div class="legal__body">
-    <slot />
-  </div>
+  {
+    sections.length > 0 && (
+      <nav class="legal__toc" aria-labelledby="legal-toc-title">
+        <h2 id="legal-toc-title">{onThisPage}</h2>
+        <ol>
+          {sections.map((x) => (
+            <li>
+              <a href={`#${x.id}`} set:html={x.html} />
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )
+  }
+
+  <div class="legal__body" set:html={body} />
 </article>
 
 <style>
@@ -87,6 +111,48 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
   .legal__missing ul {
     margin: 0.6rem 0 0;
     padding-inline-start: 1.2rem;
+  }
+
+  .legal__toc {
+    margin-top: 2.5rem;
+    padding-block: 1.25rem;
+    border-block: 1px solid var(--line);
+    font-size: 0.9375rem;
+  }
+
+  .legal__toc h2 {
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .legal__toc ol {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    columns: 2 16rem;
+    column-gap: 2.5rem;
+  }
+
+  .legal__toc li {
+    break-inside: avoid;
+    padding-block: 0.2rem;
+  }
+
+  .legal__toc a {
+    color: var(--graphite);
+    text-decoration: none;
+  }
+
+  .legal__toc a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .legal__body :global(h2[id]) {
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
   }
 
   .legal__body {

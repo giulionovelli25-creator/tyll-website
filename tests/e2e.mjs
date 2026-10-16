@@ -91,12 +91,13 @@ for (const lang of LANGS) {
       return { early, end, moved: scrollY > before };
     });
     if (!['0', '1', '2'].includes(story.early)) problems.push(`story did not start from the beginning (${story.early})`);
-    if (!(story.end.stage === '4' && story.end.systems === 4 && story.end.rows === 3 && story.end.tyll > 0.95 && story.end.next > 0.95 && story.end.paths === 5)) problems.push(`story end ${JSON.stringify(story.end)}`);
+    if (!(story.end.stage === 'done' && story.end.systems === 4 && story.end.rows === 3 && story.end.tyll > 0.95 && story.end.next > 0.95 && story.end.paths === 5)) problems.push(`story end ${JSON.stringify(story.end)}`);
     if (!story.moved) problems.push('page did not continue past the story');
     // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
     for (const sel of ['.hero__actions a[data-track="explore_solutions_click"]', '.invite__actions a[data-track="explore_solutions_click"]']) {
       await go(page, `/${lang}/`);
-      await page.$eval(sel, (a) => a.scrollIntoView({ block: 'center' }));
+      await page.$eval(sel, (a) => a.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await sleep(300);
       await Promise.all([page.waitForNavigation(), page.click(sel)]);
       const overview = await page.evaluate(() => ({ path: location.pathname, tiles: [...document.querySelectorAll('.tiles a')].map((a) => a.getAttribute('href')) }));
       if (overview.path !== PAGES[lang][5] || overview.tiles.join() !== SOL[lang].join()) problems.push(`Explore Solutions (${sel.split(' ')[0]}) → ${JSON.stringify(overview)}`);
@@ -330,7 +331,40 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     await new Promise((r) => setTimeout(r, 4200));
     return { visible: getComputedStyle(btn).display !== 'none', during, after: flow.dataset.stage };
   });
-  if (!replay.visible || !['0', '1'].includes(replay.during) || replay.after !== '4') p.push(`replay ${JSON.stringify(replay)}`);
+  if (!replay.visible || !['0', '1'].includes(replay.during) || replay.after !== 'done') p.push(`replay ${JSON.stringify(replay)}`);
+  // The issues are tabs: clicking or using the arrow keys shows each one's next step, and "Review the evidence"
+  // opens the source records behind the flagged issue
+  await go(page, '/en/');
+  const tabs = await page.evaluate(async () => {
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const flow = document.querySelector('[data-flow]');
+    flow.scrollIntoView({ block: 'center', behavior: 'instant' });
+    await wait(3000);
+    const shown = () => [...flow.querySelectorAll('[data-panel]')].filter((x) => !x.hidden).map((x) => x.dataset.panel).join();
+    const selected = () => flow.querySelector('[role=tab][aria-selected=true]')?.dataset.row;
+    const out = { start: [selected(), shown()] };
+    flow.querySelector('[data-row=invoice]').click();
+    await wait(300);
+    out.click = [selected(), shown()];
+    flow.querySelector('[data-row=invoice]').focus();
+    flow.querySelector('[data-row=invoice]').dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+    await wait(300);
+    out.key = [selected(), shown(), document.activeElement?.dataset.row];
+    const btn = flow.querySelector('[data-review]');
+    const records = () => [...flow.querySelectorAll('[data-panel=issue] .record')].filter((r) => getComputedStyle(r).display !== 'none').length;
+    out.review = { visible: getComputedStyle(btn).display !== 'none' && !btn.hidden, before: [btn.getAttribute('aria-expanded'), records()] };
+    btn.click();
+    await wait(400);
+    out.review.open = [btn.getAttribute('aria-expanded'), records()];
+    btn.click();
+    await wait(300);
+    out.review.closed = [btn.getAttribute('aria-expanded'), records()];
+    return out;
+  });
+  const want = { start: ['issue', 'issue'], click: ['invoice', 'invoice'], key: ['issue', 'issue', 'issue'] };
+  for (const k of Object.keys(want)) if (tabs[k].join() !== want[k].join()) p.push(`issue tabs ${k}: ${JSON.stringify(tabs[k])}`);
+  const r = tabs.review;
+  if (!r.visible || r.before.join() !== 'false,0' || r.open[0] !== 'true' || r.open[1] < 2 || r.closed.join() !== 'false,0') p.push(`review the evidence ${JSON.stringify(r)}`);
   // The closing silver wave flows while on screen as one formation: every line changes, and all lines keep the
   // same shape (the gaps between neighbouring lines stay nearly constant along the ribbon)
   await go(page, '/en/');

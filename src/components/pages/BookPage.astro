@@ -355,7 +355,8 @@ const fwd = lang === 'ar' ? '←' : '→';
       const url = new URL(root.dataset.url!);
       url.searchParams.set('embed_domain', location.host);
       url.searchParams.set('embed_type', 'Inline');
-      url.searchParams.set('hide_gdpr_banner', '1');
+      // Calendly's own cookie notice stays on: its booking page uses its own services (statistics, spam protection),
+      // which visitors should be able to decide about there
       url.searchParams.set('primary_color', '14161a');
       frame.replaceChildren();
       const iframe = document.createElement('iframe');
