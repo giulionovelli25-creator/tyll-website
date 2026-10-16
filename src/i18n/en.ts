@@ -117,6 +117,7 @@ const en = {
     unavailableText: 'Until then, email us with a few words about your hotel and we’ll reply to arrange a time.',
     emailUs: 'Email info@tyll.ai',
     orEmail: 'Prefer email?',
+    photoAlt: 'A sunlit hotel lobby with tall windows, palm trees outside and flowers on a round table.',
   },
   faq: {
     title: 'Frequently asked questions',

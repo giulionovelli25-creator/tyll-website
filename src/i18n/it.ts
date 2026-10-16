@@ -118,6 +118,7 @@ const it: Dict = {
     unavailableText: 'Nel frattempo scrivici due righe sul tuo hotel: ti risponderemo per fissare un orario.',
     emailUs: 'Scrivi a info@tyll.ai',
     orEmail: 'Preferisci l’email?',
+    photoAlt: 'La hall soleggiata di un hotel con finestre alte, palme all’esterno e fiori su un tavolo rotondo.',
   },
   faq: {
     title: 'Domande frequenti',

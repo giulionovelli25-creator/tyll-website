@@ -280,6 +280,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
       connector: document.querySelectorAll('.story .link, .story svg path[d=""]').length,
+      photo: /url\(/.test(getComputedStyle(document.querySelector('.story')).getPropertyValue('--stage-photo')) && !!document.querySelector('.stage__photo'),
       frags: document.querySelectorAll('.story [data-frag]').length,
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
@@ -289,6 +290,14 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     }));
     if (home.connector) p.push(`${lang}: the POS–Stock connector is still in the story`);
     if (home.frags !== 4) p.push(`${lang}: story has ${home.frags} fragments`);
+    if (!home.photo) p.push(`${lang}: story has no hotel photograph behind the cards`);
+    // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
+    await go(page, PAGES[lang][1]);
+    const book = await page.evaluate(() => {
+      const btn = document.querySelector('[data-booking-open]')?.getBoundingClientRect();
+      return { first: btn && btn.bottom <= innerHeight, mail: !!document.querySelector('.book__email a[href^="mailto:info@tyll.ai"]'), privacy: document.querySelector('.booking__privacy a')?.getAttribute('href'), photo: !!document.querySelector('.book__photo img') };
+    });
+    if (!book.first || !book.mail || !/#calendly$/.test(book.privacy || '') || !book.photo) p.push(`${lang}: booking page ${JSON.stringify(book)}`);
     if (!home.sources.some((s) => /hero-operations/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
     if (lang === 'en' && home.h1 !== 'One hotel. Many systems. Finally connected.') p.push(`hero headline changed: "${home.h1}"`);
     if (home.ctas !== 2) p.push(`${lang}: hero has ${home.ctas} buttons`);
@@ -342,7 +351,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     }
   }
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
-  record('N', `Refinements on ${where}: no connector, hero footage, three steps, العربية label`, p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('N', `Refinements on ${where}: story photo and cards, hero footage, three steps, العربية label, booking layout`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 

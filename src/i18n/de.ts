@@ -117,6 +117,7 @@ const de: Dict = {
     unavailableText: 'Bis dahin schreiben Sie uns gern ein paar Worte zu Ihrem Hotel, und wir melden uns, um einen Termin zu vereinbaren.',
     emailUs: 'E-Mail an info@tyll.ai',
     orEmail: 'Lieber per E-Mail?',
+    photoAlt: 'Eine sonnige Hotellobby mit hohen Fenstern, Palmen draußen und Blumen auf einem runden Tisch.',
   },
   faq: {
     title: 'Häufige Fragen',

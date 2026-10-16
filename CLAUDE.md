@@ -36,7 +36,8 @@ The owner provides the official brand assets, website references and research do
 - Homepage chapter 2 (`src/components/home/ConnectStory.astro`) is a scroll-driven sticky story (Before Tyll → With Tyll); with reduced motion it renders two still pictures. Do not add scroll snapping: it fought the pinned story and was removed.
 - Marketing photos and video must not feature alcohol (Gulf market). Sources in `src/assets/photos/CREDITS.md`. The hero film (16 Oct 2026) is a three-scene Pexels edit: kitchen pass, housekeeping, breakfast service; see `docs/hero-video-brief.md`.
 - Solution pages: problem statement beside its own photo, then "How Tyll helps" as three ARIA tabs (`src/components/HelpSteps.astro`); steps and their screens are set in `solutions.ts` (`steps`, by walkthrough frame index). No auto-advance.
-- The homepage story has no connector line between POS and Stock (removed on request); the two related cards only lift slightly.
+- The homepage story has no connector line between POS and Stock (removed on request); the two related cards only lift slightly. The stage background is a sunlit arches photo under a warm veil (`--stage-photo`); desktop cards are larger and scattered, with only padding allowed to overlap. Check overlaps at several sizes before changing positions.
+- Book a Call is a split screen (booking left, sunlit lobby photo right); once Calendly opens, the photo hides and the calendar takes the full width. Calendly still loads only after the click.
 - Walkthrough screens are full 1440×1240 demo captures (2× pixels) in a browser frame, shown with object-fit: contain, plus a viewer; never crop them.
 - External settings are `PUBLIC_*` variables (see `.env.example` and LAUNCH.md). Legal details live in `src/config/legal.ts` and must never be guessed.
 - `npm run launch-check` lists launch blockers. `npm run test:e2e` runs the browser tests (needs Google Chrome and the dev server).
