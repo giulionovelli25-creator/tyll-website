@@ -27,7 +27,7 @@ try {
   const list = (title, items) => console.log(`\n${title}\n${items.length ? items.map((i) => `  - ${i}`).join('\n') : '  (none)'}`);
   list('Required before going live:', required);
   list('Optional, currently switched off:', optional);
-  console.log('\nAlso needs a person: legal review of the Legal Notice and Privacy pages, and owner approval for the deploy.\n');
+  console.log('\nAlso needs a person: legal review of the Legal Notice and Privacy pages (all four languages), a native-speaker review of the Arabic and Italian text, and owner approval for the deploy.\n');
   process.exitCode = required.length ? 1 : 0;
 } finally {
   await vite.close();

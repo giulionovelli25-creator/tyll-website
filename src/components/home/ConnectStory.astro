@@ -1,6 +1,6 @@
 ---
 // Homepage chapter 2: "Before Tyll → With Tyll", driven by scroll.
-// Five fragments from different hotel systems sit scattered across a silver stage. As the visitor scrolls,
+// Four fragments from different hotel systems sit scattered across a silver stage. As the visitor scrolls,
 // the two related ones (a POS order and a stock difference) are linked, everything moves together, and the
 // scene settles into one Tyll view: one coherent stock issue with its evidence, owner and next step, and the
 // other matters listed as separate tasks. Scrolling back reverses it.
@@ -53,8 +53,7 @@ const v = p.view;
               <li class="frag frag--pos" data-frag="issue">
                 <span class="frag__sys"><i aria-hidden="true"></i>{f.pos.sys}</span>
                 <span class="frag__title">{f.pos.title}</span>
-                <span class="frag__row"><span>{f.pos.rows[0][0]}</span><span>{f.pos.rows[0][1]}</span></span>
-                <span class="frag__row frag__row--struck" data-anchor="pos"><span>{f.pos.rows[1][0]}</span><span>{f.pos.rows[1][1]}</span></span>
+                <span class="frag__row frag__row--struck" data-anchor="pos"><span>{f.pos.rows[0][0]}</span><span>{f.pos.rows[0][1]}</span></span>
                 <span class="frag__flag">{f.pos.flag}</span>
               </li>
               <li class="frag frag--stock" data-frag="issue">
@@ -78,11 +77,6 @@ const v = p.view;
                 <span class="frag__row"><span>{f.finance.rows[1][0]}</span><b>{f.finance.rows[1][1]}</b></span>
                 <span class="frag__flag">{f.finance.flag}</span>
               </li>
-              <li class="frag frag--staffing" data-frag="task-2">
-                <span class="frag__sys"><i aria-hidden="true"></i>{f.staffing.sys}</span>
-                <span class="frag__title">{f.staffing.title}</span>
-                <span class="frag__line"><span class="frag__chip">{f.staffing.status}</span>{f.staffing.line}</span>
-              </li>
             </ul>
 
             <!-- The two related fragments are the same story: drawn as a quiet link once scrolling starts -->
@@ -96,7 +90,7 @@ const v = p.view;
                 <span class="view__place">{v.place}</span>
               </div>
               <div class="view__body">
-                <p class="view__heading">{v.attention} <span>4</span></p>
+                <p class="view__heading">{v.attention} <span>{v.tasks.length + 1}</span></p>
                 <article class="issue" data-target="issue">
                   <span class="issue__status">{v.status}</span>
                   <h3>{v.issue}</h3>
@@ -113,7 +107,7 @@ const v = p.view;
                   </ul>
                   <div class="issue__foot">
                     <p class="issue__owner"><span>{v.owner}</span>{v.ownerName}</p>
-                    <span class="issue__next">{v.next} →</span>
+                    <span class="issue__next">{v.next} {lang === 'ar' ? '←' : '→'}</span>
                   </div>
                   <p class="issue__caution">{v.caution}</p>
                 </article>
@@ -316,10 +310,6 @@ const v = p.view;
     border-radius: 2px 50% 50% 2px;
   }
 
-  .frag--staffing .frag__sys i {
-    border-radius: 50% 50% 2px 2px;
-  }
-
   .frag__title {
     font-weight: 500;
     color: var(--ink);
@@ -352,7 +342,7 @@ const v = p.view;
     color: var(--ink);
     font-size: 0.9375rem;
     font-weight: 500;
-    text-align: right;
+    text-align: end;
   }
 
   .frag__flag {
@@ -435,7 +425,7 @@ const v = p.view;
   }
 
   .view__place {
-    margin-left: auto;
+    margin-inline-start: auto;
     color: var(--steel);
     font-weight: 400;
     font-size: 0.8125rem;
@@ -694,33 +684,27 @@ const v = p.view;
 
   /* Scattered positions across the stage */
   .story.is-scrolly .frag--pos {
-    left: 5%;
-    top: 7%;
+    left: 6%;
+    top: 12%;
     rotate: -2.5deg;
   }
 
   .story.is-scrolly .frag--stock {
     left: 54%;
-    top: 4%;
+    top: 8%;
     rotate: 2deg;
   }
 
   .story.is-scrolly .frag--pms {
-    left: 58%;
-    top: 47%;
+    left: 52%;
+    top: 58%;
     rotate: -1.5deg;
   }
 
   .story.is-scrolly .frag--finance {
-    left: 6%;
-    top: 52%;
+    left: 9%;
+    top: 55%;
     rotate: 1.5deg;
-  }
-
-  .story.is-scrolly .frag--staffing {
-    left: 31%;
-    top: 76%;
-    rotate: -1deg;
   }
 
   .story.is-scrolly .link {
@@ -761,29 +745,24 @@ const v = p.view;
 
     .story.is-scrolly .frag--pos {
       left: 3%;
-      top: 3%;
+      top: 4%;
     }
 
     .story.is-scrolly .frag--stock {
       left: auto;
       right: 3%;
-      top: 22%;
+      top: 27%;
     }
 
     .story.is-scrolly .frag--pms {
-      left: 4%;
-      top: 44%;
+      left: 5%;
+      top: 54%;
     }
 
     .story.is-scrolly .frag--finance {
       left: auto;
       right: 4%;
-      top: 58%;
-    }
-
-    .story.is-scrolly .frag--staffing {
-      left: 8%;
-      top: 79%;
+      top: 74%;
     }
 
     .issue__caution {

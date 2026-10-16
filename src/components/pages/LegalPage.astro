@@ -9,76 +9,144 @@ interface Props {
   lang: Locale;
 }
 
+// German law (DDG, MStV, UStG) governs this notice, so those references stay as they are in every language.
+// The Arabic and Italian versions are translations of the English and German draft and still need legal review.
 const { lang } = Astro.props;
 const d = t(lang);
-const de = lang === 'de';
+const L = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it })[lang];
 const incomplete = legalMissing().length > 0;
-const miss = (en: string, deText: string) => (de ? `Fehlt: ${deText}` : `Missing: ${en}`);
+const missWord = L('Missing', 'Fehlt', 'ناقص', 'Mancante');
+const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: ${L(en, de, ar, it)}`;
 ---
 
 <Base lang={lang} page="legal" title={d.meta.legalTitle} description={d.meta.legalDescription} noindex={incomplete}>
-  <LegalShell lang={lang} title={de ? 'Impressum' : 'Legal notice'}>
-    <h2>{de ? 'Angaben gemäß § 5 DDG' : 'Information pursuant to § 5 DDG (German Digital Services Act)'}</h2>
+  <LegalShell lang={lang} title={L('Legal notice', 'Impressum', 'البيانات القانونية', 'Note legali')}>
+    <h2>
+      {
+        L(
+          'Information pursuant to § 5 DDG (German Digital Services Act)',
+          'Angaben gemäß § 5 DDG',
+          'بيانات وفقًا للمادة 5 من DDG (قانون الخدمات الرقمية الألماني)',
+          'Informazioni ai sensi del § 5 DDG (legge tedesca sui servizi digitali)',
+        )
+      }
+    </h2>
     <address>
-      {legal.operator ?? <Missing label={miss('operator name', 'Name des Anbieters')} />}
+      {legal.operator ?? <Missing label={miss('operator name', 'Name des Anbieters', 'اسم المشغّل', 'nome del gestore')} />}
       <br />
-      {legal.address ? legal.address.map((l) => <>{l}<br /></>) : <Missing label={miss('postal address', 'Anschrift')} />}
+      {legal.address ? legal.address.map((l) => <>{l}<br /></>) : <Missing label={miss('postal address', 'Anschrift', 'العنوان البريدي', 'indirizzo postale')} />}
     </address>
 
-    <h3>{de ? 'Vertreten durch' : 'Represented by'}</h3>
-    <p>{legal.representative ?? <Missing label={miss('legal representative, if a company', 'Vertretung, falls Gesellschaft')} />}</p>
-
-    <h3>{de ? 'Kontakt' : 'Contact'}</h3>
-    <p>
-      {de ? 'E-Mail' : 'Email'}: <a href={`mailto:${legal.email}`}>{legal.email}</a>
-      {legal.phone && <><br />{de ? 'Telefon' : 'Phone'}: {legal.phone}</>}
-    </p>
-
-    <h3>{de ? 'Registereintrag' : 'Register entry'}</h3>
-    <p>{legal.register ?? <Missing label={miss('register court and number, if registered', 'Registergericht und -nummer, falls eingetragen')} />}</p>
-
-    <h3>{de ? 'Umsatzsteuer-ID' : 'VAT ID'}</h3>
-    <p>
-      {de ? 'Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: ' : 'VAT identification number under § 27a UStG: '}
-      {legal.vatId ?? <Missing label={miss('VAT ID, if one exists', 'USt-IdNr., falls vorhanden')} />}
-    </p>
-
-    <h3>{de ? 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV' : 'Responsible for content under § 18 (2) MStV'}</h3>
-    <p>{legal.contentResponsible ?? <Missing label={miss('responsible person', 'verantwortliche Person')} />}</p>
-
-    <h2>{de ? 'Verbraucherstreitbeilegung' : 'Consumer dispute resolution'}</h2>
+    <h3>{L('Represented by', 'Vertreten durch', 'يمثّلها', 'Rappresentata da')}</h3>
     <p>
       {
-        de
-          ? 'Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.'
-          : 'We are neither obliged nor willing to take part in dispute resolution proceedings before a consumer arbitration board.'
+        legal.representative ?? (
+          <Missing
+            label={miss(
+              'legal representative, if a company',
+              'Vertretung, falls Gesellschaft',
+              'الممثل القانوني، إذا كان المشغّل شركة',
+              'rappresentante legale, se società',
+            )}
+          />
+        )
       }
     </p>
 
-    <h2>{de ? 'Haftung für Inhalte' : 'Liability for content'}</h2>
+    <h3>{L('Contact', 'Kontakt', 'التواصل', 'Contatti')}</h3>
+    <p>
+      {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>
+      {legal.phone && <><br />{L('Phone', 'Telefon', 'الهاتف', 'Telefono')}: <span dir="ltr">{legal.phone}</span></>}
+    </p>
+
+    <h3>{L('Register entry', 'Registereintrag', 'القيد في السجل التجاري', 'Iscrizione al registro delle imprese')}</h3>
     <p>
       {
-        de
-          ? 'Wir erstellen die Inhalte dieser Website mit Sorgfalt. Für Richtigkeit, Vollständigkeit und Aktualität übernehmen wir jedoch keine Gewähr, soweit gesetzlich zulässig. Die interaktive Demo zeigt eine Simulation mit fiktiven Daten und stellt keine Zusage zu Funktionsumfang oder Ergebnissen dar.'
-          : 'We prepare the content of this website with care. To the extent permitted by law, however, we accept no liability for its accuracy, completeness or timeliness. The interactive demo is a simulation with fictional data and is not a commitment to specific features or results.'
+        legal.register ?? (
+          <Missing
+            label={miss(
+              'register court and number, if registered',
+              'Registergericht und -nummer, falls eingetragen',
+              'محكمة السجل ورقم القيد، إن وُجد تسجيل',
+              'tribunale e numero di iscrizione, se iscritta',
+            )}
+          />
+        )
       }
     </p>
 
-    <h2>{de ? 'Haftung für Links' : 'Liability for links'}</h2>
+    <h3>{L('VAT ID', 'Umsatzsteuer-ID', 'رقم ضريبة القيمة المضافة', 'Partita IVA')}</h3>
     <p>
       {
-        de
-          ? 'Diese Website enthält Links zu Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für diese Inhalte ist der jeweilige Anbieter verantwortlich. Werden uns Rechtsverletzungen bekannt, entfernen wir solche Links umgehend.'
-          : 'This website contains links to third-party websites whose content we do not control. The respective provider is responsible for that content. If we become aware of any legal violations, we will remove such links promptly.'
+        L(
+          'VAT identification number under § 27a UStG: ',
+          'Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: ',
+          'رقم التعريف الضريبي لضريبة القيمة المضافة بموجب المادة 27a من UStG: ',
+          'Numero di identificazione IVA ai sensi del § 27a UStG: ',
+        )
+      }
+      {legal.vatId ?? <Missing label={miss('VAT ID, if one exists', 'USt-IdNr., falls vorhanden', 'الرقم الضريبي، إن وُجد', 'partita IVA, se esistente')} />}
+    </p>
+
+    <h3>
+      {
+        L(
+          'Responsible for content under § 18 (2) MStV',
+          'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV',
+          'المسؤول عن المحتوى بموجب المادة 18 (2) من MStV',
+          'Responsabile dei contenuti ai sensi del § 18 (2) MStV',
+        )
+      }
+    </h3>
+    <p>
+      {legal.contentResponsible ?? <Missing label={miss('responsible person', 'verantwortliche Person', 'الشخص المسؤول', 'persona responsabile')} />}
+    </p>
+
+    <h2>{L('Consumer dispute resolution', 'Verbraucherstreitbeilegung', 'تسوية نزاعات المستهلكين', 'Risoluzione delle controversie dei consumatori')}</h2>
+    <p>
+      {
+        L(
+          'We are neither obliged nor willing to take part in dispute resolution proceedings before a consumer arbitration board.',
+          'Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.',
+          'لسنا ملزمين ولا مستعدين للمشاركة في إجراءات تسوية النزاعات أمام هيئة تحكيم للمستهلكين.',
+          'Non siamo obbligati né disposti a partecipare a procedure di risoluzione delle controversie davanti a un organismo di conciliazione per i consumatori.',
+        )
       }
     </p>
 
-    <h2>{de ? 'Urheberrecht' : 'Copyright'}</h2>
+    <h2>{L('Liability for content', 'Haftung für Inhalte', 'المسؤولية عن المحتوى', 'Responsabilità per i contenuti')}</h2>
     <p>
       {
-        de
-          ? 'Die Inhalte dieser Website, einschließlich Texten, Bildern, Videos und des Tyll-Logos, unterliegen dem Urheberrecht. Jede Verwertung außerhalb der gesetzlichen Grenzen bedarf unserer vorherigen Zustimmung. Zitierte Studien sind Eigentum ihrer jeweiligen Urheber.'
-          : 'The content of this website, including text, images, video and the Tyll logo, is protected by copyright. Any use beyond what the law permits requires our prior consent. Research we quote remains the property of its respective authors.'
+        L(
+          'We prepare the content of this website with care. To the extent permitted by law, however, we accept no liability for its accuracy, completeness or timeliness. The interactive demo is a simulation with fictional data and is not a commitment to specific features or results.',
+          'Wir erstellen die Inhalte dieser Website mit Sorgfalt. Für Richtigkeit, Vollständigkeit und Aktualität übernehmen wir jedoch keine Gewähr, soweit gesetzlich zulässig. Die interaktive Demo zeigt eine Simulation mit fiktiven Daten und stellt keine Zusage zu Funktionsumfang oder Ergebnissen dar.',
+          'نُعدّ محتوى هذا الموقع بعناية. ومع ذلك، وفي الحدود التي يسمح بها القانون، لا نتحمل أي مسؤولية عن دقته أو اكتماله أو حداثته. العرض التوضيحي التفاعلي محاكاة ببيانات وهمية، ولا يمثّل التزامًا بوظائف أو نتائج محددة.',
+          'Prepariamo i contenuti di questo sito con cura. Nei limiti consentiti dalla legge, tuttavia, non ci assumiamo alcuna responsabilità per la loro correttezza, completezza o attualità. La demo interattiva è una simulazione con dati fittizi e non costituisce un impegno su funzionalità o risultati specifici.',
+        )
+      }
+    </p>
+
+    <h2>{L('Liability for links', 'Haftung für Links', 'المسؤولية عن الروابط', 'Responsabilità per i link')}</h2>
+    <p>
+      {
+        L(
+          'This website contains links to third-party websites whose content we do not control. The respective provider is responsible for that content. If we become aware of any legal violations, we will remove such links promptly.',
+          'Diese Website enthält Links zu Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für diese Inhalte ist der jeweilige Anbieter verantwortlich. Werden uns Rechtsverletzungen bekannt, entfernen wir solche Links umgehend.',
+          'يحتوي هذا الموقع على روابط لمواقع تابعة لأطراف ثالثة لا نتحكم في محتواها. ويتحمل مزوّد كل موقع المسؤولية عن محتواه. وإذا علمنا بأي مخالفة قانونية، فسنزيل هذه الروابط فورًا.',
+          'Questo sito contiene link a siti di terzi di cui non controlliamo i contenuti. Di tali contenuti risponde il rispettivo gestore. Se veniamo a conoscenza di violazioni di legge, rimuoveremo tempestivamente quei link.',
+        )
+      }
+    </p>
+
+    <h2>{L('Copyright', 'Urheberrecht', 'حقوق النشر', 'Diritto d’autore')}</h2>
+    <p>
+      {
+        L(
+          'The content of this website, including text, images, video and the Tyll logo, is protected by copyright. Any use beyond what the law permits requires our prior consent. Research we quote remains the property of its respective authors.',
+          'Die Inhalte dieser Website, einschließlich Texten, Bildern, Videos und des Tyll-Logos, unterliegen dem Urheberrecht. Jede Verwertung außerhalb der gesetzlichen Grenzen bedarf unserer vorherigen Zustimmung. Zitierte Studien sind Eigentum ihrer jeweiligen Urheber.',
+          'محتوى هذا الموقع، بما في ذلك النصوص والصور والفيديو وشعار Tyll، محمي بموجب حقوق النشر. ويتطلب أي استخدام يتجاوز ما يسمح به القانون موافقتنا المسبقة. وتبقى الأبحاث التي نقتبس منها ملكًا لمؤلفيها.',
+          'I contenuti di questo sito, inclusi testi, immagini, video e il logo Tyll, sono protetti dal diritto d’autore. Qualsiasi utilizzo oltre i limiti di legge richiede il nostro consenso preventivo. Le ricerche citate restano di proprietà dei rispettivi autori.',
+        )
       }
     </p>
   </LegalShell>

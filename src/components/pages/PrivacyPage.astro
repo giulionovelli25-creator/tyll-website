@@ -1,6 +1,8 @@
 ---
 // Privacy policy. Sections for optional services (analytics, Meta Pixel, Calendly, social links) appear only
 // when that service is configured, so the text always matches what the site actually loads.
+// The legal framework is the GDPR and German law, so article references stay the same in every language.
+// The Arabic and Italian versions are translations of the English and German draft and still need legal review.
 import Base from '../../layouts/Base.astro';
 import LegalShell from './LegalShell.astro';
 import Missing from './Missing.astro';
@@ -14,86 +16,172 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
-const de = lang === 'de';
-const L = (en: string, deText: string) => (de ? deText : en);
+const L = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it })[lang];
 const incomplete = legalMissing().length > 0;
 const analytics = site.analytics.provider && site.analytics.id ? site.analytics.provider : undefined;
 const pixel = Boolean(site.metaPixelId);
 const consentNeeded = Boolean(analytics || pixel);
 const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'Instagram'].filter(Boolean) as string[];
+const and = L(' and ', ' und ', ' و', ' e ');
 ---
 
 <Base lang={lang} page="privacy" title={d.meta.privacyTitle} description={d.meta.privacyDescription} noindex={incomplete}>
-  <LegalShell lang={lang} title={L('Privacy policy', 'Datenschutzerklärung')}>
+  <LegalShell lang={lang} title={L('Privacy policy', 'Datenschutzerklärung', 'سياسة الخصوصية', 'Informativa sulla privacy')}>
     <p>
       {
         L(
           'This policy explains which personal data is processed when you visit the Tyll website, why, and what rights you have. It covers this website only. The interactive Tyll demo is a separate application with its own information.',
           'Diese Erklärung beschreibt, welche personenbezogenen Daten beim Besuch der Tyll-Website verarbeitet werden, zu welchem Zweck und welche Rechte Sie haben. Sie gilt nur für diese Website. Die interaktive Tyll-Demo ist eine eigene Anwendung mit eigenen Hinweisen.',
+          'توضح هذه السياسة البيانات الشخصية التي تُعالج عند زيارتك لموقع Tyll، وسبب معالجتها، والحقوق التي تتمتع بها. وهي تشمل هذا الموقع فقط. أما العرض التوضيحي التفاعلي لـ Tyll فهو تطبيق مستقل له معلوماته الخاصة.',
+          'Questa informativa spiega quali dati personali vengono trattati quando visiti il sito di Tyll, per quale motivo e quali diritti hai. Riguarda solo questo sito. La demo interattiva di Tyll è un’applicazione separata con una propria informativa.',
         )
       }
     </p>
 
-    <h2 id="controller">{L('Who is responsible', 'Verantwortlicher')}</h2>
-    <p>{L('The controller under Art. 4(7) GDPR is:', 'Verantwortlicher im Sinne von Art. 4 Nr. 7 DSGVO ist:')}</p>
+    <h2 id="controller">{L('Who is responsible', 'Verantwortlicher', 'الجهة المسؤولة', 'Titolare del trattamento')}</h2>
+    <p>
+      {
+        L(
+          'The controller under Art. 4(7) GDPR is:',
+          'Verantwortlicher im Sinne von Art. 4 Nr. 7 DSGVO ist:',
+          'المسؤول عن المعالجة بموجب المادة 4 (7) من اللائحة العامة لحماية البيانات (GDPR) هو:',
+          'Il titolare del trattamento ai sensi dell’art. 4, punto 7, del GDPR è:',
+        )
+      }
+    </p>
     <address>
-      {legal.operator ?? <Missing label={L('Missing: operator name', 'Fehlt: Name des Anbieters')} />}
+      {legal.operator ?? <Missing label={L('Missing: operator name', 'Fehlt: Name des Anbieters', 'ناقص: اسم المشغّل', 'Mancante: nome del gestore')} />}
       <br />
-      {legal.address ? legal.address.map((l) => <>{l}<br /></>) : <Missing label={L('Missing: postal address', 'Fehlt: Anschrift')} />}
+      {
+        legal.address ? (
+          legal.address.map((l) => <>{l}<br /></>)
+        ) : (
+          <Missing label={L('Missing: postal address', 'Fehlt: Anschrift', 'ناقص: العنوان البريدي', 'Mancante: indirizzo postale')} />
+        )
+      }
       <br />
-      {L('Email', 'E-Mail')}: <a href={`mailto:${legal.email}`}>{legal.email}</a>
+      {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>
     </address>
 
-    <h2 id="bases">{L('Legal bases', 'Rechtsgrundlagen')}</h2>
-    <p>{L('Depending on the purpose, we process personal data on these legal bases:', 'Je nach Zweck verarbeiten wir personenbezogene Daten auf folgenden Rechtsgrundlagen:')}</p>
+    <h2 id="bases">{L('Legal bases', 'Rechtsgrundlagen', 'الأسس القانونية', 'Basi giuridiche')}</h2>
+    <p>
+      {
+        L(
+          'Depending on the purpose, we process personal data on these legal bases:',
+          'Je nach Zweck verarbeiten wir personenbezogene Daten auf folgenden Rechtsgrundlagen:',
+          'بحسب الغرض، نعالج البيانات الشخصية استنادًا إلى الأسس القانونية التالية:',
+          'A seconda della finalità, trattiamo i dati personali sulle seguenti basi giuridiche:',
+        )
+      }
+    </p>
     <ul>
-      <li>{L('Art. 6(1)(a) GDPR: your consent, which you can withdraw at any time with effect for the future.', 'Art. 6 Abs. 1 lit. a DSGVO: Ihre Einwilligung, die Sie jederzeit mit Wirkung für die Zukunft widerrufen können.')}</li>
-      <li>{L('Art. 6(1)(b) GDPR: steps taken at your request before a possible contract, such as arranging a call.', 'Art. 6 Abs. 1 lit. b DSGVO: vorvertragliche Maßnahmen auf Ihre Anfrage, etwa die Vereinbarung eines Gesprächs.')}</li>
-      <li>{L('Art. 6(1)(c) GDPR: legal obligations, such as retention duties under commercial and tax law.', 'Art. 6 Abs. 1 lit. c DSGVO: rechtliche Pflichten, etwa handels- und steuerrechtliche Aufbewahrungspflichten.')}</li>
-      <li>{L('Art. 6(1)(f) GDPR: our legitimate interest in running a secure and reliable website and answering enquiries.', 'Art. 6 Abs. 1 lit. f DSGVO: unser berechtigtes Interesse an einem sicheren, stabilen Betrieb der Website und an der Beantwortung von Anfragen.')}</li>
+      <li>
+        {
+          L(
+            'Art. 6(1)(a) GDPR: your consent, which you can withdraw at any time with effect for the future.',
+            'Art. 6 Abs. 1 lit. a DSGVO: Ihre Einwilligung, die Sie jederzeit mit Wirkung für die Zukunft widerrufen können.',
+            'المادة 6 (1) (أ) من GDPR: موافقتك، التي يمكنك سحبها في أي وقت بأثر مستقبلي.',
+            'Art. 6, par. 1, lett. a) GDPR: il tuo consenso, che puoi revocare in qualsiasi momento con effetto per il futuro.',
+          )
+        }
+      </li>
+      <li>
+        {
+          L(
+            'Art. 6(1)(b) GDPR: steps taken at your request before a possible contract, such as arranging a call.',
+            'Art. 6 Abs. 1 lit. b DSGVO: vorvertragliche Maßnahmen auf Ihre Anfrage, etwa die Vereinbarung eines Gesprächs.',
+            'المادة 6 (1) (ب) من GDPR: خطوات تُتخذ بناءً على طلبك قبل إبرام عقد محتمل، مثل ترتيب مكالمة.',
+            'Art. 6, par. 1, lett. b) GDPR: misure precontrattuali adottate su tua richiesta, come fissare una chiamata.',
+          )
+        }
+      </li>
+      <li>
+        {
+          L(
+            'Art. 6(1)(c) GDPR: legal obligations, such as retention duties under commercial and tax law.',
+            'Art. 6 Abs. 1 lit. c DSGVO: rechtliche Pflichten, etwa handels- und steuerrechtliche Aufbewahrungspflichten.',
+            'المادة 6 (1) (ج) من GDPR: الالتزامات القانونية، مثل واجبات الاحتفاظ بموجب القانون التجاري والضريبي.',
+            'Art. 6, par. 1, lett. c) GDPR: obblighi di legge, come gli obblighi di conservazione previsti dalla normativa commerciale e fiscale.',
+          )
+        }
+      </li>
+      <li>
+        {
+          L(
+            'Art. 6(1)(f) GDPR: our legitimate interest in running a secure and reliable website and answering enquiries.',
+            'Art. 6 Abs. 1 lit. f DSGVO: unser berechtigtes Interesse an einem sicheren, stabilen Betrieb der Website und an der Beantwortung von Anfragen.',
+            'المادة 6 (1) (و) من GDPR: مصلحتنا المشروعة في تشغيل موقع آمن وموثوق والرد على الاستفسارات.',
+            'Art. 6, par. 1, lett. f) GDPR: il nostro legittimo interesse a gestire un sito sicuro e affidabile e a rispondere alle richieste.',
+          )
+        }
+      </li>
     </ul>
     <p>
       {
         L(
           'Storing information on your device or reading it from there is governed additionally by § 25 TDDDG (German Telecommunications Digital Services Data Protection Act): it requires your consent unless it is strictly necessary for a service you have requested.',
           'Für das Speichern von Informationen auf Ihrem Endgerät und den Zugriff darauf gilt zusätzlich § 25 TDDDG: Es erfordert Ihre Einwilligung, sofern es nicht für einen von Ihnen gewünschten Dienst unbedingt erforderlich ist.',
+          'يخضع تخزين المعلومات على جهازك أو قراءتها منه أيضًا للمادة 25 من TDDDG (القانون الألماني لحماية البيانات في الاتصالات والخدمات الرقمية): إذ يتطلب موافقتك، ما لم يكن ضروريًا تمامًا لخدمة طلبتها.',
+          'La memorizzazione di informazioni sul tuo dispositivo o la loro lettura è inoltre disciplinata dal § 25 TDDDG (legge tedesca sulla protezione dei dati nelle telecomunicazioni e nei servizi digitali): richiede il tuo consenso, salvo che sia strettamente necessaria per un servizio da te richiesto.',
         )
       }
     </p>
 
-    <h2 id="hosting">{L('Hosting and server log files', 'Hosting und Server-Logfiles')}</h2>
+    <h2 id="hosting">{L('Hosting and server log files', 'Hosting und Server-Logfiles', 'الاستضافة وسجلات الخادم', 'Hosting e file di log del server')}</h2>
     <p>
-      {L('This website is hosted by ', 'Diese Website wird gehostet von ')}
-      {legal.hosting.name ?? <Missing label={L('Missing: hosting provider', 'Fehlt: Hosting-Anbieter')} />}
-      {legal.hosting.address && `, ${legal.hosting.address}`}
+      {L('This website is hosted by ', 'Diese Website wird gehostet von ', 'يستضيف هذا الموقع ', 'Questo sito è ospitato da ')}
+      {legal.hosting.name ?? <Missing label={L('Missing: hosting provider', 'Fehlt: Hosting-Anbieter', 'ناقص: مزوّد الاستضافة', 'Mancante: fornitore di hosting')} />}
+      {legal.hosting.address && <span dir="ltr">, {legal.hosting.address}</span>}
       {
         L(
           ', which processes data on our behalf under a data processing agreement (Art. 28 GDPR). Content is delivered through a worldwide network, so servers in the USA may be involved. Transfers to the USA are based on the EU-U.S. Data Privacy Framework (Art. 45 GDPR), in which the provider participates, and on standard contractual clauses (Art. 46(2)(c) GDPR).',
           ', der die Daten in unserem Auftrag auf Grundlage eines Auftragsverarbeitungsvertrags (Art. 28 DSGVO) verarbeitet. Die Auslieferung erfolgt über ein weltweites Netzwerk, sodass auch Server in den USA beteiligt sein können. Übermittlungen in die USA stützen sich auf das EU-US Data Privacy Framework (Art. 45 DSGVO), an dem der Anbieter teilnimmt, sowie auf Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO).',
+          '، التي تعالج البيانات نيابةً عنا بموجب اتفاقية معالجة بيانات (المادة 28 من GDPR). ويُقدَّم المحتوى عبر شبكة عالمية، لذا قد تشارك خوادم في الولايات المتحدة الأمريكية. وتستند عمليات النقل إلى الولايات المتحدة إلى إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة (المادة 45 من GDPR) الذي يشارك فيه المزوّد، وإلى البنود التعاقدية القياسية (المادة 46 (2) (ج) من GDPR).',
+          ', che tratta i dati per nostro conto sulla base di un accordo sul trattamento dei dati (art. 28 GDPR). I contenuti vengono distribuiti tramite una rete mondiale, quindi possono essere coinvolti server negli Stati Uniti. I trasferimenti verso gli Stati Uniti si basano sull’EU-U.S. Data Privacy Framework (art. 45 GDPR), a cui il fornitore aderisce, e sulle clausole contrattuali standard (art. 46, par. 2, lett. c) GDPR).',
         )
       }
-      {!legal.hosting.confirmed && <> <Missing label={L('To confirm: hosting and data processing agreement for this site', 'Zu bestätigen: Hosting und Auftragsverarbeitungsvertrag für diese Website')} /></>}
+      {
+        !legal.hosting.confirmed && (
+          <>
+            {' '}
+            <Missing
+              label={L(
+                'To confirm: hosting and data processing agreement for this site',
+                'Zu bestätigen: Hosting und Auftragsverarbeitungsvertrag für diese Website',
+                'للتأكيد: الاستضافة واتفاقية معالجة البيانات لهذا الموقع',
+                'Da confermare: hosting e accordo sul trattamento dei dati per questo sito',
+              )}
+            />
+          </>
+        )
+      }
     </p>
     <p>
       {
         L(
           'Each time a page is requested, the server automatically records technical data: IP address, date and time, the page requested, the referring page, and browser and operating system information. We use this only to deliver the website and keep it secure (Art. 6(1)(f) GDPR). The log files are kept only as long as the hosting provider needs them for these purposes.',
           'Bei jedem Seitenabruf speichert der Server automatisch technische Daten: IP-Adresse, Datum und Uhrzeit, die aufgerufene Seite, die verweisende Seite sowie Angaben zu Browser und Betriebssystem. Wir nutzen diese Daten nur, um die Website auszuliefern und abzusichern (Art. 6 Abs. 1 lit. f DSGVO). Die Logfiles werden nur so lange gespeichert, wie der Hosting-Anbieter sie für diese Zwecke benötigt.',
+          'في كل مرة تُطلب فيها صفحة، يسجّل الخادم تلقائيًا بيانات تقنية: عنوان IP، والتاريخ والوقت، والصفحة المطلوبة، والصفحة المُحيلة، ومعلومات المتصفح ونظام التشغيل. ولا نستخدم هذه البيانات إلا لتقديم الموقع والحفاظ على أمنه (المادة 6 (1) (و) من GDPR). وتُحفظ ملفات السجل فقط طوال المدة التي يحتاجها مزوّد الاستضافة لهذه الأغراض.',
+          'A ogni richiesta di pagina, il server registra automaticamente dati tecnici: indirizzo IP, data e ora, pagina richiesta, pagina di provenienza e informazioni su browser e sistema operativo. Usiamo questi dati solo per fornire il sito e mantenerlo sicuro (art. 6, par. 1, lett. f) GDPR). I file di log vengono conservati solo per il tempo necessario al fornitore di hosting per queste finalità.',
         )
       }
     </p>
 
-    <h2 id="assets">{L('Fonts, images and video', 'Schriften, Bilder und Video')}</h2>
+    <h2 id="assets">{L('Fonts, images and video', 'Schriften, Bilder und Video', 'الخطوط والصور والفيديو', 'Font, immagini e video')}</h2>
     <p>
       {
         L(
           'Fonts, images and the video on this website are served from our own hosting. Loading a page does not connect your browser to font services, video platforms or other third parties.',
           'Schriften, Bilder und das Video auf dieser Website werden von unserem eigenen Hosting ausgeliefert. Beim Laden einer Seite verbindet sich Ihr Browser nicht mit Schriftdiensten, Videoplattformen oder anderen Dritten.',
+          'تُقدَّم الخطوط والصور والفيديو في هذا الموقع من استضافتنا الخاصة. ولا يؤدي تحميل أي صفحة إلى اتصال متصفحك بخدمات الخطوط أو منصات الفيديو أو أي أطراف ثالثة أخرى.',
+          'Font, immagini e video di questo sito vengono forniti dal nostro hosting. Caricare una pagina non collega il tuo browser a servizi di font, piattaforme video o altri soggetti terzi.',
         )
       }
     </p>
 
-    <h2 id="cookies">{L('Cookies and your consent choices', 'Cookies und Ihre Einwilligung')}</h2>
+    <h2 id="cookies">
+      {L('Cookies and your consent choices', 'Cookies und Ihre Einwilligung', 'ملفات تعريف الارتباط وخيارات موافقتك', 'Cookie e scelte sul consenso')}
+    </h2>
     {
       consentNeeded ? (
         <>
@@ -101,12 +189,16 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
             {L(
               'The services in the sections below that need your consent only start after you allow them in our cookie banner. You can accept or reject them with one click each, or choose individually under “Preferences”. You can change your choice at any time under “Cookie preferences” at the bottom of every page.',
               'Die einwilligungspflichtigen Dienste in den folgenden Abschnitten starten erst, nachdem Sie sie in unserem Cookie-Banner erlaubt haben. Sie können sie mit je einem Klick annehmen oder ablehnen oder unter „Einstellungen“ einzeln auswählen und Ihre Wahl jederzeit unter „Cookie-Einstellungen“ am Ende jeder Seite ändern.',
+              'لا تبدأ الخدمات التي تتطلب موافقتك في الأقسام التالية إلا بعد أن تسمح بها في شريط ملفات تعريف الارتباط. يمكنك قبولها أو رفضها بنقرة واحدة لكلٍّ منهما، أو الاختيار بشكل فردي ضمن «التفضيلات». ويمكنك تغيير اختيارك في أي وقت عبر «تفضيلات ملفات تعريف الارتباط» أسفل كل صفحة.',
+              'I servizi descritti nelle sezioni seguenti che richiedono il tuo consenso si avviano solo dopo che li hai autorizzati nel nostro banner dei cookie. Puoi accettarli o rifiutarli con un clic, oppure sceglierli singolarmente in “Preferenze”. Puoi cambiare la tua scelta in qualsiasi momento da “Preferenze sui cookie” in fondo a ogni pagina.',
             )}
           </p>
           <p>
             {L(
               'Your choice itself is saved in your browser’s local storage under the name “tyll-consent”, together with the date, so we don’t ask again on every page. This is strictly necessary to respect your choice (§ 25(2) TDDDG). We ask again after twelve months.',
               'Ihre Wahl selbst wird mit Datum im lokalen Speicher Ihres Browsers unter dem Namen „tyll-consent“ gespeichert, damit wir nicht auf jeder Seite erneut fragen. Das ist unbedingt erforderlich, um Ihre Wahl zu beachten (§ 25 Abs. 2 TDDDG). Nach zwölf Monaten fragen wir erneut.',
+              'يُحفظ اختيارك نفسه مع التاريخ في التخزين المحلي لمتصفحك باسم «tyll-consent»، حتى لا نسألك مجددًا في كل صفحة. وهذا ضروري تمامًا لاحترام اختيارك (المادة 25 (2) من TDDDG). ونسألك مجددًا بعد اثني عشر شهرًا.',
+              'La tua scelta viene salvata, insieme alla data, nella memoria locale del browser con il nome “tyll-consent”, così non te la chiediamo a ogni pagina. Questo è strettamente necessario per rispettare la tua scelta (§ 25, comma 2, TDDDG). Te la chiediamo di nuovo dopo dodici mesi.',
             )}
           </p>
         </>
@@ -115,6 +207,8 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
           {L(
             'This website currently sets no cookies and uses no analytics or advertising services, so there is nothing to consent to when you browse it. If we add such a service, we will update this policy and ask for your consent before it starts.',
             'Diese Website setzt derzeit keine Cookies und nutzt keine Analyse- oder Werbedienste; beim Surfen gibt es daher nichts einzuwilligen. Sollten wir einen solchen Dienst ergänzen, passen wir diese Erklärung an und fragen vor dem Start nach Ihrer Einwilligung.',
+            'لا يضع هذا الموقع حاليًا أي ملفات تعريف ارتباط ولا يستخدم أي خدمات تحليل أو إعلان، لذا لا يوجد ما يتطلب موافقتك أثناء تصفحه. وإذا أضفنا خدمة من هذا النوع، فسنحدّث هذه السياسة ونطلب موافقتك قبل تشغيلها.',
+            'Al momento questo sito non imposta cookie e non usa servizi di analisi o pubblicità, quindi non c’è nulla a cui acconsentire durante la navigazione. Se aggiungeremo un servizio di questo tipo, aggiorneremo questa informativa e chiederemo il tuo consenso prima di attivarlo.',
           )}
         </p>
       )
@@ -123,11 +217,20 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
     {
       analytics === 'plausible' && (
         <>
-          <h2 id="analytics">{L('Website statistics (Plausible Analytics)', 'Website-Statistik (Plausible Analytics)')}</h2>
+          <h2 id="analytics">
+            {L(
+              'Website statistics (Plausible Analytics)',
+              'Website-Statistik (Plausible Analytics)',
+              'إحصاءات الموقع (Plausible Analytics)',
+              'Statistiche del sito (Plausible Analytics)',
+            )}
+          </h2>
           <p>
             {L(
               'With your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG), we use Plausible Analytics from Plausible Insights OÜ, Västriku tn 2, 50403 Tartu, Estonia, to understand how the website is used, for example how often the booking and demo buttons are clicked. Plausible works without cookies and processes data in the EU. Your IP address is used only to produce a daily changing anonymous identifier and is not stored. We do not send names, email addresses or other personal details to Plausible.',
               'Mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG) nutzen wir Plausible Analytics der Plausible Insights OÜ, Västriku tn 2, 50403 Tartu, Estland, um zu verstehen, wie die Website genutzt wird, etwa wie oft die Buchungs- und Demo-Schaltflächen angeklickt werden. Plausible arbeitet ohne Cookies und verarbeitet Daten in der EU. Ihre IP-Adresse wird nur zur Bildung einer täglich wechselnden anonymen Kennung verwendet und nicht gespeichert. Namen, E-Mail-Adressen oder andere persönliche Angaben übermitteln wir nicht an Plausible.',
+              'بموافقتك (المادة 6 (1) (أ) من GDPR، والمادة 25 (1) من TDDDG)، نستخدم Plausible Analytics من شركة Plausible Insights OÜ، Västriku tn 2, 50403 Tartu، إستونيا، لفهم كيفية استخدام الموقع، مثل عدد مرات النقر على زرَّي الحجز والعرض التوضيحي. يعمل Plausible دون ملفات تعريف ارتباط ويعالج البيانات داخل الاتحاد الأوروبي. ويُستخدم عنوان IP الخاص بك فقط لإنشاء معرّف مجهول يتغير يوميًا، ولا يُخزَّن. ولا نرسل إلى Plausible أي أسماء أو عناوين بريد إلكتروني أو بيانات شخصية أخرى.',
+              'Con il tuo consenso (art. 6, par. 1, lett. a) GDPR, § 25, comma 1, TDDDG) usiamo Plausible Analytics di Plausible Insights OÜ, Västriku tn 2, 50403 Tartu, Estonia, per capire come viene usato il sito, ad esempio quante volte vengono cliccati i pulsanti di prenotazione e della demo. Plausible funziona senza cookie e tratta i dati nell’UE. Il tuo indirizzo IP viene usato solo per generare un identificativo anonimo che cambia ogni giorno e non viene memorizzato. Non inviamo a Plausible nomi, indirizzi email o altri dati personali.',
             )}
           </p>
         </>
@@ -136,11 +239,20 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
     {
       analytics === 'ga4' && (
         <>
-          <h2 id="analytics">{L('Website statistics (Google Analytics 4)', 'Website-Statistik (Google Analytics 4)')}</h2>
+          <h2 id="analytics">
+            {L(
+              'Website statistics (Google Analytics 4)',
+              'Website-Statistik (Google Analytics 4)',
+              'إحصاءات الموقع (Google Analytics 4)',
+              'Statistiche del sito (Google Analytics 4)',
+            )}
+          </h2>
           <p>
             {L(
               'With your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG), we use Google Analytics 4 from Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland, to understand how the website is used, for example how often the booking and demo buttons are clicked. Google Analytics sets cookies (such as “_ga”) and processes usage data, including a shortened IP address. Data may be transferred to Google LLC in the USA; this is based on the EU-U.S. Data Privacy Framework (Art. 45 GDPR). We do not send names, email addresses or other personal details to Google.',
               'Mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG) nutzen wir Google Analytics 4 der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, um zu verstehen, wie die Website genutzt wird, etwa wie oft die Buchungs- und Demo-Schaltflächen angeklickt werden. Google Analytics setzt Cookies (etwa „_ga“) und verarbeitet Nutzungsdaten einschließlich einer gekürzten IP-Adresse. Daten können an Google LLC in den USA übermittelt werden; Grundlage ist das EU-US Data Privacy Framework (Art. 45 DSGVO). Namen, E-Mail-Adressen oder andere persönliche Angaben übermitteln wir nicht an Google.',
+              'بموافقتك (المادة 6 (1) (أ) من GDPR، والمادة 25 (1) من TDDDG)، نستخدم Google Analytics 4 من شركة Google Ireland Limited، Gordon House, Barrow Street, Dublin 4، أيرلندا، لفهم كيفية استخدام الموقع، مثل عدد مرات النقر على زرَّي الحجز والعرض التوضيحي. يضع Google Analytics ملفات تعريف ارتباط (مثل «_ga») ويعالج بيانات الاستخدام، بما في ذلك عنوان IP مختصر. وقد تُنقل البيانات إلى Google LLC في الولايات المتحدة الأمريكية، استنادًا إلى إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة (المادة 45 من GDPR). ولا نرسل إلى Google أي أسماء أو عناوين بريد إلكتروني أو بيانات شخصية أخرى.',
+              'Con il tuo consenso (art. 6, par. 1, lett. a) GDPR, § 25, comma 1, TDDDG) usiamo Google Analytics 4 di Google Ireland Limited, Gordon House, Barrow Street, Dublino 4, Irlanda, per capire come viene usato il sito, ad esempio quante volte vengono cliccati i pulsanti di prenotazione e della demo. Google Analytics imposta cookie (come “_ga”) e tratta dati di utilizzo, incluso un indirizzo IP abbreviato. I dati possono essere trasferiti a Google LLC negli Stati Uniti, sulla base dell’EU-U.S. Data Privacy Framework (art. 45 GDPR). Non inviamo a Google nomi, indirizzi email o altri dati personali.',
             )}
           </p>
         </>
@@ -150,18 +262,20 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
     {
       pixel && (
         <>
-          <h2 id="meta-pixel">{L('Meta Pixel', 'Meta Pixel')}</h2>
+          <h2 id="meta-pixel">Meta Pixel</h2>
           <p>
             {L(
               'With your consent to marketing (Art. 6(1)(a) GDPR, § 25(1) TDDDG), we use the Meta Pixel from Meta Platforms Ireland Limited, Merrion Road, Dublin 4, D04 X2K5, Ireland, to measure the effect of our advertising on Facebook and Instagram and to show relevant ads. The pixel sets cookies and sends Meta information about your visit, such as the pages viewed and whether you clicked to book a call. If you are logged in to a Meta service, Meta can link this to your account. We and Meta are jointly responsible for collecting and transmitting this data (Art. 26 GDPR); Meta is responsible for any further processing. Data may be transferred to the USA on the basis of the EU-U.S. Data Privacy Framework.',
               'Mit Ihrer Einwilligung in Marketing (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG) nutzen wir das Meta Pixel der Meta Platforms Ireland Limited, Merrion Road, Dublin 4, D04 X2K5, Irland, um die Wirkung unserer Werbung auf Facebook und Instagram zu messen und relevante Anzeigen zu zeigen. Das Pixel setzt Cookies und übermittelt Meta Informationen über Ihren Besuch, etwa die aufgerufenen Seiten und ob Sie auf „Gespräch buchen“ geklickt haben. Sind Sie bei einem Meta-Dienst angemeldet, kann Meta dies Ihrem Konto zuordnen. Für die Erhebung und Übermittlung sind wir und Meta gemeinsam verantwortlich (Art. 26 DSGVO); für die weitere Verarbeitung ist Meta verantwortlich. Daten können auf Grundlage des EU-US Data Privacy Framework in die USA übermittelt werden.',
+              'بموافقتك على التسويق (المادة 6 (1) (أ) من GDPR، والمادة 25 (1) من TDDDG)، نستخدم Meta Pixel من شركة Meta Platforms Ireland Limited، Merrion Road, Dublin 4, D04 X2K5، أيرلندا، لقياس أثر إعلاناتنا على Facebook وInstagram وعرض إعلانات ملائمة. يضع البكسل ملفات تعريف ارتباط ويرسل إلى Meta معلومات عن زيارتك، مثل الصفحات التي شاهدتها وما إذا نقرت لحجز مكالمة. وإذا كنت مسجّل الدخول إلى إحدى خدمات Meta، فيمكن لـ Meta ربط ذلك بحسابك. ونحن وMeta مسؤولان بشكل مشترك عن جمع هذه البيانات ونقلها (المادة 26 من GDPR)، بينما تتحمل Meta المسؤولية عن أي معالجة لاحقة. وقد تُنقل البيانات إلى الولايات المتحدة الأمريكية استنادًا إلى إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة.',
+              'Con il tuo consenso al marketing (art. 6, par. 1, lett. a) GDPR, § 25, comma 1, TDDDG) usiamo il Meta Pixel di Meta Platforms Ireland Limited, Merrion Road, Dublino 4, D04 X2K5, Irlanda, per misurare l’effetto della nostra pubblicità su Facebook e Instagram e mostrare annunci pertinenti. Il pixel imposta cookie e invia a Meta informazioni sulla tua visita, come le pagine visualizzate e se hai cliccato per prenotare una chiamata. Se hai effettuato l’accesso a un servizio Meta, Meta può collegare queste informazioni al tuo account. Noi e Meta siamo contitolari della raccolta e della trasmissione di questi dati (art. 26 GDPR); Meta è responsabile di ogni trattamento successivo. I dati possono essere trasferiti negli Stati Uniti sulla base dell’EU-U.S. Data Privacy Framework.',
             )}
           </p>
         </>
       )
     }
 
-    <h2 id="calendly">{L('Booking a call (Calendly)', 'Terminbuchung (Calendly)')}</h2>
+    <h2 id="calendly">{L('Booking a call (Calendly)', 'Terminbuchung (Calendly)', 'حجز مكالمة (Calendly)', 'Prenotare una chiamata (Calendly)')}</h2>
     {
       site.calendlyUrl ? (
         <>
@@ -169,12 +283,16 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
             {L(
               'Our booking calendar is provided by Calendly, LLC, 115 E Main St, Ste A1B, Buford, GA 30518, USA. It is not loaded automatically: only when you click “Open the booking calendar” does your browser connect to Calendly (Art. 6(1)(a) GDPR, § 25(1) TDDDG). Calendly may then set cookies and receives technical data such as your IP address.',
               'Unser Buchungskalender wird von Calendly, LLC, 115 E Main St, Ste A1B, Buford, GA 30518, USA, bereitgestellt. Er wird nicht automatisch geladen: Erst wenn Sie auf „Buchungskalender öffnen“ klicken, verbindet sich Ihr Browser mit Calendly (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Calendly kann dann Cookies setzen und erhält technische Daten wie Ihre IP-Adresse.',
+              'توفّر شركة Calendly, LLC، 115 E Main St, Ste A1B, Buford, GA 30518، الولايات المتحدة الأمريكية، تقويم الحجز لدينا. ولا يُحمَّل تلقائيًا: فلا يتصل متصفحك بـ Calendly إلا عندما تنقر على «افتح تقويم الحجز» (المادة 6 (1) (أ) من GDPR، والمادة 25 (1) من TDDDG). وقد تضع Calendly حينها ملفات تعريف ارتباط وتتلقى بيانات تقنية مثل عنوان IP الخاص بك.',
+              'Il nostro calendario delle prenotazioni è fornito da Calendly, LLC, 115 E Main St, Ste A1B, Buford, GA 30518, USA. Non viene caricato automaticamente: il tuo browser si collega a Calendly solo quando clicchi su “Apri il calendario delle prenotazioni” (art. 6, par. 1, lett. a) GDPR, § 25, comma 1, TDDDG). Calendly può quindi impostare cookie e riceve dati tecnici come il tuo indirizzo IP.',
             )}
           </p>
           <p>
             {L(
               'If you book a call, Calendly processes the details you enter, such as your name, email address, hotel or company and your answers, together with the chosen time, so that we can hold the call (Art. 6(1)(b) GDPR). Calendly participates in the EU-U.S. Data Privacy Framework, which is the basis for the transfer to the USA (Art. 45 GDPR).',
               'Wenn Sie einen Termin buchen, verarbeitet Calendly Ihre Eingaben – etwa Name, E-Mail-Adresse, Hotel oder Unternehmen und Ihre Antworten – zusammen mit dem gewählten Zeitpunkt, damit wir das Gespräch führen können (Art. 6 Abs. 1 lit. b DSGVO). Calendly nimmt am EU-US Data Privacy Framework teil; dies ist die Grundlage für die Übermittlung in die USA (Art. 45 DSGVO).',
+              'إذا حجزت مكالمة، تعالج Calendly البيانات التي تُدخلها، مثل اسمك وعنوان بريدك الإلكتروني والفندق أو الشركة وإجاباتك، إلى جانب الموعد المختار، حتى نتمكن من إجراء المكالمة (المادة 6 (1) (ب) من GDPR). وتشارك Calendly في إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة، وهو الأساس لنقل البيانات إلى الولايات المتحدة الأمريكية (المادة 45 من GDPR).',
+              'Se prenoti una chiamata, Calendly tratta i dati che inserisci, come nome, indirizzo email, hotel o azienda e le tue risposte, insieme all’orario scelto, per permetterci di svolgere la chiamata (art. 6, par. 1, lett. b) GDPR). Calendly aderisce all’EU-U.S. Data Privacy Framework, che è la base per il trasferimento negli Stati Uniti (art. 45 GDPR).',
             )}
           </p>
         </>
@@ -183,33 +301,59 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
           {L(
             'Online booking is not active at the moment. You can arrange a call by email instead; see “Contacting us by email” below.',
             'Die Online-Buchung ist derzeit nicht aktiv. Sie können ein Gespräch stattdessen per E-Mail vereinbaren; siehe „Kontakt per E-Mail“ unten.',
+            'الحجز عبر الإنترنت غير مفعّل حاليًا. يمكنك ترتيب مكالمة عبر البريد الإلكتروني بدلًا من ذلك؛ راجع «التواصل معنا عبر البريد الإلكتروني» أدناه.',
+            'Al momento la prenotazione online non è attiva. Puoi fissare una chiamata via email; vedi “Contattarci via email” più sotto.',
           )}
         </p>
       )
     }
 
-    <h2 id="email">{L('Contacting us by email', 'Kontakt per E-Mail')}</h2>
+    <h2 id="email">{L('Contacting us by email', 'Kontakt per E-Mail', 'التواصل معنا عبر البريد الإلكتروني', 'Contattarci via email')}</h2>
     <p>
       {
         L(
           'If you email us, we process your email address and the content of your message to answer your enquiry (Art. 6(1)(b) or (f) GDPR).',
           'Wenn Sie uns per E-Mail schreiben, verarbeiten wir Ihre E-Mail-Adresse und den Inhalt Ihrer Nachricht, um Ihre Anfrage zu beantworten (Art. 6 Abs. 1 lit. b oder f DSGVO).',
+          'إذا راسلتنا عبر البريد الإلكتروني، فإننا نعالج عنوان بريدك الإلكتروني ومحتوى رسالتك للرد على استفسارك (المادة 6 (1) (ب) أو (و) من GDPR).',
+          'Se ci scrivi via email, trattiamo il tuo indirizzo email e il contenuto del messaggio per rispondere alla tua richiesta (art. 6, par. 1, lett. b) o f) GDPR).',
         )
       }
     </p>
     <p>
-      {L('Retention: ', 'Speicherdauer: ')}
-      {legal.enquiryRetention ? legal.enquiryRetention[lang] : <Missing label={L('Missing: how long enquiries and booking details are kept', 'Fehlt: Speicherdauer für Anfragen und Termindaten')} />}
+      {L('Retention: ', 'Speicherdauer: ', 'مدة الاحتفاظ: ', 'Conservazione: ')}
+      {
+        legal.enquiryRetention ? (
+          legal.enquiryRetention[lang]
+        ) : (
+          <Missing
+            label={L(
+              'Missing: how long enquiries and booking details are kept',
+              'Fehlt: Speicherdauer für Anfragen und Termindaten',
+              'ناقص: مدة الاحتفاظ بالاستفسارات وبيانات الحجز',
+              'Mancante: per quanto tempo vengono conservate richieste e dati delle prenotazioni',
+            )}
+          />
+        )
+      }
     </p>
 
     {
       social.length > 0 && (
         <>
-          <h2 id="social">{L('Links to our social media profiles', 'Links zu unseren Social-Media-Profilen')}</h2>
+          <h2 id="social">
+            {L(
+              'Links to our social media profiles',
+              'Links zu unseren Social-Media-Profilen',
+              'روابط إلى حساباتنا على وسائل التواصل الاجتماعي',
+              'Link ai nostri profili social',
+            )}
+          </h2>
           <p>
             {L(
-              `Our footer links to our profiles on ${social.join(' and ')}. These are plain links: nothing is loaded from these networks until you click one. After that, the respective network’s privacy policy applies.`,
-              `Im Fußbereich verlinken wir auf unsere Profile bei ${social.join(' und ')}. Es handelt sich um einfache Links: Von diesen Netzwerken wird nichts geladen, bevor Sie darauf klicken. Danach gilt die Datenschutzerklärung des jeweiligen Netzwerks.`,
+              `Our footer links to our profiles on ${social.join(and)}. These are plain links: nothing is loaded from these networks until you click one. After that, the respective network’s privacy policy applies.`,
+              `Im Fußbereich verlinken wir auf unsere Profile bei ${social.join(and)}. Es handelt sich um einfache Links: Von diesen Netzwerken wird nichts geladen, bevor Sie darauf klicken. Danach gilt die Datenschutzerklärung des jeweiligen Netzwerks.`,
+              `يتضمن أسفل الموقع روابط إلى حساباتنا على ${social.join(and)}. وهي روابط عادية: لا يُحمَّل أي شيء من هذه الشبكات قبل أن تنقر على أحدها. وبعد ذلك تسري سياسة الخصوصية الخاصة بالشبكة المعنية.`,
+              `Nel piè di pagina rimandiamo ai nostri profili su ${social.join(and)}. Sono semplici link: da queste reti non viene caricato nulla finché non ne clicchi uno. Da quel momento si applica l’informativa sulla privacy della rete in questione.`,
             )}
           </p>
         </>
@@ -219,44 +363,95 @@ const social = [site.social.linkedin && 'LinkedIn', site.social.instagram && 'In
     {
       site.demoUrl && (
         <>
-          <h2 id="demo">{L('The interactive demo', 'Die interaktive Demo')}</h2>
+          <h2 id="demo">{L('The interactive demo', 'Die interaktive Demo', 'العرض التوضيحي التفاعلي', 'La demo interattiva')}</h2>
           <p>
             {L(
               'The “Explore demo” buttons open our interactive demo, a separate application. It uses fictional demo accounts and data; please do not enter real personal or hotel information there. The demo’s own privacy information applies.',
               'Die Schaltflächen „Demo ansehen“ öffnen unsere interaktive Demo, eine eigene Anwendung. Sie arbeitet mit fiktiven Demo-Konten und -Daten; bitte geben Sie dort keine echten personenbezogenen Daten oder Hoteldaten ein. Es gelten die Datenschutzhinweise der Demo.',
+              'تفتح أزرار «استكشف العرض التوضيحي» العرض التوضيحي التفاعلي لدينا، وهو تطبيق مستقل. ويستخدم حسابات وبيانات تجريبية وهمية؛ لذا يُرجى عدم إدخال أي بيانات شخصية أو بيانات فندقية حقيقية فيه. وتسري عليه معلومات الخصوصية الخاصة بالعرض التوضيحي.',
+              'I pulsanti “Esplora la demo” aprono la nostra demo interattiva, un’applicazione separata. Usa account e dati dimostrativi fittizi; ti chiediamo di non inserire dati personali o dati alberghieri reali. Si applica l’informativa sulla privacy della demo.',
             )}
           </p>
         </>
       )
     }
 
-    <h2 id="rights">{L('Your rights', 'Ihre Rechte')}</h2>
-    <p>{L('Under the GDPR you have the right to:', 'Nach der DSGVO haben Sie das Recht auf:')}</p>
+    <h2 id="rights">{L('Your rights', 'Ihre Rechte', 'حقوقك', 'I tuoi diritti')}</h2>
+    <p>
+      {
+        L(
+          'Under the GDPR you have the right to:',
+          'Nach der DSGVO haben Sie das Recht auf:',
+          'بموجب اللائحة العامة لحماية البيانات (GDPR)، يحق لك:',
+          'Ai sensi del GDPR hai il diritto di:',
+        )
+      }
+    </p>
     <ul>
-      <li>{L('access your personal data (Art. 15)', 'Auskunft über Ihre personenbezogenen Daten (Art. 15)')}</li>
-      <li>{L('have it corrected (Art. 16) or deleted (Art. 17)', 'Berichtigung (Art. 16) oder Löschung (Art. 17)')}</li>
-      <li>{L('restrict its processing (Art. 18)', 'Einschränkung der Verarbeitung (Art. 18)')}</li>
-      <li>{L('receive it in a portable format (Art. 20)', 'Datenübertragbarkeit (Art. 20)')}</li>
-      <li>{L('object to processing based on legitimate interests (Art. 21)', 'Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21)')}</li>
-      <li>{L('withdraw consent at any time with effect for the future (Art. 7(3))', 'Widerruf einer Einwilligung jederzeit mit Wirkung für die Zukunft (Art. 7 Abs. 3)')}</li>
+      <li>{L('access your personal data (Art. 15)', 'Auskunft über Ihre personenbezogenen Daten (Art. 15)', 'الاطلاع على بياناتك الشخصية (المادة 15)', 'accedere ai tuoi dati personali (art. 15)')}</li>
+      <li>
+        {
+          L(
+            'have it corrected (Art. 16) or deleted (Art. 17)',
+            'Berichtigung (Art. 16) oder Löschung (Art. 17)',
+            'تصحيحها (المادة 16) أو حذفها (المادة 17)',
+            'ottenerne la rettifica (art. 16) o la cancellazione (art. 17)',
+          )
+        }
+      </li>
+      <li>{L('restrict its processing (Art. 18)', 'Einschränkung der Verarbeitung (Art. 18)', 'تقييد معالجتها (المادة 18)', 'limitarne il trattamento (art. 18)')}</li>
+      <li>
+        {
+          L(
+            'receive it in a portable format (Art. 20)',
+            'Datenübertragbarkeit (Art. 20)',
+            'الحصول عليها بصيغة قابلة للنقل (المادة 20)',
+            'riceverli in un formato portabile (art. 20)',
+          )
+        }
+      </li>
+      <li>
+        {
+          L(
+            'object to processing based on legitimate interests (Art. 21)',
+            'Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21)',
+            'الاعتراض على المعالجة القائمة على المصالح المشروعة (المادة 21)',
+            'opporti al trattamento basato sul legittimo interesse (art. 21)',
+          )
+        }
+      </li>
+      <li>
+        {
+          L(
+            'withdraw consent at any time with effect for the future (Art. 7(3))',
+            'Widerruf einer Einwilligung jederzeit mit Wirkung für die Zukunft (Art. 7 Abs. 3)',
+            'سحب الموافقة في أي وقت بأثر مستقبلي (المادة 7 (3))',
+            'revocare il consenso in qualsiasi momento con effetto per il futuro (art. 7, par. 3)',
+          )
+        }
+      </li>
     </ul>
     <p>
-      {L('To exercise these rights, email ', 'Um diese Rechte auszuüben, schreiben Sie an ')}
-      <a href={`mailto:${legal.email}`}>{legal.email}</a>.
+      {L('To exercise these rights, email ', 'Um diese Rechte auszuüben, schreiben Sie an ', 'لممارسة هذه الحقوق، راسلنا على ', 'Per esercitare questi diritti, scrivi a ')}
+      <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>.
       {
         L(
           ' You can also lodge a complaint with a data protection supervisory authority, in particular in the EU member state where you live or work, or where you believe an infringement took place (Art. 77 GDPR).',
           ' Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren, insbesondere in dem EU-Mitgliedstaat Ihres Aufenthaltsorts, Ihres Arbeitsplatzes oder des mutmaßlichen Verstoßes (Art. 77 DSGVO).',
+          ' ويمكنك أيضًا تقديم شكوى إلى سلطة إشرافية لحماية البيانات، ولا سيما في الدولة العضو في الاتحاد الأوروبي التي تقيم أو تعمل فيها، أو التي تعتقد أن المخالفة وقعت فيها (المادة 77 من GDPR).',
+          ' Puoi anche presentare un reclamo a un’autorità di controllo per la protezione dei dati, in particolare nello Stato membro dell’UE in cui vivi o lavori, o in cui ritieni sia avvenuta la violazione (art. 77 GDPR).',
         )
       }
     </p>
 
-    <h2 id="changes">{L('Changes to this policy', 'Änderungen dieser Erklärung')}</h2>
+    <h2 id="changes">{L('Changes to this policy', 'Änderungen dieser Erklärung', 'التغييرات على هذه السياسة', 'Modifiche a questa informativa')}</h2>
     <p>
       {
         L(
           'We update this policy when the website or the services it uses change. The date at the top shows the current version.',
           'Wir passen diese Erklärung an, wenn sich die Website oder die genutzten Dienste ändern. Das Datum oben zeigt die aktuelle Fassung.',
+          'نحدّث هذه السياسة عندما يتغير الموقع أو الخدمات التي يستخدمها. ويشير التاريخ في الأعلى إلى الإصدار الحالي.',
+          'Aggiorniamo questa informativa quando cambiano il sito o i servizi che utilizza. La data in alto indica la versione attuale.',
         )
       }
     </p>

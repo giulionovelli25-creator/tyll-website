@@ -1,7 +1,8 @@
 ---
-// Homepage section 3: one sourced finding over one photograph. Industry research, never a Tyll result.
+// Homepage chapter 3: one sourced finding beside one bright photograph. Industry research, never a Tyll result.
+// Side by side, so the photo keeps its natural colour instead of being darkened behind text.
 import { Picture } from 'astro:assets';
-import kitchen from '../../assets/photos/why-kitchen.jpg';
+import chef from '../../assets/photos/why-chef.jpg';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -12,76 +13,90 @@ const { lang } = Astro.props;
 const w = t(lang).home.why;
 ---
 
-<section class="why on-dark" data-dark aria-labelledby="why-title">
-  <Picture
-    src={kitchen}
-    alt={w.photoAlt}
-    formats={['avif', 'webp']}
-    fallbackFormat="jpg"
-    widths={[828, 1280, 1920, 2400]}
-    sizes="100vw"
-    loading="lazy"
-    decoding="async"
-    class="why__photo"
-  />
-  <div class="why__shade" aria-hidden="true"></div>
+<section class="why" aria-labelledby="why-title">
+  <div class="why__photo">
+    <Picture
+      src={chef}
+      alt={w.photoAlt}
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      widths={[640, 960, 1280, 1600]}
+      sizes="(max-width: 860px) 100vw, 50vw"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
 
-  <div class="wrap why__inner">
-    <h2 id="why-title">{w.title}</h2>
-    <figure class="why__figure">
-      <p class="why__number" aria-hidden="true">{w.figure}</p>
-      <figcaption>
-        <p class="why__text"><span class="visually-hidden">{w.figure}: </span>{w.text}</p>
-        <p class="why__context">{w.context}</p>
-        <p class="why__source">
-          {w.source}:{' '}
-          <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
-        </p>
-      </figcaption>
-    </figure>
+  <div class="why__panel">
+    <div class="why__inner">
+      <h2 id="why-title">{w.title}</h2>
+      <figure class="why__figure">
+        <p class="why__number" aria-hidden="true">{w.figure}</p>
+        <figcaption>
+          <p class="why__text"><span class="visually-hidden">{w.figure}: </span>{w.text}</p>
+          <p class="why__context">{w.context}</p>
+          <p class="why__source">
+            {w.source}:{' '}
+            <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
+          </p>
+        </figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
 <style>
   .why {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    min-height: clamp(560px, 92svh, 900px);
-    overflow: hidden;
-    background: var(--ink);
-    color: var(--on-dark);
-    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: clamp(600px, 100svh, 980px);
+    background: var(--cloud);
   }
 
-  .why :global(picture),
-  .why :global(.why__photo),
-  .why__shade {
+  .why__photo {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .why__photo :global(picture),
+  .why__photo :global(img) {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
   }
 
-  .why :global(picture),
-  .why :global(.why__photo) {
-    z-index: -2;
-  }
-
-  .why :global(.why__photo) {
+  .why__photo :global(img) {
     object-fit: cover;
-    object-position: 60% 50%;
+    object-position: 50% 45%;
   }
 
-  .why__shade {
-    z-index: -1;
+  /* The text side: warm silver-white, with the Tyll wave as a whisper in the corner */
+  .why__panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: calc(var(--header-h) + 2rem) var(--gut) var(--section-y);
     background:
-      linear-gradient(90deg, rgba(14, 15, 17, 0.88) 0%, rgba(14, 15, 17, 0.55) 50%, rgba(14, 15, 17, 0.15) 100%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.7) 0%, transparent 55%);
+      radial-gradient(90% 70% at 100% 100%, rgba(200, 205, 212, 0.35), transparent 70%),
+      linear-gradient(180deg, #fbfbfc 0%, #f1f2f4 100%);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .why__panel::before {
+    content: '';
+    position: absolute;
+    inset: 35% -30% -20% 20%;
+    z-index: -1;
+    background: url('/media/tyll-waves.webp') center / cover no-repeat;
+    opacity: 0.6;
+    -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent);
+    mask-image: radial-gradient(closest-side, #000 30%, transparent);
   }
 
   .why__inner {
-    padding-block: calc(var(--header-h) + 2rem) var(--section-y);
+    max-width: 34rem;
   }
 
   .why h2 {
@@ -90,19 +105,22 @@ const w = t(lang).home.why;
   }
 
   .why__figure {
-    display: grid;
-    grid-template-columns: auto minmax(0, 26rem);
-    align-items: end;
-    gap: 1.5rem 3rem;
-    margin: clamp(2.5rem, 2rem + 3vw, 5rem) 0 0;
+    margin: clamp(2rem, 1.5rem + 2vw, 3.5rem) 0 0;
   }
 
   /* The one bold number on the homepage */
   .why__number {
-    font-size: clamp(6rem, 3rem + 13vw, 13rem);
+    color: var(--ink);
+    font-size: clamp(6rem, 3rem + 9vw, 11rem);
     font-weight: 200;
     letter-spacing: -0.06em;
     line-height: 0.82;
+  }
+
+  .why figcaption {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--silver);
   }
 
   .why__text {
@@ -113,18 +131,27 @@ const w = t(lang).home.why;
   .why__context,
   .why__source {
     margin-top: 0.75rem;
-    color: var(--on-dark-muted);
+    color: var(--steel);
     font-size: var(--fs-small);
   }
 
   .why__source a {
-    color: var(--on-dark);
+    color: var(--ink);
     text-underline-offset: 3px;
   }
 
-  @media (max-width: 760px) {
-    .why__figure {
+  @media (max-width: 860px) {
+    .why {
       grid-template-columns: minmax(0, 1fr);
+      min-height: 0;
+    }
+
+    .why__photo {
+      aspect-ratio: 4 / 3;
+    }
+
+    .why__panel {
+      padding-top: var(--section-y);
     }
   }
 </style>

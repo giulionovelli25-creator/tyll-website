@@ -1,5 +1,7 @@
 ---
+import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import lounge from '../../assets/photos/faq-lounge.jpg';
 import PageIntro from '../PageIntro.astro';
 import { site } from '../../config/site';
 import { t, href, type Locale } from '../../i18n';
@@ -49,12 +51,25 @@ const schema = {
       }
     </div>
 
-    <aside class="faq__more">
+    <aside class="faq__side">
+      <Picture
+        src={lounge}
+        alt=""
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        widths={[480, 760]}
+        sizes="(max-width: 860px) calc(100vw - 32px), 380px"
+        loading="lazy"
+        decoding="async"
+        class="faq__photo"
+      />
+      <div class="faq__more">
       <h2>{f.more}</h2>
       <p>{f.moreText}</p>
       <div class="faq__actions">
         <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="faq">{d.cta.book}</a>
         <a class="btn btn--line" href={`mailto:${site.email}`} data-track="email_click">{site.email}</a>
+      </div>
       </div>
     </aside>
   </section>
@@ -122,13 +137,54 @@ const schema = {
     line-height: 1.65;
   }
 
-  .faq__more {
+  /* A silver wave behind the title area, and a warm photograph above the contact card */
+  :global(main:has(.faq))::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline-end: 0;
+    width: min(900px, 70vw);
+    height: 520px;
+    background: url('/media/tyll-waves.webp') center / cover no-repeat;
+    opacity: 0.7;
+    -webkit-mask-image: linear-gradient(200deg, #000 20%, transparent 75%);
+    mask-image: linear-gradient(200deg, #000 20%, transparent 75%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  :global([dir='rtl'] main:has(.faq))::before {
+    -webkit-mask-image: linear-gradient(160deg, #000 20%, transparent 75%);
+    mask-image: linear-gradient(160deg, #000 20%, transparent 75%);
+  }
+
+  :global(main:has(.faq)) {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .faq__side {
     position: sticky;
     top: calc(var(--header-h) + 2rem);
-    padding: 2rem;
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     background: var(--cloud);
-    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .faq__side :global(.faq__photo) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    height: auto;
+    object-fit: cover;
+    object-position: 55% 55%;
+  }
+
+  .faq__more {
+    padding: 1.75rem 2rem 2rem;
   }
 
   .faq__more h2 {
@@ -152,7 +208,7 @@ const schema = {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .faq__more {
+    .faq__side {
       position: static;
     }
   }

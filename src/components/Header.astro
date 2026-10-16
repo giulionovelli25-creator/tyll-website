@@ -17,6 +17,7 @@ const { lang, page, overHero = false } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
 const items = solutionKeys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k }));
+const fwd = lang === 'ar' ? '←' : '→';
 const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).includes(page);
 ---
 
@@ -82,7 +83,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
                 <span class="panel__text">
                   <span class="panel__name">
                     {s.name[lang]}
-                    <span class="panel__arrow" aria-hidden="true">→</span>
+                    <span class="panel__arrow" aria-hidden="true">{fwd}</span>
                   </span>
                   <span class="panel__desc">{s.menu[lang]}</span>
                 </span>
@@ -244,7 +245,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     gap: 0.4rem;
     min-height: 40px;
     padding: 0 0.85rem;
-    margin-left: -0.85rem;
+    margin-inline-start: -0.85rem;
     border: 0;
     border-radius: var(--pill);
     background: transparent;
@@ -280,7 +281,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   .lang {
     display: flex;
     gap: 0.75rem;
-    margin-right: 0.5rem;
+    margin-inline-end: 0.5rem;
   }
 
   .lang a {
@@ -442,6 +443,10 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
       transform 0.25s var(--ease);
   }
 
+  :global([dir='rtl']) .panel__arrow {
+    transform: translateX(4px);
+  }
+
   .panel__item:hover .panel__arrow,
   .panel__item:focus-visible .panel__arrow {
     opacity: 1;
@@ -487,7 +492,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     display: none;
     width: 44px;
     height: 44px;
-    margin-right: -10px;
+    margin-inline-end: -10px;
     padding: 0;
     border: 0;
     background: none;
@@ -644,7 +649,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     }
 
     .header__end {
-      margin-left: auto;
+      margin-inline-start: auto;
     }
 
     .header__burger {

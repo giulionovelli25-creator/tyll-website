@@ -5,7 +5,8 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | File | Source | Licence |
 | --- | --- | --- |
 | rooms-suite.jpg | https://unsplash.com/photos/white-bed-with-gray-pillow-p3UWyaujtQo | Unsplash License |
-| why-kitchen.jpg | https://unsplash.com/photos/stainless-steel-cooking-pots-on-stove-0EkWTSFXwCc | Unsplash License |
+| why-chef.jpg | https://unsplash.com/photos/chef-garnishing-a-small-dish-with-fresh-greens-Bq44jpoeFf4 | Unsplash License |
+| faq-lounge.jpg | https://unsplash.com/photos/modern-lounge-area-with-contemporary-furniture-and-large-windows-yGEohCLnrl0 | Unsplash License |
 | stock-chef.jpg | https://unsplash.com/photos/chef-preparing-foods-0sYLBZjgTTw | Unsplash License |
 | forecast-produce.jpg | https://unsplash.com/photos/person-slicing-parsleys-_SC2X6gphkg | Unsplash License |
 | events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww | Unsplash License |
@@ -13,4 +14,10 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
 
-Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg.
+Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg, why-kitchen.jpg (replaced by the brighter why-chef.jpg).
+
+tyll-stats-3.jpg is kept in the folder but not used on the site (a dark bar counter).
+
+## Font
+
+`public/fonts/noto-sans-arabic-var.woff2`: Noto Sans Arabic (variable, Arabic subset) by Google, SIL Open Font License 1.1, from the Fontsource package @fontsource-variable/noto-sans-arabic 5.2.5.

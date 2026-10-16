@@ -1,62 +1,72 @@
 # Hero video: replacement brief
 
-**Status (16 Oct 2026): the current reception film stays for now.**
+**Status (16 Oct 2026): the current reception film stays.** No free clip was good enough for a genuinely better "hotel in motion" opening, and nothing was bought. The three options below are ready for the owner to choose from.
 
-The goal is a new opening that shows *the people who run a hotel*, not only a beautiful lobby, so the site reads as a company built for hotel operators.
+## The goal
 
-## What was searched
+A 9–12 second "hotel in motion" sequence that shows the people who run a hotel, not only a beautiful lobby:
 
-About 120 clips on Pexels (free commercial licence), across ten searches:
+1. housekeeping preparing a sunlit suite
+2. a chef plating in a bright kitchen
+3. a concierge or guest-service moment
 
-- hotel staff
-- hotel reception
-- hotel manager
-- concierge
-- luxury hotel lobby
-- hotel housekeeping
-- waiter setting table
-- banquet preparation
-- hotel front desk night
-- restaurant team kitchen
+The hero text stays exactly as it is.
 
-None reached the quality of the current film:
+## What was searched (free libraries)
 
-- **Dated:** many are pandemic-era footage, with masked guests and staff.
-- **Staged:** others are posed, with costume bellhops and acted check-ins.
-- **Off-brand:** the calm ones are bright and generic, far from the dark, warm, cinematic Tyll look.
+Pexels (free commercial licence) was searched again for housekeeping, chef plating, room service, concierge, guest service, hotel staff and hotel reception. Findings:
 
-A video-generation tool was not available in this setup. Your brief says not to replace a good video with a worse one, so none was used.
+- **Housekeeping:** usable. Two people making a bed in a bright room.
+- **Chef plating:** usable. A chef garnishing a plated dish in a restaurant kitchen.
+- **Concierge / guest service:** nothing usable. Clips are masked (pandemic era), staged with costume bellhops, very short or vertical. The best room-service clip is 1.9 s and vertical.
 
-The opening was strengthened without new footage:
+Two good scenes out of three is not a genuinely better opening than the current film, so the current film stays.
 
-- the headline now rises in line by line
-- the Tyll checkmark draws itself after "Finally connected."
-- the hero leads straight into the scroll story
+## Option A: free stock composite (no cost)
 
-## Recommended route
+- **Preview:** `review/hero-option-A-free-stock-preview.mp4` (1600×900, about 8.4 s, 1.95 MB; not in git, review only).
+- **Clips:**
+  - housekeeping: https://www.pexels.com/video/two-women-in-white-aprons-are-making-a-bed-9472830/
+  - chef: https://www.pexels.com/video/gourmet-chef-garnishing-elegant-dish-in-restaurant-39452967/
+- **Licence:** Pexels License (free commercial use, no attribution required). It does not cover trademarks or brands visible in a clip, so the final edit must be checked for any.
+- **Gap:** the concierge / guest-service scene is still missing. The sequence would be two scenes until a third is found.
+- **Effort:** half a day to finish the edit, grade both clips to the Tyll look and encode.
 
-Commission an original 8-second loop from a small production crew in a real luxury property, or license a premium clip from a paid library.
+## Option B: paid premium stock (needs budget approval)
 
-- **Paid libraries:** Artgrid, Musicbed/Filmsupply or Getty Premium, filtered for "hotel operations", "general manager" and "concierge" with cinematic grading.
-- **Original shoot:** the property gives written permission, and every person on camera signs a model release.
+- **Libraries:** Artgrid, Musicbed/Filmsupply or Getty Images Premium.
+- **Searches:** "luxury hotel housekeeping", "chef plating", "concierge", "hotel guest service".
+- **Licensing:** these libraries offer cinematic, consistently graded footage with model releases and clear commercial licences.
+- **Cost:** typically a subscription or a per-clip licence. Nothing has been bought.
+- **Effort:** one to two days once the clips are licensed.
 
-## Storyboard: "Before the doors open" (8 s, one continuous feel, no hard cuts)
+## Option C: original shoot (best fit)
+
+- **Shoot:** a small crew in a real property, following the storyboard below.
+- **Rights:** the property gives written permission, and every person on camera signs a model release.
+- **Result:** the only option that gives all three scenes in one consistent look, with Tyll owning the footage.
+
+## Option D (only with approval): AI video generation
+
+This was not used. It needs your approval and budget, and it carries a real risk of an artificial look.
+
+## Storyboard: "A hotel in motion" (10 s, soft cross-dissolves)
 
 | Time | Shot | Notes |
 | --- | --- | --- |
-| 0.0–3.0 s | Wide, locked-off: a quiet luxury lobby at dusk. Warm pendant lights. A general manager in a dark suit walks slowly into frame from the left, tablet in hand, and stops near reception. | The camera barely drifts (a 2–3% slow push). The right two-thirds of the frame stays calm for the headline on the left. |
-| 3.0–5.5 s | Same shot. The receptionist looks up; the manager shows something on the tablet, and both nod. Behind them, a housekeeping supervisor crosses with a folder. | Real, small gestures, no acting to camera. This is the "departments connected" moment. |
-| 5.5–8.0 s | The manager steps out of frame to the right; the lobby settles back to the opening composition. | The last frame must match the first for a seamless loop. |
+| 0.0–3.5 s | Sunlit suite. A housekeeper smooths a white duvet; morning light through sheer curtains. Slow push-in. | Bright, airy, natural colour. The left half stays calm for the headline. |
+| 3.5–7.0 s | Bright kitchen pass. A chef places the final garnish on a plate with tweezers; hands and plate in focus. | Clean steel and white plates, no alcohol in shot. |
+| 7.0–10.0 s | Lobby or guest corridor. A concierge greets a guest with a small, real gesture, such as handing over a key card or pointing the way. | Modest dress suitable for Gulf audiences. The last frame dissolves back to the first for a seamless loop. |
 
 ## Technical specification
 
-- **Duration:** 6–10 s, seamless loop (first and last frames match), no audio track.
-- **Resolution:** delivered 3840×2160; site encodes at 1920×1080 and 1280×720 (mobile).
-- **Look:** dark, warm, low-key, like the current film. Skin tones natural, blacks not crushed, no teal-orange grade.
-- **Composition:** subject activity in the right half. Keep the left 55% calm and dark enough for white text at 4.5:1 contrast. Also frame safely for a 9:16 mobile crop around 65% horizontally.
-- **Motion:** locked-off or a very slow push. No handheld, no fast pans, no cuts.
-- **People:** believable hotel staff (manager, front office, housekeeping). Modest dress suitable for Gulf audiences. No alcohol in shot.
-- **Branding:** no visible third-party hotel logos or signage. No screens showing other software.
+- **Duration:** 9–12 s, seamless loop, no audio track.
+- **Resolution:** delivered 3840×2160; the site encodes 1920×1080 and 1280×720 (mobile).
+- **Look:** bright and natural, skin tones true, no heavy grade. The headline needs white text at 4.5:1 contrast, so the site keeps a soft dark gradient on the text side (left in English, German and Italian; right in Arabic, where the film is mirrored).
+- **Composition:** subject activity in the right half. Also frame safely for a 9:16 mobile crop around 65% horizontally.
+- **Motion:** locked-off or a very slow push. No handheld, no fast pans.
+- **People:** believable hotel staff. No alcohol in shot.
+- **Branding:** no visible third-party hotel logos or signage. No text in shot, because the film is mirrored for Arabic.
 - **Delivery:**
   - ProRes 422 HQ master
   - poster still (the first frame, 2400 px wide)

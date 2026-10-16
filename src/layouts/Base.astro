@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ConsentBanner from '../components/ConsentBanner.astro';
 import { site } from '../config/site';
-import { t, pages, locales, type Locale, type PageKey } from '../i18n';
+import { t, pages, locales, dirOf, ogLocale, type Locale, type PageKey } from '../i18n';
 
 interface Props {
   lang: Locale;
@@ -25,7 +25,7 @@ const ogImage = abs(`/media/og-${lang}.jpg`);
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} dir={dirOf(lang)}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -45,8 +45,8 @@ const ogImage = abs(`/media/og-${lang}.jpg`);
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={d.hero.title} />
-    <meta property="og:locale:alternate" content={lang === 'de' ? 'en_GB' : 'de_DE'} />
-    <meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_GB'} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {locales.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
@@ -54,6 +54,7 @@ const ogImage = abs(`/media/og-${lang}.jpg`);
     <link rel="apple-touch-icon" href="/media/tyll-icon-512.png" />
     <meta name="theme-color" content="#14161a" />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {lang === 'ar' && <link rel="preload" href="/fonts/noto-sans-arabic-var.woff2" as="font" type="font/woff2" crossorigin />}
     <slot name="head" />
   </head>
   <body>

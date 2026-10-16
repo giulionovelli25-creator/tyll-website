@@ -151,6 +151,7 @@ const fill = (text: string) => text.replace('{name}', name);
 
   .open :global(picture),
   .open :global(.open__photo),
+  /* Lighter than before so the photographs keep their colour; the text side stays dark enough for white type */
   .open__shade {
     position: absolute;
     inset: 0;
@@ -170,8 +171,14 @@ const fill = (text: string) => text.replace('{name}', name);
   .open__shade {
     z-index: -1;
     background:
-      linear-gradient(90deg, rgba(14, 15, 17, 0.82) 0%, rgba(14, 15, 17, 0.45) 55%, rgba(14, 15, 17, 0.1) 100%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.75) 0%, transparent 60%);
+      linear-gradient(90deg, rgba(14, 15, 17, 0.74) 0%, rgba(14, 15, 17, 0.36) 55%, rgba(14, 15, 17, 0) 100%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.62) 0%, transparent 55%);
+  }
+
+  :global([dir='rtl']) .open__shade {
+    background:
+      linear-gradient(270deg, rgba(14, 15, 17, 0.74) 0%, rgba(14, 15, 17, 0.36) 55%, rgba(14, 15, 17, 0) 100%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.62) 0%, transparent 55%);
   }
 
   .open__inner {
@@ -323,8 +330,8 @@ const fill = (text: string) => text.replace('{name}', name);
   .helps__note {
     max-width: 44rem;
     margin-top: 2rem;
-    padding-left: 1rem;
-    border-left: 2px solid var(--silver);
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid var(--silver);
     color: var(--graphite);
     font-size: 0.9375rem;
     line-height: 1.55;

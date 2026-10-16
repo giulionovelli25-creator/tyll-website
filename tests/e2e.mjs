@@ -1,4 +1,4 @@
-// Browser tests for the visitor journeys in the Step 2 brief (tests A–J).
+// Browser tests for the visitor journeys in the Step 2 brief (tests A–J), plus Arabic and Italian (K–M).
 // Runs against a running dev or preview server (default http://localhost:4321) using the installed Google Chrome.
 //   npm run dev            (in one terminal)
 //   npm run test:e2e       (in another)
@@ -16,12 +16,18 @@ const TRACKERS = /googletagmanager\.com|google-analytics\.com|plausible\.io|conn
 const SOL = {
   en: ['stock-waste', 'finance-money', 'forecasting-purchasing', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/en/solutions/${s}/`),
   de: ['lager-abfall', 'finanzen', 'prognose-einkauf', 'events-personal', 'zimmer-gaeste', 'vertrieb-performance'].map((s) => `/de/loesungen/${s}/`),
+  ar: ['stock-waste', 'finance-money', 'forecasting-purchasing', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/ar/solutions/${s}/`),
+  it: ['magazzino-sprechi', 'finanza', 'previsioni-acquisti', 'eventi-personale', 'camere-ospiti', 'vendite-performance'].map((s) => `/it/soluzioni/${s}/`),
 };
-// Same order in both languages, so index i is the same page
+const LANGS = ['en', 'de', 'ar', 'it'];
+// Same order in every language, so index i is the same page
 const PAGES = {
   en: ['/en/', '/en/book-a-call/', '/en/faq/', '/en/legal-notice/', '/en/privacy/', '/en/solutions/', ...SOL.en],
   de: ['/de/', '/de/gespraech-buchen/', '/de/faq/', '/de/impressum/', '/de/datenschutz/', '/de/loesungen/', ...SOL.de],
+  ar: ['/ar/', '/ar/book-a-call/', '/ar/faq/', '/ar/legal-notice/', '/ar/privacy/', '/ar/solutions/', ...SOL.ar],
+  it: ['/it/', '/it/prenota-una-chiamata/', '/it/faq/', '/it/note-legali/', '/it/privacy/', '/it/soluzioni/', ...SOL.it],
 };
+const ALL = LANGS.flatMap((l) => PAGES[l]);
 
 const results = [];
 const record = (id, name, status, detail = '') => results.push({ id, name, status, detail });
@@ -59,15 +65,15 @@ const config = async (page) =>
     marketing: !!document.getElementById('consent-marketing'),
   }));
 
-// ── A + B: full journey in English and German ─────────────────────────────────────────────────────
-for (const lang of ['en', 'de']) {
-  const id = lang === 'en' ? 'A' : 'B';
+// ── A, B, K, L: full journey in English, German, Arabic and Italian ───────────────────────────────
+for (const lang of LANGS) {
+  const id = { en: 'A', de: 'B', ar: 'K', it: 'L' }[lang];
   const page = await freshPage();
   const problems = [];
   try {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
-    if (!/One hotel|Ein Hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
+    if (!/One hotel|Ein Hotel|فندق واحد|Un hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
     // The Before → With Tyll story follows scroll position, reverses, and lets the page continue afterwards
     const story = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -97,7 +103,7 @@ for (const lang of ['en', 'de']) {
     if (!menu.faq) problems.push('FAQ missing from the Solutions menu');
     await page.keyboard.press('Escape');
     // Every solution from the menu: opens, one h1, its walkthrough, and demo buttons that go to the configured demo
-    for (const [i, url] of SOL[lang].entries()) {
+    for (const url of SOL[lang]) {
       await page.click('#solutions-trigger');
       await sleep(250);
       await Promise.all([page.waitForNavigation(), page.click(`#solutions-panel .panel__item[href="${url}"]`)]);
@@ -118,14 +124,15 @@ for (const lang of ['en', 'de']) {
     // Book a Call from the header lands on the booking page
     await Promise.all([page.waitForNavigation(), page.click('.header__end a[data-track="book_call_click"]')]);
     if (page.url() !== `${BASE}${PAGES[lang][1]}`) problems.push(`Book a Call went to ${page.url()}`);
-    // Every page in this language: right lang attribute, language switch to the counterpart, no errors
-    const other = lang === 'en' ? 'de' : 'en';
+    // Every page in this language: right lang and dir, all four hreflang links, language switch to the counterpart, no errors
+    const other = LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length];
     for (const [i, path] of PAGES[lang].entries()) {
       await go(page, path);
-      const info = await page.evaluate(() => ({ lang: document.documentElement.lang, title: document.title, desc: document.querySelector('meta[name=description]')?.content, canonical: document.querySelector('link[rel=canonical]')?.href, alts: [...document.querySelectorAll('link[rel=alternate][hreflang]')].map((l) => l.hreflang).join(','), h1s: document.querySelectorAll('h1').length }));
+      const info = await page.evaluate(() => ({ lang: document.documentElement.lang, dir: document.documentElement.dir, title: document.title, desc: document.querySelector('meta[name=description]')?.content, canonical: document.querySelector('link[rel=canonical]')?.href, alts: [...document.querySelectorAll('link[rel=alternate][hreflang]')].map((l) => l.hreflang).join(','), h1s: document.querySelectorAll('h1').length }));
       if (info.lang !== lang) problems.push(`${path} lang=${info.lang}`);
+      if (info.dir !== (lang === 'ar' ? 'rtl' : 'ltr')) problems.push(`${path} dir=${info.dir}`);
       if (!info.title || !info.desc || !info.canonical?.endsWith(path)) problems.push(`${path} missing title/description/canonical`);
-      if (info.alts !== 'en,de,x-default') problems.push(`${path} hreflang ${info.alts}`);
+      if (info.alts !== 'en,de,ar,it,x-default') problems.push(`${path} hreflang ${info.alts}`);
       if (info.h1s !== 1) problems.push(`${path} has ${info.h1s} h1`);
       await Promise.all([page.waitForNavigation(), page.evaluate((o) => document.querySelector(`.header .lang a[hreflang="${o}"]`).click(), other)]);
       if (new URL(page.url()).pathname !== PAGES[other][i]) problems.push(`switch from ${path} went to ${page.url()}`);
@@ -150,7 +157,7 @@ for (const lang of ['en', 'de']) {
 {
   const page = await freshPage();
   const links = new Set();
-  for (const p of [...PAGES.en, ...PAGES.de]) {
+  for (const p of ALL) {
     await go(page, p);
     (await page.$$eval('a[href^="/"]', (as) => as.map((a) => a.getAttribute('href').split('#')[0]))).forEach((l) => links.add(l));
   }
@@ -164,7 +171,7 @@ for (const lang of ['en', 'de']) {
 {
   const page = await freshPage({ width: 390, height: 844, mobile: true });
   const problems = [];
-  for (const p of [...PAGES.en, ...PAGES.de]) {
+  for (const p of ALL) {
     await go(page, p);
     const w = await page.evaluate(() => ({
       sw: document.documentElement.scrollWidth,
@@ -174,8 +181,15 @@ for (const lang of ['en', 'de']) {
         const r = e.getBoundingClientRect();
         return r.width > 0 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
       }).map((e) => e.textContent.trim().slice(0, 30)),
+      // Every walkthrough screen fits inside its frame (never cropped)
+      cropped: [...document.querySelectorAll('.walk__slide img')].filter((img) => {
+        const f = img.closest('.walk__frame').getBoundingClientRect();
+        const r = img.getBoundingClientRect();
+        return r.top < f.top - 1 || r.bottom > f.bottom + 1 || r.left < f.left - 1 || r.right > f.right + 1;
+      }).map((img) => img.getAttribute('src').split('?')[0].split('/').pop().slice(0, 30)),
     }));
     if (w.sw > w.iw) problems.push(`${p} scrolls sideways (${w.sw}px)`);
+    if (w.cropped.length) problems.push(`${p} walkthrough screens cut off: ${w.cropped.join(', ')}`);
     if (w.clipped.length) problems.push(`${p} clipped: ${w.clipped.join(' | ')}`);
   }
   await go(page, '/de/');
@@ -192,7 +206,66 @@ for (const lang of ['en', 'de']) {
   // Heading and buttons fit on a phone
   const clipped = await page.evaluate(() => [...document.querySelectorAll('h1, h2, .btn')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent.trim().slice(0, 30)));
   if (clipped.length) problems.push(`clipped: ${clipped.join(', ')}`);
-  record('C', 'Mobile (390px): layout, menu, booking button', problems.length ? 'FAIL' : 'PASS', problems.join('; '));
+  record('C', 'Mobile (390px), all four languages: layout, menu, booking button', problems.length ? 'FAIL' : 'PASS', problems.join('; '));
+  await page.ctx.close();
+}
+
+// ── M: Arabic right-to-left on a phone ────────────────────────────────────────────────────────────
+{
+  const page = await freshPage({ width: 390, height: 844, mobile: true });
+  const p = [];
+  await go(page, '/ar/');
+  const head = await page.evaluate(() => {
+    const logo = document.querySelector('.header__logo').getBoundingClientRect();
+    const burger = document.querySelector('.header__burger').getBoundingClientRect();
+    const h1 = document.querySelector('h1').getBoundingClientRect();
+    return { logoRight: logo.right > innerWidth / 2, burgerLeft: burger.left < innerWidth / 2, h1Right: Math.round(innerWidth - h1.right), font: getComputedStyle(document.body).fontFamily, cta: document.querySelector('.hero__actions .btn').textContent.trim() };
+  });
+  if (!head.logoRight || !head.burgerLeft) p.push(`header not mirrored ${JSON.stringify(head)}`);
+  if (head.h1Right > 40) p.push(`headline not right-aligned (${head.h1Right}px from the right)`);
+  if (!/Tyll Arabic/.test(head.font)) p.push(`Arabic font missing: ${head.font}`);
+  if (!head.cta.endsWith('←')) p.push(`CTA arrow does not point left: "${head.cta}"`);
+  const fontLoaded = await page.evaluate(async () => { await document.fonts.ready; return [...document.fonts].some((f) => f.family.includes('Tyll Arabic') && f.status === 'loaded'); });
+  if (!fontLoaded) p.push('Arabic web font did not load');
+  // Menu opens, solutions and FAQ in Arabic
+  await page.click('.header__burger');
+  await sleep(300);
+  const menu = await page.evaluate(() => ({ open: !document.getElementById('mobile-menu').hidden, links: [...document.querySelectorAll('#mobile-menu details li a')].map((a) => a.getAttribute('href')) }));
+  if (!menu.open || menu.links.length !== 7 || !menu.links.every((h) => h.startsWith('/ar/'))) p.push(`mobile menu ${JSON.stringify(menu)}`);
+  await page.keyboard.press('Escape');
+  // The story labels stay inside the screen at start and end
+  const story = await page.evaluate(async () => {
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const t = document.querySelector('.story__track');
+    const top = t.getBoundingClientRect().top + scrollY;
+    const out = [];
+    for (const f of [0.05, 1]) {
+      scrollTo({ top: top + (t.offsetHeight - innerHeight) * f, behavior: 'instant' });
+      await wait(500);
+      document.querySelectorAll('.story .label, .story h2, .story .frag, .story .view').forEach((e) => {
+        const r = e.getBoundingClientRect();
+        if (+getComputedStyle(e).opacity > 0.5 && r.width && (r.left < -1 || r.right > innerWidth + 1)) out.push(e.className.split(' ')[0]);
+      });
+    }
+    return out;
+  });
+  if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
+  // Walkthrough: the viewer's arrow keys follow the reading direction
+  await go(page, '/ar/solutions/rooms-guest-experience/');
+  await page.evaluate(() => document.querySelector('.walk__slide.is-active').click());
+  await sleep(500);
+  const t0 = await page.$eval('.viewer__title', (e) => e.textContent);
+  await page.keyboard.press('ArrowLeft');
+  await sleep(300);
+  const t1 = await page.$eval('.viewer__title', (e) => e.textContent);
+  if (!t0.includes('1 /') || !t1.includes('2 /')) p.push(`ArrowLeft in Arabic should go to the next screen: ${t0} → ${t1}`);
+  await page.keyboard.press('Escape');
+  // Booking page: text and email in place
+  await go(page, '/ar/book-a-call/');
+  const book = await page.evaluate(() => ({ mail: !!document.querySelector('a[href^="mailto:info@tyll.ai"]'), h1: document.querySelector('h1').textContent.trim() }));
+  if (!book.mail || !book.h1) p.push('Arabic booking page incomplete');
+  if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
+  record('M', 'Arabic right-to-left on a phone: header, font, arrows, menu, story, viewer keys', p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
@@ -319,7 +392,7 @@ for (const lang of ['en', 'de']) {
   if (unnamed) p.push(`${unnamed} links/buttons without a name`);
   if (noAlt) p.push(`${noAlt} images without alt`);
   // Headings in order on each page (no jumps such as h1 → h3)
-  for (const path of [...PAGES.en, ...PAGES.de]) {
+  for (const path of ALL) {
     await go(page, path);
     const jumps = await page.evaluate(() => { const l = [...document.querySelectorAll('main h1, main h2, main h3, main h4')].map((h) => +h.tagName[1]); return l.filter((v, i) => i && v > l[i - 1] + 1).length; });
     if (jumps) p.push(`${path}: heading level skipped`);

@@ -11,7 +11,7 @@ export default defineConfig({
   devToolbar: { enabled: false },
   build: { format: 'directory' },
   i18n: {
-    locales: ['en', 'de'],
+    locales: ['en', 'de', 'ar', 'it'],
     defaultLocale: 'en',
     routing: { prefixDefaultLocale: true, redirectToDefaultLocale: false },
   },

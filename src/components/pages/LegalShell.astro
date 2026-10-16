@@ -2,7 +2,7 @@
 // Shared frame for the Legal Notice and Privacy pages: title, the "incomplete" notice listing required
 // details that are still missing, and readable long-form text styles.
 import { legal, legalMissing } from '../../config/legal';
-import { t, type Locale } from '../../i18n';
+import { t, intlLocale, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -12,7 +12,7 @@ interface Props {
 const { lang, title } = Astro.props;
 const d = t(lang).legalPage;
 const missing = legalMissing();
-const updated = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' }).format(new Date(legal.updated));
+const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' }).format(new Date(legal.updated));
 ---
 
 <article class="wrap legal">
@@ -50,7 +50,7 @@ const updated = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
 
   @media (min-width: 1100px) {
     .legal {
-      margin-left: max(0px, calc((100vw - var(--wrap)) / 2 - var(--gut)));
+      margin-inline-start: max(0px, calc((100vw - var(--wrap)) / 2 - var(--gut)));
     }
   }
 
@@ -86,7 +86,7 @@ const updated = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
 
   .legal__missing ul {
     margin: 0.6rem 0 0;
-    padding-left: 1.2rem;
+    padding-inline-start: 1.2rem;
   }
 
   .legal__body {
@@ -122,7 +122,7 @@ const updated = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dat
   }
 
   .legal__body :global(ul) {
-    padding-left: 1.2rem;
+    padding-inline-start: 1.2rem;
   }
 
   .legal__body :global(li + li) {

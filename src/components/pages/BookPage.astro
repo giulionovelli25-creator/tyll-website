@@ -11,7 +11,7 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const b = d.book;
-const mailto = `mailto:${site.email}?subject=${encodeURIComponent(lang === 'de' ? 'Gesprächsanfrage – Tyll' : 'Call request – Tyll')}`;
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent({ en: 'Call request – Tyll', de: 'Gesprächsanfrage – Tyll', ar: 'طلب مكالمة – Tyll', it: 'Richiesta di chiamata – Tyll' }[lang])}`;
 ---
 
 <Base lang={lang} page="book" title={d.meta.bookTitle} description={d.meta.bookDescription}>

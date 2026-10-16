@@ -100,6 +100,12 @@ const d = t(lang);
     object-position: 66% 50%;
   }
 
+  /* Arabic reads from the right, so the film is mirrored: the receptionist stays clear of the headline.
+     The footage has no text or signage, so nothing reads backwards. */
+  :global([dir='rtl']) .hero__media {
+    transform: scaleX(-1);
+  }
+
   .hero__media video {
     opacity: 0;
     transition: opacity 1.2s var(--ease);
@@ -113,6 +119,13 @@ const d = t(lang);
     z-index: -1;
     background:
       linear-gradient(90deg, rgba(14, 15, 17, 0.72) 0%, rgba(14, 15, 17, 0.38) 45%, rgba(14, 15, 17, 0) 75%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.78) 0%, rgba(14, 15, 17, 0.2) 45%, rgba(14, 15, 17, 0.35) 100%);
+  }
+
+  /* Right-to-left: the text sits on the right, so the shade does too */
+  :global([dir='rtl']) .hero__shade {
+    background:
+      linear-gradient(270deg, rgba(14, 15, 17, 0.72) 0%, rgba(14, 15, 17, 0.38) 45%, rgba(14, 15, 17, 0) 75%),
       linear-gradient(0deg, rgba(14, 15, 17, 0.78) 0%, rgba(14, 15, 17, 0.2) 45%, rgba(14, 15, 17, 0.35) 100%);
   }
 
@@ -138,7 +151,7 @@ const d = t(lang);
   .hero__seal {
     display: inline-block;
     width: 0.42em;
-    margin-left: 0.18em;
+    margin-inline-start: 0.18em;
     vertical-align: 0.02em;
   }
 
@@ -196,7 +209,7 @@ const d = t(lang);
 
   .hero__toggle {
     position: absolute;
-    right: var(--gut);
+    inset-inline-end: var(--gut);
     bottom: calc(clamp(1.5rem, 1rem + 2vh, 3rem) + var(--consent-space, 0px));
     display: grid;
     place-items: center;

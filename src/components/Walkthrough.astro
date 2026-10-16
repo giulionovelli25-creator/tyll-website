@@ -37,7 +37,15 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
   </ol>
 
   <div class="walk__screen">
-    <div class="walk__frame">
+    <!-- The demo itself is English and left-to-right, so its browser frame stays left-to-right in every language -->
+    <div class="walk__chrome" aria-hidden="true" dir="ltr">
+      <span class="walk__dots"><i></i><i></i><i></i></span>
+      <span class="walk__url">
+        <svg viewBox="0 0 12 12"><path d="M3.5 5.5V4a2.5 2.5 0 0 1 5 0v1.5M3 5.5h6v4.5H3z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" /></svg>
+        demo.tyll.ai
+      </span>
+    </div>
+    <div class="walk__frame" dir="ltr">
       {
         frames.map((f, i) => (
           <button
@@ -84,10 +92,10 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
       <p class="viewer__title" aria-live="polite"></p>
       <div class="viewer__tools">
         <button type="button" class="viewer__btn" data-viewer="prev" aria-label={s.prev}>
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg class="flip-rtl" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </button>
         <button type="button" class="viewer__btn" data-viewer="next" aria-label={s.next}>
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg class="flip-rtl" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </button>
         <button type="button" class="viewer__btn viewer__zoom" data-viewer="zoom" aria-pressed="false" data-in={s.zoomIn} data-out={s.zoomOut}>
           {s.zoomIn}
@@ -131,7 +139,7 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
     background: transparent;
     color: var(--steel);
     font: inherit;
-    text-align: left;
+    text-align: start;
     cursor: pointer;
     overflow: hidden;
     transition:
@@ -195,6 +203,10 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
     transform-origin: left;
   }
 
+  :global([dir='rtl']) .walk__bar {
+    transform-origin: right;
+  }
+
   [data-walk].is-playing [aria-current] .walk__bar {
     animation: walk-progress var(--frame-ms, 5000ms) linear forwards;
   }
@@ -205,15 +217,58 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
     }
   }
 
-  /* The screen frame matches the captures (1440 × 900), so a whole screen always fits */
+  /* A quiet browser frame. The screen area matches the captures (1440 × 1240), and images are
+     contained, never cropped: every screen is shown whole on every width. */
+  .walk__chrome {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 38px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    background: linear-gradient(180deg, #fbfbfc, #f3f4f6);
+  }
+
+  .walk__dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .walk__dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--silver);
+  }
+
+  .walk__url {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-inline: auto;
+    padding: 0.2rem 0.9rem;
+    border-radius: 999px;
+    background: var(--paper);
+    box-shadow: 0 0 0 1px var(--line);
+    color: var(--steel);
+    font-size: 0.75rem;
+    transform: translateX(-24px);
+  }
+
+  .walk__url svg {
+    width: 11px;
+    height: 11px;
+  }
+
   .walk__frame {
     position: relative;
-    aspect-ratio: 16 / 10;
-    border-radius: 14px;
+    aspect-ratio: 1440 / 1240;
+    border: 1px solid var(--line);
+    border-radius: 0 0 14px 14px;
     background: var(--mist);
-    box-shadow:
-      0 0 0 1px var(--line),
-      0 40px 80px -40px rgba(20, 22, 26, 0.35);
+    box-shadow: 0 40px 80px -40px rgba(20, 22, 26, 0.35);
     overflow: hidden;
   }
 
@@ -273,23 +328,27 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
 
   /* A phone screen stands on a silver ground */
   .walk__slide--phone {
-    display: grid;
-    place-items: center;
-    padding: 4% 0;
     background:
       radial-gradient(70% 70% at 50% 40%, var(--paper), transparent),
       url('/media/tyll-waves.webp') center / cover,
       var(--mist);
   }
 
+  /* Positioned, so the height is definite and the whole phone screen fits the frame at any width */
   .walk__slide--phone :global(picture) {
-    width: auto;
-    height: 100%;
+    position: absolute;
+    inset: 4% 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: auto;
   }
 
   .walk__slide--phone :global(img) {
     width: auto;
+    max-width: 100%;
     height: 100%;
+    object-fit: contain;
     border-radius: 22px;
     box-shadow:
       0 0 0 1px var(--line),
@@ -561,8 +620,10 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
       else if (e.target === vImg) setZoom(!viewer.classList.contains('is-zoomed'));
     });
     viewer.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') load(index - 1);
-      if (e.key === 'ArrowRight') load(index + 1);
+      // In right-to-left pages the next screen is to the left
+      const rtl = document.documentElement.dir === 'rtl';
+      if (e.key === 'ArrowLeft') load(index + (rtl ? 1 : -1));
+      if (e.key === 'ArrowRight') load(index + (rtl ? -1 : 1));
     });
     // Closing returns focus to the screen that was opened, which now shows the last viewed step
     viewer.addEventListener('close', () => {

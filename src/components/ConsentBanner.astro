@@ -92,10 +92,10 @@ const hasOptional = hasAnalytics || hasMarketing;
 </dialog>
 
 <style>
-  /* Bottom right, clear of the hero's text and buttons on the left */
+  /* Bottom corner opposite the hero's text and buttons (right in left-to-right pages, left in Arabic) */
   .consent {
     position: fixed;
-    right: max(16px, env(safe-area-inset-right));
+    inset-inline-end: max(16px, env(safe-area-inset-right));
     bottom: max(16px, env(safe-area-inset-bottom));
     z-index: 60;
     width: min(420px, calc(100vw - 32px));
@@ -190,7 +190,7 @@ const hasOptional = hasAnalytics || hasMarketing;
     place-items: center;
     width: 40px;
     height: 40px;
-    margin-right: -0.5rem;
+    margin-inline-end: -0.5rem;
     border-radius: 50%;
   }
 
@@ -263,7 +263,7 @@ const hasOptional = hasAnalytics || hasMarketing;
     content: '';
     position: absolute;
     top: 3px;
-    left: 3px;
+    inset-inline-start: 3px;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -278,6 +278,10 @@ const hasOptional = hasAnalytics || hasMarketing;
 
   .prefs input[type='checkbox']:checked::after {
     transform: translateX(18px);
+  }
+
+  :global([dir='rtl']) .prefs input[type='checkbox']:checked::after {
+    transform: translateX(-18px);
   }
 
   .prefs input[type='checkbox']:focus-visible {

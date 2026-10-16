@@ -30,7 +30,7 @@
     },
     {
       "source": "/ar.html",
-      "destination": "/en/",
+      "destination": "/ar/",
       "permanent": true
     },
     {
@@ -50,7 +50,7 @@
     },
     {
       "source": "/security.html",
-      "destination": "/en/faq/#data",
+      "destination": "/en/faq/",
       "permanent": true
     },
     {

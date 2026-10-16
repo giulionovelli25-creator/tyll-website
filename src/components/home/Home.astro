@@ -25,7 +25,7 @@ const schema = {
       email: site.email,
       sameAs: [site.social.linkedin, site.social.instagram].filter(Boolean),
     },
-    { '@type': 'WebSite', '@id': `${site.url}/#website`, url: site.url, name: 'Tyll', inLanguage: ['en', 'de'], publisher: { '@id': `${site.url}/#organization` } },
+    { '@type': 'WebSite', '@id': `${site.url}/#website`, url: site.url, name: 'Tyll', inLanguage: ['en', 'de', 'ar', 'it'], publisher: { '@id': `${site.url}/#organization` } },
   ],
 };
 ---
