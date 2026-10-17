@@ -1,14 +1,17 @@
 ---
-// Homepage chapter 2: hotel systems → Tyll → investigate.
-// 01 Quiet chips on the left show the hotel's existing systems, each with one fact.
-// 02 Fine silver paths lead into the Tyll overview in the centre, the largest and brightest element: what needs
-//    attention across departments. Its three items are tabs.
-// 03 The selected item opens on the right like an investigation: status, the evidence from the systems it came
-//    from, who is responsible. "Review the evidence" opens the underlying records and lights up their sources.
-// A short introduction (about 2.5 s) plays once when the section comes into view; any click or key press takes over
-// at once, and Replay runs it again. Without JavaScript, or with reduced motion, everything is shown at once.
-// All data is fictional and matches the simulated Tyll demo.
+// Homepage chapter 2: a short, directed product sequence on a pearl stage (about 9.5 s).
+//   1. Before Tyll: records from separate systems float apart: a POS order and a stock count, with two quieter
+//      records (PMS, Finance) further back.
+//   2. With Tyll: the Tyll window rises and the two records glide into it, where they become the evidence.
+//   3. The issue they explain becomes prominent: the Coca-Cola difference at The Terrace.
+//   4. The outcome: the next step and who is responsible, assigned.
+//   5. A calm final product view that stays on screen.
+// It starts when the stage is well in view, pauses when it leaves and resumes when it returns. It never touches
+// scrolling. One button pauses, resumes or replays. Without JavaScript or with reduced motion, the final view is
+// shown at once. The final view is ordinary, readable HTML in all four languages. All data is fictional and
+// matches the Coca-Cola case in the simulated Tyll demo.
 import Logo from '../Logo.astro';
+import SolutionIcon from '../SolutionIcon.astro';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -19,17 +22,12 @@ const { lang } = Astro.props;
 const p = t(lang).home.problem;
 const f = p.frags;
 const v = p.view;
-const fwd = lang === 'ar' ? '←' : '→';
-
-// The items in the Tyll overview, and which systems each one comes from
-const rows = [
-  { id: 'issue', marks: ['pos', 'stock'], title: v.issue, team: '', status: v.status, amber: true },
-  { id: 'room', marks: ['pms'], title: v.tasks[0].title, team: v.tasks[0].team, status: v.tasks[0].status, amber: false },
-  { id: 'invoice', marks: ['finance'], title: v.tasks[1].title, team: v.tasks[1].team, status: v.tasks[1].status, amber: false },
-];
+const [ownerName, ...roleParts] = v.ownerName.split(/،\s|,\s/);
+const ownerRole = roleParts.join(', ');
 ---
 
 <section class="story" id="story" aria-labelledby="story-title" data-story>
+  <div class="story__light" aria-hidden="true"></div>
   <div class="wrap">
     <header class="story__head">
       <h2 id="story-title">{p.title}</h2>
@@ -39,164 +37,162 @@ const rows = [
       </div>
     </header>
 
-    <div class="flow" data-flow data-stage="done" data-active="issue">
-      <svg class="flow__paths" aria-hidden="true"></svg>
-
-      <!-- 01 The hotel's systems -->
-      <div class="flow__col flow__col--systems">
-        <p class="flow__caption">
-          <span class="flow__kicker"><span class="flow__n">01</span>{p.beforeLabel}</span>
-          <span class="flow__msg">{p.before}</span>
-        </p>
-        <ul class="systems" aria-label={p.before}>
-          <li class="sys" data-src="pos" data-feeds="issue" style="--i:0">
-            <span class="sys__name"><i class="mark mark--pos" aria-hidden="true"></i>{f.pos.sys}</span>
-            <span class="sys__fact">{f.pos.flag}</span>
+    <div class="cine" data-cine data-scene="5" data-state="done" role="group" aria-label={p.stage}>
+      <div class="cine__top">
+        <ol class="cine__chapters">
+          <li class="ch" data-ch="before">
+            <span class="ch__k">{p.beforeLabel}</span>
+            <span class="ch__m">{p.before}</span>
+            <span class="ch__rail" aria-hidden="true"><i></i></span>
           </li>
-          <li class="sys" data-src="stock" data-feeds="issue" style="--i:1">
-            <span class="sys__name"><i class="mark mark--stock" aria-hidden="true"></i>{f.stock.sys}</span>
-            <span class="sys__fact">{f.stock.flag}</span>
+          <li class="ch" data-ch="after">
+            <span class="ch__k"><Logo mark label="" class="ch__tick" />{p.afterLabel}</span>
+            <span class="ch__m">{p.after}</span>
+            <span class="ch__rail" aria-hidden="true"><i></i></span>
           </li>
-          <li class="sys" data-src="pms" data-feeds="room" style="--i:2">
-            <span class="sys__name"><i class="mark mark--pms" aria-hidden="true"></i>{f.pms.sys}</span>
-            <span class="sys__fact">{f.pms.line}</span>
-          </li>
-          <li class="sys" data-src="finance" data-feeds="invoice" style="--i:3">
-            <span class="sys__name"><i class="mark mark--finance" aria-hidden="true"></i>{f.finance.sys}</span>
-            <span class="sys__fact">{f.finance.rows[0][0]} {f.finance.rows[0][1]} · {f.finance.rows[1][0]} {f.finance.rows[1][1]}</span>
-          </li>
-        </ul>
+        </ol>
+        <button type="button" class="cine__ctrl" data-ctrl data-pause={p.pause} data-play={p.play} data-replay={p.replay} hidden>
+          <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.75 3.5h2v9h-2zM9.25 3.5h2v9h-2z" fill="currentColor" /></svg>
+          <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.25 3.4v9.2L12.5 8z" fill="currentColor" /></svg>
+          <svg class="i-replay" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5M3 2.6v2.6h2.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <span class="cine__ctrl-label">{p.replay}</span>
+        </button>
       </div>
 
-      <!-- 02 Tyll: the important things from every department, in one overview -->
-      <div class="flow__col flow__col--tyll">
-        <p class="flow__caption flow__caption--after">
-          <span class="flow__kicker"><span class="flow__n">02</span><Logo mark label="" class="flow__tick" />{p.afterLabel}</span>
-          <span class="flow__msg">{p.after}</span>
-        </p>
-        <div class="tyll">
-          <div class="tyll__bar">
-            <Logo mark label="" class="tyll__mark" />
-            <span>Tyll</span>
-            <span class="tyll__place">{v.place}</span>
-          </div>
-          <p class="tyll__heading" id="flow-attention">{v.attention} <span>{rows.length}</span></p>
-          <div class="tyll__rows" role="tablist" aria-labelledby="flow-attention" aria-orientation="vertical">
-            {
-              rows.map((r, i) => (
-                <button
-                  type="button"
-                  role="tab"
-                  class:list={['row', r.amber && 'row--amber']}
-                  id={`flow-tab-${r.id}`}
-                  data-row={r.id}
-                  aria-controls={`flow-panel-${r.id}`}
-                  aria-selected={i === 0 ? 'true' : 'false'}
-                  tabindex={i === 0 ? 0 : -1}
-                  style={`--i:${i}`}
-                >
-                  <span class="row__marks" aria-hidden="true">
-                    {r.marks.map((m) => (
-                      <i class={`mark mark--${m}`} />
-                    ))}
-                  </span>
-                  <span class="row__title">{r.title}</span>
-                  <span class="row__meta">
-                    {r.team && <span class="row__team">{r.team}</span>}
-                    <span class:list={['row__status', r.amber && 'row__status--amber']}>{r.status}</span>
-                  </span>
-                  <span class="row__open" aria-hidden="true">{fwd}</span>
-                </button>
-              ))
-            }
-          </div>
-        </div>
-      </div>
+      <div class="cine__stage">
+        <!-- Where the two records float before Tyll gathers them -->
+        <span class="cine__anchor" data-anchor="pos" aria-hidden="true"></span>
+        <span class="cine__anchor" data-anchor="stock" aria-hidden="true"></span>
+        <!-- Two quieter records from other systems, further back -->
+        <span class="chip" data-chip="pms" aria-hidden="true"><i class="mark mark--pms"></i><b>{f.pms.sys}</b>{f.pms.line}</span>
+        <span class="chip" data-chip="finance" aria-hidden="true">
+          <i class="mark mark--finance"></i><b>{f.finance.sys}</b>{f.finance.rows.map(([k, val]) => `${k} ${val}`).join(' · ')}
+        </span>
 
-      <!-- 03 Investigate: the selected item, its evidence and the next step -->
-      <div class="flow__col flow__col--next">
-        <p class="flow__caption flow__caption--next">
-          <span class="flow__kicker"><span class="flow__n">03</span>{p.investigateLabel}</span>
-          <span class="flow__msg">{p.investigate}</span>
-        </p>
+        <div class="app">
+          <span class="app__shell" aria-hidden="true"></span>
 
-        <article class="next" id="flow-panel-issue" role="tabpanel" aria-labelledby="flow-tab-issue" data-panel="issue">
-          <span class="chip chip--amber">{v.status}</span>
-          <h3>{v.issue}</h3>
-          <p class="next__line">{v.issueLine}</p>
-          <ul class="evidence">
-            <li data-evidence="stock">
-              <span class="src"><i class="mark mark--stock" aria-hidden="true"></i>{f.stock.sys}</span>
-              <span>{v.evidence[0]}</span>
-              <div class="record" data-record>
-                <span class="record__title">{f.stock.title}</span>
-                <span class="record__data">
+          <div class="app__rail" aria-hidden="true">
+            <Logo mark label="" class="app__logo" />
+            <span class="app__nav is-on"><SolutionIcon name="stock" /></span>
+            <span class="app__nav"><SolutionIcon name="finance" /></span>
+            <span class="app__nav"><SolutionIcon name="forecast" /></span>
+            <span class="app__nav"><SolutionIcon name="events" /></span>
+            <span class="app__nav"><SolutionIcon name="rooms" /></span>
+          </div>
+
+          <div class="app__bar">
+            <span class="app__brand" aria-hidden="true"><Logo mark label="" class="app__brand-mark" />Tyll</span>
+            <span class="app__place">{v.place}</span>
+            <span class="app__user" aria-hidden="true"><span class="avatar">SH</span><span class="app__user-name">{ownerName}</span></span>
+          </div>
+
+          <div class="app__list">
+            <p class="list__head">{v.attention}<span class="count">3</span></p>
+            <ul>
+              <li class="row row--on">
+                <span class="row__marks" aria-hidden="true"><i class="mark mark--pos"></i><i class="mark mark--stock"></i></span>
+                <span class="row__title">{v.issue}</span>
+                <span class="pill pill--amber">{v.status}</span>
+              </li>
+              {
+                v.tasks.map((task, i) => (
+                  <li class="row" data-row={i === 0 ? 'pms' : 'finance'}>
+                    <span class="row__marks" aria-hidden="true">
+                      <i class={`mark mark--${i === 0 ? 'pms' : 'finance'}`} />
+                    </span>
+                    <span class="row__title">{task.title}</span>
+                    <span class="row__tags">
+                      <span class="pill">{task.team}</span>
+                      <span class="pill">{task.status}</span>
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <article class="app__detail">
+            <div class="d__head">
+              <span class="pill pill--amber">{v.status}</span>
+              <h3 class="d__title">{v.issue}</h3>
+              <p class="d__line">{v.issueLine}</p>
+            </div>
+
+            <p class="d__label">{v.evidenceLabel}</p>
+            <div class="d__ev">
+              <section class="rec" data-rec="stock" aria-label={f.stock.sys}>
+                <p class="rec__sys"><i class="mark mark--stock" aria-hidden="true"></i>{f.stock.sys}</p>
+                <p class="rec__title">{f.stock.title}</p>
+                <p class="rec__vals">
                   <span>{f.stock.head[1]} <b>{f.stock.vals[1]}</b></span>
                   <span>{f.stock.head[2]} <b>{f.stock.vals[2]}</b></span>
-                  <span class="chip chip--amber">{f.stock.flag}</span>
-                </span>
-              </div>
-            </li>
-            <li data-evidence="pos">
-              <span class="src"><i class="mark mark--pos" aria-hidden="true"></i>{f.pos.sys}</span>
-              <span>{v.evidence[1]}</span>
-              <div class="record" data-record>
-                <span class="record__title">{f.pos.title}</span>
-                <span class="record__data">
-                  <s>{f.pos.rows[0][0]}</s><s>{f.pos.rows[0][1]}</s>
-                  <span class="chip chip--amber">{f.pos.flag}</span>
-                </span>
-              </div>
-            </li>
-          </ul>
-          <div class="next__foot">
-            <p class="next__owner"><span>{v.owner}</span>{v.ownerName}</p>
-            <button type="button" class="next__action" data-review aria-expanded="true" data-open={`${v.next} ${fwd}`} data-close={p.hideEvidence} hidden>
-              {v.next} {fwd}
-            </button>
-          </div>
-          <p class="next__caution">{v.caution}</p>
-        </article>
+                </p>
+                <span class="pill pill--amber">{f.stock.flag}</span>
+              </section>
+              <section class="rec" data-rec="pos" aria-label={f.pos.sys}>
+                <p class="rec__sys"><i class="mark mark--pos" aria-hidden="true"></i>{f.pos.sys}</p>
+                <p class="rec__title">{f.pos.title}</p>
+                <p class="rec__vals rec__vals--struck">
+                  {
+                    f.pos.rows.map(([k, val]) => (
+                      <>
+                        <s>{k}</s>
+                        <s dir="ltr">{val}</s>
+                      </>
+                    ))
+                  }
+                </p>
+                <span class="pill pill--amber">{f.pos.flag}</span>
+              </section>
+            </div>
 
-        <article class="next" id="flow-panel-room" role="tabpanel" aria-labelledby="flow-tab-room" data-panel="room" hidden>
-          <span class="chip">{v.tasks[0].status}</span>
-          <h3>{v.tasks[0].title}</h3>
-          <p class="next__line"><span class="chip">{v.tasks[0].team}</span></p>
-          <div class="record record--open">
-            <span class="src"><i class="mark mark--pms" aria-hidden="true"></i>{f.pms.sys}</span>
-            <span class="record__title">{f.pms.title}</span>
-            <span class="record__data"><span class="chip">{f.pms.status}</span><span>{f.pms.line}</span></span>
-          </div>
-        </article>
+            <div class="d__next">
+              <p class="d__label">{v.nextLabel}</p>
+              <p class="d__next-text">{v.nextText}</p>
+              <div class="d__person">
+                <span class="avatar" aria-hidden="true">SH</span>
+                <span class="d__who">
+                  <span class="d__who-k">{v.owner}</span>
+                  <span class="d__who-name">{ownerName}<span class="d__who-role">{ownerRole}</span></span>
+                </span>
+                <span class="pill pill--ink d__assigned">{v.assigned}</span>
+              </div>
+            </div>
 
-        <article class="next" id="flow-panel-invoice" role="tabpanel" aria-labelledby="flow-tab-invoice" data-panel="invoice" hidden>
-          <span class="chip">{v.tasks[1].status}</span>
-          <h3>{v.tasks[1].title}</h3>
-          <p class="next__line"><span class="chip">{v.tasks[1].team}</span></p>
-          <div class="record record--open">
-            <span class="src"><i class="mark mark--finance" aria-hidden="true"></i>{f.finance.sys}</span>
-            <span class="record__title">{f.finance.title}</span>
-            <span class="record__data">
-              <span>{f.finance.rows[0][0]} <b>{f.finance.rows[0][1]}</b></span>
-              <span>{f.finance.rows[1][0]} <b>{f.finance.rows[1][1]}</b></span>
-              <span class="chip">{f.finance.flag}</span>
-            </span>
-          </div>
-        </article>
+            <p class="d__caution">{v.caution}</p>
+          </article>
+        </div>
       </div>
-
-      <button type="button" class="flow__replay" data-replay hidden>
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5M3 2.6v2.6h2.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
-        {p.replay}
-      </button>
     </div>
   </div>
 </section>
 
 <style>
+  /* ── The environment: pearl light, soft architectural shafts, no photograph ── */
   .story {
-    padding-block: var(--section-y);
-    background: var(--paper);
+    position: relative;
+    padding-block: var(--section-y) calc(var(--section-y) * 0.9);
+    background:
+      radial-gradient(80% 60% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+      linear-gradient(180deg, #f7f7f5 0%, #f0f1f2 55%, #e9ebee 100%);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .story__light {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: repeating-linear-gradient(
+      108deg,
+      rgba(255, 255, 255, 0) 0 140px,
+      rgba(255, 255, 255, 0.5) 140px 190px,
+      rgba(255, 255, 255, 0) 190px 360px
+    );
+    -webkit-mask-image: radial-gradient(70% 60% at 62% 45%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(70% 60% at 62% 45%, #000 0%, transparent 75%);
+    opacity: 0.8;
   }
 
   .story__head {
@@ -226,103 +222,633 @@ const rows = [
     line-height: 1.5;
   }
 
-  /* ── The stage ── */
-  .flow {
-    position: relative;
+  /* ── Chapters: Before Tyll → With Tyll, each with a fine progress line ── */
+  .cine {
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+
+  .cine__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    max-width: 1080px;
+    margin-inline: auto;
+  }
+
+  .cine__chapters {
     display: grid;
-    grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.25fr) minmax(0, 1fr);
-    column-gap: clamp(2.5rem, 0.5rem + 4.5vw, 5.5rem);
-    align-items: start;
-    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
-    padding: clamp(2rem, 1.25rem + 2.5vw, 3.5rem) clamp(1.5rem, 0.75rem + 2.5vw, 3.25rem) clamp(3.5rem, 2.5rem + 2.5vw, 4.75rem);
-    border-radius: 28px;
-    background:
-      radial-gradient(55% 75% at 48% 52%, rgba(200, 205, 212, 0.13), transparent 70%),
-      linear-gradient(160deg, #1d2025 0%, #14161a 55%, #101114 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 60px 120px -60px rgba(20, 22, 26, 0.55);
-    color: var(--on-dark);
-    isolation: isolate;
+    grid-template-columns: repeat(2, minmax(0, 18rem));
+    gap: clamp(1.25rem, 0.5rem + 3vw, 3.5rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .flow__paths {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-  }
-
-  /* Fine, quiet paths; the ones that lead to the selected item are a little brighter */
-  .flow__paths :global(.path) {
-    fill: none;
-    stroke: rgba(200, 205, 212, 0.16);
-    stroke-width: 1;
-    stroke-linecap: round;
-    transition: stroke 0.5s var(--ease);
-  }
-
-  .flow__paths :global(.path.is-lit) {
-    stroke: rgba(226, 229, 233, 0.5);
-  }
-
-  .flow__paths :global(.pulse) {
-    fill: none;
-    stroke: url(#flow-pulse);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    opacity: 0;
-  }
-
-  .flow__col {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    gap: 1.25rem;
-    align-content: start;
-  }
-
-  .flow__caption {
+  .ch {
     display: grid;
     gap: 0.3rem;
-    min-height: 4.25rem;
-    margin: 0;
+    color: var(--fog);
+    transition: color 0.6s var(--ease);
   }
 
-  .flow__kicker {
+  .ch__k {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--fog);
+    gap: 0.45rem;
     font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-weight: 500;
   }
 
-  .flow__n {
-    color: rgba(244, 245, 247, 0.4);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-  }
-
-  .flow__kicker :global(.flow__tick) {
-    width: 16px;
+  .ch__k :global(.ch__tick) {
+    width: 14px;
     height: auto;
-    color: var(--on-dark);
   }
 
-  .flow__msg {
-    color: var(--on-dark);
-    font-size: clamp(1.0625rem, 0.95rem + 0.45vw, 1.3125rem);
+  .ch__m {
+    font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.375rem);
     font-weight: 400;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
     line-height: 1.25;
   }
 
+  .ch__rail {
+    position: relative;
+    height: 1px;
+    margin-top: 0.7rem;
+    background: var(--silver);
+    overflow: hidden;
+  }
+
+  .ch__rail i {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform-origin: left;
+    transform: scaleX(1);
+  }
+
+  :global([dir='rtl']) .ch__rail i {
+    transform-origin: right;
+  }
+
+  /* Final state: "With Tyll" leads; "Before Tyll" stays readable but quiet */
+  .cine .ch[data-ch='after'] {
+    color: var(--ink);
+  }
+
+  .cine .ch[data-ch='after'] .ch__k {
+    color: var(--steel);
+  }
+
+  .cine .ch[data-ch='before'] .ch__rail i {
+    background: var(--fog);
+  }
+
+  .cine[data-scene='0'] .ch[data-ch='before'],
+  .cine[data-scene='1'] .ch[data-ch='before'] {
+    color: var(--ink);
+  }
+
+  .cine[data-scene='0'] .ch[data-ch='before'] .ch__k,
+  .cine[data-scene='1'] .ch[data-ch='before'] .ch__k {
+    color: var(--steel);
+  }
+
+  .cine[data-scene='0'] .ch[data-ch='before'] .ch__rail i,
+  .cine[data-scene='1'] .ch[data-ch='before'] .ch__rail i {
+    background: var(--ink);
+  }
+
+  .cine[data-scene='0'] .ch[data-ch='after'],
+  .cine[data-scene='1'] .ch[data-ch='after'],
+  .cine[data-scene='0'] .ch[data-ch='after'] .ch__k,
+  .cine[data-scene='1'] .ch[data-ch='after'] .ch__k {
+    color: var(--fog);
+  }
+
+  /* While playing, each line fills over its chapter's time */
+  .cine.is-timed .ch__rail i {
+    transform: scaleX(0);
+    animation: ch-fill linear forwards;
+  }
+
+  .cine.is-timed .ch[data-ch='before'] .ch__rail i {
+    animation-duration: 2.6s;
+  }
+
+  .cine.is-timed .ch[data-ch='after'] .ch__rail i {
+    animation-duration: 6.8s;
+    animation-delay: 2.6s;
+  }
+
+  .cine[data-state='paused'] .ch__rail i {
+    animation-play-state: paused;
+  }
+
+  @keyframes ch-fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .cine__ctrl {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.45rem;
+    height: 40px;
+    padding: 0 1rem 0 0.85rem;
+    border: 1px solid var(--silver);
+    border-radius: var(--pill);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--graphite);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition:
+      border-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      background-color 0.25s var(--ease);
+  }
+
+  .cine__ctrl[hidden] {
+    display: none;
+  }
+
+  .cine__ctrl:hover {
+    border-color: var(--steel);
+    background: #fff;
+    color: var(--ink);
+  }
+
+  .cine__ctrl svg {
+    display: none;
+    width: 15px;
+    height: 15px;
+  }
+
+  .cine[data-state='playing'] .i-pause,
+  .cine[data-state='paused'] .i-play,
+  .cine[data-state='idle'] .i-play,
+  .cine[data-state='done'] .i-replay {
+    display: block;
+  }
+
+  /* ── The stage ── */
+  .cine__stage {
+    position: relative;
+    max-width: 1080px;
+    margin: clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem) auto 0;
+  }
+
+  /* A soft contact shadow, as if the window rests just above a pale floor */
+  .cine__stage::after {
+    content: '';
+    position: absolute;
+    inset: auto 6% -34px;
+    z-index: -1;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(20, 22, 26, 0.16), transparent);
+    filter: blur(6px);
+    transition: opacity 0.9s var(--ease);
+  }
+
+  .cine__anchor {
+    position: absolute;
+    width: 340px;
+    height: 1px;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .cine__anchor[data-anchor='pos'] {
+    top: 16%;
+    inset-inline-start: 2%;
+  }
+
+  .cine__anchor[data-anchor='stock'] {
+    top: 44%;
+    inset-inline-end: 3%;
+  }
+
+  .chip {
+    position: absolute;
+    z-index: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid rgba(200, 205, 212, 0.7);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--steel);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform-origin: left top;
+    filter: blur(0.4px);
+    transition:
+      opacity 0.9s var(--ease),
+      transform 1.3s var(--ease);
+  }
+
+  .chip b {
+    color: var(--graphite);
+    font-weight: 600;
+  }
+
+  .chip[data-chip='pms'] {
+    top: 6%;
+    inset-inline-start: 40%;
+  }
+
+  .chip[data-chip='finance'] {
+    top: 76%;
+    inset-inline-start: 24%;
+  }
+
+  /* ── The Tyll window, faithful to the demo's look: white panels, quiet lines, amber for what needs review ── */
+  .app {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 60px minmax(0, 0.82fr) minmax(0, 1.5fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'rail bar bar'
+      'rail list detail';
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .app__shell {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border: 1px solid rgba(200, 205, 212, 0.65);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 2px 6px rgba(20, 22, 26, 0.04),
+      0 50px 100px -50px rgba(20, 22, 26, 0.32);
+    transition:
+      opacity 1s var(--ease),
+      transform 1.3s var(--ease);
+  }
+
+  .app__rail {
+    grid-area: rail;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 0;
+    border-inline-end: 1px solid var(--line);
+    border-start-start-radius: 22px;
+    border-end-start-radius: 22px;
+    background: #fafafa;
+    color: var(--fog);
+  }
+
+  .app__rail :global(.app__logo) {
+    width: 22px;
+    height: auto;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+
+  .app__nav {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .app__nav.is-on {
+    background: var(--mist);
+    color: var(--ink);
+  }
+
+  .app__nav :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .app__bar {
+    grid-area: bar;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 56px;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .app__brand {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+  }
+
+  .app__brand :global(.app__brand-mark) {
+    width: 18px;
+    height: auto;
+  }
+
+  .app__place {
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--pill);
+    color: var(--graphite);
+    font-size: 0.8125rem;
+  }
+
+  .app__user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-inline-start: auto;
+    color: var(--graphite);
+    font-size: 0.8125rem;
+  }
+
+  .avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* The list of what needs attention */
+  .app__list {
+    grid-area: list;
+    padding-block: 1.25rem;
+    padding-inline: 1.25rem 1rem;
+    border-inline-end: 1px solid var(--line);
+  }
+
+  .list__head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.85rem;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .count {
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: var(--pill);
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.75rem;
+  }
+
+  .app__list ul {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.35rem 0.6rem;
+    padding: 0.8rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    color: var(--steel);
+    transition:
+      opacity 0.7s var(--ease),
+      transform 0.7s var(--ease),
+      border-color 0.6s var(--ease),
+      background-color 0.6s var(--ease),
+      box-shadow 0.6s var(--ease);
+  }
+
+  .row__marks {
+    display: inline-flex;
+    gap: 3px;
+    padding-top: 0.3rem;
+  }
+
+  .row__title {
+    color: var(--graphite);
+    font-weight: 450;
+  }
+
+  .row > .pill,
+  .row__tags {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .row__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .row--on {
+    border-color: #ecd9b0;
+    background: #fffaf0;
+    box-shadow: 0 0 0 4px rgba(236, 217, 176, 0.35);
+  }
+
+  .row--on .row__title {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* The issue, opened */
+  .app__detail {
+    grid-area: detail;
+    padding: 1.5rem 1.75rem 1.6rem;
+  }
+
+  .d__title {
+    margin-top: 0.75rem;
+    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.625rem);
+    font-weight: 450;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .d__line {
+    margin-top: 0.3rem;
+    color: var(--graphite);
+    font-size: 0.9375rem;
+  }
+
+  .d__label {
+    margin: 1.4rem 0 0.6rem;
+    color: var(--steel);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .d__ev {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .rec {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.3rem;
+    padding: 0.85rem 0.95rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    transform-origin: 0 0;
+    transition:
+      opacity 0.8s var(--ease),
+      transform 1.3s var(--ease),
+      box-shadow 1.1s var(--ease),
+      background-color 1s var(--ease);
+  }
+
+  .rec__sys {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--steel);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .rec__title {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .rec__vals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1rem;
+    margin: 0;
+    color: var(--graphite);
+  }
+
+  .rec__vals b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .rec__vals--struck s {
+    color: #9b2c2c;
+    text-decoration-color: rgba(155, 44, 44, 0.6);
+  }
+
+  .rec .pill {
+    margin-top: 0.2rem;
+  }
+
+  .d__next {
+    margin-top: 1rem;
+    padding: 0.95rem 1.05rem 1.05rem;
+    border-radius: 14px;
+    background: var(--cloud);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  .d__next .d__label {
+    margin: 0;
+  }
+
+  .d__next-text {
+    margin-top: 0.25rem;
+    color: var(--ink);
+    font-size: 0.9375rem;
+  }
+
+  .d__person {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.85rem;
+  }
+
+  .d__who {
+    display: grid;
+    min-width: 0;
+  }
+
+  .d__who-k {
+    color: var(--steel);
+    font-size: 0.75rem;
+  }
+
+  .d__who-name {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .d__who-role {
+    margin-inline-start: 0.4rem;
+    color: var(--steel);
+    font-weight: 400;
+  }
+
+  .d__assigned {
+    margin-inline-start: auto;
+  }
+
+  .d__caution {
+    margin-top: 0.9rem;
+    color: var(--steel);
+    font-size: 0.8125rem;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.18rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--pill);
+    color: var(--graphite);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .pill--amber {
+    border-color: #f1dfb8;
+    background: #fbf1dc;
+    color: #7a5310;
+  }
+
+  .pill--ink {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+  }
+
+  /* System marks, the same shapes the demo uses for each source */
   .mark {
     display: inline-block;
     flex: none;
@@ -340,792 +866,416 @@ const rows = [
   }
 
   .mark--pms {
-    transform: rotate(45deg) scale(0.9);
+    transform: rotate(45deg) scale(0.85);
   }
 
   .mark--finance {
     border-radius: 2px 50% 50% 2px;
   }
 
-  /* 01 Systems: quiet glass chips, one fact each */
-  .systems {
-    display: grid;
-    gap: 0.6rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .sys {
-    display: grid;
-    gap: 0.25rem;
-    padding: 0.7rem 0.85rem 0.75rem;
-    border: 1px solid rgba(244, 245, 247, 0.12);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.045);
-    font-size: 0.875rem;
-    line-height: 1.35;
-    transition:
-      opacity 0.6s var(--ease),
-      transform 0.6s var(--ease),
-      border-color 0.5s var(--ease),
-      background-color 0.5s var(--ease);
-  }
-
-  .sys.is-lit {
-    border-color: rgba(244, 245, 247, 0.38);
-    background: rgba(255, 255, 255, 0.09);
-  }
-
-  .sys__name {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: var(--fog);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .sys__fact {
-    color: rgba(244, 245, 247, 0.88);
-  }
-
-  /* 02 The Tyll overview: the centrepiece */
-  .tyll {
-    border-radius: 22px;
-    background: #fff;
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.12),
-      0 50px 100px -40px rgba(0, 0, 0, 0.8),
-      0 0 160px -30px rgba(200, 205, 212, 0.22);
-    color: var(--ink);
-    overflow: hidden;
-  }
-
-  .tyll__bar {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 1rem 1.3rem;
-    border-bottom: 1px solid var(--line);
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .tyll :global(.tyll__mark) {
-    width: 18px;
-    height: auto;
-  }
-
-  .tyll__place {
-    margin-inline-start: auto;
-    color: var(--steel);
-    font-size: 0.8125rem;
-    font-weight: 400;
-  }
-
-  .tyll__heading {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.15rem 1.3rem 0.7rem;
-    color: var(--graphite);
-    font-size: 0.9375rem;
-    font-weight: 600;
-  }
-
-  .tyll__heading span {
-    display: grid;
-    place-items: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.75rem;
-  }
-
-  .tyll__rows {
-    display: grid;
-    gap: 0.35rem;
-    padding: 0 0.8rem 1rem;
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas:
-      'marks title open'
-      '. meta open';
-    gap: 0.4rem 0.75rem;
-    align-items: center;
-    width: 100%;
-    padding: 0.9rem 0.95rem;
-    border: 1px solid transparent;
-    border-radius: 14px;
-    background: transparent;
-    color: var(--graphite);
-    font: inherit;
-    font-size: 1rem;
-    text-align: start;
-    cursor: pointer;
-    transition:
-      opacity 0.6s var(--ease),
-      transform 0.6s var(--ease),
-      background-color 0.4s var(--ease),
-      border-color 0.4s var(--ease),
-      box-shadow 0.4s var(--ease),
-      color 0.4s var(--ease);
-  }
-
-  .row:hover {
-    background: var(--mist);
-  }
-
-  .row:focus-visible {
-    outline: 2px solid var(--ink);
-    outline-offset: 2px;
-  }
-
-  .row__marks {
-    grid-area: marks;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    align-self: start;
-    padding-top: 0.45rem;
-  }
-
-  .row__title {
-    grid-area: title;
-    color: var(--ink);
-    font-weight: 500;
-  }
-
-  .row__meta {
-    grid-area: meta;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .row__open {
-    grid-area: open;
-    color: var(--fog);
-    opacity: 0;
-    transition: opacity 0.3s var(--ease);
-  }
-
-  .row:hover .row__open,
-  .row[aria-selected='true'] .row__open {
-    opacity: 1;
-  }
-
-  /* The selected item stands out; the others stay readable but quieter */
-  .row[aria-selected='true'] {
-    border-color: var(--silver);
-    background: #fff;
-    box-shadow: 0 10px 24px -16px rgba(20, 22, 26, 0.35);
-  }
-
-  .row--amber[aria-selected='true'] {
-    border-color: #e3c98f;
-    background: linear-gradient(180deg, #fffcf5, #fff);
-    box-shadow: 0 0 0 4px rgba(227, 201, 143, 0.18);
-  }
-
-  .row[aria-selected='false'] .row__title {
-    color: var(--graphite);
-  }
-
-  .chip,
-  .row__status,
-  .row__team {
-    display: inline-block;
-    padding: 0.12rem 0.55rem;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--graphite);
-    font-size: 0.75rem;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .chip--amber,
-  .row__status--amber {
-    border-color: transparent;
-    background: #fbf2df;
-    color: #7a4b08;
-  }
-
-  /* 03 The investigation */
-  .next {
-    display: grid;
-    gap: 0.6rem;
-    padding: 1.25rem 1.3rem 1.2rem;
-    border-radius: 20px;
-    background: #fff;
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.1),
-      0 40px 80px -40px rgba(0, 0, 0, 0.75);
-    color: var(--ink);
-  }
-
-  .next[hidden] {
-    display: none;
-  }
-
-  .next > .chip {
-    justify-self: start;
-  }
-
-  .next h3 {
-    font-size: 1.125rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-  }
-
-  .next__line {
-    color: var(--graphite);
-    font-size: 0.9375rem;
-  }
-
-  .evidence {
-    display: grid;
-    gap: 0.5rem;
-    margin: 0.3rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .evidence > li {
-    display: grid;
-    gap: 0.25rem;
-    padding: 0.65rem 0.8rem;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    color: var(--graphite);
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
-
-  .src {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--steel);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  /* The underlying record, opened by "Review the evidence" */
-  .record {
-    display: grid;
-    gap: 0.3rem;
-    margin-top: 0.35rem;
-    padding: 0.6rem 0.7rem;
-    border-radius: 10px;
-    background: var(--mist);
-    font-size: 0.8125rem;
-  }
-
-  .record--open {
-    margin-top: 0.2rem;
-  }
-
-  .record__title {
-    color: var(--ink);
-    font-weight: 500;
-  }
-
-  .record__data {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.3rem 0.9rem;
-    color: var(--graphite);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .record__data b {
-    color: var(--ink);
-  }
-
-  .record__data s {
-    color: var(--steel);
-    text-decoration-color: rgba(176, 53, 43, 0.7);
-  }
-
-  .flow.is-ready .evidence:not(.is-open) .record {
-    display: none;
-  }
-
-  .next__foot {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem 1rem;
-    margin-top: 0.3rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .next__owner {
-    font-size: 0.875rem;
-  }
-
-  .next__owner span {
-    display: block;
-    color: var(--steel);
-    font-size: 0.75rem;
-  }
-
-  .next__action {
-    min-height: 40px;
-    padding: 0 1rem;
-    border: 0;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper);
-    font: inherit;
-    font-size: 0.875rem;
-    font-weight: 500;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color 0.2s var(--ease);
-  }
-
-  .next__action:hover {
-    background: var(--graphite);
-  }
-
-  .next__action:focus-visible {
-    outline: 2px solid var(--ink);
-    outline-offset: 3px;
-  }
-
-  .next__action[hidden] {
-    display: none;
-  }
-
-  .next__caution {
-    color: var(--steel);
-    font-size: 0.8125rem;
-    line-height: 1.45;
-  }
-
-  .flow__replay {
-    position: absolute;
-    inset-inline-end: clamp(1rem, 0.5rem + 1.5vw, 2rem);
-    bottom: clamp(0.9rem, 0.6rem + 1vw, 1.4rem);
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-height: 36px;
-    padding: 0 0.85rem;
-    border: 1px solid rgba(244, 245, 247, 0.2);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--on-dark-muted);
-    font: inherit;
-    font-size: 0.8125rem;
-    cursor: pointer;
-    transition:
-      border-color 0.2s var(--ease),
-      color 0.2s var(--ease);
-  }
-
-  .flow__replay[hidden] {
-    display: none;
-  }
-
-  .flow__replay:hover {
-    border-color: rgba(244, 245, 247, 0.5);
-    color: var(--on-dark);
-  }
-
-  .flow__replay svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  /* ── The short introduction. data-stage: 0 → 1 systems → 2 Tyll → 3 items → done ── */
-  .flow .flow__caption,
-  .flow .tyll,
-  .flow .next {
-    transition:
-      opacity 0.6s var(--ease),
-      transform 0.6s var(--ease);
-  }
-
-  .flow[data-stage='0'] :is(.sys, .flow__col--systems .flow__caption) {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  .flow:is([data-stage='0'], [data-stage='1']) :is(.tyll, .flow__caption--after) {
-    opacity: 0;
-    transform: scale(0.97);
-  }
-
-  .flow:is([data-stage='0'], [data-stage='1'], [data-stage='2']) .row {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  .flow:not([data-stage='done']) :is(.next, .flow__caption--next) {
-    opacity: 0;
-    transform: translateX(var(--from, 14px));
-  }
-
-  :global([dir='rtl']) .flow {
-    --from: -14px;
-  }
-
-  .flow .sys {
-    transition-delay: calc(var(--i) * 90ms);
-  }
-
-  .flow .tyll {
-    transition-delay: 0.15s;
-  }
-
-  .flow .row {
-    transition-delay: calc(var(--i) * 120ms);
-  }
-
-  .flow[data-reset] *,
-  .flow[data-reset] :global(*) {
+  /* ── Scenes. Everything above is the final view; these rules hold parts back until their scene. ── */
+  .cine.is-instant *,
+  .cine.is-instant {
     transition: none !important;
   }
 
-  .flow[data-measure] :is(.sys, .tyll, .row, .next, .flow__caption) {
-    transform: none !important;
+  /* The window and its parts wait for scene 2 */
+  .cine[data-scene='0'] .app__shell,
+  .cine[data-scene='1'] .app__shell {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
   }
 
-  /* A panel that is switched in by the visitor fades up gently */
-  .next.is-entering {
-    animation: next-in 0.45s var(--ease);
+  .cine[data-scene='0'] .cine__stage::after,
+  .cine[data-scene='1'] .cine__stage::after {
+    opacity: 0;
   }
 
-  @keyframes next-in {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-  }
-
-  /* Paths draw during the introduction; one faint light travels along each, once */
-  .flow__paths :global(.path) {
-    stroke-dasharray: var(--len) var(--len);
-    stroke-dashoffset: 0;
+  .app__rail,
+  .app__bar,
+  .list__head,
+  .d__head,
+  .d__label,
+  .d__next,
+  .d__caution {
     transition:
-      stroke-dashoffset 0.9s var(--ease),
-      stroke 0.5s var(--ease);
-    transition-delay: calc(var(--i) * 90ms), 0s;
+      opacity 0.8s var(--ease),
+      transform 0.8s var(--ease);
   }
 
-  .flow:is([data-stage='0'], [data-stage='1']) :global(.path) {
-    stroke-dashoffset: var(--len);
+  .cine[data-scene='0'] :is(.app__rail, .app__bar),
+  .cine[data-scene='1'] :is(.app__rail, .app__bar) {
+    opacity: 0;
   }
 
-  .flow:not([data-stage='done']) :global(.path--next) {
-    stroke-dashoffset: var(--len);
+  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2']) :is(.list__head, .row, .d__head, .d__next, .d__caution, .d__head ~ .d__label) {
+    opacity: 0;
+    transform: translateY(10px);
   }
 
-  .flow[data-stage='2'] :global(.pulse:not(.pulse--next)) {
-    animation: flow-pulse 1.2s var(--ease) both;
-    animation-delay: calc(0.15s + var(--i) * 90ms);
+  .cine[data-scene='3'] :is(.d__next, .d__caution) {
+    opacity: 0;
+    transform: translateY(10px);
   }
 
-  @keyframes flow-pulse {
-    0% {
-      opacity: 0;
-      stroke-dashoffset: 40;
-    }
-    20% {
-      opacity: 0.8;
-    }
-    80% {
-      opacity: 0.8;
-    }
-    100% {
-      opacity: 0;
-      stroke-dashoffset: calc(var(--len) * -1);
-    }
+  .cine[data-scene='4'] .d__caution {
+    opacity: 0;
   }
 
-  /* ── Narrow screens: 01, 02 and 03 one after another ── */
+  .cine[data-scene='3'] .row {
+    transition-delay: calc(var(--n, 0) * 120ms);
+  }
+
+  .row:nth-child(2) {
+    --n: 1;
+  }
+
+  .row:nth-child(3) {
+    --n: 2;
+  }
+
+  /* The issue row lights up a beat after it appears */
+  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2']) .row--on {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .cine[data-scene='3'] .row--on {
+    transition-delay: 0s, 0s, 0.5s, 0.5s, 0.5s;
+  }
+
+  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2'], [data-scene='3']) .d__assigned {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .d__assigned {
+    transition:
+      opacity 0.6s var(--ease) 0.9s,
+      transform 0.6s var(--ease) 0.9s;
+  }
+
+  /* The records: floating apart in scene 1 (positions are set by the script), resting in the window afterwards */
+  .cine[data-scene='0'] .rec {
+    opacity: 0;
+  }
+
+  .cine:is([data-scene='0'], [data-scene='1']) .rec {
+    box-shadow:
+      0 1px 2px rgba(20, 22, 26, 0.05),
+      0 30px 60px -28px rgba(20, 22, 26, 0.3);
+  }
+
+  .cine[data-scene='1'] .rec[data-rec='pos'] {
+    transition-delay: 0.25s;
+  }
+
+  .cine[data-scene='1'] .chip {
+    opacity: 0.9;
+  }
+
+  .cine[data-scene='1'] .chip[data-chip='finance'] {
+    transition-delay: 0.45s;
+  }
+
+  .cine[data-scene='1'] .chip[data-chip='pms'] {
+    transition-delay: 0.6s;
+  }
+
   @media (max-width: 1000px) {
     .story__head {
       grid-template-columns: minmax(0, 1fr);
-      align-items: start;
     }
 
-    .flow {
+    .app {
       grid-template-columns: minmax(0, 1fr);
-      row-gap: 3rem;
-      padding-bottom: 4.75rem;
+      grid-template-areas:
+        'bar'
+        'list'
+        'detail';
     }
 
-    .flow__caption {
-      min-height: 0;
+    .app__rail {
+      display: none;
     }
 
-    .systems {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 560px) {
-    .flow {
-      padding-inline: 1rem;
-      border-radius: 22px;
+    .app__brand {
+      display: inline-flex;
     }
 
-    .sys {
-      padding: 0.6rem 0.7rem 0.65rem;
-      font-size: 0.8125rem;
+    .app__list {
+      padding: 1rem 1rem 0.5rem;
+      border-inline-end: 0;
     }
 
-    .tyll__bar,
-    .tyll__heading {
-      padding-inline: 1rem;
-    }
-
-    .tyll__rows {
-      padding-inline: 0.5rem;
+    .app__list ul {
+      gap: 0.3rem;
     }
 
     .row {
-      padding: 0.8rem 0.75rem;
-      font-size: 0.9375rem;
+      padding: 0.65rem 0.75rem;
     }
 
-    .flow__replay {
-      inset-inline-end: 1rem;
+    .app__detail {
+      margin: 0.5rem 1rem 0;
+      padding: 1.15rem 0 1.25rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .cine__anchor {
+      width: min(340px, 74%);
+    }
+
+    .cine__anchor[data-anchor='pos'] {
+      top: 6%;
+      inset-inline-start: 0;
+    }
+
+    .cine__anchor[data-anchor='stock'] {
+      top: 30%;
+      inset-inline-end: 0;
+    }
+
+    .chip[data-chip='pms'] {
+      top: 56%;
+      inset-inline-start: 6%;
+    }
+
+    .chip[data-chip='finance'] {
+      top: 66%;
+      inset-inline-start: 12%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cine__top {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .cine__chapters {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .ch__m {
+      font-size: 1rem;
+    }
+
+    .cine__ctrl {
+      align-self: flex-start;
+      height: 36px;
+    }
+
+    .app__place {
+      font-size: 0.75rem;
+    }
+
+    .app__user-name {
+      display: none;
+    }
+
+    .d__ev {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .d__person {
+      flex-wrap: wrap;
+    }
+
+    .d__who-role {
+      display: block;
+      margin-inline-start: 0;
+    }
+
+    .chip {
+      max-width: 80%;
+      white-space: normal;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .flow__paths :global(.pulse) {
-      display: none;
-    }
-
-    .next.is-entering {
-      animation: none;
+    .cine *,
+    .cine {
+      transition: none !important;
+      animation: none !important;
     }
   }
 </style>
 
 <script>
-  const flow = document.querySelector<HTMLElement>('[data-flow]');
+  const cine = document.querySelector<HTMLElement>('[data-cine]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
-  if (flow) {
-    const svg = flow.querySelector<SVGSVGElement>('.flow__paths')!;
-    const tyll = flow.querySelector<HTMLElement>('.tyll')!;
-    const tabs = [...flow.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-    const panels = [...flow.querySelectorAll<HTMLElement>('[data-panel]')];
-    const sources = [...flow.querySelectorAll<HTMLElement>('[data-src]')];
-    const evidence = flow.querySelector<HTMLElement>('.evidence')!;
-    const review = flow.querySelector<HTMLButtonElement>('[data-review]')!;
-    const replay = flow.querySelector<HTMLButtonElement>('[data-replay]')!;
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    const NS = 'http://www.w3.org/2000/svg';
+  // With reduced motion the final view, already in the page, simply stays
+  if (cine && !reduce.matches) {
+    const stage = cine.querySelector<HTMLElement>('.cine__stage')!;
+    const ctrl = cine.querySelector<HTMLButtonElement>('[data-ctrl]')!;
+    const label = ctrl.querySelector<HTMLElement>('.cine__ctrl-label')!;
+    const recs = [...cine.querySelectorAll<HTMLElement>('[data-rec]')];
+    const chips = [...cine.querySelectorAll<HTMLElement>('[data-chip]')];
+    const anchor = (name: string) => cine.querySelector<HTMLElement>(`[data-anchor="${name}"]`)!;
 
-    // ── Paths, drawn between the real positions of the cards ──
-    const draw = () => {
-      flow.setAttribute('data-reset', '');
-      flow.setAttribute('data-measure', '');
-      const box = flow.getBoundingClientRect();
-      const rel = (el: Element) => {
-        const r = el.getBoundingClientRect();
-        return { l: r.left - box.left, r: r.right - box.left, t: r.top - box.top, b: r.bottom - box.top, cx: r.left - box.left + r.width / 2, cy: r.top - box.top + r.height / 2 };
-      };
-      const t = rel(tyll);
-      const panel = rel(panels.find((x) => !x.hidden) ?? panels[0]);
-      const grid = rel(flow.querySelector('.systems')!);
-      const cap = rel(flow.querySelector('.flow__caption--after')!);
-      const capNext = rel(flow.querySelector('.flow__caption--next')!);
-      const rows = Object.fromEntries(tabs.map((tab) => [tab.dataset.row!, rel(tab)]));
-      flow.removeAttribute('data-measure');
-      void flow.offsetWidth;
-      flow.removeAttribute('data-reset');
+    // Scene start times (ms) and the moment the final view is complete
+    const TIMES: [number, number][] = [
+      [0, 1],
+      [2600, 2],
+      [4300, 3],
+      [6200, 4],
+      [8200, 5],
+    ];
+    const END = 9400;
 
-      const rtl = document.documentElement.dir === 'rtl';
-      const stacked = t.t > grid.b;
-      const curve = (x1: number, y1: number, x2: number, y2: number, vertical: boolean) =>
-        vertical
-          ? `M ${x1} ${y1} C ${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`
-          : `M ${x1} ${y1} C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`;
-      const items: { d: string; feeds: string; next?: boolean }[] = [];
-      const starts = sources.map((s) => { const c = rel(s); return c.cx + (c.t < grid.t + 4 ? -10 : 10); }).sort((a, b) => a - b);
-      sources.forEach((s) => {
-        const c = rel(s);
-        const feeds = s.dataset.feeds!;
-        if (stacked) {
-          const x1 = c.cx + (c.t < grid.t + 4 ? -10 : 10);
-          const x2 = t.cx + (starts.indexOf(x1) - (sources.length - 1) / 2) * 22;
-          items.push({ d: curve(x1, grid.b + 6, x2, cap.t - 10, true), feeds });
-        } else {
-          items.push({ d: curve(rtl ? c.l - 6 : c.r + 6, c.cy, rtl ? t.r + 6 : t.l - 6, rows[feeds].cy, false), feeds });
-        }
-      });
-      const from = rows[flow.dataset.active!] ?? rows.issue;
-      items.push({
-        d: stacked ? curve(t.cx, t.b + 6, t.cx, capNext.t - 10, true) : curve(rtl ? t.l - 6 : t.r + 6, from.cy, rtl ? panel.r + 6 : panel.l - 6, panel.t + 40, false),
-        feeds: 'next',
-        next: true,
-      });
-
-      svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
-      svg.replaceChildren();
-      const defs = document.createElementNS(NS, 'defs');
-      defs.innerHTML =
-        '<linearGradient id="flow-pulse" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.6" stop-color="#fff" stop-opacity="0.8"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>';
-      svg.append(defs);
-      items.forEach((it, i) => {
-        for (const cls of ['path', 'pulse']) {
-          const el = document.createElementNS(NS, 'path');
-          el.setAttribute('d', it.d);
-          el.setAttribute('class', `${cls}${it.next ? ` ${cls}--next` : ''}`);
-          el.dataset.feeds = it.feeds;
-          svg.append(el);
-          const len = Math.ceil((el as SVGPathElement).getTotalLength());
-          el.style.setProperty('--len', String(len));
-          el.style.setProperty('--i', String(i));
-          if (cls === 'pulse') el.style.strokeDasharray = `40 ${len + 40}`;
-        }
-      });
-      light();
-    };
-
-    // ── Selection: which item is open, which sources and paths lead to it ──
-    let reviewing = false;
-    const light = () => {
-      const active = flow.dataset.active!;
-      svg.querySelectorAll<SVGPathElement>('.path').forEach((el) => el.classList.toggle('is-lit', el.dataset.feeds === active || el.dataset.feeds === 'next'));
-      sources.forEach((s) => s.classList.toggle('is-lit', s.dataset.feeds === active && (active !== 'issue' || reviewing)));
-    };
-
-    const select = (id: string, focus = false) => {
-      const changed = flow.dataset.active !== id;
-      flow.dataset.active = id;
-      tabs.forEach((tab) => {
-        const on = tab.dataset.row === id;
-        tab.setAttribute('aria-selected', String(on));
-        tab.tabIndex = on ? 0 : -1;
-        if (on && focus) tab.focus();
-      });
-      panels.forEach((panel) => {
-        const on = panel.dataset.panel === id;
-        panel.hidden = !on;
-        if (on && changed && !reduce.matches) {
-          panel.classList.remove('is-entering');
-          void panel.offsetWidth;
-          panel.classList.add('is-entering');
-        }
-      });
-      light();
-      draw();
-    };
-
-    const setReview = (open: boolean) => {
-      reviewing = open;
-      evidence.classList.toggle('is-open', open);
-      review.setAttribute('aria-expanded', String(open));
-      review.textContent = open ? review.dataset.close! : review.dataset.open!;
-      light();
-    };
-
-    // Any interaction ends the introduction and leaves the visitor in control
+    let scene = 5;
+    let state: 'idle' | 'playing' | 'paused' | 'done' = 'done';
+    let elapsed = 0;
+    let startedAt = 0;
     let timers: number[] = [];
-    const takeOver = () => {
+    let autoPaused = false;
+
+    const setState = (s: typeof state) => {
+      state = s;
+      cine.dataset.state = s;
+      label.textContent = s === 'playing' ? ctrl.dataset.pause! : s === 'done' ? ctrl.dataset.replay! : ctrl.dataset.play!;
+    };
+
+    // Puts the two records where they float before Tyll, measured from their resting place in the window
+    const scatter = () => {
+      recs.forEach((r) => (r.style.transform = 'none'));
+      recs.forEach((r) => {
+        const from = r.getBoundingClientRect();
+        const to = anchor(r.dataset.rec!).getBoundingClientRect();
+        const s = to.width / from.width;
+        r.style.transform = `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${s})`;
+      });
+      chips.forEach((c) => (c.style.transform = ''));
+    };
+
+    // The quieter records slide toward the list rows they become, and fade as the rows appear
+    const gatherChips = () => {
+      chips.forEach((c) => {
+        const row = cine.querySelector<HTMLElement>(`[data-row="${c.dataset.chip}"]`);
+        if (!row) return;
+        c.style.transform = '';
+        const from = c.getBoundingClientRect();
+        const to = row.getBoundingClientRect();
+        c.style.transform = `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(0.9)`;
+      });
+    };
+
+    const show = (n: number) => {
+      scene = n;
+      if (n === 2) {
+        recs.forEach((r) => (r.style.transform = ''));
+        gatherChips();
+      }
+      cine.dataset.scene = String(n);
+    };
+
+    const clear = () => {
       timers.forEach(clearTimeout);
       timers = [];
-      flow.dataset.stage = 'done';
     };
 
-    tabs.forEach((tab) =>
-      tab.addEventListener('click', () => {
-        takeOver();
-        select(tab.dataset.row!);
-      }),
-    );
-    flow.querySelector('[role="tablist"]')!.addEventListener('keydown', (e) => {
-      const ev = e as KeyboardEvent;
-      const i = tabs.indexOf(document.activeElement as HTMLButtonElement);
-      if (i < 0) return;
-      const step = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
-      let n = -1;
-      if (step) n = (i + step + tabs.length) % tabs.length;
-      else if (ev.key === 'Home') n = 0;
-      else if (ev.key === 'End') n = tabs.length - 1;
-      if (n < 0) return;
-      ev.preventDefault();
-      takeOver();
-      select(tabs[n].dataset.row!, true);
-    });
-    review.hidden = false;
-    review.addEventListener('click', () => {
-      takeOver();
-      setReview(!reviewing);
-      if (reviewing) evidence.querySelector<HTMLElement>('[data-record]')?.scrollIntoView({ block: 'nearest', behavior: reduce.matches ? 'auto' : 'smooth' });
-    });
+    const schedule = () => {
+      clear();
+      startedAt = performance.now() - elapsed;
+      for (const [at, n] of TIMES) if (at >= elapsed && n > scene) timers.push(window.setTimeout(() => show(n), at - elapsed));
+      timers.push(
+        window.setTimeout(() => {
+          cine.classList.remove('is-timed');
+          setState('done');
+        }, END - elapsed),
+      );
+      setState('playing');
+    };
 
-    // ── The short introduction: systems, then Tyll, then its items, then the investigation opens ──
+    // Back to the first frame without any transition
+    const reset = () => {
+      clear();
+      elapsed = 0;
+      cine.classList.add('is-instant');
+      cine.classList.remove('is-timed');
+      scene = 0;
+      cine.dataset.scene = '0';
+      scatter();
+      void cine.offsetWidth;
+      cine.classList.remove('is-instant');
+    };
+
     const play = () => {
-      timers.forEach(clearTimeout);
-      setReview(false);
-      select('issue');
-      flow.setAttribute('data-reset', '');
-      flow.dataset.stage = '0';
-      void flow.offsetWidth;
-      flow.removeAttribute('data-reset');
-      timers = [
-        window.setTimeout(() => (flow.dataset.stage = '1'), 60),
-        window.setTimeout(() => (flow.dataset.stage = '2'), 600),
-        window.setTimeout(() => (flow.dataset.stage = '3'), 1400),
-        window.setTimeout(() => (flow.dataset.stage = 'done'), 2300),
-      ];
+      reset();
+      cine.classList.add('is-timed');
+      // The records appear on the next frame, so their entrance is animated
+      requestAnimationFrame(() => {
+        show(1);
+        schedule();
+      });
     };
 
-    flow.classList.add('is-ready');
-    setReview(false);
-    draw();
-    document.fonts?.ready.then(draw);
-    // Redraw whenever the stage changes size: window resizes, a panel switches, the evidence opens
-    let lastSize = '';
-    new ResizeObserver(() => {
-      const size = `${flow.offsetWidth}x${flow.offsetHeight}`;
-      if (size !== lastSize) {
-        lastSize = size;
-        draw();
-      }
-    }).observe(flow);
+    const pause = () => {
+      if (state !== 'playing') return;
+      clear();
+      elapsed = performance.now() - startedAt;
+      setState('paused');
+    };
 
-    if (!reduce.matches) {
-      replay.hidden = false;
-      replay.addEventListener('click', play);
-      flow.dataset.stage = '0';
-      new IntersectionObserver(
-        ([e], io) => {
-          if (!e.isIntersecting) return;
-          io.disconnect();
-          if (flow.dataset.stage === '0') play();
-        },
-        { threshold: 0.3 },
-      ).observe(flow);
-      // A click before the introduction has started shows everything at once
-      flow.addEventListener('pointerdown', () => flow.dataset.stage === '0' && takeOver(), { once: true });
-    }
+    const resume = () => {
+      if (state === 'paused') schedule();
+    };
+
+    // Keep the floating positions right if the window is resized before the records have gathered
+    const ro = new ResizeObserver(() => {
+      if (scene > 1) return;
+      cine.classList.add('is-instant');
+      scatter();
+      void cine.offsetWidth;
+      cine.classList.remove('is-instant');
+    });
+    ro.observe(stage);
+
+    ctrl.addEventListener('click', () => {
+      autoPaused = false;
+      if (state === 'playing') pause();
+      else if (state === 'paused') resume();
+      else play();
+    });
+
+    // Starts once the stage is well in view; pauses when it leaves, resumes when it is back
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry.intersectionRatio >= 0.3;
+        if (state === 'idle' && visible) play();
+        else if (state === 'playing' && !entry.isIntersecting) {
+          pause();
+          autoPaused = true;
+        } else if (state === 'paused' && autoPaused && visible) {
+          autoPaused = false;
+          resume();
+        }
+      },
+      { threshold: [0, 0.3] },
+    );
+
+    // Ready: show the first frame and wait for the stage to come into view
+    reset();
+    setState('idle');
+    ctrl.hidden = false;
+    io.observe(stage);
+
+    // If the visitor asks for reduced motion later, show the final view and stop
+    reduce.addEventListener('change', () => {
+      if (!reduce.matches) return;
+      clear();
+      io.disconnect();
+      ro.disconnect();
+      recs.forEach((r) => (r.style.transform = ''));
+      chips.forEach((c) => (c.style.transform = ''));
+      cine.classList.remove('is-timed');
+      show(5);
+      setState('done');
+      ctrl.hidden = true;
+    });
   }
 </script>
