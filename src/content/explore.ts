@@ -205,7 +205,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'تجتمع الحجوزات وأنماط الزوار دون حجز وإشغال الفندق ومؤتمر الخميس لتعطي 589 ضيفًا متوقعًا. ويمكن تعديل أي رقم.',
           'Prenotazioni, clienti senza prenotazione delle ultime settimane, occupazione e la conferenza di giovedì danno 589 ospiti attesi. Ogni cifra si può modificare.',
         ),
-        focus: [0.1799, 0.2798, 0.8187, 0.5855],
+        focus: [0.1799, 0.2798, 0.8187, 0.52],
+        fade: true,
         mark: [0.205, 0.712, 0.33, 0.032],
       },
       {

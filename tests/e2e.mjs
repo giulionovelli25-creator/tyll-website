@@ -193,7 +193,7 @@ for (const lang of LANGS) {
         return r.width > 1 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
       }).map((e) => e.textContent.trim().slice(0, 30)),
       // Demo screens keep their proportions (never stretched)
-      stretched: [...document.querySelectorAll('.ex__cam')].filter((c) => {
+      stretched: [...document.querySelectorAll('.ex__canvas')].filter((c) => {
         const r = c.getBoundingClientRect();
         return r.width > 0 && Math.abs(r.width / r.height - 1440 / 1240) > 0.02;
       }).length,
