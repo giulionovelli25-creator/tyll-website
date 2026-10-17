@@ -1,5 +1,6 @@
 ---
-// Homepage chapter 3: one sourced finding beside one bright photograph. Industry research, never a Tyll result.
+// Homepage chapter 3: one sourced finding (how many systems a typical hotel runs) beside one bright photograph.
+// Industry research, never a Tyll result.
 // Side by side, so the photo keeps its natural colour instead of being darkened behind text.
 import { Picture } from 'astro:assets';
 import chef from '../../assets/photos/why-chef.jpg';
@@ -31,7 +32,7 @@ const w = t(lang).home.why;
     <div class="why__inner">
       <h2 id="why-title">{w.title}</h2>
       <figure class="why__figure">
-        <p class="why__number" aria-hidden="true">{w.figure}</p>
+        <p class="why__number" aria-hidden="true"><bdi dir="ltr">{w.figure}</bdi></p>
         <figcaption>
           <p class="why__text"><span class="visually-hidden">{w.figure}: </span>{w.text}</p>
           <p class="why__context">{w.context}</p>
