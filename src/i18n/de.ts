@@ -105,6 +105,7 @@ const de: Dict = {
     wholeScreen: 'Ganzer Bildschirm',
     closeUp: 'Nahansicht',
     exploreHint: 'Wählen Sie einen Bereich, um zu sehen, was er zeigt.',
+    swipeHint: 'Seitlich wischen, um die ganze Breite zu sehen.',
     viewer: 'Ansicht vergrößert',
     close: 'Schließen',
     zoomIn: 'Vergrößern',

@@ -107,6 +107,7 @@ const ar: Dict = {
     wholeScreen: 'الشاشة كاملة',
     closeUp: 'عرض مقرّب',
     exploreHint: 'اختر جزءًا من الشاشة لترى ما يعرضه.',
+    swipeHint: 'اسحب جانبيًا لرؤية العرض الكامل.',
     viewer: 'عارض الشاشات',
     close: 'إغلاق',
     zoomIn: 'تكبير',

@@ -5,7 +5,9 @@
 // Rectangles are fractions of the full 1440 × 1240 capture: [x, y, width, height].
 //   focus  – what the camera frames on wider screens
 //   mark   – the exact part to highlight (optional)
-//   phone  – a tighter frame for phones, so the key figures stay readable (defaults to focus)
+//   fade   – the content carries on below the frame (a long list or form); the frame fades out and points to the
+//            whole screen
+// Focus rectangles are snapped to the gaps between cards, so a frame never cuts through a block of the interface.
 // Every sentence describes only what the referenced screen shows. Checked against the demo captures on 17 Oct 2026.
 
 import type { Locale, SolutionKey } from '../i18n/routes';
@@ -19,7 +21,7 @@ export type Spot = {
   text: Text;
   focus: Rect;
   mark?: Rect;
-  phone?: Rect;
+  fade?: boolean;
   /** A stage of a genuine workflow (Forecasting only) */
   stage?: Text;
 };
@@ -57,9 +59,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'الجرد في جهة، والمبيعات والوصفات في الجهة الأخرى: استُهلكت 38 علبة، وتفسّر السجلات 30 منها. فرق العلب الثماني هو ما يحتاج إلى تحقق.',
           'Da una parte i conteggi, dall’altra vendite e ricette: 38 lattine usate, 30 spiegate. La differenza di 8 lattine è ciò che va verificato.',
         ),
-        focus: [0.195, 0.4, 0.49, 0.44],
+        focus: [0.1799, 0.3863, 0.5125, 0.4847],
         mark: [0.207, 0.682, 0.466, 0.152],
-        phone: [0.205, 0.51, 0.24, 0.32],
       },
       {
         frame: 1,
@@ -70,22 +71,20 @@ export const explore: Record<SolutionKey, Explore> = {
           '28 درهمًا بسعر اليوم. وهي ليست خسارة مؤكدة، ولا تصبح كذلك إلا إذا أثبتت النتيجة ذلك.',
           'AED 28 al prezzo di oggi. Non è una perdita confermata: lo diventa solo se l’esito lo stabilisce.',
         ),
-        focus: [0.195, 0.08, 0.79, 0.33],
+        focus: [0.1799, 0.0556, 0.8187, 0.354],
         mark: [0.705, 0.25, 0.27, 0.135],
-        phone: [0.69, 0.235, 0.3, 0.16],
       },
       {
         frame: 2,
         label: t('Possible explanations', 'Mögliche Erklärungen', 'التفسيرات المحتملة', 'Possibili spiegazioni'),
         text: t(
-          'Each possible cause is listed with what the records show. Here they point to a drink served but not entered in the POS, or removed from the bill. Nothing is concluded until a manager checks.',
-          'Jede mögliche Ursache steht mit dem, was die Daten zeigen. Hier deuten sie auf ein Getränk, das serviert, aber nicht in der Kasse erfasst oder von der Rechnung entfernt wurde. Entschieden ist nichts, bis jemand prüft.',
-          'يُعرض كل سبب محتمل مع ما تُظهره السجلات. وهنا تشير السجلات إلى مشروب قُدّم دون إدخاله في نقطة البيع، أو حُذف من الفاتورة. ولا يُستنتج شيء قبل أن يتحقق مدير.',
-          'Ogni possibile causa è elencata con ciò che mostrano i dati. Qui indicano una bevanda servita ma non battuta in cassa, o tolta dal conto. Nulla è stabilito finché un responsabile non verifica.',
+          'Each possible cause is listed with what the records show. Nothing is concluded until a manager checks.',
+          'Jede mögliche Ursache steht mit dem, was die Daten zeigen. Entschieden ist nichts, bis jemand prüft.',
+          'يُعرض كل سبب محتمل مع ما تُظهره السجلات، ولا يُستنتج شيء قبل أن يتحقق مدير.',
+          'Ogni possibile causa è elencata con ciò che mostrano i dati. Nulla è stabilito finché un responsabile non verifica.',
         ),
-        focus: [0.2, 0.43, 0.48, 0.37],
+        focus: [0.1799, 0.4129, 0.5125, 0.3919],
         mark: [0.207, 0.505, 0.465, 0.045],
-        phone: [0.205, 0.49, 0.3, 0.12],
       },
       {
         frame: 3,
@@ -96,7 +95,7 @@ export const explore: Record<SolutionKey, Explore> = {
           'يتولى مدير الأغذية والمشروبات الحالة مع موعد نهائي، وتبقى في قائمته حتى تُسجَّل نتيجة.',
           'Il direttore F&B prende in carico il caso, con una scadenza. Resta nella sua lista finché non viene registrato un esito.',
         ),
-        focus: [0.695, 0.13, 0.29, 0.33],
+        focus: [0.6792, 0.1298, 0.3194, 0.315],
         mark: [0.705, 0.192, 0.27, 0.04],
       },
       {
@@ -108,7 +107,7 @@ export const explore: Record<SolutionKey, Explore> = {
           'بعد التحقق، يسجّل المدير ما توصل إليه: تصحيح مشروع، أو خسارة مؤكدة، أو إيراد مسترد، أو عدم وجود نتيجة.',
           'A verifica conclusa, il responsabile registra cosa è emerso: una correzione legittima, una perdita confermata, un ricavo recuperato o nessun riscontro.',
         ),
-        focus: [0.695, 0.715, 0.29, 0.28],
+        focus: [0.6792, 0.7145, 0.3194, 0.2798],
         mark: [0.705, 0.745, 0.265, 0.25],
       },
     ],
@@ -132,9 +131,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'طلب واحد في The Terrace: حُذفت Coca-Cola بعد ست دقائق من إرسالها إلى البار، بقيمة 22 درهمًا.',
           'Un ordine a The Terrace: una Coca-Cola tolta sei minuti dopo l’invio al bar, con AED 22 coinvolti.',
         ),
-        focus: [0.195, 0.09, 0.79, 0.23],
+        focus: [0.1799, 0.0556, 0.8187, 0.2782],
         mark: [0.198, 0.255, 0.776, 0.062],
-        phone: [0.198, 0.25, 0.36, 0.07],
       },
       {
         frame: 1,
@@ -145,22 +143,20 @@ export const explore: Record<SolutionKey, Explore> = {
           'الطلب الأصلي والفاتورة النهائية جنبًا إلى جنب. فرق الـ 22 درهمًا هو المشروب الذي حُذف.',
           'L’ordine originale e il conto finale fianco a fianco. La differenza di AED 22 è la bevanda tolta.',
         ),
-        focus: [0.195, 0.335, 0.79, 0.185],
+        focus: [0.1799, 0.3185, 0.8187, 0.2387],
         mark: [0.598, 0.475, 0.375, 0.03],
-        phone: [0.595, 0.38, 0.38, 0.14],
       },
       {
         frame: 1,
         label: t('Every step, in order', 'Jeder Schritt der Reihe nach', 'كل خطوة بالترتيب', 'Ogni passaggio, in ordine'),
         text: t(
-          'The point-of-sale history shows each step, including the removal, under whose login it happened and that no reason or approval was recorded.',
-          'Der Kassenverlauf zeigt jeden Schritt, auch die Entfernung – unter wessen Login sie geschah und dass weder Grund noch Freigabe erfasst wurden.',
-          'يعرض سجل نقطة البيع كل خطوة، بما فيها الحذف، وتحت أي حساب تمّ، وأنه لم يُسجَّل سبب أو موافقة.',
-          'La cronologia della cassa mostra ogni passaggio, compresa la rimozione, con quale login è avvenuta e che non sono stati registrati motivo né approvazione.',
+          'Each step at the point of sale, including the removal, which has no reason or approval on record.',
+          'Jeder Schritt an der Kasse, auch die Entfernung – ohne erfassten Grund oder Freigabe.',
+          'كل خطوة في نقطة البيع، بما فيها الحذف، دون سبب أو موافقة مسجّلة.',
+          'Ogni passaggio alla cassa, compresa la rimozione, senza motivo né approvazione registrati.',
         ),
-        focus: [0.195, 0.565, 0.4, 0.43],
+        focus: [0.1799, 0.5435, 0.4146, 0.4508],
         mark: [0.205, 0.8, 0.38, 0.045],
-        phone: [0.205, 0.7, 0.38, 0.16],
       },
       {
         frame: 2,
@@ -171,9 +167,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'تُطابَق رسوم المنافذ مع فواتير الضيوف: فُحص 1,882 رسمًا هذا الأسبوع، بفرق 576 درهمًا، ورُصد 17 قيدًا.',
           'Gli addebiti dei punti vendita vengono confrontati con i conti degli ospiti: 1.882 controllati questa settimana, una differenza di AED 576 e 17 registrazioni segnalate.',
         ),
-        focus: [0.195, 0.25, 0.79, 0.25],
+        focus: [0.1799, 0.2371, 0.8187, 0.3089],
         mark: [0.205, 0.335, 0.69, 0.065],
-        phone: [0.205, 0.33, 0.4, 0.08],
       },
       {
         frame: 3,
@@ -184,9 +179,9 @@ export const explore: Record<SolutionKey, Explore> = {
           'تُدرج فواتير الموردين التي تحتسب أكثر مما وصل، أو بسعر أعلى من المتفق عليه، مع المبلغ الذي يجب التحقق منه.',
           'Le fatture dei fornitori che addebitano più di quanto arrivato, o sopra il prezzo concordato, sono elencate con l’importo da verificare.',
         ),
-        focus: [0.195, 0.285, 0.79, 0.3],
+        focus: [0.1799, 0.2573, 0.8187, 0.3298],
+        fade: true,
         mark: [0.2, 0.35, 0.775, 0.035],
-        phone: [0.2, 0.34, 0.4, 0.1],
       },
     ],
   },
@@ -210,9 +205,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'تجتمع الحجوزات وأنماط الزوار دون حجز وإشغال الفندق ومؤتمر الخميس لتعطي 589 ضيفًا متوقعًا. ويمكن تعديل أي رقم.',
           'Prenotazioni, clienti senza prenotazione delle ultime settimane, occupazione e la conferenza di giovedì danno 589 ospiti attesi. Ogni cifra si può modificare.',
         ),
-        focus: [0.195, 0.31, 0.79, 0.44],
+        focus: [0.1799, 0.2798, 0.8187, 0.5855],
         mark: [0.205, 0.712, 0.33, 0.032],
-        phone: [0.205, 0.38, 0.38, 0.25],
       },
       {
         frame: 1,
@@ -224,9 +218,9 @@ export const explore: Record<SolutionKey, Explore> = {
           '15 صنفًا تحتاج إلى طلب، لكلٍّ منها كمية مقترحة وتاريخ أقصى للطلب، وما إذا كان سينفد قبل التوريد التالي.',
           '15 articoli da ordinare, ognuno con quantità suggerita, data entro cui ordinare e se finisce prima della prossima consegna.',
         ),
-        focus: [0.195, 0.3, 0.79, 0.45],
+        focus: [0.1799, 0.2798, 0.8187, 0.5073],
+        fade: true,
         mark: [0.205, 0.383, 0.122, 0.04],
-        phone: [0.205, 0.43, 0.4, 0.25],
       },
       {
         frame: 2,
@@ -238,9 +232,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'يذهب الطلب إلى المشتريات، وتظهر كل خطوة موافقة: المشتريات، ثم المحاسبة، ثم المدير العام للطلبات التي تتجاوز 5,000 درهم.',
           'La richiesta va agli Acquisti e ogni passaggio di approvazione è visibile: acquisti, contabilità e, sopra AED 5.000, il direttore generale.',
         ),
-        focus: [0.195, 0.3, 0.79, 0.21],
+        focus: [0.1799, 0.2782, 0.8187, 0.2444],
         mark: [0.205, 0.455, 0.68, 0.04],
-        phone: [0.205, 0.36, 0.4, 0.13],
       },
       {
         frame: 3,
@@ -252,9 +245,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'توافق المشتريات أو تطلب تعديلات أو ترفض، مع رؤية الميزانية المتبقية بعد هذا الطلب. والميزانيات أرقام تخطيطية في العرض التوضيحي.',
           'Gli Acquisti approvano, chiedono modifiche o rifiutano, con il budget residuo dopo questa richiesta sotto gli occhi. I budget sono cifre di pianificazione della demo.',
         ),
-        focus: [0.195, 0.47, 0.79, 0.27],
+        focus: [0.1799, 0.454, 0.8187, 0.2984],
         mark: [0.208, 0.633, 0.24, 0.034],
-        phone: [0.205, 0.48, 0.38, 0.22],
       },
       {
         frame: 4,
@@ -266,9 +258,9 @@ export const explore: Record<SolutionKey, Explore> = {
           'لا يرتفع المخزون إلا عند تسجيل التوريد، وليس عند إرسال الطلب.',
           'Le giacenze aumentano solo quando la consegna viene registrata, non quando si ordina.',
         ),
-        focus: [0.195, 0.08, 0.6, 0.42],
+        focus: [0.1799, 0.0573, 0.8187, 0.4427],
+        fade: true,
         mark: [0.205, 0.118, 0.37, 0.022],
-        phone: [0.205, 0.08, 0.38, 0.3],
       },
     ],
   },
@@ -291,22 +283,20 @@ export const explore: Record<SolutionKey, Explore> = {
           'عشاء مؤتمر المبيعات الإقليمي: 180 ضيفًا يوم الخميس في Grand Ballroom، وما زال قيد التخطيط.',
           'La cena della conferenza vendite regionale: 180 ospiti giovedì nel Grand Ballroom, ancora in pianificazione.',
         ),
-        focus: [0.195, 0.335, 0.79, 0.27],
+        focus: [0.1799, 0.3218, 0.8187, 0.45],
         mark: [0.205, 0.348, 0.77, 0.046],
-        phone: [0.205, 0.345, 0.4, 0.25],
       },
       {
         frame: 1,
         label: t('Cost and price', 'Kosten und Preis', 'التكلفة والسعر', 'Costi e prezzo'),
         text: t(
-          'Food, drinks and labour are estimated against the agreed price, so the expected contribution is visible early. Demo estimates, not accounting figures.',
-          'Speisen, Getränke und Personal werden gegen den vereinbarten Preis geschätzt, so ist der erwartete Beitrag früh sichtbar. Schätzwerte der Demo, keine Buchhaltungszahlen.',
-          'تُقدَّر تكلفة الطعام والمشروبات والعمالة مقابل السعر المتفق عليه، فتظهر المساهمة المتوقعة مبكرًا. تقديرات العرض التوضيحي، وليست أرقامًا محاسبية.',
-          'Cibo, bevande e personale sono stimati rispetto al prezzo concordato, così il contributo atteso si vede presto. Stime della demo, non dati contabili.',
+          'Food, drinks and labour are estimated against the agreed price. Demo estimates, not accounting figures.',
+          'Speisen, Getränke und Personal werden gegen den vereinbarten Preis geschätzt. Schätzwerte der Demo, keine Buchhaltungszahlen.',
+          'تُقدَّر تكلفة الطعام والمشروبات والعمالة مقابل السعر المتفق عليه. تقديرات العرض التوضيحي، وليست أرقامًا محاسبية.',
+          'Cibo, bevande e personale sono stimati rispetto al prezzo concordato. Stime della demo, non dati contabili.',
         ),
-        focus: [0.195, 0.4, 0.4, 0.2],
+        focus: [0.1799, 0.3218, 0.8187, 0.45],
         mark: [0.207, 0.5, 0.375, 0.06],
-        phone: [0.205, 0.4, 0.38, 0.2],
       },
       {
         frame: 1,
@@ -317,9 +307,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'ما يزال هناك ستة نُدُل إضافيين وأدوار أخرى يجب شغلها، إضافة إلى مكونات للشراء. وكل سطر يقود إلى المكان المناسب للتصرف.',
           'Mancano altri sei camerieri e altri ruoli, più ingredienti da comprare. Ogni riga porta al punto in cui intervenire.',
         ),
-        focus: [0.585, 0.4, 0.4, 0.33],
+        focus: [0.1799, 0.3218, 0.8187, 0.45],
         mark: [0.59, 0.433, 0.375, 0.026],
-        phone: [0.59, 0.42, 0.38, 0.2],
       },
       {
         frame: 2,
@@ -330,9 +319,9 @@ export const explore: Record<SolutionKey, Explore> = {
           'النُدُل: المطلوب 12، والمؤكد 6. ويعرض Tyll الأشخاص ذوي المهارة المناسبة المتفرغين طوال الفعالية.',
           'Camerieri: 12 necessari, 6 confermati. Tyll elenca le persone con la competenza giusta libere per tutto l’evento.',
         ),
-        focus: [0.195, 0.35, 0.79, 0.32],
+        focus: [0.1799, 0.3218, 0.8187, 0.3476],
+        fade: true,
         mark: [0.68, 0.433, 0.3, 0.03],
-        phone: [0.595, 0.425, 0.39, 0.18],
       },
       {
         frame: 3,
@@ -343,9 +332,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'يُطلب ستة نُدُل من قسم آخر. ترى مديرة المطعم الطلب، ويظهر «0 من 6 مؤكد» حتى تتخذ قرارها.',
           'Sei camerieri vengono richiesti a un altro reparto. La responsabile del ristorante vede la richiesta, che mostra 0 su 6 confermati finché non decide.',
         ),
-        focus: [0.195, 0.2, 0.79, 0.3],
+        focus: [0.1799, 0.1927, 0.8187, 0.3306],
         mark: [0.2, 0.365, 0.78, 0.033],
-        phone: [0.56, 0.3, 0.43, 0.12],
       },
     ],
   },
@@ -368,9 +356,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'يرى الاستقبال أن 4 ضيوف قادمين قد ينتظرون: 12 غرفة جاهزة، و4 قيد التنظيف، و3 بانتظار التنظيف.',
           'Il ricevimento vede che 4 ospiti in arrivo potrebbero dover aspettare: 12 camere pronte, 4 in pulizia e 3 in attesa di pulizia.',
         ),
-        focus: [0.195, 0.25, 0.79, 0.15],
+        focus: [0.1799, 0.2371, 0.8187, 0.1726],
         mark: [0.205, 0.335, 0.42, 0.04],
-        phone: [0.205, 0.26, 0.4, 0.13],
       },
       {
         frame: 0,
@@ -381,9 +368,9 @@ export const explore: Record<SolutionKey, Explore> = {
           'تعرض كل غرفة حالة تنظيفها والوقت المتوقع لجاهزيتها ومدة انتظار الضيف. تقديرات وليست ضمانات.',
           'Ogni camera mostra lo stato della pulizia, l’orario stimato in cui sarà pronta e da quanto un ospite aspetta. Stime, non garanzie.',
         ),
-        focus: [0.195, 0.42, 0.79, 0.22],
+        focus: [0.1799, 0.396, 0.8187, 0.2935],
+        fade: true,
         mark: [0.2, 0.48, 0.78, 0.045],
-        phone: [0.58, 0.43, 0.4, 0.18],
       },
       {
         frame: 1,
@@ -394,9 +381,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'وصل الضيف المهم لجناح 1211 بالفعل. يطلب الاستقبال من التدبير الفندقي إعطاء الأولوية للجناح، ويُسجَّل الطلب في سجل الغرفة.',
           'L’ospite VIP della suite 1211 è già arrivato. Il ricevimento chiede all’housekeeping di dare priorità alla suite, e la richiesta resta nella cronologia della camera.',
         ),
-        focus: [0.195, 0.29, 0.79, 0.48],
+        focus: [0.1799, 0.2734, 0.8187, 0.5121],
         mark: [0.205, 0.305, 0.775, 0.13],
-        phone: [0.205, 0.3, 0.4, 0.15],
       },
       {
         frame: 2,
@@ -407,9 +393,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'ينتقل الجناح إلى أعلى لوحة التدبير الفندقي، حيث يرى الفريق أيضًا الغرف المنتظرة ومن كُلّف بها.',
           'La suite sale in cima alla bacheca dell’housekeeping, dove il team vede anche quali camere aspettano e a chi sono assegnate.',
         ),
-        focus: [0.195, 0.25, 0.79, 0.28],
+        focus: [0.1799, 0.2371, 0.8187, 0.3105],
         mark: [0.2, 0.49, 0.78, 0.035],
-        phone: [0.2, 0.44, 0.4, 0.09],
       },
       {
         frame: 4,
@@ -420,9 +405,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'تضع عاملة الغرف علامة «تم التنظيف» من هاتفها، فيرى الاستقبال الجناح 1211 بانتظار الفحص.',
           'L’addetta lo segna come pulito dal telefono. Il ricevimento vede quindi la suite 1211 in attesa di ispezione.',
         ),
-        focus: [0.195, 0.29, 0.79, 0.5],
+        focus: [0.1799, 0.2734, 0.8187, 0.5323],
         mark: [0.205, 0.305, 0.235, 0.026],
-        phone: [0.205, 0.3, 0.4, 0.12],
       },
     ],
   },
@@ -445,9 +429,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'يرى الملّاك والمديرون العامون الإيراد والمساهمة التشغيلية المقدّرة والخسائر المحتملة للأسبوع، مع اتجاه كلٍّ منها.',
           'Proprietà e direttori generali vedono ricavi, contributo operativo stimato e perdite potenziali della settimana, ciascuno con il suo andamento.',
         ),
-        focus: [0.195, 0.42, 0.79, 0.36],
+        focus: [0.1799, 0.3363, 0.8187, 0.4758],
         mark: [0.198, 0.352, 0.78, 0.12],
-        phone: [0.198, 0.35, 0.4, 0.13],
       },
       {
         frame: 0,
@@ -458,9 +441,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'المسائل المفتوحة وراء الأرقام، مع القيمة المعنية وأولويتها ومن يتولاها.',
           'Le questioni aperte dietro i numeri, con il valore coinvolto, la priorità e chi se ne occupa.',
         ),
-        focus: [0.195, 0.42, 0.79, 0.36],
+        focus: [0.1799, 0.3363, 0.8187, 0.4758],
         mark: [0.205, 0.585, 0.77, 0.155],
-        phone: [0.205, 0.58, 0.4, 0.16],
       },
       {
         frame: 1,
@@ -471,9 +453,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'يتابع فريق المبيعات الفرص المفتوحة والخطوة التالية لكل منها. والقيم المتوقعة تقديرات بيعية، ولا تُعرض أبدًا كإيراد.',
           'Le vendite seguono le opportunità aperte e il prossimo passo di ciascuna. I valori attesi sono stime commerciali, mai mostrate come ricavi.',
         ),
-        focus: [0.195, 0.3, 0.79, 0.22],
+        focus: [0.1799, 0.2863, 0.8187, 0.2516],
         mark: [0.205, 0.315, 0.45, 0.04],
-        phone: [0.205, 0.37, 0.4, 0.15],
       },
       {
         frame: 3,
@@ -484,9 +465,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'ترتبط كل صفقة مؤكدة بفعاليتها، فترى العمليات ما تحتاجه. وما يزال هذا المؤتمر بحاجة إلى 15 موظفًا.',
           'Ogni affare confermato è collegato al suo evento, così l’operatività vede cosa serve. Per questa conferenza mancano ancora 15 persone.',
         ),
-        focus: [0.195, 0.24, 0.79, 0.23],
+        focus: [0.1792, 0.2371, 0.8194, 0.2484],
         mark: [0.205, 0.425, 0.775, 0.035],
-        phone: [0.58, 0.4, 0.4, 0.07],
       },
       {
         frame: 4,
@@ -497,9 +477,8 @@ export const explore: Record<SolutionKey, Explore> = {
           'الإيراد والتكاليف المباشرة والمساهمة التشغيلية المقدّرة منذ بداية الشهر. وتوضح الشاشة أن هذا ليس صافي الربح.',
           'Ricavi, costi diretti e contributo operativo stimato del mese in corso. La schermata precisa che non si tratta di utile netto.',
         ),
-        focus: [0.195, 0.27, 0.79, 0.44],
+        focus: [0.1799, 0.2573, 0.8187, 0.4694],
         mark: [0.205, 0.44, 0.42, 0.03],
-        phone: [0.205, 0.3, 0.42, 0.2],
       },
     ],
   },

@@ -105,6 +105,7 @@ const en = {
     wholeScreen: 'Whole screen',
     closeUp: 'Close-up',
     exploreHint: 'Choose a part of the screen to see what it shows.',
+    swipeHint: 'Swipe sideways to see the full width.',
     viewer: 'Screen viewer',
     close: 'Close',
     zoomIn: 'Zoom in',

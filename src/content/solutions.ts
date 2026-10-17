@@ -10,13 +10,13 @@ import forecastProduce from '../assets/photos/forecast-produce.jpg';
 import eventsBanquet from '../assets/photos/events-banquet.jpg';
 import roomsSuite from '../assets/photos/rooms-suite.jpg';
 import receipts from '../assets/photos/tyll-problem-1.jpg';
-import salesLobby from '../assets/photos/sales-lobby.jpg';
+import salesBuffet from '../assets/photos/sales-buffet.jpg';
 import probStock from '../assets/photos/problem/problem-stock.jpg';
 import probFinance from '../assets/photos/problem/problem-finance.jpg';
 import probForecast from '../assets/photos/problem/problem-forecasting.jpg';
 import probEvents from '../assets/photos/problem/problem-events.jpg';
 import probRooms from '../assets/photos/problem/problem-rooms-housekeeping.jpg';
-import probSales from '../assets/photos/problem/problem-sales-service.jpg';
+import probSales from '../assets/photos/problem/problem-sales-frontdesk.jpg';
 
 const screens = import.meta.glob<{ default: ImageMetadata }>('../assets/demo/*.png', { eager: true });
 const screen = (name: string) => {
@@ -831,14 +831,14 @@ export const solutions: Record<SolutionKey, Solution> = {
   sales: {
     key: 'sales',
     icon: 'sales',
-    photo: salesLobby,
+    photo: salesBuffet,
     photoAlt: t(
-      'A sunlit hotel lobby with guests seated among palms and tall windows.',
-      'Eine sonnige Hotellobby mit Gästen zwischen Palmen und hohen Fenstern.',
-      'ردهة فندق مشمسة يجلس فيها الضيوف بين أشجار النخيل والنوافذ العالية.',
-      'Una hall d’albergo assolata con ospiti seduti tra palme e alte finestre.',
+      'A buffet with heated dishes and stacked plates during a hotel event.',
+      'Ein Buffet mit Wärmelampen und gestapelten Tellern bei einer Hotelveranstaltung.',
+      'بوفيه بأطباق ساخنة وصحون مكدّسة خلال فعالية في فندق.',
+      'Un buffet con piatti caldi e piatti impilati durante un evento in hotel.',
     ),
-    photoFocus: '60% 55%',
+    photoFocus: '68% 50%',
     name: t('Sales & Performance', 'Vertrieb & Performance', 'المبيعات والأداء', 'Vendite e performance'),
     menu: t(
       'Understand opportunities and see how the business is performing.',
@@ -860,8 +860,8 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Le opportunità di vendita e i dati sulle performance dell’hotel si trovano spesso in posti diversi.',
     ),
     problemPhoto: probSales,
-    problemPhotoAlt: t('A waiter clearing a table in a hotel restaurant while guests are served at the buffet.', 'Ein Kellner räumt in einem Hotelrestaurant einen Tisch ab, während am Buffet Gäste bedient werden.', 'نادل يرتّب طاولة في مطعم فندق بينما يُخدَم الضيوف عند البوفيه.', 'Un cameriere sparecchia un tavolo nel ristorante di un hotel mentre al buffet si servono gli ospiti.'),
-    problemFocus: '45% 45%',
+    problemPhotoAlt: t('A host at the front desk of a hotel restaurant, with the dining room beyond.', 'Ein Gastgeber am Empfang eines Hotelrestaurants, dahinter der Speisesaal.', 'مضيف عند مكتب الاستقبال في مطعم فندق، وخلفه قاعة الطعام.', 'Un addetto all’accoglienza di un ristorante d’albergo, con la sala sullo sfondo.'),
+    problemFocus: '22% 55%',
     steps: [
       { label: t('Review', 'Überblicken', 'المراجعة', 'Osserva'), frame: 0 },
       { label: t('Pursue', 'Verfolgen', 'المتابعة', 'Segui'), frame: 1 },

@@ -383,7 +383,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
         return {
           selected: sel,
           notes: [...ex.querySelectorAll('.ex__note')].filter((x) => getComputedStyle(x).visibility === 'visible').length,
-          panel: !!ex.querySelector('.ex__layer.is-panel.is-open'),
+          panel: ex.querySelector('.ex__layer.is-on')?.dataset.layer !== tabs[0].dataset.frame,
           needsPanel: tabs[sel].dataset.frame !== tabs[0].dataset.frame,
           ring: !!ex.querySelector(`.ex__mark.is-on[data-mark="${sel}"]`),
         };
@@ -411,7 +411,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
         ex.querySelector('[data-whole]').click();
         await new Promise((r) => setTimeout(r, 1100));
         const v = ex.querySelector('.ex__view').getBoundingClientRect();
-        const cam = ex.querySelector('.ex__layer.is-base .ex__cam');
+        const cam = ex.querySelector('.ex__layer.is-on .ex__cam');
         const r = cam.getBoundingClientRect();
         const img = cam.querySelector('img');
         return { fits: r.left >= v.left - 1 && r.right <= v.right + 1 && r.top >= v.top - 1 && r.bottom <= v.bottom + 1, ratio: Math.abs(r.width / r.height - 1440 / 1240) < 0.02, pressed: ex.querySelector('[data-whole]').getAttribute('aria-pressed'), loaded: img.complete && img.naturalWidth > 0 };
@@ -433,6 +433,57 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
   record('N', `Refinements on ${where}: wave, product sequence, hero, product explorer, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
+}
+
+// ── P: product media fit — every part of every solution screen, desktop to phone ──────────────────
+{
+  const p = [];
+  let checked = 0;
+  for (const [w, h, mobile] of [[1440, 900, false], [1280, 800, false], [1024, 768, false], [768, 1024, false], [390, 844, true]]) {
+    const page = await freshPage({ width: w, height: h, mobile });
+    for (const lang of ['en', 'de', 'ar', 'it']) {
+      for (const url of SOL[lang]) {
+        await go(page, url);
+        const r = await page.evaluate(async () => {
+          const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+          const ex = document.querySelector('[data-ex]');
+          ex.scrollIntoView({ block: 'start', behavior: 'instant' });
+          const tabs = [...ex.querySelectorAll('[role=tab]')];
+          const view = ex.querySelector('.ex__view');
+          const phone = innerWidth <= 900;
+          const out = [];
+          for (const [i, tab] of tabs.entries()) {
+            tab.click();
+            await wait(phone ? 120 : 1000);
+            const cam = ex.querySelector('.ex__layer.is-on .ex__cam');
+            const v = view.getBoundingClientRect();
+            const c = cam.getBoundingClientRect();
+            const [x, y, rw, rh] = tab.dataset.rect.split(',').map(Number);
+            if (phone) {
+              // The part keeps the capture's proportions and a readable scale; wider parts scroll sideways
+              const scale = c.width / (rw * 1440);
+              if (scale < 0.79 && c.width < view.clientWidth - 24) out.push(`${i}: scale ${scale.toFixed(2)}`);
+              if (Math.abs(c.height / c.width - (rh * 1240) / (rw * 1440)) > 0.02) out.push(`${i}: proportions`);
+            } else {
+              // The whole part is inside the view and in proportion
+              const card = { l: c.left + x * c.width, t: c.top + y * c.height, r: c.left + (x + rw) * c.width, b: c.top + (y + rh) * c.height };
+              if (card.l < v.left - 1 || card.r > v.right + 1 || card.t < v.top - 1 || card.b > v.bottom + 1) out.push(`${i}: outside the view ${JSON.stringify({ l: Math.round(card.l - v.left), t: Math.round(card.t - v.top), r: Math.round(v.right - card.r), b: Math.round(v.bottom - card.b) })}`);
+              if (Math.abs(c.width / c.height - 1440 / 1240) > 0.01) out.push(`${i}: stretched`);
+              const textScale = (c.width / 1440);
+              if (textScale < 0.7) out.push(`${i}: small (${textScale.toFixed(2)})`);
+            }
+          }
+          return { n: tabs.length, out, over: document.documentElement.scrollWidth > innerWidth };
+        });
+        checked += r.n;
+        if (r.out.length) p.push(`${w}px ${url}: ${r.out.join(', ')}`);
+        if (r.over) p.push(`${w}px ${url}: page scrolls sideways`);
+      }
+    }
+    if (page.errors.length) p.push(`console at ${w}px: ${page.errors.join(' | ')}`);
+    await page.ctx.close();
+  }
+  record('P', `Product screens fit and stay readable: ${checked} parts across 6 pages, 4 languages, 5 widths`, p.length ? 'FAIL' : 'PASS', p.slice(0, 12).join('; '));
 }
 
 // ── D + E: consent ────────────────────────────────────────────────────────────────────────────────

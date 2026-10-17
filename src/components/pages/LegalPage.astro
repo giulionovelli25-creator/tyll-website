@@ -20,8 +20,8 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
 ---
 
 <Base lang={lang} page="legal" title={d.meta.legalTitle} description={d.meta.legalDescription} noindex={incomplete}>
-  <LegalShell lang={lang} title={L('Legal notice', 'Impressum', 'البيانات القانونية', 'Note legali')}>
-    <h2>
+  <LegalShell lang={lang} title={L('Legal notice', 'Impressum', 'البيانات القانونية', 'Note legali')} toc>
+    <h2 id="provider">
       {
         L(
           'Information pursuant to § 5 DDG (German Digital Services Act)',
@@ -109,7 +109,7 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
       </div>
     </dl>
 
-    <h2>{L('Consumer dispute resolution', 'Verbraucherstreitbeilegung', 'تسوية نزاعات المستهلكين', 'Risoluzione delle controversie dei consumatori')}</h2>
+    <h2 id="disputes">{L('Consumer dispute resolution', 'Verbraucherstreitbeilegung', 'تسوية نزاعات المستهلكين', 'Risoluzione delle controversie dei consumatori')}</h2>
     <p>
       {
         L(
@@ -121,7 +121,7 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
       }
     </p>
 
-    <h2>{L('Liability for content', 'Haftung für Inhalte', 'المسؤولية عن المحتوى', 'Responsabilità per i contenuti')}</h2>
+    <h2 id="content">{L('Liability for content', 'Haftung für Inhalte', 'المسؤولية عن المحتوى', 'Responsabilità per i contenuti')}</h2>
     <p>
       {
         L(
@@ -133,7 +133,7 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
       }
     </p>
 
-    <h2>{L('Liability for links', 'Haftung für Links', 'المسؤولية عن الروابط', 'Responsabilità per i link')}</h2>
+    <h2 id="links">{L('Liability for links', 'Haftung für Links', 'المسؤولية عن الروابط', 'Responsabilità per i link')}</h2>
     <p>
       {
         L(
@@ -145,7 +145,7 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
       }
     </p>
 
-    <h2>{L('Copyright', 'Urheberrecht', 'حقوق النشر', 'Diritto d’autore')}</h2>
+    <h2 id="copyright">{L('Copyright', 'Urheberrecht', 'حقوق النشر', 'Diritto d’autore')}</h2>
     <p>
       {
         L(

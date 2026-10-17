@@ -1,9 +1,11 @@
 ---
-// One real demo screen, presented large, that visitors explore part by part.
-// The parts are tabs above the screen; choosing one moves a "camera" to that part of the screen, rings the exact
-// detail and shows one or two sentences about it underneath. The ringed parts can also be clicked on the screen
-// itself. A part that lives on another demo screen opens that screen as a panel over the first one, as a detail view
-// would in the product. "Whole screen" shows the complete capture; "Enlarge" opens every screen at full size.
+// One real demo screen at a time, explored part by part.
+// The parts are tabs above the screen. Each part is a complete block of the interface (its frame is snapped to the
+// gaps between cards, so nothing is cut through): on wider screens it is shown sharp and large over a soft view of
+// the whole screen behind it, with the exact detail ringed and one or two sentences underneath. A part that lives on
+// another demo screen brings that screen in behind it. Where the content carries on (a long list or form), the frame
+// fades out and offers the whole screen. On phones the part is shown at a readable size and scrolls sideways when it
+// is wider than the phone. "Whole screen" shows the complete capture; "Enlarge" opens every screen at full size.
 // Nothing moves on its own. Without JavaScript the first part is framed and every explanation is listed.
 // The demo is in English and left-to-right, so the screen keeps that direction in every language.
 import { Picture, getImage } from 'astro:assets';
@@ -23,51 +25,36 @@ const p = t(lang).solutionPage;
 const frames = solution.frames;
 const spots = explore.spots;
 
-// Camera framing, computed here so it needs no measuring in the browser.
-// The view has a fixed aspect ratio (wider on desktop, taller on phones). The capture is scaled so the focus fits,
-// centred on it, and kept inside the view; it is never stretched. The result is a transform for an element that is
-// as wide as the view and as tall as the capture at that width.
+// Desktop framing, computed here so the browser measures nothing. The view has a fixed aspect ratio; the capture is
+// scaled so the part fits with a little air around it, centred on it. The result is a transform for an element as
+// wide as the view and as tall as the capture at that width, plus the clip that keeps only the part visible.
 const IMG = 1440 / 1240;
-const DESKTOP = 1.66;
-const PHONE = 1.25;
-// Panels for other screens sit slightly inset over the first screen, so their own aspect differs a little
-const INSET = { top: 0.045, start: 0.05 };
-// Desktop zoom stays moderate so text is sharp and in proportion; phones need more to stay legible
-const cam = (r: Rect, aspect: number, maxZoom: number) => {
+const VIEW = 1.66;
+const MAX_ZOOM = 1.6;
+const n2 = (v: number) => Math.round(v * 10000) / 100;
+const cam = (r: Rect) => {
   const [x, y, w, h] = r;
-  const fit = Math.min(1, IMG / aspect);
-  const z = Math.max(fit, Math.min(maxZoom, 1 / w, 1 / aspect / (h / IMG)));
-  const ih = z / IMG;
-  const vh = 1 / aspect;
-  let left = 0.5 - (x + w / 2) * z;
-  let top = vh / 2 - (y + h / 2) * ih;
-  left = z >= 1 ? Math.min(0, Math.max(1 - z, left)) : (1 - z) / 2;
-  top = ih >= vh ? Math.min(0, Math.max(vh - ih, top)) : (vh - ih) / 2;
-  const n = (v: number) => Math.round(v * 10000) / 100;
-  return `${n(left)},${n(top * IMG)},${Math.round(z * 1000) / 1000}`;
+  const vh = 1 / VIEW;
+  const z = Math.min(MAX_ZOOM, 0.92 / w, (0.9 * vh) / (h / IMG));
+  const left = 0.5 - (x + w / 2) * z;
+  const top = vh / 2 - (y + h / 2) * (z / IMG);
+  return `${n2(left)},${n2(top * IMG)},${Math.round(z * 1000) / 1000}`;
 };
+const clip = (r: Rect) => [r[1], 1 - r[0] - r[2], 1 - r[1] - r[3], r[0]].map((v) => `${n2(Math.max(0, v))}%`).join(' ');
 const whole: Rect = [0, 0, 1, 1];
+const wholeCam = cam(whole);
 
-const base = spots[0].frame;
 const used = [...new Set(spots.map((s) => s.frame))];
-// On phones the detail panels cover the whole view, so they share its aspect
-const aspectOf = (frame: number, a: number) => (frame === base || a === PHONE ? a : (a * (1 - INSET.start)) / (1 - INSET.top));
-const views = spots.map((s) => ({
-  d: cam(s.focus, aspectOf(s.frame, DESKTOP), 1.75),
-  m: cam(s.phone ?? s.focus, aspectOf(s.frame, PHONE), 3.2),
-}));
-const layers = used.map((frame) => {
-  const first = spots.findIndex((s) => s.frame === frame);
-  return {
-    frame,
-    first,
-    whole: { d: cam(whole, aspectOf(frame, DESKTOP), 1), m: cam(whole, aspectOf(frame, PHONE), 1) },
-  };
-});
-const style = (v: string) => {
-  const [x, y, z] = v.split(',');
-  return `--x:${x}%;--y:${y}%;--z:${z}`;
+const views = spots.map((s) => ({ cam: cam(s.focus), clip: clip(s.focus), rect: s.focus.join(','), fade: n2(s.focus[1] + s.focus[3]) }));
+const layers = used.map((frame) => ({ frame, first: spots.findIndex((s) => s.frame === frame) }));
+const camStyle = (i: number) => {
+  const [x, y, z] = views[i].cam.split(',');
+  return `--x:${x}%;--y:${y}%;--z:${z};--clip:inset(${views[i].clip} round calc(14px / ${z}));--fade:${spots[i].fade ? `${views[i].fade}%` : '200%'}`;
 };
+const wholeStyle = (() => {
+  const [x, y, z] = wholeCam.split(',');
+  return `--x:${x}%;--y:${y}%;--z:${z}`;
+})();
 const pct = (r: Rect) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
 // Every screen of this solution, full size, for the viewer
 const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f.img.width, format: 'webp', quality: 85 })));
@@ -75,7 +62,7 @@ const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f
 const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stage?.[lang] !== s.stage[lang]) ? s.stage[lang] : null));
 ---
 
-<div class:list={['ex', `ex--${explore.tone}`]} data-ex id={id}>
+<div class:list={['ex', `ex--${explore.tone}`]} data-ex id={id} data-whole-cam={wholeCam}>
   <div class="ex__parts" role="tablist" aria-label={p.exploreParts} hidden>
     {
       spots.map((s, i) => (
@@ -95,8 +82,10 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
             tabindex={i === 0 ? 0 : -1}
             data-spot={i}
             data-frame={s.frame}
-            data-d={views[i].d}
-            data-m={views[i].m}
+            data-cam={views[i].cam}
+            data-clip={views[i].clip}
+            data-rect={views[i].rect}
+            data-fade={s.fade ? views[i].fade : undefined}
           >
             {s.label[lang]}
           </button>
@@ -125,45 +114,49 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
 
     <div class="ex__view" dir="ltr">
       {
-        layers.map((l) => (
-          <div
-            class:list={['ex__layer', l.frame === base ? 'is-base' : 'is-panel']}
-            data-layer={l.frame}
-            data-wd={l.whole.d}
-            data-wm={l.whole.m}
-            aria-hidden={l.frame === base ? undefined : 'true'}
-          >
-            <div class="ex__cam" style={style(views[l.first].d)}>
-              <Picture
-                src={frames[l.frame].img}
-                alt={frames[l.frame].alt[lang]}
-                formats={['avif', 'webp']}
-                fallbackFormat="webp"
-                widths={[1440, 2880]}
-                sizes="(max-width: 760px) 300vw, 2400px"
-                loading="lazy"
-                decoding="async"
-                class="ex__img"
-              />
-              {spots.map(
-                (s, i) =>
-                  s.frame === l.frame && (
-                    <button
-                      type="button"
-                      class:list={['ex__mark', !s.mark && 'ex__mark--area', i === 0 && 'is-on']}
-                      style={pct(s.mark ?? s.focus)}
-                      data-mark={i}
-                      tabindex="-1"
-                      aria-hidden="true"
-                    />
-                  ),
-              )}
+        layers.map((l, k) => (
+          <div class:list={['ex__layer', k === 0 && 'is-on']} data-layer={l.frame} aria-hidden={k === 0 ? undefined : 'true'}>
+            <div class="ex__backdrop" style={wholeStyle} aria-hidden="true">
+              <Picture src={frames[l.frame].img} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[1440, 2880]} sizes="1280px" loading="lazy" decoding="async" />
+            </div>
+            <div class="ex__cam" style={camStyle(l.first)}>
+              <div class="ex__canvas">
+                <Picture
+                  src={frames[l.frame].img}
+                  alt={frames[l.frame].alt[lang]}
+                  formats={['avif', 'webp']}
+                  fallbackFormat="webp"
+                  widths={[1440, 2880]}
+                  sizes="(max-width: 900px) 1400px, 2200px"
+                  loading="lazy"
+                  decoding="async"
+                  class="ex__img"
+                />
+                {spots.map(
+                  (s, i) =>
+                    s.frame === l.frame && (
+                      <button
+                        type="button"
+                        class:list={['ex__mark', !s.mark && 'ex__mark--area', i === 0 && 'is-on']}
+                        style={pct(s.mark ?? s.focus)}
+                        data-mark={i}
+                        tabindex="-1"
+                        aria-hidden="true"
+                      />
+                    ),
+                )}
+              </div>
             </div>
           </div>
         ))
       }
+      <button type="button" class="ex__more" data-more hidden>
+        <span>{p.wholeScreen}</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
     </div>
   </figure>
+  <p class="ex__swipe" data-swipe hidden>{p.swipeHint}</p>
 
   <div class="ex__notes" aria-live="polite">
     {
@@ -359,56 +352,35 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     height: 14px;
   }
 
-  /* ── The screen and its camera ── */
+  /* ── The screen ── */
   .ex__view {
     position: relative;
     aspect-ratio: 1.66;
     overflow: hidden;
-    background: #f3f4f6;
+    background: #e9ebee;
   }
 
   .ex__layer {
     position: absolute;
     inset: 0;
-    overflow: hidden;
-    transition:
-      opacity 0.55s var(--ease),
-      transform 0.7s var(--ease),
-      filter 0.55s var(--ease);
-  }
-
-  /* A detail screen opens as a panel over the first one */
-  .ex__layer.is-panel {
-    top: 4.5%;
-    left: 5%;
-    border-top-left-radius: 14px;
-    background: #f3f4f6;
-    box-shadow:
-      0 0 0 1px rgba(20, 22, 26, 0.08),
-      -30px -10px 80px -20px rgba(20, 22, 26, 0.35);
     opacity: 0;
     visibility: hidden;
-    transform: translate(3%, 2%);
+    filter: drop-shadow(0 18px 30px rgba(20, 22, 26, 0.14)) drop-shadow(0 2px 4px rgba(20, 22, 26, 0.06));
     transition:
       opacity 0.5s var(--ease),
-      transform 0.7s var(--ease),
       visibility 0s linear 0.5s;
   }
 
-  .ex__layer.is-panel.is-open {
+  .ex__layer.is-on {
     opacity: 1;
     visibility: visible;
-    transform: none;
     transition:
       opacity 0.5s var(--ease),
-      transform 0.7s var(--ease),
       visibility 0s;
   }
 
-  .ex__layer.is-base.is-under {
-    filter: brightness(0.9) saturate(0.9);
-  }
-
+  /* The whole screen, softly, so the part in front keeps its context */
+  .ex__backdrop,
   .ex__cam {
     position: absolute;
     top: 0;
@@ -417,17 +389,43 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     aspect-ratio: 1440 / 1240;
     transform-origin: 0 0;
     transform: translate(var(--x), var(--y)) scale(var(--z));
-    transition: transform 0.9s var(--ease);
   }
 
-  .ex__cam :global(picture),
-  .ex__cam :global(.ex__img) {
+  .ex__backdrop {
+    opacity: 0.55;
+    filter: blur(2px) saturate(0.8);
+    transition: opacity 0.6s var(--ease);
+  }
+
+  .ex__backdrop :global(picture),
+  .ex__backdrop :global(img),
+  .ex__canvas :global(picture),
+  .ex__canvas :global(.ex__img) {
     display: block;
     width: 100%;
     height: 100%;
   }
 
-  /* The exact detail: a fine amber ring with the rest of the screen softly dimmed */
+  /* The part itself: sharp and complete, lifted slightly from the screen behind it */
+  .ex__cam {
+    clip-path: var(--clip);
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(var(--fade) - 4%), transparent var(--fade));
+    mask-image: linear-gradient(180deg, #000 calc(var(--fade) - 4%), transparent var(--fade));
+    transition:
+      transform 0.85s var(--ease),
+      clip-path 0.85s var(--ease);
+  }
+
+  .ex__canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ex.is-whole .ex__backdrop {
+    opacity: 0;
+  }
+
+  /* The exact detail: a fine amber ring */
   .ex__mark {
     position: absolute;
     padding: 0;
@@ -447,8 +445,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
   .ex__mark.is-on {
     box-shadow:
       0 0 0 calc(2px / var(--z)) var(--ring),
-      0 0 0 calc(7px / var(--z)) rgba(183, 121, 31, 0.16),
-      0 0 0 200vmax rgba(20, 22, 26, 0.06);
+      0 0 0 calc(7px / var(--z)) rgba(183, 121, 31, 0.16);
     cursor: default;
   }
 
@@ -456,10 +453,45 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     box-shadow: none;
   }
 
-  .ex.is-whole .ex__mark.is-on {
-    box-shadow:
-      0 0 0 calc(2px / var(--z)) var(--ring),
-      0 0 0 calc(7px / var(--z)) rgba(183, 121, 31, 0.16);
+  /* Where the content carries on below the frame */
+  .ex__more {
+    position: absolute;
+    left: 50%;
+    bottom: 4%;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 34px;
+    padding: 0 0.95rem;
+    border: 0;
+    border-radius: var(--pill);
+    background: var(--ink);
+    color: #fff;
+    font: inherit;
+    font-size: 0.8125rem;
+    box-shadow: 0 10px 24px -10px rgba(20, 22, 26, 0.5);
+    cursor: pointer;
+    transform: translateX(-50%);
+  }
+
+  .ex__more[hidden] {
+    display: none;
+  }
+
+  .ex__more svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ex__swipe {
+    margin-top: -0.25rem;
+    color: var(--ex-muted);
+    font-size: 0.8125rem;
+  }
+
+  .ex__swipe[hidden] {
+    display: none;
   }
 
   /* ── The explanation under the screen ── */
@@ -641,9 +673,76 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     width: 390px;
   }
 
-  @media (max-width: 760px) {
+  /* ── Phones: the part at a readable size, scrolling sideways when it is wider than the phone ── */
+  @media (max-width: 900px) {
     .ex__view {
-      aspect-ratio: 1.25;
+      aspect-ratio: auto;
+      padding: 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+    }
+
+    .ex__layer {
+      position: relative;
+      inset: auto;
+      display: none;
+      filter: none;
+    }
+
+    /* While part of the screen is still to the right, its edge fades so the sideways scroll is obvious */
+    .ex__view.is-more {
+      -webkit-mask-image: linear-gradient(90deg, #000 82%, rgba(0, 0, 0, 0.25) 100%);
+      mask-image: linear-gradient(90deg, #000 82%, rgba(0, 0, 0, 0.25) 100%);
+    }
+
+    .ex__layer.is-on {
+      display: block;
+    }
+
+    .ex__backdrop {
+      display: none;
+    }
+
+    .ex__cam {
+      position: relative;
+      width: var(--cw, 100%);
+      height: var(--ch, auto);
+      aspect-ratio: auto;
+      overflow: hidden;
+      border-radius: 10px;
+      transform: none;
+      clip-path: none;
+      box-shadow: 0 6px 16px -8px rgba(20, 22, 26, 0.25);
+      transition: none;
+    }
+
+    .ex__canvas {
+      inset: auto;
+      left: var(--cl, 0);
+      top: var(--ct, 0);
+      width: var(--iw, 100%);
+      aspect-ratio: 1440 / 1240;
+    }
+
+    .ex__mark {
+      border-radius: 6px;
+    }
+
+    .ex__mark.is-on {
+      box-shadow:
+        0 0 0 2px var(--ring),
+        0 0 0 6px rgba(183, 121, 31, 0.16);
+    }
+
+    .ex__more {
+      position: sticky;
+      left: 50%;
+      bottom: auto;
+      display: flex;
+      width: max-content;
+      margin: -46px 0 10px;
+      transform: translateX(-50%);
     }
 
     .ex__parts {
@@ -685,12 +784,6 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     .ex__window {
       border-radius: 12px;
     }
-
-    .ex__layer.is-panel {
-      top: 0;
-      left: 0;
-      border-radius: 0;
-    }
   }
 
   @media (max-width: 560px) {
@@ -701,9 +794,9 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
 
   @media (prefers-reduced-motion: reduce) {
     .ex__cam,
+    .ex__backdrop,
     .ex__layer,
-    .ex__layer.is-panel,
-    .ex__layer.is-panel.is-open,
+    .ex__layer.is-on,
     .ex.is-ready .ex__note,
     .ex.is-ready .ex__note.is-on {
       transition: none;
@@ -716,41 +809,66 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     const list = ex.querySelector<HTMLElement>('[role="tablist"]')!;
     const tabs = [...ex.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panel = ex.querySelector<HTMLElement>('[role="tabpanel"]')!;
+    const view = ex.querySelector<HTMLElement>('.ex__view')!;
     const notes = [...ex.querySelectorAll<HTMLElement>('[data-note]')];
     const layers = [...ex.querySelectorAll<HTMLElement>('[data-layer]')];
     const marks = [...ex.querySelectorAll<HTMLElement>('[data-mark]')];
     const wholeBtn = ex.querySelector<HTMLButtonElement>('[data-whole]')!;
     const wholeLabel = wholeBtn.querySelector('span')!;
+    const more = ex.querySelector<HTMLButtonElement>('[data-more]')!;
+    const swipe = ex.querySelector<HTMLElement>('[data-swipe]')!;
     const enlarge = ex.querySelector<HTMLButtonElement>('[data-enlarge]')!;
-    const phone = matchMedia('(max-width: 760px)');
-    const base = layers[0].dataset.layer;
+    const phone = matchMedia("(max-width: 900px)");
     let active = 0;
     let whole = false;
 
     const layerOf = (frame: string) => layers.find((l) => l.dataset.layer === frame)!;
-    const place = (layer: HTMLElement, v: string) => {
-      const [x, y, z] = v.split(',');
-      const camEl = layer.querySelector<HTMLElement>('.ex__cam')!;
+
+    // Desktop: the camera transform and the clip that keeps only the part
+    const frameDesktop = (camEl: HTMLElement, tab: HTMLElement) => {
+      const [x, y, z] = (whole ? ex.dataset.wholeCam! : tab.dataset.cam!).split(',');
       camEl.style.setProperty('--x', `${x}%`);
       camEl.style.setProperty('--y', `${y}%`);
       camEl.style.setProperty('--z', z);
+      camEl.style.setProperty('--clip', whole ? 'inset(0% 0% 0% 0% round 0px)' : `inset(${tab.dataset.clip} round calc(14px / ${z}))`);
+      camEl.style.setProperty('--fade', !whole && tab.dataset.fade ? `${tab.dataset.fade}%` : '200%');
     };
-    const key = () => (phone.matches ? 'm' : 'd');
+
+    // Phones: a box exactly the size of the part at a readable scale; wider parts scroll sideways
+    const framePhone = (camEl: HTMLElement, tab: HTMLElement) => {
+      const [x, y, w, h] = whole ? [0, 0, 1, 1] : tab.dataset.rect!.split(',').map(Number);
+      const room = view.clientWidth - 24;
+      const s = whole ? room / 1440 : Math.min(1, Math.max(room / (w * 1440), 0.8));
+      camEl.style.setProperty('--cw', `${Math.round(w * 1440 * s)}px`);
+      camEl.style.setProperty('--ch', `${Math.round(h * 1240 * s)}px`);
+      camEl.style.setProperty('--iw', `${Math.round(1440 * s)}px`);
+      camEl.style.setProperty('--cl', `${Math.round(-x * 1440 * s)}px`);
+      camEl.style.setProperty('--ct', `${Math.round(-y * 1240 * s)}px`);
+      camEl.style.setProperty('--z', '1');
+      camEl.style.setProperty('--fade', !whole && tab.dataset.fade ? '100%' : '200%');
+      view.scrollLeft = 0;
+      swipe.hidden = w * 1440 * s <= room + 1;
+      edge();
+    };
+    const edge = () => view.classList.toggle('is-more', phone.matches && view.scrollLeft + view.clientWidth < view.scrollWidth - 4);
+    view.addEventListener('scroll', edge, { passive: true });
 
     const render = () => {
       const tab = tabs[active];
-      const frame = tab.dataset.frame!;
-      const layer = layerOf(frame);
-      place(layer, whole ? layer.dataset[`w${key()}`]! : tab.dataset[key()]!);
+      const layer = layerOf(tab.dataset.frame!);
+      const camEl = layer.querySelector<HTMLElement>('.ex__cam')!;
       layers.forEach((l) => {
-        const isBase = l.dataset.layer === base;
-        const open = l === layer;
-        // Under an open panel the first screen settles back to its whole view, so only the panel draws the eye
-        if (isBase && !open) place(l, l.dataset[`w${key()}`]!);
-        if (isBase) l.classList.toggle('is-under', !open);
-        else l.classList.toggle('is-open', open);
-        l.setAttribute('aria-hidden', String(!open));
+        const on = l === layer;
+        l.classList.toggle('is-on', on);
+        l.setAttribute('aria-hidden', String(!on));
       });
+      if (phone.matches) framePhone(camEl, tab);
+      else {
+        frameDesktop(camEl, tab);
+        swipe.hidden = true;
+        view.classList.remove('is-more');
+      }
+      more.hidden = whole || !tab.dataset.fade;
       ex.classList.toggle('is-whole', whole);
       wholeBtn.setAttribute('aria-pressed', String(whole));
       wholeLabel.textContent = whole ? wholeBtn.dataset.on! : wholeBtn.dataset.off!;
@@ -788,11 +906,19 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     });
     // The ringed parts can be chosen on the screen itself
     marks.forEach((m) => m.addEventListener('click', () => select(Number(m.dataset.mark))));
-    wholeBtn.addEventListener('click', () => {
+    const toggleWhole = () => {
       whole = !whole;
       render();
-    });
+    };
+    wholeBtn.addEventListener('click', toggleWhole);
+    more.addEventListener('click', toggleWhole);
     phone.addEventListener('change', render);
+    let lastWidth = 0;
+    new ResizeObserver(() => {
+      if (!phone.matches || view.clientWidth === lastWidth) return;
+      lastWidth = view.clientWidth;
+      render();
+    }).observe(view);
 
     // ── Viewer: every screen of this solution at full size ──
     const viewer = ex.querySelector<HTMLDialogElement>('.viewer')!;

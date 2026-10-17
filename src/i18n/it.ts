@@ -106,6 +106,7 @@ const it: Dict = {
     wholeScreen: 'Schermo intero',
     closeUp: 'Primo piano',
     exploreHint: 'Scegli una parte dello schermo per vedere cosa mostra.',
+    swipeHint: 'Scorri di lato per vedere tutta la larghezza.',
     viewer: 'Visualizzatore schermate',
     close: 'Chiudi',
     zoomIn: 'Ingrandisci',
