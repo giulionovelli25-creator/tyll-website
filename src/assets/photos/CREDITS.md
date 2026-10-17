@@ -17,6 +17,9 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | stock-chef.jpg | https://unsplash.com/photos/chef-preparing-foods-0sYLBZjgTTw | Unsplash License |
 | forecast-produce.jpg | https://unsplash.com/photos/person-slicing-parsleys-_SC2X6gphkg | Unsplash License |
 | events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww | Unsplash License |
+| sales-lobby.jpg | https://unsplash.com/photos/a-luxurious-lobby-with-large-windows-Yu5Pvxr1QJo (Sales & Performance opening, added 17 Oct 2026) | Unsplash License |
+| problem/problem-sales-service.jpg | https://unsplash.com/photos/man-in-yellow-polo-shirt-standing-in-front-of-table-9oWo22jvYkI (Sales & Performance, added 17 Oct 2026) | Unsplash License |
+| problem/problem-rooms-housekeeping.jpg | https://unsplash.com/photos/person-holding-white-pillow-5-S_JpT7NGQ (Rooms & Guest Experience, added 17 Oct 2026) | Unsplash License |
 | tyll-problem-1.jpg | Tyll's own asset from the current website (tyll.ai/bilder/problem-1.jpg) | Tyll |
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
@@ -24,6 +27,8 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg, why-kitchen.jpg (replaced by the brighter why-chef.jpg).
 
 tyll-stats-3.jpg is kept in the folder but not used on the site (a dark bar counter).
+
+No longer used since 17 Oct 2026 (kept in the folder): tyll-stats-2.jpg (a laptop at a dark desk, replaced by sales-lobby.jpg), problem/problem-rooms.jpg (a corridor, replaced by housekeeping) and problem/problem-sales.jpg (an office meeting, replaced by restaurant service).
 
 Removed on 16 Oct 2026: story-arches.jpg (the homepage Before Tyll background is now drawn in CSS).
 

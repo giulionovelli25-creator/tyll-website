@@ -50,6 +50,7 @@ const de: Dict = {
       },
       view: {
         place: 'Grand Resort Dubai · Heute',
+        simulated: 'Demonstration mit simulierten Daten.',
         attention: 'Braucht Aufmerksamkeit',
         status: 'Zu prüfen',
         issue: 'Coca-Cola-Abweichung auf The Terrace',
@@ -100,6 +101,10 @@ const de: Dict = {
     pause: 'Rundgang anhalten',
     play: 'Rundgang abspielen',
     enlarge: 'Ansicht vergrößern',
+    exploreParts: 'Bereiche des Bildschirms',
+    wholeScreen: 'Ganzer Bildschirm',
+    closeUp: 'Nahansicht',
+    exploreHint: 'Wählen Sie einen Bereich, um zu sehen, was er zeigt.',
     viewer: 'Ansicht vergrößert',
     close: 'Schließen',
     zoomIn: 'Vergrößern',

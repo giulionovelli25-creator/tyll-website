@@ -1,10 +1,16 @@
 ---
+// A solution page tells one operational story:
+//   1. Opening: the photograph of where it happens, the headline and the demo/booking buttons.
+//   2. Context (warm ivory): the problem in one sentence, how Tyll helps in three short lines, and a second
+//      photograph that bleeds to the edge; the side alternates from page to page.
+//   3. The product (charcoal or light stone): one real demo screen, large, explored part by part.
+//   4. The outcome and the next step, then the other five solutions as photographs.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SolutionIcon from '../SolutionIcon.astro';
-import Walkthrough from '../Walkthrough.astro';
-import HelpSteps from '../HelpSteps.astro';
+import ProductExplorer from '../ProductExplorer.astro';
 import { solutions } from '../../content/solutions';
+import { explore } from '../../content/explore';
 import { demoLink } from '../../config/demo';
 import { t, href, solutionKeys, type Locale, type SolutionKey } from '../../i18n';
 
@@ -17,10 +23,13 @@ const { lang, solution } = Astro.props;
 const d = t(lang);
 const p = d.solutionPage;
 const s = solutions[solution];
+const ex = explore[solution];
 const name = s.name[lang];
 const demo = demoLink(solution);
 const others = solutionKeys.filter((k) => k !== solution);
 const fill = (text: string) => text.replace('{name}', name);
+// Alternate the photograph's side so the six pages don't share one silhouette
+const photoSide = solutionKeys.indexOf(solution) % 2 === 0 ? 'end' : 'start';
 ---
 
 <Base lang={lang} page={solution} title={`${name} – Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`} overHero>
@@ -64,81 +73,105 @@ const fill = (text: string) => text.replace('{name}', name);
     </div>
   </section>
 
-  <!-- 2. The problem, in one sentence, beside a photograph of where it happens -->
-  <section class="problem" aria-labelledby="sol-problem">
-    <div class="wrap problem__inner">
-      <div class="problem__copy">
-        <span class="problem__icon"><SolutionIcon name={s.icon} /></span>
-        <h2 id="sol-problem" class="problem__label">{p.problemLabel}</h2>
-        <p class="problem__text">{s.problem[lang]}</p>
-      </div>
+  <!-- 2. The problem and how Tyll helps, beside a photograph of where it happens -->
+  <section class:list={['context', `context--photo-${photoSide}`]} aria-labelledby="sol-problem">
+    <div class="context__copy">
+      <p class="context__label">
+        <span class="context__icon" aria-hidden="true"><SolutionIcon name={s.icon} /></span>
+        <span id="sol-problem">{p.problemLabel}</span>
+      </p>
+      <p class="context__problem">{s.problem[lang]}</p>
+
+      <h2 class="context__helps-title">{p.helps}</h2>
+      <ul class="helps">
+        {
+          s.steps.map((st, i) => (
+            <li>
+              <span class="helps__k">{st.label[lang]}</span>
+              <span class="helps__v">{s.helps[lang][i]}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="context__photo">
       <Picture
         src={s.problemPhoto}
         alt={s.problemPhotoAlt[lang]}
         formats={['avif', 'webp']}
         fallbackFormat="jpg"
-        widths={[640, 960, 1280]}
-        sizes="(max-width: 860px) 100vw, 46vw"
+        widths={[640, 960, 1280, 1600]}
+        sizes="(max-width: 900px) 100vw, 46vw"
         loading="lazy"
         decoding="async"
-        class="problem__photo"
         style={`object-position:${s.problemFocus}`}
       />
     </div>
   </section>
 
-  <!-- 3. How Tyll helps, then the walkthrough -->
-  <section class="helps" aria-labelledby="sol-helps">
-    <div class="wrap">
-      <h2 id="sol-helps">{p.helps}</h2>
-      <HelpSteps lang={lang} solution={s} />
-
-      <div class="walk-wrap">
-        <h3>{s.walkTitle[lang]}</h3>
-        <Walkthrough lang={lang} frames={s.frames} note={p.walkIntro} />
-        {s.note && <p class="helps__note">{s.note[lang]}</p>}
-      </div>
+  <!-- 3. The product: one real demo screen, explored part by part -->
+  <section class:list={['product', `product--${ex.tone}`, ex.tone === 'dark' && 'on-dark']} data-dark={ex.tone === 'dark' ? '' : undefined} aria-labelledby="sol-product">
+    <div class="product__wrap">
+      <header class="product__head">
+        <h2 id="sol-product">{s.walkTitle[lang]}</h2>
+        <p>{p.exploreHint} {p.walkIntro}</p>
+      </header>
+      <ProductExplorer lang={lang} solution={s} explore={ex} id={`ex-${solution}`} />
+      {s.note && <p class="product__note">{s.note[lang]}</p>}
     </div>
   </section>
 
-  <!-- 4. Try it -->
-  <section class="final on-dark" data-dark aria-labelledby="sol-final">
-    <div class="wrap final__inner">
-      <h2 id="sol-final">{fill(p.finalTitle)}</h2>
-      <p>{demo ? p.finalText : p.finalTextNoDemo}</p>
-      <div class="final__actions">
-        {
-          demo && (
-            <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-final`}>
-              {fill(p.tryNamed)}
-              <span class="visually-hidden"> {d.cta.newTab}</span>
-            </a>
-          )
-        }
-        <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href={href('book', lang)} data-track="book_call_click" data-track-from={`${solution}-final`}>
-          {d.cta.book}
-        </a>
-      </div>
-
-      <nav class="others" aria-labelledby="sol-others">
-        <div class="others__head">
-          <h3 id="sol-others">{p.others}</h3>
-          <a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a>
-        </div>
-        <ul>
+  <!-- 4. What it adds up to, and where to go next -->
+  <section class="close" aria-labelledby="sol-final">
+    <div class="wrap close__inner">
+      <h2 id="sol-final" class="close__outcome">{ex.outcome[lang]}</h2>
+      <div class="close__side">
+        <p>{demo ? p.finalText : p.finalTextNoDemo}</p>
+        <div class="close__actions">
           {
-            others.map((k) => (
-              <li>
-                <a href={href(k, lang)}>
-                  <SolutionIcon name={solutions[k].icon} />
-                  {solutions[k].name[lang]}
-                </a>
-              </li>
-            ))
+            demo && (
+              <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-final`}>
+                {fill(p.tryNamed)}
+                <span class="visually-hidden"> {d.cta.newTab}</span>
+              </a>
+            )
           }
-        </ul>
-      </nav>
+          <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href={href('book', lang)} data-track="book_call_click" data-track-from={`${solution}-final`}>
+            {d.cta.book}
+          </a>
+        </div>
+      </div>
     </div>
+
+    <nav class="wrap others" aria-labelledby="sol-others">
+      <div class="others__head">
+        <h3 id="sol-others">{p.others}</h3>
+        <a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a>
+      </div>
+      <ul>
+        {
+          others.map((k) => (
+            <li>
+              <a href={href(k, lang)}>
+                <Picture
+                  src={solutions[k].photo}
+                  alt=""
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  widths={[360, 560]}
+                  sizes="(max-width: 700px) 70vw, 230px"
+                  loading="lazy"
+                  decoding="async"
+                  style={`object-position:${solutions[k].photoFocus}`}
+                />
+                <span class="others__name">{solutions[k].name[lang]}</span>
+                <span class="others__menu">{solutions[k].menu[lang]}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
   </section>
 </Base>
 
@@ -148,7 +181,7 @@ const fill = (text: string) => text.replace('{name}', name);
     position: relative;
     display: flex;
     align-items: flex-end;
-    min-height: clamp(600px, 88vh, 940px);
+    min-height: clamp(560px, 82vh, 880px);
     overflow: hidden;
     background: var(--ink);
     color: var(--on-dark);
@@ -157,7 +190,6 @@ const fill = (text: string) => text.replace('{name}', name);
 
   .open :global(picture),
   .open :global(.open__photo),
-  /* Lighter than before so the photographs keep their colour; the text side stays dark enough for white type */
   .open__shade {
     position: absolute;
     inset: 0;
@@ -226,140 +258,202 @@ const fill = (text: string) => text.replace('{name}', name);
   }
 
   .open__actions,
-  .final__actions {
+  .close__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
   }
 
-  /* 2. Problem */
-  .problem {
-    padding-block: clamp(4.5rem, 3rem + 5vw, 7.5rem);
-    background: var(--paper);
-  }
-
-  /* Editorial split: the statement on one side, a photograph of where it happens on the other.
-     A short silver line under the statement leads on to "How Tyll helps". */
-  .problem__inner {
+  /* 2. Context: warm ivory, the copy aligned to the page grid, the photograph running to the edge */
+  .context {
+    --edge: calc(max(0px, (100vw - var(--wrap)) / 2) + var(--gut));
     display: grid;
-    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    gap: clamp(2rem, 1rem + 4vw, 6rem);
-    align-items: center;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    align-items: stretch;
+    background: #f5f3ee;
   }
 
-  .problem__copy {
+  .context__copy {
+    padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
+    padding-inline: var(--edge) clamp(2rem, 1rem + 4vw, 6rem);
+  }
+
+  .context--photo-start .context__copy {
+    order: 2;
+    padding-inline: clamp(2rem, 1rem + 4vw, 6rem) var(--edge);
+  }
+
+  .context__photo {
     position: relative;
-    padding-bottom: clamp(3rem, 2rem + 3vw, 5rem);
+    min-height: 100%;
   }
 
-  .problem__copy::after {
-    content: '';
+  .context__photo :global(picture),
+  .context__photo :global(img) {
     position: absolute;
-    inset-inline-start: 28px;
-    bottom: 0;
-    height: clamp(2rem, 1.5rem + 2vw, 3.5rem);
-    border-inline-start: 1px solid var(--silver);
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 
-  .problem__inner :global(.problem__photo) {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 5;
-    border-radius: 20px;
+  .context__photo :global(img) {
     object-fit: cover;
   }
 
-  .problem__icon {
+  .context__label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .context__icon {
     display: grid;
     place-items: center;
-    width: 56px;
-    height: 56px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(20, 22, 26, 0.14);
+    border-radius: 12px;
     color: var(--graphite);
   }
 
-  .problem__icon :global(svg) {
-    width: 26px;
-    height: 26px;
+  .context__icon :global(svg) {
+    width: 20px;
+    height: 20px;
   }
 
-  .problem__label {
-    margin-top: 2rem;
+  .context__problem {
+    max-width: 22ch;
+    margin-top: 1.25rem;
+    color: var(--ink);
+    font-size: clamp(1.875rem, 1.3rem + 2.2vw, 3.125rem);
+    font-weight: 380;
+    letter-spacing: -0.032em;
+    line-height: 1.1;
+  }
+
+  .context__helps-title {
+    margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
     color: var(--steel);
     font-size: var(--fs-small);
     font-weight: 500;
     letter-spacing: 0;
-    line-height: 1.4;
   }
 
-  .problem__text {
-    max-width: 24ch;
-    margin-top: 0.6rem;
-    font-size: clamp(1.75rem, 1.2rem + 2.1vw, 3rem);
-    font-weight: 380;
-    letter-spacing: -0.03em;
-    line-height: 1.12;
-  }
-
-  /* 3. How Tyll helps */
   .helps {
-    padding-block: var(--section-y);
-    background: linear-gradient(180deg, var(--mist) 0%, var(--cloud) 100%);
+    display: grid;
+    max-width: 36rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .helps h2 {
-    font-size: var(--fs-h2);
+  .helps li {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.25rem 1.5rem;
+    padding-block: 1.1rem;
+    border-top: 1px solid rgba(20, 22, 26, 0.12);
   }
 
-
-  .walk-wrap {
-    margin-top: clamp(4rem, 3rem + 4vw, 6.5rem);
+  .helps__k {
+    color: var(--ink);
+    font-weight: 500;
   }
 
-  .walk-wrap h3 {
-    margin-bottom: 1.75rem;
-    font-size: clamp(1.5rem, 1.25rem + 0.9vw, 2rem);
-    font-weight: 400;
-    letter-spacing: -0.025em;
-  }
-
-  .helps__note {
-    max-width: 44rem;
-    margin-top: 2rem;
-    padding-inline-start: 1rem;
-    border-inline-start: 2px solid var(--silver);
+  .helps__v {
     color: var(--graphite);
-    font-size: 0.9375rem;
     line-height: 1.55;
   }
 
-  /* 4. Final */
-  .final {
-    padding-block: clamp(5rem, 3.5rem + 6vw, 9rem) clamp(3rem, 2rem + 3vw, 4.5rem);
-    background: var(--ink);
+  /* 3. The product */
+  .product {
+    padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
+    overflow: hidden;
+  }
+
+  .product--dark {
+    background:
+      radial-gradient(60% 40% at 50% 0%, rgba(255, 255, 255, 0.07), transparent 70%),
+      linear-gradient(180deg, #1d1f23 0%, #15171a 100%);
     color: var(--on-dark);
   }
 
-  .final h2 {
-    max-width: 18ch;
-    font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
-    letter-spacing: -0.035em;
+  .product--light {
+    background:
+      radial-gradient(60% 40% at 50% 0%, rgba(255, 255, 255, 0.7), transparent 70%),
+      linear-gradient(180deg, #ecebe7 0%, #e3e2de 100%);
   }
 
-  .final__inner > p {
-    max-width: 34rem;
-    margin-top: 1.25rem;
-    color: var(--on-dark-muted);
+  .product__wrap {
+    max-width: calc(1280px + var(--gut) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gut);
+  }
+
+  .product__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem clamp(2rem, 1rem + 4vw, 6rem);
+    align-items: end;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .product__head h2 {
+    max-width: 18ch;
+    font-size: var(--fs-h2);
+  }
+
+  .product__head p {
+    max-width: 30rem;
+    font-size: var(--fs-small);
+    line-height: 1.55;
+    opacity: 0.78;
+  }
+
+  .product__note {
+    max-width: 44rem;
+    margin-top: 2rem;
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid currentColor;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    opacity: 0.7;
+  }
+
+  /* 4. Outcome and next step */
+  .close {
+    padding-block: clamp(5rem, 3.5rem + 5vw, 8.5rem) clamp(3.5rem, 2.5rem + 3vw, 5.5rem);
+    background: #fafaf9;
+  }
+
+  .close__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 2rem clamp(2rem, 1rem + 5vw, 7rem);
+    align-items: end;
+  }
+
+  .close__outcome {
+    max-width: 24ch;
+    font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.875rem);
+    font-weight: 380;
+    letter-spacing: -0.034em;
+    line-height: 1.08;
+  }
+
+  .close__side > p {
+    max-width: 30rem;
+    color: var(--graphite);
     font-size: var(--fs-lead);
+    line-height: 1.5;
   }
 
   .others {
-    margin-top: clamp(4rem, 3rem + 4vw, 6rem);
-    padding-top: 1.75rem;
-    border-top: 1px solid rgba(244, 245, 247, 0.12);
+    margin-top: clamp(4rem, 3rem + 4vw, 6.5rem);
   }
 
   .others__head {
@@ -368,76 +462,142 @@ const fill = (text: string) => text.replace('{name}', name);
     align-items: baseline;
     justify-content: space-between;
     gap: 0.5rem 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .others h3 {
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
   }
 
   .others__all {
-    color: var(--on-dark);
+    color: var(--ink);
     font-size: 0.9375rem;
     font-weight: 500;
     text-underline-offset: 4px;
   }
 
-  .others h3 {
-    color: var(--fog);
-    font-size: var(--fs-small);
-    font-weight: 500;
-  }
-
   .others ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 2rem;
-    margin: 1rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin: 1.25rem 0 0;
     padding: 0;
     list-style: none;
   }
 
   .others a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    padding: 0.35rem 0;
-    color: var(--on-dark);
-    font-size: 0.9375rem;
+    display: grid;
+    gap: 0.3rem;
+    color: var(--ink);
     text-decoration: none;
-    opacity: 0.86;
   }
 
-  .others a:hover {
-    opacity: 1;
+  .others a :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    object-fit: cover;
+    transition:
+      transform 0.6s var(--ease),
+      filter 0.6s var(--ease);
+  }
+
+  .others a :global(picture) {
+    display: block;
+    margin-bottom: 0.6rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .others a:hover :global(img) {
+    transform: scale(1.03);
+  }
+
+  .others__name {
+    font-weight: 500;
+  }
+
+  .others a:hover .others__name {
     text-decoration: underline;
-    text-underline-offset: 4px;
+    text-underline-offset: 3px;
   }
 
-  .others :global(svg) {
-    width: 18px;
-    height: 18px;
-    color: var(--fog);
+  .others__menu {
+    color: var(--steel);
+    font-size: 0.875rem;
+    line-height: 1.45;
   }
 
-  @media (max-width: 860px) {
-    .problem__inner {
+  @media (max-width: 1100px) {
+    .others ul {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .context {
       grid-template-columns: minmax(0, 1fr);
-      gap: 2.5rem;
     }
 
-    .problem__copy {
-      padding-bottom: 0;
+    .context__copy,
+    .context--photo-start .context__copy {
+      order: 0;
+      padding-inline: var(--gut);
     }
 
-    .problem__copy::after {
-      display: none;
-    }
-
-    .problem__inner :global(.problem__photo) {
+    .context__photo {
       aspect-ratio: 4 / 3;
+    }
+
+    .product__head,
+    .close__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .others ul {
+      display: flex;
+      gap: 1rem;
+      margin-inline: calc(var(--gut) * -1);
+      padding-inline: var(--gut);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .others li {
+      flex: 0 0 64%;
+      scroll-snap-align: start;
+    }
+
+    .helps li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .open__shade,
+    :global([dir='rtl']) .open__shade {
+      background: linear-gradient(0deg, rgba(14, 15, 17, 0.82) 0%, rgba(14, 15, 17, 0.5) 55%, rgba(14, 15, 17, 0.28) 100%);
     }
   }
 
   @media (max-width: 640px) {
     .open__actions :global(.btn),
-    .final__actions :global(.btn) {
+    .close__actions :global(.btn) {
       flex: 1 1 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .others a :global(img) {
+      transition: none;
     }
   }
 </style>

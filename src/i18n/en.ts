@@ -50,6 +50,7 @@ const en = {
       },
       view: {
         place: 'Grand Resort Dubai · Today',
+        simulated: 'Demonstration with simulated data.',
         attention: 'Needs attention',
         status: 'Needs review',
         issue: 'Coca-Cola difference at The Terrace',
@@ -100,6 +101,10 @@ const en = {
     pause: 'Pause the walkthrough',
     play: 'Play the walkthrough',
     enlarge: 'Enlarge this screen',
+    exploreParts: 'Parts of the screen',
+    wholeScreen: 'Whole screen',
+    closeUp: 'Close-up',
+    exploreHint: 'Choose a part of the screen to see what it shows.',
     viewer: 'Screen viewer',
     close: 'Close',
     zoomIn: 'Zoom in',

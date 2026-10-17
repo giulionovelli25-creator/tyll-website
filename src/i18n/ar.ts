@@ -52,6 +52,7 @@ const ar: Dict = {
       },
       view: {
         place: 'Grand Resort Dubai · اليوم',
+        simulated: 'عرض توضيحي ببيانات محاكاة.',
         attention: 'يتطلب انتباهًا',
         status: 'بحاجة إلى مراجعة',
         issue: 'فرق في Coca-Cola لدى The Terrace',
@@ -102,6 +103,10 @@ const ar: Dict = {
     pause: 'إيقاف الجولة مؤقتًا',
     play: 'تشغيل الجولة',
     enlarge: 'تكبير هذه الشاشة',
+    exploreParts: 'أجزاء الشاشة',
+    wholeScreen: 'الشاشة كاملة',
+    closeUp: 'عرض مقرّب',
+    exploreHint: 'اختر جزءًا من الشاشة لترى ما يعرضه.',
     viewer: 'عارض الشاشات',
     close: 'إغلاق',
     zoomIn: 'تكبير',

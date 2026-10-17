@@ -75,23 +75,23 @@ for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/One hotel|Ein Hotel|فندق واحد|Un hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // Systems → Tyll → next step: plays once when in view, ends on the full picture, and never holds the page
+    // The product sequence: starts when well in view, ends on the final Tyll view (button shows Replay), never holds the page
     const story = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-      const flow = document.querySelector('[data-flow]');
+      const cine = document.querySelector('[data-cine]');
       const before = scrollY;
-      flow.scrollIntoView({ block: 'center', behavior: 'instant' });
-      await wait(250);
-      const early = flow.dataset.stage;
-      await wait(4800);
-      const op = (sel) => +getComputedStyle(flow.querySelector(sel)).opacity;
-      const end = { stage: flow.dataset.stage, systems: flow.querySelectorAll('[data-src]').length, rows: flow.querySelectorAll('[data-row]').length, tyll: op('.tyll'), next: op('.next'), paths: flow.querySelectorAll('.flow__paths .path').length };
-      scrollTo({ top: flow.getBoundingClientRect().bottom + scrollY + 200, behavior: 'instant' });
+      cine.scrollIntoView({ block: 'start', behavior: 'instant' });
+      await wait(400);
+      const early = { scene: cine.dataset.scene, state: cine.dataset.state };
+      await wait(10200);
+      const op = (sel) => +getComputedStyle(cine.querySelector(sel)).opacity;
+      const end = { scene: cine.dataset.scene, state: cine.dataset.state, shell: op('.app__shell'), next: op('.d__next'), recs: cine.querySelectorAll('[data-rec]').length, rows: cine.querySelectorAll('.row').length };
+      scrollTo({ top: cine.getBoundingClientRect().bottom + scrollY + 200, behavior: 'instant' });
       await wait(200);
       return { early, end, moved: scrollY > before };
     });
-    if (!['0', '1', '2'].includes(story.early)) problems.push(`story did not start from the beginning (${story.early})`);
-    if (!(story.end.stage === 'done' && story.end.systems === 4 && story.end.rows === 3 && story.end.tyll > 0.95 && story.end.next > 0.95 && story.end.paths === 5)) problems.push(`story end ${JSON.stringify(story.end)}`);
+    if (!['0', '1'].includes(story.early.scene) || story.early.state !== 'playing') problems.push(`story did not start from the beginning (${JSON.stringify(story.early)})`);
+    if (!(story.end.scene === '5' && story.end.state === 'done' && story.end.shell > 0.95 && story.end.next > 0.95 && story.end.recs === 2 && story.end.rows === 3)) problems.push(`story end ${JSON.stringify(story.end)}`);
     if (!story.moved) problems.push('page did not continue past the story');
     // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
     for (const sel of ['.hero__actions a[data-track="explore_solutions_click"]', '.invite__actions a[data-track="explore_solutions_click"]']) {
@@ -111,7 +111,7 @@ for (const lang of LANGS) {
     if (menu.items.join() !== SOL[lang].join()) problems.push(`menu items ${menu.items.join()}`);
     if (!menu.faq) problems.push('FAQ missing from the Solutions menu');
     await page.keyboard.press('Escape');
-    // Every solution from the menu: opens, one h1, its walkthrough, and demo buttons that go to the configured demo
+    // Every solution from the menu: opens, one h1, its product explorer, and demo buttons that go to the configured demo
     for (const url of SOL[lang]) {
       await page.click('#solutions-trigger');
       await sleep(250);
@@ -119,15 +119,16 @@ for (const lang of LANGS) {
       const sol = await page.evaluate(() => ({
         path: location.pathname,
         h1: document.querySelectorAll('h1').length,
-        steps: document.querySelectorAll('[data-walk] .walk__step').length,
+        steps: document.querySelectorAll('[data-ex] [role=tab]').length,
         demo: [...document.querySelectorAll('main a[data-track="explore_demo_click"]')].map((a) => a.getAttribute('href')),
         book: !!document.querySelector('main a[data-track="book_call_click"]'),
       }));
       if (sol.path !== url || sol.h1 !== 1 || sol.steps < 4 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
       if (sol.demo.length && sol.demo.some((h) => !new URL(h).search && !new URL(h).pathname.match(/\/\w/))) problems.push(`${url}: demo link without a solution route`);
-      // The walkthrough steps can be chosen
-      await page.evaluate(() => document.querySelectorAll('[data-walk] .walk__step')[2].click());
-      if (!(await page.$eval('[data-walk] .walk__step:nth-child(1)', () => document.querySelectorAll('[data-walk] .walk__step')[2].hasAttribute('aria-current')))) problems.push(`${url}: walkthrough step did not change`);
+      // The parts of the screen can be chosen, and the explanation follows
+      await page.evaluate(() => document.querySelectorAll('[data-ex] [role=tab]')[2].click());
+      const part = await page.evaluate(() => ({ tab: document.querySelectorAll('[data-ex] [role=tab]')[2].getAttribute('aria-selected'), note: document.querySelector('[data-ex] .ex__note.is-on')?.dataset.note }));
+      if (part.tab !== 'true' || part.note !== '2') problems.push(`${url}: explorer part did not change ${JSON.stringify(part)}`);
     }
     await go(page, `/${lang}/`);
     // Book a Call from the header lands on the booking page
@@ -191,15 +192,14 @@ for (const lang of LANGS) {
         // Visually hidden headings (1px boxes for screen readers) are not on screen
         return r.width > 1 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
       }).map((e) => e.textContent.trim().slice(0, 30)),
-      // Every walkthrough screen fits inside its frame (never cropped)
-      cropped: [...document.querySelectorAll('.walk__slide img, .steps__frame img')].filter((img) => {
-        const f = img.closest('.walk__frame, .steps__frame').getBoundingClientRect();
-        const r = img.getBoundingClientRect();
-        return r.top < f.top - 1 || r.bottom > f.bottom + 1 || r.left < f.left - 1 || r.right > f.right + 1;
-      }).map((img) => img.getAttribute('src').split('?')[0].split('/').pop().slice(0, 30)),
+      // Demo screens keep their proportions (never stretched)
+      stretched: [...document.querySelectorAll('.ex__cam')].filter((c) => {
+        const r = c.getBoundingClientRect();
+        return r.width > 0 && Math.abs(r.width / r.height - 1440 / 1240) > 0.02;
+      }).length,
     }));
     if (w.sw > w.iw) problems.push(`${p} scrolls sideways (${w.sw}px)`);
-    if (w.cropped.length) problems.push(`${p} walkthrough screens cut off: ${w.cropped.join(', ')}`);
+    if (w.stretched) problems.push(`${p} ${w.stretched} demo screens stretched`);
     if (w.clipped.length) problems.push(`${p} clipped: ${w.clipped.join(' | ')}`);
   }
   await go(page, '/de/');
@@ -243,26 +243,25 @@ for (const lang of LANGS) {
   const menu = await page.evaluate(() => ({ open: !document.getElementById('mobile-menu').hidden, links: [...document.querySelectorAll('#mobile-menu details li a')].map((a) => a.getAttribute('href')) }));
   if (!menu.open || menu.links.length !== 7 || !menu.links.every((h) => h.startsWith('/ar/'))) p.push(`mobile menu ${JSON.stringify(menu)}`);
   await page.keyboard.press('Escape');
-  // The systems → Tyll → next step picture stays inside the screen, in a vertical sequence
+  // The product sequence stays inside the screen and ends on the final view
   const story = await page.evaluate(async () => {
-    const flow = document.querySelector('[data-flow]');
-    flow.scrollIntoView({ block: 'start', behavior: 'instant' });
-    await new Promise((r) => setTimeout(r, 4800));
+    const cine = document.querySelector('[data-cine]');
+    cine.scrollIntoView({ block: 'start', behavior: 'instant' });
+    await new Promise((r) => setTimeout(r, 10200));
     const out = [];
-    flow.querySelectorAll('.sys, .tyll, .next, .flow__caption').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
-    const order = ['.systems', '.tyll', '.next'].map((sel) => flow.querySelector(sel).getBoundingClientRect().top);
-    if (!(order[0] < order[1] && order[1] < order[2])) out.push('not systems → Tyll → next step');
+    cine.querySelectorAll('.app, .rec, .ch, .cine__ctrl').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    if (cine.dataset.scene !== '5') out.push(`scene ${cine.dataset.scene}`);
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
-  // Walkthrough: the viewer's arrow keys follow the reading direction
+  // Product explorer: the viewer's arrow keys follow the reading direction
   await go(page, '/ar/solutions/rooms-guest-experience/');
-  await page.evaluate(() => document.querySelector('.walk__slide.is-active').click());
+  await page.evaluate(() => document.querySelector('[data-ex] [data-enlarge]').click());
   await sleep(500);
-  const t0 = await page.$eval('.viewer__title', (e) => e.textContent);
+  const t0 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
   await page.keyboard.press('ArrowLeft');
   await sleep(300);
-  const t1 = await page.$eval('.viewer__title', (e) => e.textContent);
+  const t1 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
   if (!t0.includes('1 /') || !t1.includes('2 /')) p.push(`ArrowLeft in Arabic should go to the next screen: ${t0} → ${t1}`);
   await page.keyboard.press('Escape');
   // Booking page: text and email in place
@@ -282,17 +281,16 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
-      flowSources: [...document.querySelectorAll('[data-flow] [data-src]')].map((e) => e.dataset.src).join(),
-      rows: [...document.querySelectorAll('[data-flow] [data-row]')].map((e) => e.dataset.row).join(),
-      connectedCards: document.querySelectorAll('.story .link, .frag').length,
+      recs: [...document.querySelectorAll('[data-cine] [data-rec]')].map((e) => e.dataset.rec).join(),
+      oldDiagram: document.querySelectorAll('[data-flow], .story .link, .frag').length,
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
       ctas: document.querySelectorAll('.hero__actions .btn').length,
       ar: document.querySelector('.lang a[hreflang="ar"]')?.textContent.trim(),
       codes: [...document.querySelectorAll('.header__end .lang a')].map((a) => a.querySelector('[aria-hidden="true"], .lang__ar').textContent.trim()).join(' '),
     }));
-    if (home.flowSources !== 'pos,stock,pms,finance' || home.rows !== 'issue,room,invoice') p.push(`${lang}: flow ${home.flowSources} → ${home.rows}`);
-    if (home.connectedCards) p.push(`${lang}: old scattered cards or connector still present`);
+    if (home.recs !== 'stock,pos') p.push(`${lang}: sequence records ${home.recs}`);
+    if (home.oldDiagram) p.push(`${lang}: old diagram still present`);
     // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
     await go(page, PAGES[lang][1]);
     const book = await page.evaluate(() => {
@@ -318,53 +316,29 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
-  // The replay button runs the sequence again from the start
+  // Pause holds the sequence; Play continues it; Replay runs it again from the start
   await go(page, '/en/');
-  const replay = await page.evaluate(async () => {
-    const flow = document.querySelector('[data-flow]');
-    flow.scrollIntoView({ block: 'center', behavior: 'instant' });
-    await new Promise((r) => setTimeout(r, 4500));
-    const btn = flow.querySelector('[data-replay]');
-    btn.click();
-    await new Promise((r) => setTimeout(r, 200));
-    const during = flow.dataset.stage;
-    await new Promise((r) => setTimeout(r, 4200));
-    return { visible: getComputedStyle(btn).display !== 'none', during, after: flow.dataset.stage };
-  });
-  if (!replay.visible || !['0', '1'].includes(replay.during) || replay.after !== 'done') p.push(`replay ${JSON.stringify(replay)}`);
-  // The issues are tabs: clicking or using the arrow keys shows each one's next step, and "Review the evidence"
-  // opens the source records behind the flagged issue
-  await go(page, '/en/');
-  const tabs = await page.evaluate(async () => {
+  const ctl = await page.evaluate(async () => {
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-    const flow = document.querySelector('[data-flow]');
-    flow.scrollIntoView({ block: 'center', behavior: 'instant' });
-    await wait(3000);
-    const shown = () => [...flow.querySelectorAll('[data-panel]')].filter((x) => !x.hidden).map((x) => x.dataset.panel).join();
-    const selected = () => flow.querySelector('[role=tab][aria-selected=true]')?.dataset.row;
-    const out = { start: [selected(), shown()] };
-    flow.querySelector('[data-row=invoice]').click();
-    await wait(300);
-    out.click = [selected(), shown()];
-    flow.querySelector('[data-row=invoice]').focus();
-    flow.querySelector('[data-row=invoice]').dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
-    await wait(300);
-    out.key = [selected(), shown(), document.activeElement?.dataset.row];
-    const btn = flow.querySelector('[data-review]');
-    const records = () => [...flow.querySelectorAll('[data-panel=issue] .record')].filter((r) => getComputedStyle(r).display !== 'none').length;
-    out.review = { visible: getComputedStyle(btn).display !== 'none' && !btn.hidden, before: [btn.getAttribute('aria-expanded'), records()] };
+    const cine = document.querySelector('[data-cine]');
+    const btn = cine.querySelector('[data-ctrl]');
+    cine.scrollIntoView({ block: 'start', behavior: 'instant' });
+    await wait(1000);
     btn.click();
-    await wait(400);
-    out.review.open = [btn.getAttribute('aria-expanded'), records()];
+    const pausedAt = cine.dataset.scene;
+    await wait(3500);
+    const paused = { state: cine.dataset.state, scene: cine.dataset.scene, label: btn.textContent.trim() };
+    btn.click();
+    await wait(9500);
+    const done = { state: cine.dataset.state, scene: cine.dataset.scene, label: btn.textContent.trim() };
     btn.click();
     await wait(300);
-    out.review.closed = [btn.getAttribute('aria-expanded'), records()];
-    return out;
+    const again = { state: cine.dataset.state, scene: cine.dataset.scene };
+    return { visible: getComputedStyle(btn).display !== 'none', pausedAt, paused, done, again };
   });
-  const want = { start: ['issue', 'issue'], click: ['invoice', 'invoice'], key: ['issue', 'issue', 'issue'] };
-  for (const k of Object.keys(want)) if (tabs[k].join() !== want[k].join()) p.push(`issue tabs ${k}: ${JSON.stringify(tabs[k])}`);
-  const r = tabs.review;
-  if (!r.visible || r.before.join() !== 'false,0' || r.open[0] !== 'true' || r.open[1] < 2 || r.closed.join() !== 'false,0') p.push(`review the evidence ${JSON.stringify(r)}`);
+  if (!ctl.visible || ctl.paused.state !== 'paused' || ctl.paused.scene !== ctl.pausedAt || ctl.paused.label !== 'Play') p.push(`pause ${JSON.stringify(ctl)}`);
+  if (ctl.done.state !== 'done' || ctl.done.scene !== '5' || ctl.done.label !== 'Replay') p.push(`resume ${JSON.stringify(ctl.done)}`);
+  if (ctl.again.state !== 'playing' || !['0', '1'].includes(ctl.again.scene)) p.push(`replay ${JSON.stringify(ctl.again)}`);
   // The closing silver wave flows while on screen as one formation: every line changes, and all lines keep the
   // same shape (the gaps between neighbouring lines stay nearly constant along the ribbon)
   await go(page, '/en/');
@@ -394,42 +368,70 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   });
   if (!video.playing || !video.pausedAfter) p.push(`hero video ${JSON.stringify(video)}`);
   if (mobile ? video.w !== 1280 : video.w !== 1920) p.push(`hero video on ${where} is ${video.w}px wide (${video.src})`);
-  // Three steps on every solution page: click or tap, keyboard, one panel at a time, nothing cropped
+  // The product explorer on every solution page: click or tap, keyboard, one explanation at a time, a detail panel
+  // for parts on another screen, the whole screen on request, and every screen in the viewer
   for (const lang of ['en', 'ar']) {
     for (const url of SOL[lang]) {
       await go(page, url);
-      await page.evaluate(() => document.querySelector('.steps').scrollIntoView({ block: 'center' }));
-      const tabs = await page.$$('.steps__tab');
-      if (tabs.length !== 3) { p.push(`${url}: ${tabs.length} steps`); continue; }
-      const state = () => page.evaluate(() => ({
-        selected: [...document.querySelectorAll('.steps__tab')].findIndex((t) => t.getAttribute('aria-selected') === 'true'),
-        visible: [...document.querySelectorAll('.steps__panel')].filter((x) => getComputedStyle(x).visibility === 'visible').length,
-        inert: [...document.querySelectorAll('.steps__panel')].filter((x) => x.inert).length,
-        text: document.querySelector('.steps__panel.is-active .steps__text')?.textContent.trim().length,
-      }));
-      if (mobile) await tabs[1].tap(); else await tabs[1].click();
-      await sleep(600);
-      const a = await state();
-      await page.focus('.steps__tab[aria-selected="true"]');
-      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
-      await sleep(600);
-      const b = await state();
-      await page.keyboard.press('Home');
-      await sleep(600);
-      const c = await state();
-      if (a.selected !== 1 || b.selected !== 2 || c.selected !== 0) p.push(`${url}: steps selected ${a.selected}/${b.selected}/${c.selected}`);
-      if (a.visible !== 1 || a.inert !== 2 || !a.text) p.push(`${url}: panels ${JSON.stringify(a)}`);
-      const shot = await page.evaluate(() => {
-        const img = document.querySelector('.steps__panel.is-active .steps__frame img');
-        const f = img.closest('.steps__frame').getBoundingClientRect();
-        const r = img.getBoundingClientRect();
-        return { fits: r.top >= f.top - 1 && r.bottom <= f.bottom + 1 && r.left >= f.left - 1 && r.right <= f.right + 1, fit: getComputedStyle(img).objectFit, loaded: img.complete && img.naturalWidth > 0 };
+      await page.evaluate(() => document.querySelector('[data-ex]').scrollIntoView({ block: 'center' }));
+      const tabs = await page.$$('[data-ex] [role=tab]');
+      if (tabs.length < 4) { p.push(`${url}: ${tabs.length} parts`); continue; }
+      const state = () => page.evaluate(() => {
+        const ex = document.querySelector('[data-ex]');
+        const tabs = [...ex.querySelectorAll('[role=tab]')];
+        const sel = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+        return {
+          selected: sel,
+          notes: [...ex.querySelectorAll('.ex__note')].filter((x) => getComputedStyle(x).visibility === 'visible').length,
+          panel: !!ex.querySelector('.ex__layer.is-panel.is-open'),
+          needsPanel: tabs[sel].dataset.frame !== tabs[0].dataset.frame,
+          ring: !!ex.querySelector(`.ex__mark.is-on[data-mark="${sel}"]`),
+        };
       });
-      if (!shot.fits || shot.fit !== 'contain' || !shot.loaded) p.push(`${url}: step screen ${JSON.stringify(shot)}`);
+      if (mobile) await tabs[1].tap(); else await tabs[1].click();
+      await sleep(900);
+      const a = await state();
+      await page.focus('[data-ex] [role=tab][aria-selected="true"]');
+      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
+      await sleep(900);
+      const b = await state();
+      await page.keyboard.press('End');
+      await sleep(900);
+      const c = await state();
+      await page.keyboard.press('Home');
+      await sleep(900);
+      const d = await state();
+      if (a.selected !== 1 || b.selected !== 2 || c.selected !== tabs.length - 1 || d.selected !== 0) p.push(`${url}: parts selected ${a.selected}/${b.selected}/${c.selected}/${d.selected}`);
+      for (const [k, x] of Object.entries({ a, b, c, d })) {
+        if (x.notes !== 1 || x.panel !== x.needsPanel || !x.ring) p.push(`${url} ${k}: ${JSON.stringify(x)}`);
+      }
+      // Whole screen: the complete capture fits inside the view, in proportion
+      const whole = await page.evaluate(async () => {
+        const ex = document.querySelector('[data-ex]');
+        ex.querySelector('[data-whole]').click();
+        await new Promise((r) => setTimeout(r, 1100));
+        const v = ex.querySelector('.ex__view').getBoundingClientRect();
+        const cam = ex.querySelector('.ex__layer.is-base .ex__cam');
+        const r = cam.getBoundingClientRect();
+        const img = cam.querySelector('img');
+        return { fits: r.left >= v.left - 1 && r.right <= v.right + 1 && r.top >= v.top - 1 && r.bottom <= v.bottom + 1, ratio: Math.abs(r.width / r.height - 1440 / 1240) < 0.02, pressed: ex.querySelector('[data-whole]').getAttribute('aria-pressed'), loaded: img.complete && img.naturalWidth > 0 };
+      });
+      if (!whole.fits || !whole.ratio || whole.pressed !== 'true' || !whole.loaded) p.push(`${url}: whole screen ${JSON.stringify(whole)}`);
+      // Enlarge opens the viewer with every screen of this solution
+      const view = await page.evaluate(async () => {
+        const ex = document.querySelector('[data-ex]');
+        ex.querySelector('[data-enlarge]').click();
+        await new Promise((r) => setTimeout(r, 400));
+        const dlg = ex.querySelector('.viewer');
+        const out = { open: dlg.open, title: dlg.querySelector('.viewer__title').textContent, src: dlg.querySelector('.viewer__img').getAttribute('src') };
+        dlg.close();
+        return out;
+      });
+      if (!view.open || !/\d+ \/ \d+/.test(view.title) || !view.src) p.push(`${url}: viewer ${JSON.stringify(view)}`);
     }
   }
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
-  record('N', `Refinements on ${where}: wave, systems → Tyll → next step, hero, three steps, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('N', `Refinements on ${where}: wave, product sequence, hero, product explorer, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
@@ -545,8 +547,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     hiddenText: [...document.querySelectorAll('.step__text')].filter((e) => getComputedStyle(e).opacity !== '1').length,
     toggle: !!document.querySelector('.hero__toggle:not([hidden])'),
   }));
-  const still = await page.evaluate(() => { const f = document.querySelector('[data-flow]'); return { stage: f.dataset.stage, replay: getComputedStyle(f.querySelector('[data-replay]')).display === 'none', next: getComputedStyle(f.querySelector('.next')).opacity }; });
-  if (still.stage !== 'done' || !still.replay || still.next !== '1') p.push(`story not shown complete under reduced motion: ${JSON.stringify(still)}`);
+  const still = await page.evaluate(() => { const c = document.querySelector('[data-cine]'); return { scene: c.dataset.scene, ctrl: c.querySelector('[data-ctrl]').hidden, next: getComputedStyle(c.querySelector('.d__next')).opacity, shell: getComputedStyle(c.querySelector('.app__shell')).opacity }; });
+  if (still.scene !== '5' || !still.ctrl || still.next !== '1' || still.shell !== '1') p.push(`story not shown complete under reduced motion: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   const wavePaused = await page.evaluate(async () => {
     const path = document.querySelector('.invite__waves path');

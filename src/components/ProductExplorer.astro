@@ -1,0 +1,843 @@
+---
+// One real demo screen, presented large, that visitors explore part by part.
+// The parts are tabs above the screen; choosing one moves a "camera" to that part of the screen, rings the exact
+// detail and shows one or two sentences about it underneath. The ringed parts can also be clicked on the screen
+// itself. A part that lives on another demo screen opens that screen as a panel over the first one, as a detail view
+// would in the product. "Whole screen" shows the complete capture; "Enlarge" opens every screen at full size.
+// Nothing moves on its own. Without JavaScript the first part is framed and every explanation is listed.
+// The demo is in English and left-to-right, so the screen keeps that direction in every language.
+import { Picture, getImage } from 'astro:assets';
+import type { Solution } from '../content/solutions';
+import type { Explore, Rect } from '../content/explore';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  solution: Solution;
+  explore: Explore;
+  id: string;
+}
+
+const { lang, solution, explore, id } = Astro.props;
+const p = t(lang).solutionPage;
+const frames = solution.frames;
+const spots = explore.spots;
+
+// Camera framing, computed here so it needs no measuring in the browser.
+// The view has a fixed aspect ratio (wider on desktop, taller on phones). The capture is scaled so the focus fits,
+// centred on it, and kept inside the view; it is never stretched. The result is a transform for an element that is
+// as wide as the view and as tall as the capture at that width.
+const IMG = 1440 / 1240;
+const DESKTOP = 1.66;
+const PHONE = 1.25;
+// Panels for other screens sit slightly inset over the first screen, so their own aspect differs a little
+const INSET = { top: 0.045, start: 0.05 };
+// Desktop zoom stays moderate so text is sharp and in proportion; phones need more to stay legible
+const cam = (r: Rect, aspect: number, maxZoom: number) => {
+  const [x, y, w, h] = r;
+  const fit = Math.min(1, IMG / aspect);
+  const z = Math.max(fit, Math.min(maxZoom, 1 / w, 1 / aspect / (h / IMG)));
+  const ih = z / IMG;
+  const vh = 1 / aspect;
+  let left = 0.5 - (x + w / 2) * z;
+  let top = vh / 2 - (y + h / 2) * ih;
+  left = z >= 1 ? Math.min(0, Math.max(1 - z, left)) : (1 - z) / 2;
+  top = ih >= vh ? Math.min(0, Math.max(vh - ih, top)) : (vh - ih) / 2;
+  const n = (v: number) => Math.round(v * 10000) / 100;
+  return `${n(left)},${n(top * IMG)},${Math.round(z * 1000) / 1000}`;
+};
+const whole: Rect = [0, 0, 1, 1];
+
+const base = spots[0].frame;
+const used = [...new Set(spots.map((s) => s.frame))];
+// On phones the detail panels cover the whole view, so they share its aspect
+const aspectOf = (frame: number, a: number) => (frame === base || a === PHONE ? a : (a * (1 - INSET.start)) / (1 - INSET.top));
+const views = spots.map((s) => ({
+  d: cam(s.focus, aspectOf(s.frame, DESKTOP), 1.75),
+  m: cam(s.phone ?? s.focus, aspectOf(s.frame, PHONE), 3.2),
+}));
+const layers = used.map((frame) => {
+  const first = spots.findIndex((s) => s.frame === frame);
+  return {
+    frame,
+    first,
+    whole: { d: cam(whole, aspectOf(frame, DESKTOP), 1), m: cam(whole, aspectOf(frame, PHONE), 1) },
+  };
+});
+const style = (v: string) => {
+  const [x, y, z] = v.split(',');
+  return `--x:${x}%;--y:${y}%;--z:${z}`;
+};
+const pct = (r: Rect) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
+// Every screen of this solution, full size, for the viewer
+const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f.img.width, format: 'webp', quality: 85 })));
+// Stage names, shown once before the first part of each stage (Forecasting)
+const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stage?.[lang] !== s.stage[lang]) ? s.stage[lang] : null));
+---
+
+<div class:list={['ex', `ex--${explore.tone}`]} data-ex id={id}>
+  <div class="ex__parts" role="tablist" aria-label={p.exploreParts} hidden>
+    {
+      spots.map((s, i) => (
+        <>
+          {stageStart[i] && (
+            <span class="ex__stage-name" role="presentation">
+              {stageStart[i]}
+            </span>
+          )}
+          <button
+            type="button"
+            role="tab"
+            class="ex__part"
+            id={`${id}-tab-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-controls={`${id}-view`}
+            tabindex={i === 0 ? 0 : -1}
+            data-spot={i}
+            data-frame={s.frame}
+            data-d={views[i].d}
+            data-m={views[i].m}
+          >
+            {s.label[lang]}
+          </button>
+        </>
+      ))
+    }
+  </div>
+
+  <figure class="ex__window" id={`${id}-view`} role="tabpanel" aria-labelledby={`${id}-tab-0`}>
+    <div class="ex__chrome" dir="ltr">
+      <span class="ex__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="ex__url" aria-hidden="true">
+        <svg viewBox="0 0 12 12"><path d="M3.5 5.5V4a2.5 2.5 0 0 1 5 0v1.5M3 5.5h6v4.5H3z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" /></svg>
+        demo.tyll.ai
+      </span>
+      <span class="ex__tools">
+        <button type="button" class="ex__tool" data-whole aria-pressed="false" data-on={p.closeUp} data-off={p.wholeScreen} hidden>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 2.5h-4v4M9.5 2.5h4v4M6.5 13.5h-4v-4M9.5 13.5h4v-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <span>{p.wholeScreen}</span>
+        </button>
+        <button type="button" class="ex__tool ex__tool--icon" data-enlarge aria-label={p.enlarge} hidden>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+      </span>
+    </div>
+
+    <div class="ex__view" dir="ltr">
+      {
+        layers.map((l) => (
+          <div
+            class:list={['ex__layer', l.frame === base ? 'is-base' : 'is-panel']}
+            data-layer={l.frame}
+            data-wd={l.whole.d}
+            data-wm={l.whole.m}
+            aria-hidden={l.frame === base ? undefined : 'true'}
+          >
+            <div class="ex__cam" style={style(views[l.first].d)}>
+              <Picture
+                src={frames[l.frame].img}
+                alt={frames[l.frame].alt[lang]}
+                formats={['avif', 'webp']}
+                fallbackFormat="webp"
+                widths={[1440, 2880]}
+                sizes="(max-width: 760px) 300vw, 2400px"
+                loading="lazy"
+                decoding="async"
+                class="ex__img"
+              />
+              {spots.map(
+                (s, i) =>
+                  s.frame === l.frame && (
+                    <button
+                      type="button"
+                      class:list={['ex__mark', !s.mark && 'ex__mark--area', i === 0 && 'is-on']}
+                      style={pct(s.mark ?? s.focus)}
+                      data-mark={i}
+                      tabindex="-1"
+                      aria-hidden="true"
+                    />
+                  ),
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </figure>
+
+  <div class="ex__notes" aria-live="polite">
+    {
+      spots.map((s, i) => (
+        <div class:list={['ex__note', i === 0 && 'is-on']} data-note={i}>
+          <h3 class="ex__note-title">
+            {s.stage && <span class="ex__note-stage">{s.stage[lang]}</span>}
+            {s.label[lang]}
+          </h3>
+          <p>{s.text[lang]}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <dialog class="viewer" aria-label={p.viewer}>
+    <div class="viewer__bar">
+      <p class="viewer__title" aria-live="polite"></p>
+      <div class="viewer__tools">
+        <button type="button" class="viewer__btn" data-viewer="prev" aria-label={p.prev}>
+          <svg class="flip-rtl" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+        <button type="button" class="viewer__btn" data-viewer="next" aria-label={p.next}>
+          <svg class="flip-rtl" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+        <button type="button" class="viewer__btn viewer__zoom" data-viewer="zoom" aria-pressed="false" data-in={p.zoomIn} data-out={p.zoomOut}>
+          {p.zoomIn}
+        </button>
+        <button type="button" class="viewer__btn" data-viewer="close" aria-label={p.close}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="viewer__stage">
+      <img class="viewer__img" alt="" decoding="async" />
+    </div>
+    <ul hidden>
+      {frames.map((f, i) => <li data-shot={i} data-full={full[i].src} data-title={f.title[lang]} data-alt={f.alt[lang]} data-phone={f.phone ? '' : undefined} />)}
+    </ul>
+  </dialog>
+</div>
+
+<style>
+  .ex {
+    --ring: #b7791f;
+    display: grid;
+    gap: clamp(1rem, 0.75rem + 0.8vw, 1.5rem);
+  }
+
+  /* ── The parts to explore ── */
+  .ex__parts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ex__parts[hidden] {
+    display: none;
+  }
+
+  .ex__stage-name {
+    margin-inline: 0.6rem 0.1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    opacity: 0.6;
+  }
+
+  .ex__stage-name:first-child {
+    margin-inline-start: 0;
+  }
+
+  .ex__part {
+    min-height: 40px;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--ex-line);
+    border-radius: var(--pill);
+    background: transparent;
+    color: var(--ex-muted);
+    font: inherit;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition:
+      color 0.25s var(--ease),
+      border-color 0.25s var(--ease),
+      background-color 0.25s var(--ease);
+  }
+
+  .ex__part:hover {
+    border-color: var(--ex-text);
+    color: var(--ex-text);
+  }
+
+  .ex__part[aria-selected='true'] {
+    border-color: var(--ex-on-bg);
+    background: var(--ex-on-bg);
+    color: var(--ex-on-text);
+  }
+
+  /* ── The browser window ── */
+  .ex__window {
+    margin: 0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px var(--ex-frame),
+      0 60px 120px -60px rgba(0, 0, 0, 0.55),
+      0 24px 48px -32px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+  }
+
+  .ex__chrome {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 0.6rem 0 1rem;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #fbfbfc, #f2f3f5);
+  }
+
+  .ex__dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .ex__dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--silver);
+  }
+
+  .ex__url {
+    position: absolute;
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.9rem;
+    border-radius: var(--pill);
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line);
+    color: var(--steel);
+    font-size: 0.75rem;
+    transform: translateX(-50%);
+  }
+
+  .ex__url svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .ex__tools {
+    display: flex;
+    gap: 0.35rem;
+    margin-left: auto;
+  }
+
+  .ex__tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 32px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--pill);
+    background: #fff;
+    color: var(--graphite);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+  }
+
+  .ex__tool[hidden] {
+    display: none;
+  }
+
+  .ex__tool:hover {
+    border-color: var(--steel);
+    color: var(--ink);
+  }
+
+  .ex__tool--icon {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .ex__tool svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ── The screen and its camera ── */
+  .ex__view {
+    position: relative;
+    aspect-ratio: 1.66;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+
+  .ex__layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    transition:
+      opacity 0.55s var(--ease),
+      transform 0.7s var(--ease),
+      filter 0.55s var(--ease);
+  }
+
+  /* A detail screen opens as a panel over the first one */
+  .ex__layer.is-panel {
+    top: 4.5%;
+    left: 5%;
+    border-top-left-radius: 14px;
+    background: #f3f4f6;
+    box-shadow:
+      0 0 0 1px rgba(20, 22, 26, 0.08),
+      -30px -10px 80px -20px rgba(20, 22, 26, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(3%, 2%);
+    transition:
+      opacity 0.5s var(--ease),
+      transform 0.7s var(--ease),
+      visibility 0s linear 0.5s;
+  }
+
+  .ex__layer.is-panel.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.5s var(--ease),
+      transform 0.7s var(--ease),
+      visibility 0s;
+  }
+
+  .ex__layer.is-base.is-under {
+    filter: brightness(0.9) saturate(0.9);
+  }
+
+  .ex__cam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1440 / 1240;
+    transform-origin: 0 0;
+    transform: translate(var(--x), var(--y)) scale(var(--z));
+    transition: transform 0.9s var(--ease);
+  }
+
+  .ex__cam :global(picture),
+  .ex__cam :global(.ex__img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The exact detail: a fine amber ring with the rest of the screen softly dimmed */
+  .ex__mark {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    border-radius: calc(10px / var(--z));
+    background: transparent;
+    cursor: pointer;
+    transition:
+      box-shadow 0.5s var(--ease),
+      opacity 0.4s var(--ease);
+  }
+
+  .ex__mark:hover {
+    box-shadow: 0 0 0 calc(1.5px / var(--z)) rgba(183, 121, 31, 0.55);
+  }
+
+  .ex__mark.is-on {
+    box-shadow:
+      0 0 0 calc(2px / var(--z)) var(--ring),
+      0 0 0 calc(7px / var(--z)) rgba(183, 121, 31, 0.16),
+      0 0 0 200vmax rgba(20, 22, 26, 0.06);
+    cursor: default;
+  }
+
+  .ex__mark--area.is-on {
+    box-shadow: none;
+  }
+
+  .ex.is-whole .ex__mark.is-on {
+    box-shadow:
+      0 0 0 calc(2px / var(--z)) var(--ring),
+      0 0 0 calc(7px / var(--z)) rgba(183, 121, 31, 0.16);
+  }
+
+  /* ── The explanation under the screen ── */
+  .ex__notes {
+    display: grid;
+  }
+
+  .ex__note {
+    padding: 0.25rem 0 0;
+  }
+
+  .ex__note + .ex__note {
+    margin-top: 1.25rem;
+  }
+
+  .ex.is-ready .ex__note {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition:
+      opacity 0.4s var(--ease),
+      transform 0.4s var(--ease),
+      visibility 0s linear 0.4s;
+  }
+
+  .ex.is-ready .ex__note.is-on {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.45s var(--ease) 0.1s,
+      transform 0.45s var(--ease) 0.1s,
+      visibility 0s;
+  }
+
+  .ex__note-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    color: var(--ex-text);
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    font-weight: 450;
+    letter-spacing: -0.015em;
+  }
+
+  .ex__note-stage {
+    color: var(--ex-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .ex__note p {
+    max-width: 46rem;
+    margin-top: 0.4rem;
+    color: var(--ex-muted);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+
+  /* ── Tones: charcoal or light stone behind the product ── */
+  .ex--dark {
+    --ex-text: var(--on-dark);
+    --ex-muted: rgba(244, 245, 247, 0.74);
+    --ex-line: rgba(244, 245, 247, 0.24);
+    --ex-on-bg: var(--on-dark);
+    --ex-on-text: var(--ink);
+    --ex-frame: rgba(255, 255, 255, 0.08);
+  }
+
+  .ex--light {
+    --ex-text: var(--ink);
+    --ex-muted: var(--graphite);
+    --ex-line: var(--silver);
+    --ex-on-bg: var(--ink);
+    --ex-on-text: #fff;
+    --ex-frame: rgba(20, 22, 26, 0.08);
+  }
+
+  /* ── Viewer ── */
+  .viewer {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(14, 15, 17, 0.96);
+    color: var(--on-dark);
+  }
+
+  .viewer::backdrop {
+    background: rgba(14, 15, 17, 0.6);
+  }
+
+  .viewer[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .viewer__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem max(16px, 2vw);
+    border-bottom: 1px solid rgba(244, 245, 247, 0.1);
+  }
+
+  .viewer__title {
+    overflow: hidden;
+    font-size: 0.9375rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .viewer__tools {
+    display: flex;
+    flex: none;
+    gap: 0.4rem;
+  }
+
+  .viewer__btn {
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.6rem;
+    border: 1px solid rgba(244, 245, 247, 0.22);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--on-dark);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .viewer__btn:hover {
+    border-color: var(--on-dark);
+  }
+
+  .viewer__btn svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .viewer__stage {
+    display: grid;
+    place-items: center;
+    overflow: auto;
+    padding: max(12px, 2vw);
+    overscroll-behavior: contain;
+  }
+
+  .viewer__img {
+    max-width: 100%;
+    max-height: calc(100dvh - 64px - 2 * max(12px, 2vw));
+    border-radius: 8px;
+    background: var(--paper);
+    cursor: zoom-in;
+  }
+
+  .viewer.is-zoomed .viewer__stage {
+    place-items: start;
+  }
+
+  .viewer.is-zoomed .viewer__img {
+    max-width: none;
+    max-height: none;
+    width: min(1440px, 200vw);
+    cursor: zoom-out;
+  }
+
+  .viewer.is-zoomed .viewer__img.is-phone {
+    width: 390px;
+  }
+
+  @media (max-width: 760px) {
+    .ex__view {
+      aspect-ratio: 1.25;
+    }
+
+    .ex__parts {
+      flex-wrap: nowrap;
+      margin-inline: calc(var(--gut) * -1);
+      padding-inline: var(--gut);
+      padding-bottom: 0.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .ex__parts::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ex__part {
+      flex: none;
+      font-size: 0.875rem;
+    }
+
+    .ex__stage-name {
+      flex: none;
+    }
+
+    .ex__url {
+      display: none;
+    }
+
+    .ex__tool span {
+      display: none;
+    }
+
+    .ex__tool {
+      width: 32px;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .ex__window {
+      border-radius: 12px;
+    }
+
+    .ex__layer.is-panel {
+      top: 0;
+      left: 0;
+      border-radius: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .viewer__zoom {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ex__cam,
+    .ex__layer,
+    .ex__layer.is-panel,
+    .ex__layer.is-panel.is-open,
+    .ex.is-ready .ex__note,
+    .ex.is-ready .ex__note.is-on {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ex]').forEach((ex) => {
+    const list = ex.querySelector<HTMLElement>('[role="tablist"]')!;
+    const tabs = [...ex.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panel = ex.querySelector<HTMLElement>('[role="tabpanel"]')!;
+    const notes = [...ex.querySelectorAll<HTMLElement>('[data-note]')];
+    const layers = [...ex.querySelectorAll<HTMLElement>('[data-layer]')];
+    const marks = [...ex.querySelectorAll<HTMLElement>('[data-mark]')];
+    const wholeBtn = ex.querySelector<HTMLButtonElement>('[data-whole]')!;
+    const wholeLabel = wholeBtn.querySelector('span')!;
+    const enlarge = ex.querySelector<HTMLButtonElement>('[data-enlarge]')!;
+    const phone = matchMedia('(max-width: 760px)');
+    const base = layers[0].dataset.layer;
+    let active = 0;
+    let whole = false;
+
+    const layerOf = (frame: string) => layers.find((l) => l.dataset.layer === frame)!;
+    const place = (layer: HTMLElement, v: string) => {
+      const [x, y, z] = v.split(',');
+      const camEl = layer.querySelector<HTMLElement>('.ex__cam')!;
+      camEl.style.setProperty('--x', `${x}%`);
+      camEl.style.setProperty('--y', `${y}%`);
+      camEl.style.setProperty('--z', z);
+    };
+    const key = () => (phone.matches ? 'm' : 'd');
+
+    const render = () => {
+      const tab = tabs[active];
+      const frame = tab.dataset.frame!;
+      const layer = layerOf(frame);
+      place(layer, whole ? layer.dataset[`w${key()}`]! : tab.dataset[key()]!);
+      layers.forEach((l) => {
+        const isBase = l.dataset.layer === base;
+        const open = l === layer;
+        // Under an open panel the first screen settles back to its whole view, so only the panel draws the eye
+        if (isBase && !open) place(l, l.dataset[`w${key()}`]!);
+        if (isBase) l.classList.toggle('is-under', !open);
+        else l.classList.toggle('is-open', open);
+        l.setAttribute('aria-hidden', String(!open));
+      });
+      ex.classList.toggle('is-whole', whole);
+      wholeBtn.setAttribute('aria-pressed', String(whole));
+      wholeLabel.textContent = whole ? wholeBtn.dataset.on! : wholeBtn.dataset.off!;
+    };
+
+    const select = (i: number, focus = false) => {
+      active = i;
+      whole = false;
+      tabs.forEach((tab, j) => {
+        const on = i === j;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        notes[j].classList.toggle('is-on', on);
+      });
+      marks.forEach((m) => m.classList.toggle('is-on', m.dataset.mark === String(i)));
+      panel.setAttribute('aria-labelledby', tabs[i].id);
+      render();
+      if (focus) {
+        tabs[i].focus();
+        tabs[i].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    };
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
+    list.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(document.activeElement as HTMLButtonElement);
+      if (i < 0) return;
+      const rtl = document.documentElement.dir === 'rtl';
+      const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1, ArrowDown: 1, ArrowUp: -1 }[e.key];
+      if (step) select((i + step + tabs.length) % tabs.length, true);
+      else if (e.key === 'Home') select(0, true);
+      else if (e.key === 'End') select(tabs.length - 1, true);
+      else return;
+      e.preventDefault();
+    });
+    // The ringed parts can be chosen on the screen itself
+    marks.forEach((m) => m.addEventListener('click', () => select(Number(m.dataset.mark))));
+    wholeBtn.addEventListener('click', () => {
+      whole = !whole;
+      render();
+    });
+    phone.addEventListener('change', render);
+
+    // ── Viewer: every screen of this solution at full size ──
+    const viewer = ex.querySelector<HTMLDialogElement>('.viewer')!;
+    const vImg = viewer.querySelector<HTMLImageElement>('.viewer__img')!;
+    const vTitle = viewer.querySelector<HTMLElement>('.viewer__title')!;
+    const vZoom = viewer.querySelector<HTMLButtonElement>('[data-viewer="zoom"]')!;
+    const shots = [...viewer.querySelectorAll<HTMLElement>('[data-shot]')];
+    let shown = 0;
+    const setZoom = (on: boolean) => {
+      viewer.classList.toggle('is-zoomed', on);
+      vZoom.setAttribute('aria-pressed', String(on));
+      vZoom.textContent = on ? vZoom.dataset.out! : vZoom.dataset.in!;
+    };
+    const load = (i: number) => {
+      shown = (i + shots.length) % shots.length;
+      const s = shots[shown];
+      vImg.src = s.dataset.full!;
+      vImg.alt = s.dataset.alt!;
+      vImg.classList.toggle('is-phone', s.hasAttribute('data-phone'));
+      vTitle.textContent = `${s.dataset.title} · ${shown + 1} / ${shots.length}`;
+      setZoom(false);
+    };
+    enlarge.addEventListener('click', () => {
+      load(Number(tabs[active].dataset.frame));
+      viewer.showModal();
+      viewer.querySelector<HTMLElement>('[data-viewer="close"]')!.focus();
+    });
+    viewer.addEventListener('click', (e) => {
+      const action = (e.target as Element).closest<HTMLElement>('[data-viewer]')?.dataset.viewer;
+      if (action === 'close') viewer.close();
+      else if (action === 'prev') load(shown - 1);
+      else if (action === 'next') load(shown + 1);
+      else if (action === 'zoom' || e.target === vImg) setZoom(!viewer.classList.contains('is-zoomed'));
+    });
+    viewer.addEventListener('keydown', (e) => {
+      const rtl = document.documentElement.dir === 'rtl';
+      if (e.key === 'ArrowLeft') load(shown + (rtl ? 1 : -1));
+      if (e.key === 'ArrowRight') load(shown + (rtl ? -1 : 1));
+    });
+    viewer.addEventListener('close', () => enlarge.focus({ preventScroll: true }));
+
+    list.hidden = false;
+    wholeBtn.hidden = false;
+    enlarge.hidden = false;
+    ex.classList.add('is-ready');
+    select(0);
+  });
+</script>

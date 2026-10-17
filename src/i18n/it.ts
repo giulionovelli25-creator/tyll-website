@@ -51,6 +51,7 @@ const it: Dict = {
       },
       view: {
         place: 'Grand Resort Dubai · Oggi',
+        simulated: 'Dimostrazione con dati simulati.',
         attention: 'Richiede attenzione',
         status: 'Da verificare',
         issue: 'Differenza di Coca-Cola a The Terrace',
@@ -101,6 +102,10 @@ const it: Dict = {
     pause: 'Metti in pausa la presentazione',
     play: 'Riproduci la presentazione',
     enlarge: 'Ingrandisci questa schermata',
+    exploreParts: 'Parti dello schermo',
+    wholeScreen: 'Schermo intero',
+    closeUp: 'Primo piano',
+    exploreHint: 'Scegli una parte dello schermo per vedere cosa mostra.',
     viewer: 'Visualizzatore schermate',
     close: 'Chiudi',
     zoomIn: 'Ingrandisci',

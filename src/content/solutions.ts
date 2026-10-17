@@ -10,13 +10,13 @@ import forecastProduce from '../assets/photos/forecast-produce.jpg';
 import eventsBanquet from '../assets/photos/events-banquet.jpg';
 import roomsSuite from '../assets/photos/rooms-suite.jpg';
 import receipts from '../assets/photos/tyll-problem-1.jpg';
-import laptop from '../assets/photos/tyll-stats-2.jpg';
+import salesLobby from '../assets/photos/sales-lobby.jpg';
 import probStock from '../assets/photos/problem/problem-stock.jpg';
 import probFinance from '../assets/photos/problem/problem-finance.jpg';
 import probForecast from '../assets/photos/problem/problem-forecasting.jpg';
 import probEvents from '../assets/photos/problem/problem-events.jpg';
-import probRooms from '../assets/photos/problem/problem-rooms.jpg';
-import probSales from '../assets/photos/problem/problem-sales.jpg';
+import probRooms from '../assets/photos/problem/problem-rooms-housekeeping.jpg';
+import probSales from '../assets/photos/problem/problem-sales-service.jpg';
 
 const screens = import.meta.glob<{ default: ImageMetadata }>('../assets/demo/*.png', { eager: true });
 const screen = (name: string) => {
@@ -118,10 +118,10 @@ export const solutions: Record<SolutionKey, Solution> = {
       ],
     },
     walkTitle: t(
-      'Eight cans of Coca-Cola, step by step',
-      'Acht Dosen Coca-Cola, Schritt für Schritt',
-      'ثماني علب Coca-Cola، خطوة بخطوة',
-      'Otto lattine di Coca-Cola, passo dopo passo',
+      'Eight cans of Coca-Cola, investigated',
+      'Acht Dosen Coca-Cola, untersucht',
+      'ثماني علب Coca-Cola قيد التحقيق',
+      'Otto lattine di Coca-Cola, sotto esame',
     ),
     frames: [
       {
@@ -708,8 +708,8 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Quando ricevimento, housekeeping e altri reparti lavorano separatamente, anche le richieste semplici possono richiedere più tempo.',
     ),
     problemPhoto: probRooms,
-    problemPhotoAlt: t('A bright hotel corridor with guest room doors.', 'Ein heller Hotelflur mit Zimmertüren.', 'ممر فندقي مشرق بأبواب غرف الضيوف.', 'Un corridoio d’albergo luminoso con le porte delle camere.'),
-    problemFocus: '50% 50%',
+    problemPhotoAlt: t('A room attendant straightening the pillows on a freshly made hotel bed.', 'Ein Zimmermitarbeiter richtet die Kissen auf einem frisch bezogenen Hotelbett.', 'عامل غرف يرتّب الوسائد على سرير فندقي مرتّب حديثًا.', 'Un addetto alle camere sistema i cuscini su un letto d’albergo appena rifatto.'),
+    problemFocus: '30% 50%',
     steps: [
       { label: t('Spot', 'Erkennen', 'الرصد', 'Individua'), frame: 0 },
       { label: t('Request', 'Anfragen', 'الطلب', 'Richiedi'), frame: 2 },
@@ -831,14 +831,14 @@ export const solutions: Record<SolutionKey, Solution> = {
   sales: {
     key: 'sales',
     icon: 'sales',
-    photo: laptop,
+    photo: salesLobby,
     photoAlt: t(
-      'A manager working on a laptop at a dimly lit desk.',
-      'Eine Führungskraft arbeitet abends an einem Laptop.',
-      'مدير يعمل على حاسوب محمول على مكتب خافت الإضاءة.',
-      'Un manager lavora al portatile su una scrivania in penombra.',
+      'A sunlit hotel lobby with guests seated among palms and tall windows.',
+      'Eine sonnige Hotellobby mit Gästen zwischen Palmen und hohen Fenstern.',
+      'ردهة فندق مشمسة يجلس فيها الضيوف بين أشجار النخيل والنوافذ العالية.',
+      'Una hall d’albergo assolata con ospiti seduti tra palme e alte finestre.',
     ),
-    photoFocus: '55% 45%',
+    photoFocus: '60% 55%',
     name: t('Sales & Performance', 'Vertrieb & Performance', 'المبيعات والأداء', 'Vendite e performance'),
     menu: t(
       'Understand opportunities and see how the business is performing.',
@@ -860,8 +860,8 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Le opportunità di vendita e i dati sulle performance dell’hotel si trovano spesso in posti diversi.',
     ),
     problemPhoto: probSales,
-    problemPhotoAlt: t('Three colleagues reviewing plans together at a bright meeting table.', 'Drei Kolleginnen besprechen Pläne an einem hellen Besprechungstisch.', 'ثلاث زميلات يراجعن الخطط معًا على طاولة اجتماعات مشرقة.', 'Tre colleghe esaminano insieme i piani a un tavolo riunioni luminoso.'),
-    problemFocus: '50% 45%',
+    problemPhotoAlt: t('A waiter clearing a table in a hotel restaurant while guests are served at the buffet.', 'Ein Kellner räumt in einem Hotelrestaurant einen Tisch ab, während am Buffet Gäste bedient werden.', 'نادل يرتّب طاولة في مطعم فندق بينما يُخدَم الضيوف عند البوفيه.', 'Un cameriere sparecchia un tavolo nel ristorante di un hotel mentre al buffet si servono gli ospiti.'),
+    problemFocus: '45% 45%',
     steps: [
       { label: t('Review', 'Überblicken', 'المراجعة', 'Osserva'), frame: 0 },
       { label: t('Pursue', 'Verfolgen', 'المتابعة', 'Segui'), frame: 1 },

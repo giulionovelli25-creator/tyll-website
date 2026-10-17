@@ -110,6 +110,7 @@ const ownerRole = roleParts.join(', ');
                 ))
               }
             </ul>
+            <p class="list__foot" aria-hidden="true">{v.simulated}</p>
           </div>
 
           <article class="app__detail">
@@ -238,7 +239,7 @@ const ownerRole = roleParts.join(', ');
 
   .cine__chapters {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 18rem));
+    grid-template-columns: repeat(2, minmax(0, 22rem));
     gap: clamp(1.25rem, 0.5rem + 3vw, 3.5rem);
     margin: 0;
     padding: 0;
@@ -595,9 +596,18 @@ const ownerRole = roleParts.join(', ');
   /* The list of what needs attention */
   .app__list {
     grid-area: list;
+    display: flex;
+    flex-direction: column;
     padding-block: 1.25rem;
     padding-inline: 1.25rem 1rem;
     border-inline-end: 1px solid var(--line);
+  }
+
+  .list__foot {
+    margin: auto 0 0;
+    padding-top: 1.25rem;
+    color: var(--fog);
+    font-size: 0.75rem;
   }
 
   .list__head {
@@ -903,14 +913,27 @@ const ownerRole = roleParts.join(', ');
       transform 0.8s var(--ease);
   }
 
-  .cine[data-scene='0'] :is(.app__rail, .app__bar),
-  .cine[data-scene='1'] :is(.app__rail, .app__bar) {
+  .cine[data-scene='0'] :is(.app__rail, .app__bar, .list__foot),
+  .cine[data-scene='1'] :is(.app__rail, .app__bar, .list__foot) {
     opacity: 0;
   }
 
-  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2']) :is(.list__head, .row, .d__head, .d__next, .d__caution, .d__head ~ .d__label) {
+  .app__list,
+  .app__detail {
+    transition: border-color 0.8s var(--ease);
+  }
+
+  .cine:is([data-scene='0'], [data-scene='1']) :is(.app__list, .app__detail) {
+    border-color: transparent;
+  }
+
+  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2']) :is(.list__head, .row, .d__head, .d__next, .d__caution) {
     opacity: 0;
     transform: translateY(10px);
+  }
+
+  .cine:is([data-scene='0'], [data-scene='1']) .d__head ~ .d__label {
+    opacity: 0;
   }
 
   .cine[data-scene='3'] :is(.d__next, .d__caution) {
@@ -1080,6 +1103,32 @@ const ownerRole = roleParts.join(', ');
       grid-template-columns: minmax(0, 1fr);
     }
 
+    .app__list {
+      padding-bottom: 0;
+    }
+
+    .app__list ul,
+    .list__foot {
+      display: none;
+    }
+
+    .list__head {
+      margin: 0;
+    }
+
+    .app__detail {
+      margin-top: 0.85rem;
+      padding-top: 1rem;
+    }
+
+    .d__title {
+      font-size: 1.25rem;
+    }
+
+    .d__label {
+      margin-top: 1.1rem;
+    }
+
     .d__person {
       flex-wrap: wrap;
     }
@@ -1155,7 +1204,9 @@ const ownerRole = roleParts.join(', ');
     // The quieter records slide toward the list rows they become, and fade as the rows appear
     const gatherChips = () => {
       chips.forEach((c) => {
-        const row = cine.querySelector<HTMLElement>(`[data-row="${c.dataset.chip}"]`);
+        const row = [cine.querySelector<HTMLElement>(`[data-row="${c.dataset.chip}"]`), cine.querySelector<HTMLElement>('.list__head')].find(
+          (el) => el && el.offsetParent,
+        );
         if (!row) return;
         c.style.transform = '';
         const from = c.getBoundingClientRect();
