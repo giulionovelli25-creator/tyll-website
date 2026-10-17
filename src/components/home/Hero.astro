@@ -53,11 +53,12 @@ const d = t(lang);
       {d.hero.body.map((p) => <p>{p}</p>)}
     </div>
     <div class="hero__actions">
-      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_call_click" data-track-from="hero">{d.cta.book}</a>
+      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_call_click" data-track-from="hero">{d.home.invite.demo}</a>
       <a class="btn btn--line btn--lg" href={href('solutions', lang)} data-track="explore_solutions_click" data-track-from="hero">
         {d.cta.solutions}
       </a>
     </div>
+    <p class="hero__note">{d.home.invite.note}</p>
   </div>
 
   <button class="hero__toggle" type="button" aria-pressed="false" data-pause={d.hero.pause} data-play={d.hero.play} hidden>
@@ -68,6 +69,13 @@ const d = t(lang);
 </section>
 
 <style>
+  /* What to expect from the call, right under the buttons */
+  .hero__note {
+    margin-top: 1rem;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+  }
+
   .hero {
     position: relative;
     display: flex;
@@ -174,12 +182,14 @@ const d = t(lang);
     }
 
     .hero__body,
-    .hero__actions {
+    .hero__actions,
+    .hero__note {
       animation: hero-fade 0.9s var(--ease) both;
       animation-delay: 0.5s;
     }
 
-    .hero__actions {
+    .hero__actions,
+    .hero__note {
       animation-delay: 0.62s;
     }
   }

@@ -24,15 +24,15 @@ const de: Dict = {
   },
   hero: {
     title: 'Ein Hotel. Viele Systeme. Endlich verbunden.',
-    body: ['Tyll bringt die wichtigen Informationen und Teams Ihres Hotels zusammen – ohne die Systeme zu ersetzen, die Sie bereits nutzen.'],
+    body: ['Tyll verbindet die bestehenden Systeme Ihres Hotels, erkennt, was Aufmerksamkeit braucht, und hilft Ihren Teams, bessere Entscheidungen zu treffen – ohne zusätzliche Komplexität.'],
     pause: 'Hintergrundvideo anhalten',
     play: 'Hintergrundvideo abspielen',
     videoLabel: 'Ein Hotel bei der Arbeit: ein Koch würzt Teller am Pass, eine Zimmerkraft bereitet ein helles Zimmer vor, und der Zimmerservice ist im Flur unterwegs.',
   },
   home: {
     problem: {
-      title: 'Zu viele Systeme. Zu wenig Verbindung.',
-      text: 'Hotels haben die Informationen, die sie brauchen. Doch wenn sie über Systeme und Abteilungen verstreut sind, wird es schwerer, Dinge zu erledigen.',
+      title: 'Probleme früh erkennen. Sicher handeln.',
+      text: 'Weniger Suchen in verschiedenen Systemen. Weniger teure Versäumnisse. Klarere Entscheidungen für jedes Team.',
       beforeLabel: 'Vor Tyll',
       before: 'Informationen überall.',
       afterLabel: 'Mit Tyll',
@@ -80,8 +80,10 @@ const de: Dict = {
       photoAlt: 'Ein Koch garniert in einer Restaurantküche einen angerichteten Teller mit frischen Kräutern.',
     },
     invite: {
-      title: 'Ein besserer Weg, Ihr Hotel zu führen, beginnt hier.',
-      text: 'Entdecken Sie, wie Tyll Ihr Hotel verbindet – oder sprechen Sie mit uns darüber, was Ihr Team braucht.',
+      title: 'Sehen Sie, was Ihr Hotel erreichen kann, wenn alles zusammenspielt.',
+      text: 'Erfahren Sie, wie Tyll Ihre bestehenden Systeme verbindet und Ihren Teams mehr Klarheit und Kontrolle gibt.',
+      demo: 'Persönliche Demo buchen →',
+      note: 'Ein kurzes Gespräch über Ihr Hotel, mit einem Blick auf Tyll. Unverbindlich.',
     },
   },
   solutionPage: {

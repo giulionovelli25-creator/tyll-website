@@ -42,11 +42,12 @@ const frame = ribbon(0);
     <h2 id="invite-title">{v.title}</h2>
     <p>{v.text}</p>
     <div class="invite__actions">
-      <a class="btn btn--solid btn--lg" href={href('solutions', lang)} data-track="explore_solutions_click" data-track-from="final">
+      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_call_click" data-track-from="final">{v.demo}</a>
+      <a class="btn btn--line btn--lg" href={href('solutions', lang)} data-track="explore_solutions_click" data-track-from="final">
         {d.cta.solutions}
       </a>
-      <a class="btn btn--line btn--lg" href={href('book', lang)} data-track="book_call_click" data-track-from="final">{d.cta.book}</a>
     </div>
+    <p class="invite__note">{v.note}</p>
   </div>
 </section>
 
@@ -108,7 +109,7 @@ const frame = ribbon(0);
   }
 
   .invite h2 {
-    max-width: 16ch;
+    max-width: 20ch;
     font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.75rem);
     letter-spacing: -0.04em;
   }
@@ -127,6 +128,12 @@ const frame = ribbon(0);
     justify-content: center;
     gap: 0.75rem;
     margin-top: 2.5rem;
+  }
+
+  .invite .invite__note {
+    margin-top: 1.25rem;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
   }
 
   @media (max-width: 640px) {
