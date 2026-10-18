@@ -16,7 +16,7 @@ const de: Dict = {
   },
   cta: {
     newTab: '(öffnet in neuem Tab)',
-    book: 'Gespräch buchen →',
+    book: 'Demo buchen →',
     demo: 'Demo ansehen →',
     demoLong: 'Interaktive Demo ansehen →',
     solutions: 'Lösungen entdecken →',
@@ -77,7 +77,7 @@ const de: Dict = {
       source: 'Quelle',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'Ein Koch garniert in einer Restaurantküche einen angerichteten Teller mit frischen Kräutern.',
+      photoAlt: 'Eine Hotelrezeptionistin arbeitet am Computer der Rezeption, hinter ihr die Lobby-Lounge.',
     },
     invite: {
       title: 'Sehen Sie, was Ihr Hotel erreichen kann, wenn alles zusammenspielt.',
@@ -98,7 +98,7 @@ const de: Dict = {
     finalTextNoDemo: 'Buchen Sie ein Gespräch, und wir zeigen Ihnen diesen Bereich von Tyll in der Demo.',
     others: 'Weitere Lösungen',
     indexTitle: 'Wählen Sie, was für Ihr Hotel zählt.',
-    indexIntro: 'Sechs Bereiche, in denen Tyll Teams hilft zu sehen, was passiert, und zu handeln. Jeder mit einem kurzen Rundgang.',
+    indexIntro: 'Sechs Bereiche, in denen Tyll Ihren Teams zeigt, was Aufmerksamkeit braucht – und hilft, zu handeln.',
     step: 'Schritt',
     pause: 'Rundgang anhalten',
     play: 'Rundgang abspielen',
@@ -117,7 +117,7 @@ const de: Dict = {
   },
   book: {
     title: 'Sprechen wir über Ihr Hotel.',
-    intro: 'Erzählen Sie uns ein wenig über Ihr Haus, und wir besprechen, wie Tyll Ihnen helfen könnte.',
+    intro: 'Sehen Sie, wie Tyll mit den Systemen Ihres Hotels arbeiten könnte.',
     consentTitle: 'Wählen Sie einen Termin in unserem Buchungskalender',
     consentText:
       'Der Kalender wird von Calendly bereitgestellt. Wenn Sie ihn öffnen, verbindet sich Ihr Browser mit Calendly; dabei können Daten in den USA verarbeitet werden, und Calendly nutzt eigene Dienste, etwa für Statistik und Spam-Schutz. Ihre Eingaben gehen direkt an Calendly, um den Termin zu vereinbaren.',
@@ -140,14 +140,14 @@ const de: Dict = {
     title: 'Häufige Fragen',
     intro: 'Kurze Antworten auf die Fragen, die Hotelteams uns am häufigsten stellen.',
     more: 'Noch eine Frage?',
-    moreText: 'Buchen Sie ein Gespräch oder schreiben Sie uns. Wir gehen es gern mit Ihnen durch.',
+    moreText: 'Buchen Sie ein kurzes Gespräch oder schreiben Sie uns. Unverbindlich.',
     items: [
-      { id: 'what', q: 'Was ist Tyll?', a: ['Tyll hilft Hotels, wichtige Informationen, Aufgaben und Abteilungen an einem Ort zusammenzubringen – damit Probleme leichter zu finden, zu verstehen und zu lösen sind.'] },
+      { id: 'what', q: 'Was ist Tyll?', a: ['Tyll bringt die Informationen, Aufgaben und Abteilungen Ihres Hotels an einem Ort zusammen, damit Probleme früher erkannt und gelöst werden.'] },
       { id: 'replace', q: 'Ersetzt Tyll unsere bestehende Hotelsoftware?', a: ['Nein. Tyll ist darauf ausgelegt, mit den Systemen zusammenzuarbeiten, die Sie bereits nutzen – etwa Kasse, PMS, Warenwirtschaft und Buchhaltung.'] },
       { id: 'departments', q: 'Welchen Abteilungen kann Tyll helfen?', a: ['Restaurants und Bars, Küche und Einkauf, Finanzen, Veranstaltungen und Bankett, Rezeption, Housekeeping und Vertrieb. Welche davon ein Pilotprojekt umfasst, entscheiden Sie.'] },
-      { id: 'demo', q: 'Was zeigt die interaktive Demo?', a: ['Eine simulierte Hotelgruppe mit Bestandsprüfungen, finanziellen Rückfragen, Prognose und Einkauf, Veranstaltungen und Personal, Zimmern und Gästewünschen sowie Vertrieb. Sie arbeitet mit fiktiven Hotels, Personen und Zahlen.'] },
-      { id: 'integrations', q: 'Wie funktionieren Anbindungen?', a: ['Je nach Ihren Systemen können Informationen über unterstützte Schnittstellen oder vereinbarte Datenexporte einfließen. Wir klären, was für Ihr Hotel möglich ist, bevor etwas angebunden wird – und versprechen keine Anbindungen, die wir nicht bestätigt haben.'] },
-      { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: ['Ja, wir besprechen gern ein fokussiertes Pilotprojekt mit Ihnen. Wir vereinbaren einen Bereich für den Start, die Daten, die Sie teilen können, und woran wir messen, ob es hilft. Umfang und Zeitplan werden mit Ihnen vereinbart, nie vorausgesetzt.'] },
+      { id: 'demo', q: 'Was zeigt die interaktive Demo?', a: ['Eine simulierte Hotelgruppe mit Lager, Finanzen, Einkauf, Events, Zimmern und Vertrieb – mit fiktiven Hotels, Personen und Zahlen.'] },
+      { id: 'integrations', q: 'Wie funktionieren Anbindungen?', a: ['Über unterstützte Anbindungen oder vereinbarte Datenexporte. Was für Ihr Hotel möglich ist, klären wir, bevor etwas verbunden wird.'] },
+      { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: ['Ja. Wir können ein fokussiertes Pilotprojekt vereinbaren: einen Bereich zum Start, die Daten, die Sie teilen, und woran wir den Nutzen messen.'] },
     ],
   },
   legalPage: {

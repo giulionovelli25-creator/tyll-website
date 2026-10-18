@@ -31,7 +31,7 @@ const others = solutionKeys.filter((k) => k !== solution);
 const fill = (text: string) => text.replace('{name}', name);
 // Alternate the photograph's side so the six pages don't share one silhouette
 const photoSide = solutionKeys.indexOf(solution) % 2 === 0 ? 'end' : 'start';
-// The Tyll silver wave, held still: one frame of the homepage ribbon
+// The Tyll silver wave, the same flowing ribbon as on the homepage; this frame is also the still one
 const wave = ribbon(0.32);
 ---
 
@@ -96,6 +96,16 @@ const wave = ribbon(0.32);
           ))
         }
       </ul>
+      {
+        s.proof && (
+          <p class="context__proof">
+            {s.proof.text[lang]} <span class="context__proof-note">{s.proof.context[lang]}</span>{' '}
+            <a href={s.proof.url} target="_blank" rel="noopener">
+              {s.proof.source[lang]}
+            </a>
+          </p>
+        )
+      }
     </div>
     <div class="context__photo">
       <Picture
@@ -117,7 +127,7 @@ const wave = ribbon(0.32);
     <div class="product__wrap">
       <header class="product__head">
         <h2 id="sol-product">{s.walkTitle[lang]}</h2>
-        <p>{p.exploreHint} {p.walkIntro}</p>
+        <p>{p.walkIntro}</p>
       </header>
       <ProductExplorer lang={lang} solution={s} explore={ex} id={`ex-${solution}`} />
       {s.note && <p class="product__note">{s.note[lang]}</p>}
@@ -145,7 +155,7 @@ const wave = ribbon(0.32);
         <div class="cta__copy">
           <p class="cta__outcome">{ex.outcome[lang]}</p>
           <h2 id="sol-final">{fill(p.finalTitle)}</h2>
-          <p class="cta__text">{demo ? p.finalText : p.finalTextNoDemo}</p>
+          <p class="cta__text">{d.home.invite.note}</p>
           <div class="close__actions">
             {
               demo && (
@@ -377,6 +387,26 @@ const wave = ribbon(0.32);
     gap: 0.25rem 1.5rem;
     padding-block: 1.1rem;
     border-top: 1px solid rgba(20, 22, 26, 0.12);
+  }
+
+  /* Independent research beside the problem, always with its source */
+  .context__proof {
+    max-width: 36rem;
+    margin-top: 1.5rem;
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid var(--silver);
+    color: var(--graphite);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .context__proof-note {
+    color: var(--steel);
+  }
+
+  .context__proof a {
+    color: var(--steel);
+    text-underline-offset: 3px;
   }
 
   .helps__k {
@@ -673,3 +703,35 @@ const wave = ribbon(0.32);
     }
   }
 </style>
+
+<script>
+  import { ribbon, PERIOD } from '../../scripts/wave';
+
+  // The wave flows like the homepage's: redrawn about 30 times a second, only while on screen, and not at all
+  // when reduced motion is asked for (the server-rendered frame stays)
+  const svg = document.querySelector<SVGSVGElement>('.cta__wave');
+  if (svg) {
+    const paths = [...svg.querySelectorAll('path')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    let raf = 0;
+    let last = 0;
+    let t = 0.32 * PERIOD;
+    const draw = (now: number) => {
+      raf = requestAnimationFrame(draw);
+      if (now - last < 33) return;
+      t = (t + Math.min(now - last, 100) / 1000) % PERIOD;
+      last = now;
+      ribbon(t / PERIOD).forEach((l, i) => paths[i]?.setAttribute('d', l.d));
+    };
+    const sync = () => {
+      cancelAnimationFrame(raf);
+      if (visible && !reduce.matches) {
+        last = performance.now();
+        raf = requestAnimationFrame(draw);
+      }
+    };
+    new IntersectionObserver(([e]) => ((visible = e.isIntersecting), sync())).observe(svg);
+    reduce.addEventListener('change', sync);
+  }
+</script>

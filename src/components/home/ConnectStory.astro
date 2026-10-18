@@ -1,15 +1,15 @@
 ---
-// Homepage chapter 2: a short, directed product sequence on a pearl stage (about 9.5 s).
-//   1. Before Tyll: records from separate systems float apart: a POS order and a stock count, with two quieter
-//      records (PMS, Finance) further back.
-//   2. With Tyll: the Tyll window rises and the two records glide into it, where they become the evidence.
-//   3. The issue they explain becomes prominent: the Coca-Cola difference at The Terrace.
-//   4. The outcome: the next step and who is responsible, assigned.
-//   5. A calm final product view that stays on screen.
+// Homepage chapter 2: a short, directed product sequence on a pearl stage (about 8.5 s).
+//   1. Before Tyll: four records from separate systems drift apart at different depths (also the resting state
+//      before the sequence starts, so the stage is never empty).
+//   2. With Tyll: the window rises and the records glide into it.
+//   3. The problem comes first: the Coca-Cola difference lights up; everything else stays quiet.
+//   4. Then its evidence: the stock count and the POS order brighten in their places.
+//   5. Then the next step and who is responsible, assigned.
+//   6. A calm final product view that stays on screen.
 // It starts when the stage is well in view, pauses when it leaves and resumes when it returns. It never touches
 // scrolling. One button pauses, resumes or replays. Without JavaScript or with reduced motion, the final view is
-// shown at once. The final view is ordinary, readable HTML in all four languages. All data is fictional and
-// matches the Coca-Cola case in the simulated Tyll demo.
+// shown at once. All data is fictional and matches the Coca-Cola case in the simulated Tyll demo.
 import Logo from '../Logo.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { t, type Locale } from '../../i18n';
@@ -37,7 +37,7 @@ const ownerRole = roleParts.join(', ');
       </div>
     </header>
 
-    <div class="cine" data-cine data-scene="5" data-state="done" role="group" aria-label={p.stage}>
+    <div class="cine" data-cine data-scene="6" data-state="done" role="group" aria-label={p.stage}>
       <div class="cine__top">
         <ol class="cine__chapters">
           <li class="ch" data-ch="before">
@@ -64,9 +64,13 @@ const ownerRole = roleParts.join(', ');
         <span class="cine__anchor" data-anchor="pos" aria-hidden="true"></span>
         <span class="cine__anchor" data-anchor="stock" aria-hidden="true"></span>
         <!-- Two quieter records from other systems, further back -->
-        <span class="chip" data-chip="pms" aria-hidden="true"><i class="mark mark--pms"></i><b>{f.pms.sys}</b>{f.pms.line}</span>
+        <span class="chip" data-chip="pms" aria-hidden="true">
+          <span class="chip__sys"><i class="mark mark--pms"></i>{f.pms.sys}</span>
+          <span class="chip__fact">{f.pms.line}</span>
+        </span>
         <span class="chip" data-chip="finance" aria-hidden="true">
-          <i class="mark mark--finance"></i><b>{f.finance.sys}</b>{f.finance.rows.map(([k, val]) => `${k} ${val}`).join(' · ')}
+          <span class="chip__sys"><i class="mark mark--finance"></i>{f.finance.sys}</span>
+          <span class="chip__fact">{f.finance.rows.map(([k, val]) => `${k} ${val}`).join(' · ')}</span>
         </span>
 
         <div class="app">
@@ -173,7 +177,7 @@ const ownerRole = roleParts.join(', ');
   /* ── The environment: pearl light, soft architectural shafts, no photograph ── */
   .story {
     position: relative;
-    padding-block: var(--section-y) calc(var(--section-y) * 0.9);
+    padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
     background:
       radial-gradient(80% 60% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
       linear-gradient(180deg, #f7f7f5 0%, #f0f1f2 55%, #e9ebee 100%);
@@ -204,7 +208,7 @@ const ownerRole = roleParts.join(', ');
   }
 
   .story__head h2 {
-    max-width: 13ch;
+    max-width: 18ch;
     font-size: var(--fs-h2);
   }
 
@@ -225,7 +229,7 @@ const ownerRole = roleParts.join(', ');
 
   /* ── Chapters: Before Tyll → With Tyll, each with a fine progress line ── */
   .cine {
-    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3.25rem);
   }
 
   .cine__top {
@@ -306,24 +310,19 @@ const ownerRole = roleParts.join(', ');
     background: var(--fog);
   }
 
-  .cine[data-scene='0'] .ch[data-ch='before'],
   .cine[data-scene='1'] .ch[data-ch='before'] {
     color: var(--ink);
   }
 
-  .cine[data-scene='0'] .ch[data-ch='before'] .ch__k,
   .cine[data-scene='1'] .ch[data-ch='before'] .ch__k {
     color: var(--steel);
   }
 
-  .cine[data-scene='0'] .ch[data-ch='before'] .ch__rail i,
   .cine[data-scene='1'] .ch[data-ch='before'] .ch__rail i {
     background: var(--ink);
   }
 
-  .cine[data-scene='0'] .ch[data-ch='after'],
   .cine[data-scene='1'] .ch[data-ch='after'],
-  .cine[data-scene='0'] .ch[data-ch='after'] .ch__k,
   .cine[data-scene='1'] .ch[data-ch='after'] .ch__k {
     color: var(--fog);
   }
@@ -335,12 +334,12 @@ const ownerRole = roleParts.join(', ');
   }
 
   .cine.is-timed .ch[data-ch='before'] .ch__rail i {
-    animation-duration: 2.6s;
+    animation-duration: 1.6s;
   }
 
   .cine.is-timed .ch[data-ch='after'] .ch__rail i {
-    animation-duration: 6.8s;
-    animation-delay: 2.6s;
+    animation-duration: 7s;
+    animation-delay: 1.6s;
   }
 
   .cine[data-state='paused'] .ch__rail i {
@@ -400,7 +399,7 @@ const ownerRole = roleParts.join(', ');
   .cine__stage {
     position: relative;
     max-width: 1080px;
-    margin: clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem) auto 0;
+    margin: clamp(1.25rem, 1rem + 1vw, 1.75rem) auto 0;
   }
 
   /* A soft contact shadow, as if the window rests just above a pale floor */
@@ -437,38 +436,43 @@ const ownerRole = roleParts.join(', ');
   .chip {
     position: absolute;
     z-index: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 0.9rem;
-    border: 1px solid rgba(200, 205, 212, 0.7);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.72);
-    color: var(--steel);
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.7rem 0.95rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--graphite);
     font-size: 0.8125rem;
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
+    scale: 0.94;
     transform-origin: left top;
-    filter: blur(0.4px);
+    box-shadow: 0 18px 40px -26px rgba(20, 22, 26, 0.28);
     transition:
       opacity 0.9s var(--ease),
-      transform 1.3s var(--ease);
+      transform 1.3s var(--ease),
+      rotate 1.3s var(--ease);
   }
 
-  .chip b {
-    color: var(--graphite);
+  .chip__sys {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--steel);
+    font-size: 0.75rem;
     font-weight: 600;
   }
 
   .chip[data-chip='pms'] {
-    top: 6%;
-    inset-inline-start: 40%;
+    top: 4%;
+    inset-inline-start: 42%;
   }
 
   .chip[data-chip='finance'] {
-    top: 76%;
-    inset-inline-start: 24%;
+    top: 74%;
+    inset-inline-start: 22%;
   }
 
   /* ── The Tyll window, faithful to the demo's look: white panels, quiet lines, amber for what needs review ── */
@@ -738,7 +742,8 @@ const ownerRole = roleParts.join(', ');
       opacity 0.8s var(--ease),
       transform 1.3s var(--ease),
       box-shadow 1.1s var(--ease),
-      background-color 1s var(--ease);
+      background-color 1s var(--ease),
+      rotate 1.3s var(--ease);
   }
 
   .rec__sys {
@@ -883,20 +888,18 @@ const ownerRole = roleParts.join(', ');
     border-radius: 2px 50% 50% 2px;
   }
 
-  /* ── Scenes. Everything above is the final view; these rules hold parts back until their scene. ── */
+  /* ── Scenes. Everything above is the final view (scene 6); these rules hold parts back until their scene. ── */
   .cine.is-instant *,
   .cine.is-instant {
     transition: none !important;
   }
 
-  /* The window and its parts wait for scene 2 */
-  .cine[data-scene='0'] .app__shell,
+  /* 1 · Before Tyll: no window yet */
   .cine[data-scene='1'] .app__shell {
     opacity: 0;
     transform: translateY(24px) scale(0.97);
   }
 
-  .cine[data-scene='0'] .cine__stage::after,
   .cine[data-scene='1'] .cine__stage::after {
     opacity: 0;
   }
@@ -904,6 +907,7 @@ const ownerRole = roleParts.join(', ');
   .app__rail,
   .app__bar,
   .list__head,
+  .list__foot,
   .d__head,
   .d__label,
   .d__next,
@@ -913,7 +917,6 @@ const ownerRole = roleParts.join(', ');
       transform 0.8s var(--ease);
   }
 
-  .cine[data-scene='0'] :is(.app__rail, .app__bar, .list__foot),
   .cine[data-scene='1'] :is(.app__rail, .app__bar, .list__foot) {
     opacity: 0;
   }
@@ -923,28 +926,68 @@ const ownerRole = roleParts.join(', ');
     transition: border-color 0.8s var(--ease);
   }
 
-  .cine:is([data-scene='0'], [data-scene='1']) :is(.app__list, .app__detail) {
+  .cine[data-scene='1'] :is(.app__list, .app__detail) {
     border-color: transparent;
   }
 
-  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2']) :is(.list__head, .row, .d__head, .d__next, .d__caution) {
+  /* The records float apart, each at its own angle and depth, drifting gently */
+  .cine[data-scene='1'] :is(.rec, .chip) {
+    animation: cine-drift 5.5s var(--ease) infinite alternate;
+  }
+
+  .cine[data-scene='1'] .rec {
+    box-shadow:
+      0 1px 2px rgba(20, 22, 26, 0.05),
+      0 30px 60px -28px rgba(20, 22, 26, 0.3);
+  }
+
+  .cine[data-scene='1'] .rec[data-rec='pos'] {
+    rotate: -1.6deg;
+    animation-duration: 6.2s;
+  }
+
+  .cine[data-scene='1'] .rec[data-rec='stock'] {
+    rotate: 1.2deg;
+    animation-delay: -2s;
+  }
+
+  .cine[data-scene='1'] .chip {
+    opacity: 0.85;
+  }
+
+  .cine[data-scene='1'] .chip[data-chip='pms'] {
+    rotate: 1.4deg;
+    animation-duration: 7s;
+    animation-delay: -1s;
+  }
+
+  .cine[data-scene='1'] .chip[data-chip='finance'] {
+    rotate: -1deg;
+    animation-duration: 6.6s;
+    animation-delay: -3s;
+  }
+
+  @keyframes cine-drift {
+    from {
+      translate: 0 0;
+    }
+
+    to {
+      translate: 0 -8px;
+    }
+  }
+
+  /* 2 · The records arrive, still quiet: Tyll has not shown what matters yet */
+  .cine:is([data-scene='1'], [data-scene='2']) :is(.list__head, .row, .d__head) {
     opacity: 0;
     transform: translateY(10px);
   }
 
-  .cine:is([data-scene='0'], [data-scene='1']) .d__head ~ .d__label {
-    opacity: 0;
+  .cine:is([data-scene='2'], [data-scene='3']) .rec {
+    opacity: 0.3;
   }
 
-  .cine[data-scene='3'] :is(.d__next, .d__caution) {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  .cine[data-scene='4'] .d__caution {
-    opacity: 0;
-  }
-
+  /* 3 · The problem first; the other items stay in the background */
   .cine[data-scene='3'] .row {
     transition-delay: calc(var(--n, 0) * 120ms);
   }
@@ -957,53 +1000,48 @@ const ownerRole = roleParts.join(', ');
     --n: 2;
   }
 
-  /* The issue row lights up a beat after it appears */
-  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2']) .row--on {
+  .cine[data-scene='3'] .row:not(.row--on) {
+    opacity: 0.45;
+  }
+
+  .cine:is([data-scene='1'], [data-scene='2']) .row--on {
     border-color: transparent;
     background: transparent;
     box-shadow: none;
   }
 
   .cine[data-scene='3'] .row--on {
-    transition-delay: 0s, 0s, 0.5s, 0.5s, 0.5s;
+    transition-delay: 0s, 0s, 0.4s, 0.4s, 0.4s;
   }
 
-  .cine:is([data-scene='0'], [data-scene='1'], [data-scene='2'], [data-scene='3']) .d__assigned {
+  /* 4 · Then its evidence */
+  .cine:is([data-scene='1'], [data-scene='2'], [data-scene='3']) .d__head ~ .d__label {
+    opacity: 0;
+  }
+
+  .cine[data-scene='4'] .rec[data-rec='pos'] {
+    transition-delay: 0.3s, 0s, 0s, 0s, 0s;
+  }
+
+  /* 5 · Then the next step and who follows up; 6 · the closing note */
+  .cine:is([data-scene='1'], [data-scene='2'], [data-scene='3'], [data-scene='4']) .d__next {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .cine:is([data-scene='1'], [data-scene='2'], [data-scene='3'], [data-scene='4'], [data-scene='5']) .d__caution {
+    opacity: 0;
+  }
+
+  .cine:is([data-scene='1'], [data-scene='2'], [data-scene='3'], [data-scene='4']) .d__assigned {
     opacity: 0;
     transform: scale(0.9);
   }
 
   .d__assigned {
     transition:
-      opacity 0.6s var(--ease) 0.9s,
-      transform 0.6s var(--ease) 0.9s;
-  }
-
-  /* The records: floating apart in scene 1 (positions are set by the script), resting in the window afterwards */
-  .cine[data-scene='0'] .rec {
-    opacity: 0;
-  }
-
-  .cine:is([data-scene='0'], [data-scene='1']) .rec {
-    box-shadow:
-      0 1px 2px rgba(20, 22, 26, 0.05),
-      0 30px 60px -28px rgba(20, 22, 26, 0.3);
-  }
-
-  .cine[data-scene='1'] .rec[data-rec='pos'] {
-    transition-delay: 0.25s;
-  }
-
-  .cine[data-scene='1'] .chip {
-    opacity: 0.9;
-  }
-
-  .cine[data-scene='1'] .chip[data-chip='finance'] {
-    transition-delay: 0.45s;
-  }
-
-  .cine[data-scene='1'] .chip[data-chip='pms'] {
-    transition-delay: 0.6s;
+      opacity 0.6s var(--ease) 0.8s,
+      transform 0.6s var(--ease) 0.8s;
   }
 
   @media (max-width: 1000px) {
@@ -1168,15 +1206,15 @@ const ownerRole = roleParts.join(', ');
 
     // Scene start times (ms) and the moment the final view is complete
     const TIMES: [number, number][] = [
-      [0, 1],
-      [2600, 2],
-      [4300, 3],
-      [6200, 4],
-      [8200, 5],
+      [1600, 2],
+      [3200, 3],
+      [4800, 4],
+      [6300, 5],
+      [7800, 6],
     ];
-    const END = 9400;
+    const END = 8600;
 
-    let scene = 5;
+    let scene = 6;
     let state: 'idle' | 'playing' | 'paused' | 'done' = 'done';
     let elapsed = 0;
     let startedAt = 0;
@@ -1248,8 +1286,8 @@ const ownerRole = roleParts.join(', ');
       elapsed = 0;
       cine.classList.add('is-instant');
       cine.classList.remove('is-timed');
-      scene = 0;
-      cine.dataset.scene = '0';
+      scene = 1;
+      cine.dataset.scene = '1';
       scatter();
       void cine.offsetWidth;
       cine.classList.remove('is-instant');
@@ -1258,11 +1296,7 @@ const ownerRole = roleParts.join(', ');
     const play = () => {
       reset();
       cine.classList.add('is-timed');
-      // The records appear on the next frame, so their entrance is animated
-      requestAnimationFrame(() => {
-        show(1);
-        schedule();
-      });
+      schedule();
     };
 
     const pause = () => {
@@ -1324,7 +1358,7 @@ const ownerRole = roleParts.join(', ');
       recs.forEach((r) => (r.style.transform = ''));
       chips.forEach((c) => (c.style.transform = ''));
       cine.classList.remove('is-timed');
-      show(5);
+      show(6);
       setState('done');
       ctrl.hidden = true;
     });

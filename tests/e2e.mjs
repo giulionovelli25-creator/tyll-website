@@ -91,7 +91,7 @@ for (const lang of LANGS) {
       return { early, end, moved: scrollY > before };
     });
     if (!['0', '1'].includes(story.early.scene) || story.early.state !== 'playing') problems.push(`story did not start from the beginning (${JSON.stringify(story.early)})`);
-    if (!(story.end.scene === '5' && story.end.state === 'done' && story.end.shell > 0.95 && story.end.next > 0.95 && story.end.recs === 2 && story.end.rows === 3)) problems.push(`story end ${JSON.stringify(story.end)}`);
+    if (!(story.end.scene === '6' && story.end.state === 'done' && story.end.shell > 0.95 && story.end.next > 0.95 && story.end.recs === 2 && story.end.rows === 3)) problems.push(`story end ${JSON.stringify(story.end)}`);
     if (!story.moved) problems.push('page did not continue past the story');
     // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
     for (const sel of ['.hero__actions a[data-track="explore_solutions_click"]', '.invite__actions a[data-track="explore_solutions_click"]']) {
@@ -250,7 +250,7 @@ for (const lang of LANGS) {
     await new Promise((r) => setTimeout(r, 10200));
     const out = [];
     cine.querySelectorAll('.app, .rec, .ch, .cine__ctrl').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
-    if (cine.dataset.scene !== '5') out.push(`scene ${cine.dataset.scene}`);
+    if (cine.dataset.scene !== '6') out.push(`scene ${cine.dataset.scene}`);
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
@@ -337,7 +337,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     return { visible: getComputedStyle(btn).display !== 'none', pausedAt, paused, done, again };
   });
   if (!ctl.visible || ctl.paused.state !== 'paused' || ctl.paused.scene !== ctl.pausedAt || ctl.paused.label !== 'Play') p.push(`pause ${JSON.stringify(ctl)}`);
-  if (ctl.done.state !== 'done' || ctl.done.scene !== '5' || ctl.done.label !== 'Replay') p.push(`resume ${JSON.stringify(ctl.done)}`);
+  if (ctl.done.state !== 'done' || ctl.done.scene !== '6' || ctl.done.label !== 'Replay') p.push(`resume ${JSON.stringify(ctl.done)}`);
   if (ctl.again.state !== 'playing' || !['0', '1'].includes(ctl.again.scene)) p.push(`replay ${JSON.stringify(ctl.again)}`);
   // The closing silver wave flows while on screen as one formation: every line changes, and all lines keep the
   // same shape (the gaps between neighbouring lines stay nearly constant along the ribbon)
@@ -599,7 +599,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     toggle: !!document.querySelector('.hero__toggle:not([hidden])'),
   }));
   const still = await page.evaluate(() => { const c = document.querySelector('[data-cine]'); return { scene: c.dataset.scene, ctrl: c.querySelector('[data-ctrl]').hidden, next: getComputedStyle(c.querySelector('.d__next')).opacity, shell: getComputedStyle(c.querySelector('.app__shell')).opacity }; });
-  if (still.scene !== '5' || !still.ctrl || still.next !== '1' || still.shell !== '1') p.push(`story not shown complete under reduced motion: ${JSON.stringify(still)}`);
+  if (still.scene !== '6' || !still.ctrl || still.next !== '1' || still.shell !== '1') p.push(`story not shown complete under reduced motion: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   const wavePaused = await page.evaluate(async () => {
     const path = document.querySelector('.invite__waves path');

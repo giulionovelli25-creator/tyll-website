@@ -16,7 +16,7 @@ const en = {
   },
   cta: {
     newTab: '(opens in a new tab)',
-    book: 'Book a Call →',
+    book: 'Book a Demo →',
     demo: 'Explore Demo →',
     demoLong: 'Explore Interactive Demo →',
     solutions: 'Explore Solutions →',
@@ -77,7 +77,7 @@ const en = {
       source: 'Source',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'A chef garnishing a plated dish with fresh greens in a restaurant kitchen.',
+      photoAlt: 'A hotel receptionist working at the front-desk computer, with the lobby lounge behind her.',
     },
     invite: {
       title: 'See what your hotel could achieve when everything works together.',
@@ -98,7 +98,7 @@ const en = {
     finalTextNoDemo: 'Book a call and we’ll walk you through this part of Tyll in the demo.',
     others: 'Other solutions',
     indexTitle: 'Choose what matters to your hotel.',
-    indexIntro: 'Six areas where Tyll helps teams see what is happening and act on it. Each one has its own short walkthrough.',
+    indexIntro: 'Six areas where Tyll helps your teams see what needs attention and act on it.',
     step: 'Step',
     pause: 'Pause the walkthrough',
     play: 'Play the walkthrough',
@@ -117,7 +117,7 @@ const en = {
   },
   book: {
     title: 'Let’s talk about your hotel.',
-    intro: 'Tell us a little about your property, and we’ll explore how Tyll could help.',
+    intro: 'See how Tyll could work with your hotel’s systems.',
     consentTitle: 'Choose a time in our booking calendar',
     consentText:
       'The calendar is provided by Calendly. When you open it, your browser connects to Calendly, which may process your data in the USA and uses its own services, for example for statistics and spam protection. The details you enter go directly to Calendly to arrange the call.',
@@ -140,14 +140,14 @@ const en = {
     title: 'Frequently asked questions',
     intro: 'Short answers to the questions hotel teams ask us most.',
     more: 'Have another question?',
-    moreText: 'Book a call or email us. We’re happy to go through it with you.',
+    moreText: 'Book a short call or email us. No commitment.',
     items: <FaqItem[]>[
-      { id: 'what', q: 'What is Tyll?', a: ['Tyll helps hotels bring important information, tasks and departments together in one place, so problems are easier to find, understand and resolve.'] },
+      { id: 'what', q: 'What is Tyll?', a: ['Tyll brings your hotel’s information, tasks and departments into one place, so problems are found and resolved sooner.'] },
       { id: 'replace', q: 'Does Tyll replace our existing hotel software?', a: ['No. Tyll is designed to work alongside the systems you already use, such as your POS, property management, stock and accounting software.'] },
       { id: 'departments', q: 'Which departments can Tyll help?', a: ['Restaurants and bars, the kitchen and purchasing, finance, events and banqueting, front office, housekeeping and sales. You decide which ones a pilot covers.'] },
-      { id: 'demo', q: 'What can I see in the interactive demo?', a: ['A simulated hotel group with stock investigations, financial follow-ups, forecasting and purchasing, events and staffing, rooms and guest requests, and sales. It uses fictional hotels, people and figures.'] },
-      { id: 'integrations', q: 'How do integrations work?', a: ['Depending on your systems, information can come in through supported connections or agreed data exports. We confirm what is possible for your hotel before anything is connected, and we don’t claim connections we haven’t confirmed.'] },
-      { id: 'test', q: 'Can we test Tyll at our hotel?', a: ['Yes, we can discuss a focused pilot with you. We agree on one area to start with, the data you can share and how we’ll judge whether it helps. Scope and timing are agreed with you, never assumed.'] },
+      { id: 'demo', q: 'What can I see in the interactive demo?', a: ['A simulated hotel group covering stock, finance, purchasing, events, rooms and sales, with fictional hotels, people and figures.'] },
+      { id: 'integrations', q: 'How do integrations work?', a: ['Through supported connections or agreed data exports. We confirm what’s possible for your hotel before anything is connected.'] },
+      { id: 'test', q: 'Can we test Tyll at our hotel?', a: ['Yes. We can agree a focused pilot: one area to start with, the data you share and how we’ll judge whether it helps.'] },
     ],
   },
   legalPage: {

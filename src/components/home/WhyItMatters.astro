@@ -3,7 +3,7 @@
 // Industry research, never a Tyll result.
 // Side by side, so the photo keeps its natural colour instead of being darkened behind text.
 import { Picture } from 'astro:assets';
-import chef from '../../assets/photos/why-chef.jpg';
+import reception from '../../assets/photos/why-reception.jpg';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -12,12 +12,14 @@ interface Props {
 
 const { lang } = Astro.props;
 const w = t(lang).home.why;
+// The figure counts up when it first comes into view; the suffix (the "+") stays where it is
+const [, count = w.figure, suffix = ''] = w.figure.match(/^(\d+)(.*)$/) ?? [];
 ---
 
 <section class="why" aria-labelledby="why-title">
   <div class="why__photo">
     <Picture
-      src={chef}
+      src={reception}
       alt={w.photoAlt}
       formats={['avif', 'webp']}
       fallbackFormat="jpg"
@@ -32,7 +34,7 @@ const w = t(lang).home.why;
     <div class="why__inner">
       <h2 id="why-title">{w.title}</h2>
       <figure class="why__figure">
-        <p class="why__number" aria-hidden="true"><bdi dir="ltr">{w.figure}</bdi></p>
+        <p class="why__number" aria-hidden="true"><bdi dir="ltr"><span data-count={count}>{count}</span>{suffix}</bdi></p>
         <figcaption>
           <p class="why__text"><span class="visually-hidden">{w.figure}: </span>{w.text}</p>
           <p class="why__context">{w.context}</p>
@@ -69,7 +71,7 @@ const w = t(lang).home.why;
 
   .why__photo :global(img) {
     object-fit: cover;
-    object-position: 50% 45%;
+    object-position: 52% 50%;
   }
 
   /* The text side: warm silver-white, with the Tyll wave as a whisper in the corner */
@@ -156,3 +158,41 @@ const w = t(lang).home.why;
     }
   }
 </style>
+
+<script>
+  // Counts the figure up from 1 the first time it comes into view (about 0.9 s, easing out), once per visit.
+  // While counting, the number keeps the width of its final value, so the "+" beside it never moves.
+  // With reduced motion, or without JavaScript, the final figure simply shows.
+  const el = document.querySelector<HTMLElement>('.why__number [data-count]');
+  if (el && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const target = Number(el.dataset.count);
+    // Measured with the final value in place (and again when counting starts, once the web font has loaded)
+    const hold = () => {
+      el.removeAttribute('style');
+      el.textContent = String(target);
+      const width = el.getBoundingClientRect().width;
+      Object.assign(el.style, { display: 'inline-block', width: `${width}px`, textAlign: 'right' });
+    };
+    hold();
+    el.textContent = '1';
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        hold();
+        el.textContent = '1';
+        const start = performance.now();
+        const step = (now: number) => {
+          const p = Math.min(1, (now - start) / 900);
+          const eased = 1 - (1 - p) ** 3;
+          el.textContent = String(Math.max(1, Math.round(1 + eased * (target - 1))));
+          if (p < 1) requestAnimationFrame(step);
+          else el.removeAttribute('style');
+        };
+        requestAnimationFrame(step);
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+  }
+</script>

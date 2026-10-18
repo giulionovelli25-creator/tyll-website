@@ -5,7 +5,8 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | File | Source | Licence |
 | --- | --- | --- |
 | rooms-suite.jpg | https://unsplash.com/photos/white-bed-with-gray-pillow-p3UWyaujtQo | Unsplash License |
-| why-chef.jpg | https://unsplash.com/photos/chef-garnishing-a-small-dish-with-fresh-greens-Bq44jpoeFf4 | Unsplash License |
+| why-reception.jpg | https://www.pexels.com/photo/professional-receptionist-at-work-in-islamabad-hotel-36817019/ (homepage statistic, added 18 Oct 2026; replaces why-chef.jpg there) | Pexels License (free commercial use, no attribution required) |
+| why-chef.jpg | https://unsplash.com/photos/chef-garnishing-a-small-dish-with-fresh-greens-Bq44jpoeFf4 | Unsplash License (no longer used since 18 Oct 2026) |
 | faq-lounge.jpg | https://unsplash.com/photos/modern-lounge-area-with-contemporary-furniture-and-large-windows-yGEohCLnrl0 | Unsplash License |
 | problem/problem-stock.jpg | https://unsplash.com/photos/a-man-standing-in-a-kitchen-preparing-food-hM6MSq__M0Q | Unsplash License |
 | problem/problem-finance.jpg | https://unsplash.com/photos/a-woman-working-at-a-counter-with-a-computer-HVsYPecRjdw | Unsplash License |
