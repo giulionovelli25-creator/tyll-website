@@ -202,8 +202,31 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
 <style>
   .ex {
     --ring: #b7791f;
+    --ex-gap: clamp(0.75rem, 0.5rem + 0.6vw, 1.125rem);
     display: grid;
-    gap: clamp(1rem, 0.75rem + 0.8vw, 1.5rem);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ex-gap);
+  }
+
+  /* Desktop: tabs, the whole screen and its explanation fit in one view. The screen keeps its proportions and is
+     sized from the height left once the header, tabs, browser bar, explanation and gaps are counted (the script
+     measures the tabs and the tallest explanation). It never gets narrower than 900px, where the demo text would
+     become too small to read; it never gets wider than the column. */
+  @media (min-width: 901px) {
+    .ex {
+      --ex-fit: calc(
+        100svh - var(--header-h) - 1.5rem - var(--ex-tabs, 42px) - 44px - var(--ex-notes, 6.5rem) - var(--ex-gap) * 2
+      );
+      width: min(100%, max(900px, var(--ex-fit) * 1.66));
+      margin-inline: auto;
+    }
+
+    /* The tabs keep one line where the column allows it, running on past the screen's edge rather than wrapping */
+    .ex__parts {
+      width: max-content;
+      /* At most to the column's edge: the screen is centred, so half the spare column width is free on that side */
+      max-width: calc((100% + min(1280px, 100vw - 2 * var(--gut)) - 16px) / 2);
+    }
   }
 
   /* ── The parts to explore ── */
@@ -919,6 +942,21 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
       lastWidth = view.clientWidth;
       render();
     }).observe(view);
+    // The tabs and the tallest explanation decide how much height the screen can have (see the desktop sizing)
+    const notesBox = ex.querySelector<HTMLElement>('.ex__notes')!;
+    // Measured on the next frame and set only when a value changes, so a resize never feeds back into itself
+    let fitFrame = 0;
+    const setVar = (name: string, value: string) => ex.style.getPropertyValue(name) !== value && ex.style.setProperty(name, value);
+    const fit = () => {
+      cancelAnimationFrame(fitFrame);
+      fitFrame = requestAnimationFrame(() => {
+        setVar('--ex-tabs', `${Math.ceil(list.offsetHeight)}px`);
+        setVar('--ex-notes', `${Math.ceil(notesBox.offsetHeight)}px`);
+      });
+    };
+    const fitObserver = new ResizeObserver(fit);
+    fitObserver.observe(list);
+    fitObserver.observe(notesBox);
 
     // ── Viewer: every screen of this solution at full size ──
     const viewer = ex.querySelector<HTMLDialogElement>('.viewer')!;

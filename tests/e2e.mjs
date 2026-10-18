@@ -31,7 +31,11 @@ const PAGES = {
 const ALL = LANGS.flatMap((l) => PAGES[l]);
 
 const results = [];
-const record = (id, name, status, detail = '') => results.push({ id, name, status, detail });
+const record = (id, name, status, detail = '') => {
+  results.push({ id, name, status, detail });
+  // Progress as each check finishes, so a stalled run shows where it stopped
+  console.error(`… ${id} ${status}`);
+};
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
 
@@ -82,7 +86,7 @@ for (const lang of LANGS) {
       const before = scrollY;
       cine.scrollIntoView({ block: 'start', behavior: 'instant' });
       await wait(400);
-      const early = { scene: cine.dataset.scene, state: cine.dataset.state };
+      const early = { scene: cine.dataset.scene, state: cine.dataset.state, pieces: [...cine.querySelectorAll('[data-piece]')].filter((e) => getComputedStyle(e).visibility === 'visible' && +getComputedStyle(e).opacity > 0.9).length };
       await wait(10200);
       const op = (sel) => +getComputedStyle(cine.querySelector(sel)).opacity;
       const end = { scene: cine.dataset.scene, state: cine.dataset.state, shell: op('.app__shell'), next: op('.d__next'), recs: cine.querySelectorAll('[data-rec]').length, rows: cine.querySelectorAll('.row').length };
@@ -90,7 +94,7 @@ for (const lang of LANGS) {
       await wait(200);
       return { early, end, moved: scrollY > before };
     });
-    if (!['0', '1'].includes(story.early.scene) || story.early.state !== 'playing') problems.push(`story did not start from the beginning (${JSON.stringify(story.early)})`);
+    if (!['0', '1'].includes(story.early.scene) || story.early.state !== 'playing' || story.early.pieces !== 4) problems.push(`story did not start from the beginning (${JSON.stringify(story.early)})`);
     if (!(story.end.scene === '6' && story.end.state === 'done' && story.end.shell > 0.95 && story.end.next > 0.95 && story.end.recs === 2 && story.end.rows === 3)) problems.push(`story end ${JSON.stringify(story.end)}`);
     if (!story.moved) problems.push('page did not continue past the story');
     // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
@@ -484,6 +488,37 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     await page.ctx.close();
   }
   record('P', `Product screens fit and stay readable: ${checked} parts across 6 pages, 4 languages, 5 widths`, p.length ? 'FAIL' : 'PASS', p.slice(0, 12).join('; '));
+}
+
+// ── Q: on a 1440 × 900 screen the tabs, the whole product screen and its explanation are seen together ────────
+{
+  const p = [];
+  const page = await freshPage({ width: 1440, height: 900 });
+  for (const url of SOL.en) {
+    await go(page, url);
+    const r = await page.evaluate(async () => {
+      const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+      const ex = document.querySelector('[data-ex]');
+      const tabs = ex.querySelector('.ex__parts');
+      const header = document.querySelector('header').getBoundingClientRect().height;
+      scrollTo({ top: tabs.getBoundingClientRect().top + scrollY - header - 16, behavior: 'instant' });
+      await wait(200);
+      const out = [];
+      for (const [i, tab] of [...ex.querySelectorAll('[role=tab]')].entries()) {
+        tab.click();
+        await wait(700);
+        const note = ex.querySelector('.ex__note.is-on').getBoundingClientRect();
+        const win = ex.querySelector('.ex__window').getBoundingClientRect();
+        if (tabs.getBoundingClientRect().top < header || note.bottom > innerHeight) out.push(`${i}: note ends at ${Math.round(note.bottom)}`);
+        if (Math.abs(win.width / (win.height - 44) - 1.66) > 0.02) out.push(`${i}: screen proportions`);
+      }
+      return { out, scrolled: Math.round(scrollY) };
+    });
+    if (r.out.length) p.push(`${url}: ${r.out.join(', ')}`);
+  }
+  if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
+  await page.ctx.close();
+  record('Q', 'Product explorer fits one 1440 × 900 screen: tabs, screen and explanation', p.length ? 'FAIL' : 'PASS', p.join('; '));
 }
 
 // ── D + E: consent ────────────────────────────────────────────────────────────────────────────────

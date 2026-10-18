@@ -36,7 +36,7 @@ const en = {
       beforeLabel: 'Before Tyll',
       before: 'Information everywhere.',
       afterLabel: 'With Tyll',
-      after: 'Everything important. One place.',
+      after: 'The right information. Already connected.',
       replay: 'Replay',
       pause: 'Pause',
       play: 'Play',

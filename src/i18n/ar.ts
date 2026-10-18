@@ -38,7 +38,7 @@ const ar: Dict = {
       beforeLabel: 'قبل Tyll',
       before: 'المعلومات في كل مكان.',
       afterLabel: 'مع Tyll',
-      after: 'كل ما يهم. في مكان واحد.',
+      after: 'المعلومات الصحيحة. مترابطة مسبقًا.',
       replay: 'إعادة التشغيل',
       pause: 'إيقاف مؤقت',
       play: 'تشغيل',

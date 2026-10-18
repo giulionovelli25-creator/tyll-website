@@ -36,7 +36,7 @@ const de: Dict = {
       beforeLabel: 'Vor Tyll',
       before: 'Informationen überall.',
       afterLabel: 'Mit Tyll',
-      after: 'Alles Wichtige. An einem Ort.',
+      after: 'Die richtigen Informationen. Bereits verbunden.',
       replay: 'Erneut abspielen',
       pause: 'Pause',
       play: 'Abspielen',

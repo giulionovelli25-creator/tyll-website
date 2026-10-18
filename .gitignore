@@ -6,3 +6,6 @@ dist/
 .DS_Store
 .vercel/
 review/
+
+# Scratch scripts for local checks
+tests/tmp/
