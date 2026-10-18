@@ -1,8 +1,9 @@
 ---
 // A solution page tells one operational story:
 //   1. Opening: the photograph of where it happens, the headline and the demo/booking buttons.
-//   2. Context (warm ivory): the problem in one sentence, how Tyll helps in three short lines, and a second
-//      photograph that bleeds to the edge; the side alternates from page to page.
+//   2. Context (warm ivory, one centred column): the problem in one sentence and how Tyll helps as three steps,
+//      beside a second photograph set into the page with rounded corners. The composition is asymmetric (about
+//      58/42) and varies from page to page: the photograph's side, shape and height change.
 //   3. The product (charcoal or light stone): one real demo screen, large, explored part by part.
 //   4. The outcome and the next step, then the other five solutions as photographs.
 import { Picture } from 'astro:assets';
@@ -29,8 +30,11 @@ const name = s.name[lang];
 const demo = demoLink(solution);
 const others = solutionKeys.filter((k) => k !== solution);
 const fill = (text: string) => text.replace('{name}', name);
-// Alternate the photograph's side so the six pages don't share one silhouette
-const photoSide = solutionKeys.indexOf(solution) % 2 === 0 ? 'end' : 'start';
+// Vary the composition so the six pages don't share one silhouette: the photograph's side alternates, and its
+// shape and height follow a three-step cycle
+const order = solutionKeys.indexOf(solution);
+const photoSide = order % 2 === 0 ? 'end' : 'start';
+const variant = order % 3;
 // The Tyll silver wave, the same flowing ribbon as on the homepage; this frame is also the still one
 const wave = ribbon(0.32);
 ---
@@ -77,48 +81,50 @@ const wave = ribbon(0.32);
   </section>
 
   <!-- 2. The problem and how Tyll helps, beside a photograph of where it happens -->
-  <section class:list={['context', `context--photo-${photoSide}`]} aria-labelledby="sol-problem">
-    <div class="context__copy">
-      <p class="context__label">
-        <span class="context__icon" aria-hidden="true"><SolutionIcon name={s.icon} /></span>
-        <span id="sol-problem">{p.problemLabel}</span>
-      </p>
-      <p class="context__problem">{s.problem[lang]}</p>
+  <section class:list={['context', `context--photo-${photoSide}`, `context--v${variant}`]} aria-labelledby="sol-problem" data-rise-group>
+    <div class="wrap context__grid">
+      <div class="context__copy" data-rise>
+        <p class="context__label">
+          <span class="context__icon" aria-hidden="true"><SolutionIcon name={s.icon} /></span>
+          <span id="sol-problem">{p.problemLabel}</span>
+        </p>
+        <p class="context__problem">{s.problem[lang]}</p>
 
-      <h2 class="context__helps-title">{p.helps}</h2>
-      <ul class="helps">
+        <h2 class="context__helps-title">{p.helps}</h2>
+        <ol class="helps">
+          {
+            s.steps.map((st, i) => (
+              <li>
+                <span class="helps__k">{st.label[lang]}</span>
+                <span class="helps__v">{s.helps[lang][i]}</span>
+              </li>
+            ))
+          }
+        </ol>
         {
-          s.steps.map((st, i) => (
-            <li>
-              <span class="helps__k">{st.label[lang]}</span>
-              <span class="helps__v">{s.helps[lang][i]}</span>
-            </li>
-          ))
+          s.proof && (
+            <p class="context__proof">
+              {s.proof.text[lang]} <span class="context__proof-note">{s.proof.context[lang]}</span>{' '}
+              <a href={s.proof.url} target="_blank" rel="noopener">
+                {s.proof.source[lang]}
+              </a>
+            </p>
+          )
         }
-      </ul>
-      {
-        s.proof && (
-          <p class="context__proof">
-            {s.proof.text[lang]} <span class="context__proof-note">{s.proof.context[lang]}</span>{' '}
-            <a href={s.proof.url} target="_blank" rel="noopener">
-              {s.proof.source[lang]}
-            </a>
-          </p>
-        )
-      }
-    </div>
-    <div class="context__photo">
-      <Picture
-        src={s.problemPhoto}
-        alt={s.problemPhotoAlt[lang]}
-        formats={['avif', 'webp']}
-        fallbackFormat="jpg"
-        widths={[640, 960, 1280, 1600]}
-        sizes="(max-width: 900px) 100vw, 46vw"
-        loading="lazy"
-        decoding="async"
-        style={`object-position:${s.problemFocus}`}
-      />
+      </div>
+      <div class="context__photo" data-rise>
+        <Picture
+          src={s.problemPhoto}
+          alt={s.problemPhotoAlt[lang]}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          widths={[640, 960, 1280]}
+          sizes="(max-width: 900px) 92vw, 40vw"
+          loading="lazy"
+          decoding="async"
+          style={`object-position:${s.problemFocus}`}
+        />
+      </div>
     </div>
   </section>
 
@@ -211,7 +217,8 @@ const wave = ribbon(0.32);
     position: relative;
     display: flex;
     align-items: flex-end;
-    min-height: clamp(560px, 82vh, 880px);
+    /* Tall enough for the photograph to set the scene, short enough that the next section shows below it */
+    min-height: clamp(520px, 72vh, 760px);
     overflow: hidden;
     background: var(--ink);
     color: var(--on-dark);
@@ -295,34 +302,64 @@ const wave = ribbon(0.32);
     margin-top: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
   }
 
-  /* 2. Context: warm ivory, the copy aligned to the page grid, the photograph running to the edge */
+  /* 2. Context: warm ivory across the page, the content in the centred column. Copy and photograph sit side by
+     side with space between them (about 58/42); the photograph keeps its own shape and rounded corners. */
   .context {
-    --edge: calc(max(0px, (100vw - var(--wrap)) / 2) + var(--gut));
-    display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-    align-items: stretch;
+    padding-block: clamp(4rem, 2.5rem + 5vw, 7.5rem);
     background: #f5f3ee;
   }
 
-  .context__copy {
-    padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
-    padding-inline: var(--edge) clamp(2rem, 1rem + 4vw, 6rem);
+  .context__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(2.5rem, 1rem + 3.5vw, 4.5rem);
+    align-items: start;
   }
 
   .context--photo-start .context__copy {
     order: 2;
-    padding-inline: clamp(2rem, 1rem + 4vw, 6rem) var(--edge);
+  }
+
+  /* With the photograph first, the columns swap so the copy keeps the wider one */
+  .context--photo-start .context__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   }
 
   .context__photo {
     position: relative;
-    min-height: 100%;
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: #e8e4dc;
+    box-shadow: 0 40px 80px -48px rgba(20, 22, 26, 0.45);
+  }
+
+  /* Page-to-page variation: shape, height and proportion */
+  .context--v1 .context__grid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .context--v1.context--photo-start .context__grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+
+  .context--v1 .context__photo {
+    aspect-ratio: 3 / 4;
+    margin-top: clamp(2rem, 1rem + 4vw, 5.5rem);
+  }
+
+  .context--v2 .context__grid {
+    align-items: center;
+  }
+
+  .context--v2 .context__photo {
+    aspect-ratio: 5 / 6;
   }
 
   .context__photo :global(picture),
   .context__photo :global(img) {
-    position: absolute;
-    inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
   }
@@ -356,37 +393,62 @@ const wave = ribbon(0.32);
   }
 
   .context__problem {
-    max-width: 22ch;
+    max-width: 21ch;
     margin-top: 1.25rem;
     color: var(--ink);
-    font-size: clamp(1.875rem, 1.3rem + 2.2vw, 3.125rem);
+    font-size: clamp(1.875rem, 1.3rem + 2.1vw, 3rem);
     font-weight: 380;
     letter-spacing: -0.032em;
     line-height: 1.1;
   }
 
   .context__helps-title {
-    margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+    margin-top: clamp(2.5rem, 1.75rem + 2.5vw, 3.75rem);
     color: var(--steel);
     font-size: var(--fs-small);
     font-weight: 500;
     letter-spacing: 0;
   }
 
+  /* How Tyll helps: three steps in order, joined by a fine line, each action above its explanation */
   .helps {
     display: grid;
-    max-width: 36rem;
-    margin: 0.75rem 0 0;
+    gap: 1.6rem;
+    max-width: 38rem;
+    margin: 1.25rem 0 0;
     padding: 0;
+    padding-inline: 1.9rem 0;
     list-style: none;
   }
 
   .helps li {
+    position: relative;
     display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr);
-    gap: 0.25rem 1.5rem;
-    padding-block: 1.1rem;
-    border-top: 1px solid rgba(20, 22, 26, 0.12);
+    gap: 0.3rem;
+  }
+
+  /* The step's point on the line */
+  .helps li::before {
+    content: '';
+    position: absolute;
+    top: 0.42rem;
+    inset-inline-start: -1.9rem;
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--steel);
+    border-radius: 50%;
+    background: #f5f3ee;
+  }
+
+  /* The line down to the next step */
+  .helps li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(0.42rem + 12px);
+    bottom: calc(-1.6rem + 0.42rem - 3px);
+    inset-inline-start: calc(-1.9rem + 4px);
+    width: 1px;
+    background: rgba(20, 22, 26, 0.16);
   }
 
   /* Independent research beside the problem, always with its source */
@@ -411,12 +473,33 @@ const wave = ribbon(0.32);
 
   .helps__k {
     color: var(--ink);
+    font-size: 1.0625rem;
     font-weight: 500;
+    line-height: 1.3;
   }
 
   .helps__v {
+    max-width: 34rem;
     color: var(--graphite);
     line-height: 1.55;
+  }
+
+  /* A quiet entrance as the section comes into view (only with JavaScript, and never with reduced motion) */
+  .context.is-rising [data-rise] {
+    opacity: 0;
+    translate: 0 18px;
+    transition:
+      opacity 0.9s var(--ease),
+      translate 0.9s var(--ease);
+  }
+
+  .context.is-rising [data-rise].is-in {
+    opacity: 1;
+    translate: none;
+  }
+
+  .context.is-rising .context__photo {
+    transition-delay: 0.12s;
   }
 
   /* 3. The product */
@@ -444,7 +527,10 @@ const wave = ribbon(0.32);
     padding-inline: var(--gut);
   }
 
+  /* The heading keeps to the page's centred column, like the sections around it */
   .product__head {
+    max-width: var(--wrap);
+    margin-inline: auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 1rem clamp(2rem, 1rem + 4vw, 6rem);
@@ -630,18 +716,23 @@ const wave = ribbon(0.32);
   }
 
   @media (max-width: 900px) {
-    .context {
+    .context__grid,
+    .context--photo-start .context__grid,
+    .context--v1 .context__grid,
+    .context--v1.context--photo-start .context__grid {
       grid-template-columns: minmax(0, 1fr);
+      gap: clamp(2.5rem, 2rem + 3vw, 3.5rem);
     }
 
-    .context__copy,
     .context--photo-start .context__copy {
       order: 0;
-      padding-inline: var(--gut);
     }
 
-    .context__photo {
-      aspect-ratio: 4 / 3;
+    .context__photo,
+    .context--v1 .context__photo,
+    .context--v2 .context__photo {
+      aspect-ratio: 3 / 2;
+      margin-top: 0;
     }
 
     .product__head {
@@ -665,8 +756,11 @@ const wave = ribbon(0.32);
       scroll-snap-align: start;
     }
 
-    .helps li {
-      grid-template-columns: minmax(0, 1fr);
+    .context__photo,
+    .context--v1 .context__photo,
+    .context--v2 .context__photo {
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
     }
   }
 
@@ -706,6 +800,22 @@ const wave = ribbon(0.32);
 
 <script>
   import { ribbon, PERIOD } from '../../scripts/wave';
+
+  // The context section's copy and photograph rise gently into place the first time they are seen
+  const group = document.querySelector<HTMLElement>('[data-rise-group]');
+  if (group && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    group.classList.add('is-rising');
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }),
+      { rootMargin: '0px 0px -12% 0px' },
+    );
+    group.querySelectorAll('[data-rise]').forEach((el) => io.observe(el));
+  }
 
   // The wave flows like the homepage's: redrawn about 30 times a second, only while on screen, and not at all
   // when reduced motion is asked for (the server-rendered frame stays)
