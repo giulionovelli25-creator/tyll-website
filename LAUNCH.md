@@ -19,8 +19,8 @@ All of these are **public** values that end up in the page. They are not secrets
 | Variable | What to put | If empty |
 | --- | --- | --- |
 | `PUBLIC_SITE_URL` | `https://tyll.ai` | defaults to `https://tyll.ai` |
-| `PUBLIC_DEMO_URL` | `https://demo.tyll.ai` once the demo is live | every "Explore demo" and "Try … in the Demo" button is hidden |
-| `PUBLIC_CALENDLY_URL` | `https://calendly.com/besher-asfari-code/new-meeting` (approved by the owner, 15 Oct 2026) | booking page offers email instead |
+| `PUBLIC_DEMO_URL` | `https://demo.tyll.ai` (live; built in as the default since 18 Oct 2026) | only a localhost value hides the demo buttons in production |
+| `PUBLIC_CALENDLY_URL` | `https://calendly.com/besher-asfari-code/new-meeting` (approved by the owner, 15 Oct 2026; built in as the default) | — |
 | `PUBLIC_LINKEDIN_URL` | `https://www.linkedin.com/company/tyll.ai/` (taken from the current site) | left out of footer |
 | `PUBLIC_INSTAGRAM_URL` | official Instagram profile | left out of footer |
 | `PUBLIC_ANALYTICS_PROVIDER` | `ga4` or `plausible` | no statistics, no consent banner for them |
