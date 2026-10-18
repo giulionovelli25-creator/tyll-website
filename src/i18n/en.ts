@@ -179,7 +179,7 @@ const en = {
   footer: {
     solutions: 'Solutions',
     linkedin: 'Follow Tyll on LinkedIn →',
-    tagline: 'One hotel. Many systems. Finally connected.',
+    tagline: 'Less complexity. More clarity. Better hospitality.',
     explore: 'Explore',
     company: 'Company',
     contact: 'Contact',

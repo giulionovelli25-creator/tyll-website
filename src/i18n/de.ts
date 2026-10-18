@@ -179,7 +179,7 @@ const de: Dict = {
   footer: {
     solutions: 'Lösungen',
     linkedin: 'Tyll auf LinkedIn folgen →',
-    tagline: 'Ein Hotel. Viele Systeme. Endlich verbunden.',
+    tagline: 'Weniger Komplexität. Mehr Klarheit. Bessere Gastfreundschaft.',
     explore: 'Entdecken',
     company: 'Unternehmen',
     contact: 'Kontakt',

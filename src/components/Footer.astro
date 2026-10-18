@@ -13,6 +13,10 @@ const { lang, page } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
 const year = new Date().getFullYear();
+// "Book a Demo →": the arrow is set apart so it can move on hover
+const [, bookText = d.cta.book, bookArrow = ''] = d.cta.book.match(/^(.*?)\s*([→←])$/) ?? [];
+// The tagline breaks only between its sentences
+const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
 ---
 
 <footer class="footer on-dark" data-dark>
@@ -21,7 +25,7 @@ const year = new Date().getFullYear();
       <a href={home} class="footer__logo" aria-label="Tyll – home">
         <Logo anim="loop" label="Tyll" />
       </a>
-      <p>{d.footer.tagline}</p>
+      <p>{taglineParts.map((part, i) => <><span class="footer__phrase">{part}</span>{i < taglineParts.length - 1 && ' '}</>)}</p>
       {
         site.social.linkedin && (
           <a class="footer__social" href={site.social.linkedin} target="_blank" rel="noopener" data-track="linkedin_click">
@@ -44,7 +48,9 @@ const year = new Date().getFullYear();
         <h2>{d.footer.contact}</h2>
         <ul>
           <li>
-            <a href={href('book', lang)} data-track="book_call_click" data-track-from="footer">{d.cta.book}</a>
+            <a class="footer__book" href={href('book', lang)} data-track="book_call_click" data-track-from="footer">
+              <span class="footer__book-text">{bookText}</span>{bookArrow && <span class="footer__arrow" aria-hidden="true">{bookArrow}</span>}
+            </a>
           </li>
           {
             site.demoUrl && (
@@ -113,10 +119,14 @@ const year = new Date().getFullYear();
 
   .footer__brand p {
     margin-top: 1.25rem;
-    max-width: 22ch;
+    max-width: 28ch;
     color: var(--on-dark-muted);
     font-size: 1.0625rem;
     line-height: 1.45;
+  }
+
+  .footer__phrase {
+    white-space: nowrap;
   }
 
   .footer__social {
@@ -172,6 +182,46 @@ const year = new Date().getFullYear();
     opacity: 1;
     text-decoration: underline;
     text-underline-offset: 4px;
+  }
+
+  /* The one call to action in the footer: full white, a little heavier, its arrow moving on hover */
+  .footer a.footer__book {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    font-weight: 500;
+    opacity: 1;
+  }
+
+  /* Only the words are underlined on hover, so the arrow moves cleanly */
+  .footer a.footer__book:hover {
+    text-decoration: none;
+  }
+
+  .footer__book:hover .footer__book-text {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .footer__arrow {
+    display: inline-block;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .footer__book:hover .footer__arrow,
+  .footer__book:focus-visible .footer__arrow {
+    transform: translateX(4px);
+  }
+
+  :global([dir='rtl']) .footer__book:hover .footer__arrow,
+  :global([dir='rtl']) .footer__book:focus-visible .footer__arrow {
+    transform: translateX(-4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__arrow {
+      transition: none;
+    }
   }
 
   .footer__base {

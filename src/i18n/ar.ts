@@ -181,7 +181,7 @@ const ar: Dict = {
   footer: {
     solutions: 'الحلول',
     linkedin: 'تابع Tyll على LinkedIn ←',
-    tagline: 'فندق واحد. أنظمة كثيرة. مترابطة أخيرًا.',
+    tagline: 'تعقيد أقل. وضوح أكبر. ضيافة أفضل.',
     explore: 'استكشف',
     company: 'الشركة',
     contact: 'التواصل',

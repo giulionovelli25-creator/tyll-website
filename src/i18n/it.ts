@@ -180,7 +180,7 @@ const it: Dict = {
   footer: {
     solutions: 'Soluzioni',
     linkedin: 'Segui Tyll su LinkedIn →',
-    tagline: 'Un hotel. Tanti sistemi. Finalmente connessi.',
+    tagline: 'Meno complessità. Più chiarezza. Ospitalità migliore.',
     explore: 'Esplora',
     company: 'Azienda',
     contact: 'Contatti',
