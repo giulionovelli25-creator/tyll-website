@@ -78,7 +78,7 @@ const it: Dict = {
       source: 'Fonte',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'Una receptionist d’albergo lavora al computer della reception, con la lounge della hall alle sue spalle.',
+      photoAlt: 'La hall soleggiata di un hotel con archi in legno intagliato, lanterne e una fontana piastrellata che conduce alla vista sul mare.',
     },
     invite: {
       title: 'Scopri cosa può ottenere il tuo hotel quando tutto funziona insieme.',

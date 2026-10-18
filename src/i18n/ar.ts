@@ -79,7 +79,7 @@ const ar: Dict = {
       source: 'المصدر',
       sourceName: 'Hotel Tech Report، جوائز HotelTechAwards لعام 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'موظفة استقبال في فندق تعمل على حاسوب مكتب الاستقبال، وخلفها صالة الردهة.',
+      photoAlt: 'ردهة فندق مشمسة بأقواس خشبية منحوتة وفوانيس ونافورة مكسوّة بالبلاط تمتد نحو إطلالة على البحر.',
     },
     invite: {
       title: 'اكتشف ما يمكن لفندقك تحقيقه عندما يعمل كل شيء معًا.',

@@ -77,7 +77,7 @@ const de: Dict = {
       source: 'Quelle',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'Eine Hotelrezeptionistin arbeitet am Computer der Rezeption, hinter ihr die Lobby-Lounge.',
+      photoAlt: 'Eine sonnige Hotellobby mit geschnitzten Holzbögen, Laternen und einem gefliesten Brunnen mit Blick aufs Meer.',
     },
     invite: {
       title: 'Sehen Sie, was Ihr Hotel erreichen kann, wenn alles zusammenspielt.',

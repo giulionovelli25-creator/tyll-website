@@ -77,7 +77,7 @@ const en = {
       source: 'Source',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'A hotel receptionist working at the front-desk computer, with the lobby lounge behind her.',
+      photoAlt: 'A sunlit hotel lobby with carved wooden arches, lanterns and a tiled fountain leading to a view of the sea.',
     },
     invite: {
       title: 'See what your hotel could achieve when everything works together.',

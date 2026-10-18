@@ -5,7 +5,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | File | Source | Licence |
 | --- | --- | --- |
 | rooms-suite.jpg | https://unsplash.com/photos/white-bed-with-gray-pillow-p3UWyaujtQo | Unsplash License |
-| why-reception.jpg | https://www.pexels.com/photo/professional-receptionist-at-work-in-islamabad-hotel-36817019/ (homepage statistic, added 18 Oct 2026; replaces why-chef.jpg there) | Pexels License (free commercial use, no attribution required) |
+| why-lobby.jpg | https://www.pexels.com/photo/luxurious-hotel-lobby-with-elegant-design-33376434/ (homepage statistic, added 18 Oct 2026; replaces why-reception.jpg) | Pexels License (free commercial use, no attribution required) |
 | why-chef.jpg | https://unsplash.com/photos/chef-garnishing-a-small-dish-with-fresh-greens-Bq44jpoeFf4 | Unsplash License (no longer used since 18 Oct 2026) |
 | faq-lounge.jpg | https://unsplash.com/photos/modern-lounge-area-with-contemporary-furniture-and-large-windows-yGEohCLnrl0 | Unsplash License |
 | problem/problem-stock.jpg | https://unsplash.com/photos/a-man-standing-in-a-kitchen-preparing-food-hM6MSq__M0Q | Unsplash License |
@@ -48,3 +48,4 @@ Removed on 16 Oct 2026: the reception film (`hero-reception.mp4` and its poster)
 ## Font
 
 `public/fonts/noto-sans-arabic-var.woff2` and its nine-glyph subset `noto-sans-arabic-label.woff2` (the word العربية, for the language switch): Noto Sans Arabic (variable, Arabic subset) by Google, SIL Open Font License 1.1, from the Fontsource package @fontsource-variable/noto-sans-arabic 5.2.5.
+Removed on 18 Oct 2026 (no longer used): why-reception.jpg (receptionist at a front-desk computer; replaced by why-lobby.jpg at the owner's request).
