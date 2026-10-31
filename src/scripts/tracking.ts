@@ -3,8 +3,10 @@
 // - Withdrawing consent stops further sending at once and removes the provider's cookies.
 // - Events carry only where a click happened and the page language: never names, emails or form content.
 //
-// Events: book_call_click, explore_demo_click, booking_calendar_opened, booking_started, booking_confirmed,
-// language_changed, video_play, video_pause, faq_opened, email_click.
+// Events: page_view (sent by GA4 itself), book_demo_click (every "Book a Demo" and "Book Your Personalised Demo"
+// button, with `location` saying which one), explore_demo_click (every demo button), email_click (info@tyll.ai),
+// booking_calendar_opened, booking_started, booking_confirmed, language_changed, video_play, video_pause,
+// faq_opened.
 // They come from [data-track] clicks or from `tyll:track` events dispatched by components.
 
 import { site } from '../config/site';
@@ -57,8 +59,12 @@ function startAnalytics() {
       // eslint-disable-next-line prefer-rest-params
       w.dataLayer!.push(arguments);
     };
-    w.gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+    // Google Consent Mode v2: everything denied by default, then only analytics storage granted, because this
+    // runs only after the visitor accepted analytics. Advertising signals stay denied.
+    w.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', functionality_storage: 'denied', personalization_storage: 'denied', security_storage: 'denied' });
+    w.gtag('consent', 'update', { analytics_storage: 'granted' });
     w.gtag('js', new Date());
+    // GA4 sends the page_view event itself with this config call
     w.gtag('config', analyticsId);
     addScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(analyticsId)}`);
   } else if (provider === 'plausible') {

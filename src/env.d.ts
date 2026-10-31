@@ -1,5 +1,6 @@
 interface ImportMetaEnv {
   readonly DEPLOY_ENV: string;
+  readonly BUILD_DATE: string;
   readonly PUBLIC_SITE_URL?: string;
   readonly PUBLIC_DEMO_URL?: string;
   readonly PUBLIC_CALENDLY_URL?: string;

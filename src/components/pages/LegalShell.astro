@@ -31,7 +31,7 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
   <header class="legal__band">
     <div class="wrap legal__band-inner">
       <h1>{title}</h1>
-      <p class="legal__meta">{d.updated}: {updated}. {d.review}</p>
+      <p class="legal__meta">{d.updated}: {updated}.{missing.length > 0 && ` ${d.review}`}</p>
     </div>
   </header>
 

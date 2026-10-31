@@ -27,7 +27,8 @@ try {
   const list = (title, items) => console.log(`\n${title}\n${items.length ? items.map((i) => `  - ${i}`).join('\n') : '  (none)'}`);
   list('Required before going live:', required);
   list('Optional, currently switched off:', optional);
-  console.log('\nAlso needs a person: legal review of the Legal Notice and Privacy pages (all four languages), a native-speaker review of the Arabic and Italian text, and owner approval for the deploy.\n');
+  console.log('\nOn Railway: set DEPLOY_ENV=production on the live service so search engines may index it, and accept Railway\'s data processing agreement (railway.com/legal/dpa) in the dashboard.');
+  console.log('Also needs a person: legal review of the Legal Notice and Privacy pages (all four languages), a native-speaker review of the Arabic and Italian text, and owner approval for the deploy.\n');
   process.exitCode = required.length ? 1 : 0;
 } finally {
   await vite.close();

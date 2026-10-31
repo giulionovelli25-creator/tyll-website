@@ -5,8 +5,7 @@
 // The Arabic and Italian versions are translations of the English and German draft and still need legal review.
 import Base from '../../layouts/Base.astro';
 import LegalShell from './LegalShell.astro';
-import Missing from './Missing.astro';
-import { legal, legalMissing } from '../../config/legal';
+import { legal, legalMissing, operatorNames } from '../../config/legal';
 import { site } from '../../config/site';
 import { t, type Locale } from '../../i18n';
 
@@ -50,17 +49,29 @@ const and = L(' and ', ' und ', ' و', ' e ');
       }
     </p>
     <address>
-      {legal.operator ?? <Missing label={L('Missing: operator name', 'Fehlt: Name des Anbieters', 'ناقص: اسم المشغّل', 'Mancante: nome del gestore')} />}
-      <br />
       {
-        legal.address ? (
-          legal.address.map((l) => <>{l}<br /></>)
-        ) : (
-          <Missing label={L('Missing: postal address', 'Fehlt: Anschrift', 'ناقص: العنوان البريدي', 'Mancante: indirizzo postale')} />
+        operatorNames(lang) && (
+          <>
+            {operatorNames(lang)}
+            {L(
+              ' (founders of Tyll, as private persons)',
+              ' (Gründer von Tyll, als Privatpersonen)',
+              ' (مؤسسو Tyll بصفتهم الشخصية)',
+              ' (fondatori di Tyll, come persone fisiche)',
+            )}
+            <br />
+          </>
         )
       }
-      <br />
-      {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>
+      {
+        legal.address?.map((l) => (
+          <>
+            {l}
+            <br />
+          </>
+        ))
+      }
+      {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} data-track="email_click" data-track-from="privacy" dir="ltr">{legal.email}</a>
     </address>
 
     <h2 id="bases">{L('Legal bases', 'Rechtsgrundlagen', 'الأسس القانونية', 'Basi giuridiche')}</h2>
@@ -130,35 +141,29 @@ const and = L(' and ', ' und ', ' و', ' e ');
     <h2 id="hosting">{L('Hosting and server log files', 'Hosting und Server-Logfiles', 'الاستضافة وسجلات الخادم', 'Hosting e file di log del server')}</h2>
     <p>
       {L('This website is hosted by ', 'Diese Website wird gehostet von ', 'يستضيف هذا الموقع ', 'Questo sito è ospitato da ')}
-      {
-        legal.hosting.name ? (
-          <bdi dir="ltr">{legal.hosting.address ? `${legal.hosting.name}, ${legal.hosting.address}` : legal.hosting.name}</bdi>
-        ) : (
-          <Missing label={L('Missing: hosting provider', 'Fehlt: Hosting-Anbieter', 'ناقص: مزوّد الاستضافة', 'Mancante: fornitore di hosting')} />
-        )
-      }
+      <bdi dir="ltr">{`${legal.hosting.name}, ${legal.hosting.address}`}</bdi>
       {
         L(
-          ', which processes data on our behalf under a data processing agreement (Art. 28 GDPR). Content is delivered through a worldwide network, so servers in the USA may be involved. Transfers to the USA are based on the EU-U.S. Data Privacy Framework (Art. 45 GDPR), in which the provider participates, and on standard contractual clauses (Art. 46(2)(c) GDPR).',
-          ', der die Daten in unserem Auftrag auf Grundlage eines Auftragsverarbeitungsvertrags (Art. 28 DSGVO) verarbeitet. Die Auslieferung erfolgt über ein weltweites Netzwerk, sodass auch Server in den USA beteiligt sein können. Übermittlungen in die USA stützen sich auf das EU-US Data Privacy Framework (Art. 45 DSGVO), an dem der Anbieter teilnimmt, sowie auf Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO).',
-          '، التي تعالج البيانات نيابةً عنا بموجب اتفاقية معالجة بيانات (المادة 28 من GDPR). ويُقدَّم المحتوى عبر شبكة عالمية، لذا قد تشارك خوادم في الولايات المتحدة الأمريكية. وتستند عمليات النقل إلى الولايات المتحدة إلى إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة (المادة 45 من GDPR) الذي يشارك فيه المزوّد، وإلى البنود التعاقدية القياسية (المادة 46 (2) (ج) من GDPR).',
-          ', che tratta i dati per nostro conto sulla base di un accordo sul trattamento dei dati (art. 28 GDPR). I contenuti vengono distribuiti tramite una rete mondiale, quindi possono essere coinvolti server negli Stati Uniti. I trasferimenti verso gli Stati Uniti si basano sull’EU-U.S. Data Privacy Framework (art. 45 GDPR), a cui il fornitore aderisce, e sulle clausole contrattuali standard (art. 46, par. 2, lett. c) GDPR).',
+          ', which processes data on our behalf under a data processing agreement (Art. 28 GDPR).',
+          ', die die Daten in unserem Auftrag auf Grundlage eines Auftragsverarbeitungsvertrags (Art. 28 DSGVO) verarbeitet.',
+          '، التي تعالج البيانات نيابةً عنا بموجب اتفاقية معالجة بيانات (المادة 28 من GDPR).',
+          ', che tratta i dati per nostro conto sulla base di un accordo sul trattamento dei dati (art. 28 GDPR).',
         )
-      }
+      }{' '}
       {
-        !legal.hosting.confirmed && (
-          <>
-            {' '}
-            <Missing
-              label={L(
-                'To confirm: hosting and data processing agreement for this site',
-                'Zu bestätigen: Hosting und Auftragsverarbeitungsvertrag für diese Website',
-                'للتأكيد: الاستضافة واتفاقية معالجة البيانات لهذا الموقع',
-                'Da confermare: hosting e accordo sul trattamento dei dati per questo sito',
-              )}
-            />
-          </>
-        )
+        legal.hosting.euRegion
+          ? L(
+              'The website runs on Railway servers in the EU. Railway is a US company, so access from the USA cannot be ruled out; such transfers are covered by the EU standard contractual clauses (Art. 46(2)(c) GDPR) in Railway’s data processing agreement.',
+              'Die Website läuft auf Servern von Railway in der EU. Railway ist ein US-Unternehmen, daher ist ein Zugriff aus den USA nicht ausgeschlossen; solche Übermittlungen sind durch die EU-Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO) im Auftragsverarbeitungsvertrag von Railway abgesichert.',
+              'يعمل الموقع على خوادم Railway داخل الاتحاد الأوروبي. وRailway شركة أمريكية، لذا لا يمكن استبعاد الوصول من الولايات المتحدة؛ وتغطي هذه العمليات البنودُ التعاقدية القياسية للاتحاد الأوروبي (المادة 46 (2) (ج) من GDPR) الواردة في اتفاقية معالجة البيانات الخاصة بـ Railway.',
+              'Il sito funziona su server di Railway nell’UE. Railway è una società statunitense, quindi non si può escludere un accesso dagli Stati Uniti; tali trasferimenti sono coperti dalle clausole contrattuali standard dell’UE (art. 46, par. 2, lett. c) GDPR) contenute nell’accordo sul trattamento dei dati di Railway.',
+            )
+          : L(
+              'The servers are located in the USA. This transfer to a country outside the EU is based on the standard contractual clauses adopted by the European Commission (Art. 46(2)(c) GDPR), which are part of Railway’s data processing agreement.',
+              'Die Server stehen in den USA. Diese Übermittlung in ein Land außerhalb der EU stützt sich auf die von der Europäischen Kommission erlassenen Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO), die Teil des Auftragsverarbeitungsvertrags von Railway sind.',
+              'تقع الخوادم في الولايات المتحدة الأمريكية. ويستند هذا النقل إلى دولة خارج الاتحاد الأوروبي إلى البنود التعاقدية القياسية التي اعتمدتها المفوضية الأوروبية (المادة 46 (2) (ج) من GDPR)، وهي جزء من اتفاقية معالجة البيانات الخاصة بـ Railway.',
+              'I server si trovano negli Stati Uniti. Questo trasferimento verso un Paese al di fuori dell’UE si basa sulle clausole contrattuali standard adottate dalla Commissione europea (art. 46, par. 2, lett. c) GDPR), che fanno parte dell’accordo sul trattamento dei dati di Railway.',
+            )
       }
     </p>
     <p>
@@ -254,10 +259,34 @@ const and = L(' and ', ' und ', ' و', ' e ');
           </h2>
           <p>
             {L(
-              'With your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG), we use Google Analytics 4 from Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland, to understand how the website is used, for example how often the booking and demo buttons are clicked. Google Analytics sets cookies (such as “_ga”) and processes usage data, including a shortened IP address. Data may be transferred to Google LLC in the USA; this is based on the EU-U.S. Data Privacy Framework (Art. 45 GDPR). We do not send names, email addresses or other personal details to Google.',
-              'Mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG) nutzen wir Google Analytics 4 der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, um zu verstehen, wie die Website genutzt wird, etwa wie oft die Buchungs- und Demo-Schaltflächen angeklickt werden. Google Analytics setzt Cookies (etwa „_ga“) und verarbeitet Nutzungsdaten einschließlich einer gekürzten IP-Adresse. Daten können an Google LLC in den USA übermittelt werden; Grundlage ist das EU-US Data Privacy Framework (Art. 45 DSGVO). Namen, E-Mail-Adressen oder andere persönliche Angaben übermitteln wir nicht an Google.',
-              'بموافقتك (المادة 6 (1) (أ) من GDPR، والمادة 25 (1) من TDDDG)، نستخدم Google Analytics 4 من شركة Google Ireland Limited، Gordon House, Barrow Street, Dublin 4، أيرلندا، لفهم كيفية استخدام الموقع، مثل عدد مرات النقر على زرَّي الحجز والعرض التوضيحي. يضع Google Analytics ملفات تعريف ارتباط (مثل «_ga») ويعالج بيانات الاستخدام، بما في ذلك عنوان IP مختصر. وقد تُنقل البيانات إلى Google LLC في الولايات المتحدة الأمريكية، استنادًا إلى إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة (المادة 45 من GDPR). ولا نرسل إلى Google أي أسماء أو عناوين بريد إلكتروني أو بيانات شخصية أخرى.',
-              'Con il tuo consenso (art. 6, par. 1, lett. a) GDPR, § 25, comma 1, TDDDG) usiamo Google Analytics 4 di Google Ireland Limited, Gordon House, Barrow Street, Dublino 4, Irlanda, per capire come viene usato il sito, ad esempio quante volte vengono cliccati i pulsanti di prenotazione e della demo. Google Analytics imposta cookie (come “_ga”) e tratta dati di utilizzo, incluso un indirizzo IP abbreviato. I dati possono essere trasferiti a Google LLC negli Stati Uniti, sulla base dell’EU-U.S. Data Privacy Framework (art. 45 GDPR). Non inviamo a Google nomi, indirizzi email o altri dati personali.',
+              'Provider and purpose. With your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG), we use Google Analytics 4 from Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland, to understand how the website is used: which pages are viewed and how often the “Book a Demo”, “Explore Demo” and email links are clicked. We do not send names, email addresses or other personal details to Google, and advertising features are switched off.',
+              'Anbieter und Zweck. Mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG) nutzen wir Google Analytics 4 der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, um zu verstehen, wie die Website genutzt wird: welche Seiten aufgerufen werden und wie oft die Schaltflächen „Demo buchen“ und „Demo ansehen“ sowie E-Mail-Links angeklickt werden. Namen, E-Mail-Adressen oder andere persönliche Angaben übermitteln wir nicht an Google; Werbefunktionen sind ausgeschaltet.',
+              'المزوّد والغرض. بموافقتك (المادة 6 (1) (أ) من GDPR، والمادة 25 (1) من TDDDG)، نستخدم Google Analytics 4 من شركة Google Ireland Limited، Gordon House, Barrow Street, Dublin 4، أيرلندا، لفهم كيفية استخدام الموقع: أي الصفحات تُعرض، وعدد مرات النقر على أزرار «احجز عرضًا توضيحيًا» و«استكشف العرض التوضيحي» وروابط البريد الإلكتروني. ولا نرسل إلى Google أي أسماء أو عناوين بريد إلكتروني أو بيانات شخصية أخرى، كما أن ميزات الإعلانات معطّلة.',
+              'Fornitore e finalità. Con il tuo consenso (art. 6, par. 1, lett. a) GDPR, § 25, comma 1, TDDDG) usiamo Google Analytics 4 di Google Ireland Limited, Gordon House, Barrow Street, Dublino 4, Irlanda, per capire come viene usato il sito: quali pagine vengono visualizzate e quante volte vengono cliccati i pulsanti “Prenota una demo” ed “Esplora la demo” e i link email. Non inviamo a Google nomi, indirizzi email o altri dati personali, e le funzioni pubblicitarie sono disattivate.',
+            )}
+          </p>
+          <p>
+            {L(
+              'Cookies. Google Analytics sets two cookies on this website: “_ga”, which distinguishes visitors, and “_ga_<ID>”, which keeps the state of a visit. Both last up to two years. Google uses your IP address to estimate your approximate location and does not store it. Event data is kept for two months in Google Analytics.',
+              'Cookies. Google Analytics setzt auf dieser Website zwei Cookies: „_ga“, das Besucher unterscheidet, und „_ga_<ID>“, das den Stand eines Besuchs speichert. Beide gelten bis zu zwei Jahre. Google nutzt Ihre IP-Adresse, um Ihren ungefähren Standort zu bestimmen, und speichert sie nicht. Ereignisdaten werden in Google Analytics zwei Monate aufbewahrt.',
+              'ملفات تعريف الارتباط. يضع Google Analytics على هذا الموقع ملفَّي تعريف ارتباط: «_ga» الذي يميّز الزوار، و«_ga_<ID>» الذي يحفظ حالة الزيارة. ويبقى كلاهما مدة تصل إلى عامين. وتستخدم Google عنوان IP الخاص بك لتقدير موقعك التقريبي ولا تخزّنه. وتُحفظ بيانات الأحداث في Google Analytics لمدة شهرين.',
+              'Cookie. Google Analytics imposta su questo sito due cookie: “_ga”, che distingue i visitatori, e “_ga_<ID>”, che conserva lo stato di una visita. Entrambi durano fino a due anni. Google usa il tuo indirizzo IP per stimare la tua posizione approssimativa e non lo memorizza. I dati degli eventi vengono conservati in Google Analytics per due mesi.',
+            )}
+          </p>
+          <p>
+            {L(
+              'Transfer to the USA. Data may be transferred to Google LLC in the USA. Google LLC is certified under the EU-U.S. Data Privacy Framework, so the transfer is based on the European Commission’s adequacy decision (Art. 45 GDPR).',
+              'Übermittlung in die USA. Daten können an Google LLC in den USA übermittelt werden. Google LLC ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung stützt sich daher auf den Angemessenheitsbeschluss der Europäischen Kommission (Art. 45 DSGVO).',
+              'النقل إلى الولايات المتحدة. قد تُنقل البيانات إلى Google LLC في الولايات المتحدة الأمريكية. وGoogle LLC معتمدة بموجب إطار خصوصية البيانات بين الاتحاد الأوروبي والولايات المتحدة، لذا يستند النقل إلى قرار الملاءمة الصادر عن المفوضية الأوروبية (المادة 45 من GDPR).',
+              'Trasferimento negli Stati Uniti. I dati possono essere trasferiti a Google LLC negli Stati Uniti. Google LLC è certificata nell’ambito dell’EU-U.S. Data Privacy Framework, quindi il trasferimento si basa sulla decisione di adeguatezza della Commissione europea (art. 45 GDPR).',
+            )}
+          </p>
+          <p>
+            {L(
+              'Withdrawing consent. Google Analytics loads only after you accept it; if you reject it or make no choice, no Google script is loaded and no Google cookies are set. You can withdraw your consent at any time under “Cookie preferences” at the bottom of every page. We then stop Google Analytics at once and delete its cookies.',
+              'Widerruf. Google Analytics wird erst geladen, nachdem Sie zugestimmt haben; lehnen Sie ab oder treffen Sie keine Wahl, wird kein Google-Skript geladen und kein Google-Cookie gesetzt. Sie können Ihre Einwilligung jederzeit unter „Cookie-Einstellungen“ am Ende jeder Seite widerrufen. Wir beenden Google Analytics dann sofort und löschen seine Cookies.',
+              'سحب الموافقة. لا يُحمَّل Google Analytics إلا بعد قبولك؛ وإذا رفضته أو لم تختر شيئًا، فلن يُحمَّل أي برنامج نصي من Google ولن تُوضع أي ملفات تعريف ارتباط من Google. ويمكنك سحب موافقتك في أي وقت عبر «تفضيلات ملفات تعريف الارتباط» أسفل كل صفحة، فنوقف Google Analytics فورًا ونحذف ملفاته.',
+              'Revoca del consenso. Google Analytics viene caricato solo dopo che lo hai accettato; se lo rifiuti o non scegli, non viene caricato alcuno script di Google e non viene impostato alcun cookie di Google. Puoi revocare il consenso in qualsiasi momento da “Preferenze sui cookie” in fondo a ogni pagina: in quel caso fermiamo subito Google Analytics e ne eliminiamo i cookie.',
             )}
           </p>
         </>
@@ -333,23 +362,14 @@ const and = L(' and ', ' und ', ' و', ' e ');
         )
       }
     </p>
-    <p>
-      {L('Retention: ', 'Speicherdauer: ', 'مدة الاحتفاظ: ', 'Conservazione: ')}
-      {
-        legal.enquiryRetention ? (
-          legal.enquiryRetention[lang]
-        ) : (
-          <Missing
-            label={L(
-              'Missing: how long enquiries and booking details are kept',
-              'Fehlt: Speicherdauer für Anfragen und Termindaten',
-              'ناقص: مدة الاحتفاظ بالاستفسارات وبيانات الحجز',
-              'Mancante: per quanto tempo vengono conservate richieste e dati delle prenotazioni',
-            )}
-          />
-        )
-      }
-    </p>
+    {
+      legal.enquiryRetention && (
+        <p>
+          {L('Retention: ', 'Speicherdauer: ', 'مدة الاحتفاظ: ', 'Conservazione: ')}
+          {legal.enquiryRetention[lang]}
+        </p>
+      )
+    }
 
     {
       social.length > 0 && (
@@ -459,7 +479,7 @@ const and = L(' and ', ' und ', ' و', ' e ');
     </ul>
     <p>
       {L('To exercise these rights, email ', 'Um diese Rechte auszuüben, schreiben Sie an ', 'لممارسة هذه الحقوق، راسلنا على ', 'Per esercitare questi diritti, scrivi a ')}
-      <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>.
+      <a href={`mailto:${legal.email}`} data-track="email_click" data-track-from="privacy" dir="ltr">{legal.email}</a>.
       {
         L(
           ' You can also lodge a complaint with a data protection supervisory authority, in particular in the EU member state where you live or work, or where you believe an infringement took place (Art. 77 GDPR).',

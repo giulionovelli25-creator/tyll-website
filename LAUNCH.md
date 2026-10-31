@@ -29,7 +29,7 @@ All of these are **public** values that end up in the page. They are not secrets
 
 The privacy policy and cookie banner adjust themselves to these settings. Set them for **Production** and redeploy.
 
-Search engines may index **only** the production deployment (`VERCEL_ENV=production`). Every preview and local build is `noindex` with `Disallow: /` in robots.txt, so previews never compete with the real site.
+Search engines may index **only** the production deployment: on Railway, set `DEPLOY_ENV=production` on the live service (on Vercel, `VERCEL_ENV=production` is set automatically). Every preview and local build is `noindex` with `Disallow: /` in robots.txt, so previews never compete with the real site.
 
 Each solution page's demo button opens a specific area of the demo. The paths are kept in `src/config/demo.ts` (for example Stock & Waste → `/stock?tab=where`). They are real demo routes, and the demo keeps them through sign-in.
 

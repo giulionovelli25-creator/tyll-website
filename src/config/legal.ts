@@ -1,6 +1,12 @@
-// Legal details for the Legal Notice and Privacy pages. Nothing here may be guessed: leave a value null
-// until the owner supplies it. Missing required values are listed on the pages themselves and by
-// `npm run launch-check`, and the pages stay out of search results until they are complete.
+// Legal details for the Legal Notice and Privacy pages: the ONE place for the operators' names and address.
+// Nothing here may be guessed. Each TODO stays empty (null or []) until the owner supplies it. While any TODO is
+// open, the legal pages show a "not complete yet" box, are left out of the sitemap, carry noindex, and the build
+// prints a loud warning; the missing values themselves are simply not shown (no placeholder text is published).
+//
+// Tyll is not a registered company yet. The site is operated by the founders as private persons, so the Legal
+// Notice (§ 5 DDG) names them and a postal address where they can receive mail. The fields that only apply to a
+// registered company (legal form, legal representative, commercial register court and number, VAT ID) were
+// removed on 31 Oct 2026; they come back here, and on the Legal Notice, once the company is registered.
 
 import { site } from './site';
 import type { Locale } from '../i18n/routes';
@@ -8,61 +14,70 @@ import type { Locale } from '../i18n/routes';
 type Text = Record<Locale, string>;
 
 export const legal = {
+  /** Full names of the founders who operate the site, as private persons (owner, 31 Oct 2026). */
+  operators: ['Giulio Novelli', 'Pawel Gruca', 'Fynn Kopitz', 'Bisher Asfari'] as string[],
   /**
-   * Country where the operating company is registered. The Legal Notice and Privacy Policy are drafted for a
-   * German operator (DDG, MStV, UStG, TDDDG); if the company is registered elsewhere, both must be reworked by a
-   * lawyer for that jurisdiction.
+   * Postal address where the operators can receive mail, one line per entry. For now the owner chose CODE University
+   * of Applied Sciences in Berlin (address from the imprint on code.berlin, checked 31 Oct 2026). Replace it with the
+   * operators' own address as soon as possible: mail sent here must actually reach them.
    */
-  country: null as string | null,
-  /** Registered company name with legal form (e.g. "Tyll GmbH"), or the full name of the person operating the site. */
-  operator: null as string | null,
-  /** Postal address lines for service of documents. A P.O. box is not enough. */
-  address: null as string[] | null,
-  /** Managing director(s) or other legal representative. Only for companies. */
-  representative: null as string | null,
-  /** Commercial register court and number, if registered (e.g. "Amtsgericht Berlin-Charlottenburg, HRB 000000"). */
-  register: null as string | null,
-  /** VAT identification number under § 27a UStG, if one has been issued. */
-  vatId: null as string | null,
-  /** Person responsible for editorial content under § 18 (2) MStV, with address if different. */
-  contentResponsible: null as string | null,
+  address: ['c/o CODE University of Applied Sciences', 'Donaustraße 44', '12043 Berlin', 'Germany'] as string[] | null,
+  /** Person responsible for editorial content under § 18 (2) MStV (owner, 31 Oct 2026). Their address is the one above. */
+  contentResponsible: 'Giulio Novelli' as string | null,
   email: site.email,
   /** Optional phone number. */
   phone: null as string | null,
 
-  /** Website hosting provider and whether a data processing agreement is in place for this site. */
+  /**
+   * Hosting provider. Railway Corporation's address is from its Data Processing Addendum (railway.com/legal/dpa,
+   * Exhibit B), checked 31 Oct 2026. Its DPA bases EU transfers to the US on the EU-U.S. Data Privacy Framework
+   * where the recipient is certified, otherwise on the EU standard contractual clauses (Decision 2021/914);
+   * Railway was not found on the Data Privacy Framework list, so the policy names the standard contractual clauses.
+   * The DPA must be accepted in the Railway dashboard (DocuSign form linked from the DPA).
+   */
   hosting: {
-    name: 'Vercel Inc.' as string | null,
-    // From vercel.com/legal/privacy-policy, checked 15 Oct 2026. The live site still shows an older address.
-    address: '440 N Barranca Avenue #4133, Covina, CA 91723, USA' as string | null,
-    /** Set to true once this site is deployed on Vercel and the data processing agreement is confirmed. */
-    confirmed: false,
+    name: 'Railway Corporation',
+    address: '548 Market St PMB 68956, San Francisco, CA 94104, USA',
+    /** The Railway service runs in the "US West" region; set to true if it moves to an EU region (EU West, Amsterdam). */
+    euRegion: false,
   },
-  /** How long booking enquiries and emails are kept after the conversation, in plain words. */
-  enquiryRetention: null as Text | null,
-  /** Date of the current version of the legal pages. */
-  updated: '2026-10-16',
+  /** How long booking enquiries and emails are kept (owner, 31 Oct 2026: 12 months after the last contact). */
+  enquiryRetention: {
+    en: 'We delete your enquiry and our correspondence 12 months after our last contact, unless the law requires us to keep it longer.',
+    de: 'Wir löschen Ihre Anfrage und unsere Korrespondenz 12 Monate nach unserem letzten Kontakt, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.',
+    ar: 'نحذف استفسارك ومراسلاتنا بعد 12 شهرًا من آخر تواصل بيننا، ما لم يُلزمنا القانون بالاحتفاظ بها مدة أطول.',
+    it: 'Cancelliamo la tua richiesta e la nostra corrispondenza 12 mesi dopo il nostro ultimo contatto, salvo che la legge ci imponga di conservarle più a lungo.',
+  } as Text | null,
+  /** Date of the current version of the legal pages: the day the site was built and deployed. */
+  updated: import.meta.env.BUILD_DATE as string,
 };
+
+/** The operators' names as one phrase in the page language ("A and B"), or undefined while the TODO is open. */
+export function operatorNames(lang: Locale): string | undefined {
+  const names = legal.operators;
+  if (!names.length) return undefined;
+  const and = { en: ' and ', de: ' und ', ar: ' و', it: ' e ' }[lang];
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')}${and}${names.at(-1)}` : names[0];
+}
 
 export type MissingItem = { key: string } & Text;
 
-/** Required details that are still missing. Optional ones (register, VAT ID, phone) are listed as "if applicable". */
+/** Required details that are still missing (the open TODOs above). */
 export function legalMissing(): MissingItem[] {
   const m: MissingItem[] = [];
-  if (!legal.country)
-    m.push({ key: 'country', en: 'Country where the operating company is registered (these pages are drafted for Germany; another country needs different legal texts)', de: 'Land, in dem das betreibende Unternehmen eingetragen ist (diese Seiten sind für Deutschland entworfen; ein anderes Land erfordert andere Rechtstexte)', ar: 'الدولة المسجّلة فيها الشركة المشغّلة (صيغت هذه الصفحات لألمانيا؛ وتتطلب دولة أخرى نصوصًا قانونية مختلفة)', it: 'Paese in cui è registrata la società che gestisce il sito (queste pagine sono redatte per la Germania; un altro Paese richiede testi legali diversi)' });
-  if (!legal.operator)
-    m.push({ key: 'operator', en: 'Name of the operator: registered company name and legal form, or full name of the person', de: 'Name des Anbieters: Firma mit Rechtsform oder vollständiger Name der Person', ar: 'اسم المشغّل: الاسم التجاري المسجّل والشكل القانوني، أو الاسم الكامل للشخص', it: 'Nome del gestore: ragione sociale con forma giuridica, oppure nome completo della persona' });
-  if (!legal.address) m.push({ key: 'address', en: 'Postal address of the operator', de: 'Ladungsfähige Anschrift des Anbieters', ar: 'العنوان البريدي للمشغّل', it: 'Indirizzo postale del gestore' });
-  if (!legal.representative)
-    m.push({ key: 'representative', en: 'Legal representative (e.g. managing director), if the operator is a company', de: 'Vertretungsberechtigte Person (z. B. Geschäftsführung), falls der Anbieter eine Gesellschaft ist', ar: 'الممثل القانوني (مثل المدير التنفيذي)، إذا كان المشغّل شركة', it: 'Rappresentante legale (ad es. amministratore), se il gestore è una società' });
-  if (!legal.register) m.push({ key: 'register', en: 'Commercial register court and number, if registered', de: 'Registergericht und Registernummer, falls eingetragen', ar: 'محكمة السجل التجاري ورقم القيد، إن وُجد تسجيل', it: 'Tribunale del registro delle imprese e numero di iscrizione, se iscritto' });
-  if (!legal.vatId) m.push({ key: 'vatId', en: 'VAT identification number, if one exists', de: 'Umsatzsteuer-Identifikationsnummer, falls vorhanden', ar: 'رقم التعريف الضريبي لضريبة القيمة المضافة، إن وُجد', it: 'Partita IVA, se esistente' });
+  if (!legal.operators.length)
+    m.push({ key: 'operators', en: 'Full names of the founders who operate the site', de: 'Vollständige Namen der Gründer, die die Website betreiben', ar: 'الأسماء الكاملة للمؤسسين الذين يشغّلون الموقع', it: 'Nomi completi dei fondatori che gestiscono il sito' });
+  if (!legal.address?.length) m.push({ key: 'address', en: 'Postal address where the operators can receive mail', de: 'Ladungsfähige Anschrift der Betreiber', ar: 'العنوان البريدي الذي يتلقى فيه المشغّلون البريد', it: 'Indirizzo postale presso cui i gestori ricevono la posta' });
   if (!legal.contentResponsible)
     m.push({ key: 'contentResponsible', en: 'Person responsible for content under § 18 (2) MStV', de: 'Verantwortliche Person nach § 18 Abs. 2 MStV', ar: 'الشخص المسؤول عن المحتوى بموجب المادة 18 (2) من MStV', it: 'Persona responsabile dei contenuti ai sensi del § 18 (2) MStV' });
-  if (!legal.hosting.confirmed || !legal.hosting.address)
-    m.push({ key: 'hosting', en: 'Confirm that this site is hosted on Vercel under a data processing agreement', de: 'Bestätigen, dass diese Website bei Vercel mit Auftragsverarbeitungsvertrag gehostet wird', ar: 'تأكيد أن هذا الموقع مستضاف لدى Vercel بموجب اتفاقية معالجة بيانات', it: 'Confermare che il sito è ospitato su Vercel con un accordo sul trattamento dei dati' });
   if (!legal.enquiryRetention)
     m.push({ key: 'retention', en: 'How long booking enquiries and emails are kept', de: 'Wie lange Terminanfragen und E-Mails gespeichert werden', ar: 'مدة الاحتفاظ بطلبات الحجز ورسائل البريد الإلكتروني', it: 'Per quanto tempo vengono conservate le richieste di appuntamento e le email' });
   return m;
+}
+
+// A loud warning in every build while a TODO is open, so an incomplete legal notice is never deployed unnoticed
+const open = legalMissing();
+if (open.length && import.meta.env.PROD) {
+  const line = '!'.repeat(78);
+  console.warn(`\n${line}\n  LEGAL PAGES INCOMPLETE: fill in the TODOs in src/config/legal.ts\n${open.map((o) => `  - ${o.en}`).join('\n')}\n${line}\n`);
 }

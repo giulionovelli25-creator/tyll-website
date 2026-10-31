@@ -1,5 +1,6 @@
 ---
-// Vercel redirects "/" to "/en/" before this page is reached (vercel.json); this covers other hosts.
+// "/" forwards to the English homepage. The instant refresh and the canonical link tell search engines that
+// /en/ is the page to index, so this one needs no robots tag of its own.
 ---
 
 <!doctype html>
@@ -8,7 +9,6 @@
     <meta charset="utf-8" />
     <title>Tyll</title>
     <meta http-equiv="refresh" content="0;url=/en/" />
-    <meta name="robots" content="noindex" />
     <link rel="canonical" href="/en/" />
   </head>
   <body><a href="/en/">Tyll</a></body>

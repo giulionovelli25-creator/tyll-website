@@ -68,7 +68,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
           </a>
         )
       }
-      <a class="btn btn--solid btn--sm header__book" href={href('book', lang)} data-track="book_call_click" data-track-from="header">
+      <a class="btn btn--solid btn--sm header__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="header">
         {d.cta.book}
       </a>
       <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -136,7 +136,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   <div class="mobile-menu" id="mobile-menu" hidden>
     <nav class="wrap" aria-label={d.nav.label}>
       <div class="mobile-menu__actions">
-        <a class="btn btn--solid" href={href('book', lang)} data-track="book_call_click" data-track-from="menu">{d.cta.book}</a>
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_demo_click" data-track-from="menu">{d.cta.book}</a>
         {
           site.demoUrl && (
             <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">

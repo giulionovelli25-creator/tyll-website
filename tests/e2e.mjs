@@ -125,7 +125,7 @@ for (const lang of LANGS) {
         h1: document.querySelectorAll('h1').length,
         steps: document.querySelectorAll('[data-ex] [role=tab]').length,
         demo: [...document.querySelectorAll('main a[data-track="explore_demo_click"]')].map((a) => a.getAttribute('href')),
-        book: !!document.querySelector('main a[data-track="book_call_click"]'),
+        book: !!document.querySelector('main a[data-track="book_demo_click"]'),
       }));
       if (sol.path !== url || sol.h1 !== 1 || sol.steps < 4 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
       if (sol.demo.length && sol.demo.some((h) => !new URL(h).search && !new URL(h).pathname.match(/\/\w/))) problems.push(`${url}: demo link without a solution route`);
@@ -136,7 +136,7 @@ for (const lang of LANGS) {
     }
     await go(page, `/${lang}/`);
     // Book a Call from the header lands on the booking page
-    await Promise.all([page.waitForNavigation(), page.click('.header__end a[data-track="book_call_click"]')]);
+    await Promise.all([page.waitForNavigation(), page.click('.header__end a[data-track="book_demo_click"]')]);
     if (page.url() !== `${BASE}${PAGES[lang][1]}`) problems.push(`Book a Call went to ${page.url()}`);
     // Every page in this language: right lang and dir, all four hreflang links, language switch to the counterpart, no errors
     const other = LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length];
@@ -207,7 +207,7 @@ for (const lang of LANGS) {
     if (w.clipped.length) problems.push(`${p} clipped: ${w.clipped.join(' | ')}`);
   }
   await go(page, '/de/');
-  const bookVisible = await page.$eval('.header__end > a[data-track="book_call_click"]', (a) => { const r = a.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth; });
+  const bookVisible = await page.$eval('.header__end > a[data-track="book_demo_click"]', (a) => { const r = a.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth; });
   if (!bookVisible) problems.push('Book a Call not visible in the mobile header');
   await page.click('.header__burger');
   await sleep(300);

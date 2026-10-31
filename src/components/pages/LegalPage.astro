@@ -1,22 +1,24 @@
 ---
 import Base from '../../layouts/Base.astro';
 import LegalShell from './LegalShell.astro';
-import Missing from './Missing.astro';
-import { legal, legalMissing } from '../../config/legal';
+import { legal, legalMissing, operatorNames } from '../../config/legal';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
 }
 
-// German law (DDG, MStV, UStG) governs this notice, so those references stay as they are in every language.
+// German law (DDG, MStV) governs this notice, so those references stay as they are in every language.
 // The Arabic and Italian versions are translations of the English and German draft and still need legal review.
+// Tyll is not a registered company yet: the founders operate the site as private persons, so the notice names them.
+// Register court and number, VAT ID and a company's legal representative are left out until the company is
+// registered; then they come back here (and in src/config/legal.ts).
+// A detail that has not been supplied yet is simply not shown; the page's "not complete yet" box lists it instead.
 const { lang } = Astro.props;
 const d = t(lang);
 const L = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it })[lang];
 const incomplete = legalMissing().length > 0;
-const missWord = L('Missing', 'Fehlt', 'ناقص', 'Mancante');
-const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: ${L(en, de, ar, it)}`;
+const operators = operatorNames(lang);
 ---
 
 <Base lang={lang} page="legal" title={d.meta.legalTitle} description={d.meta.legalDescription} noindex={incomplete}>
@@ -32,81 +34,62 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
       }
     </h2>
     <dl class="facts">
-      <div>
-        <dt>{L('Operator', 'Anbieter', 'المشغّل', 'Gestore')}</dt>
-        <dd>{legal.operator ?? <Missing label={miss('operator name and legal form', 'Name und Rechtsform des Anbieters', 'اسم المشغّل وشكله القانوني', 'nome e forma giuridica del gestore')} />}</dd>
-      </div>
-      <div>
-        <dt>{L('Address', 'Anschrift', 'العنوان', 'Indirizzo')}</dt>
-        <dd>
-          <address>
-            {
-              legal.address ? (
-                legal.address.map((l, i) => <>{i > 0 && <br />}{l}</>)
-              ) : (
-                <Missing label={miss('postal address', 'Anschrift', 'العنوان البريدي', 'indirizzo postale')} />
-              )
-            }
-          </address>
-        </dd>
-      </div>
-      <div>
-        <dt>{L('Represented by', 'Vertreten durch', 'يمثّلها', 'Rappresentata da')}</dt>
-        <dd>
-          {
-            legal.representative ?? (
-              <Missing
-                label={miss(
-                  'legal representative, if a company',
-                  'Vertretung, falls Gesellschaft',
-                  'الممثل القانوني، إذا كان المشغّل شركة',
-                  'rappresentante legale, se società',
+      {
+        operators && (
+          <div>
+            <dt>{L('Operated by', 'Betrieben von', 'يشغّل الموقع', 'Gestito da')}</dt>
+            <dd>
+              {operators}
+              <span class="facts__note">
+                {L(
+                  'Founders of Tyll, as private persons. Tyll is not yet a registered company.',
+                  'Gründer von Tyll, als Privatpersonen. Tyll ist noch keine eingetragene Gesellschaft.',
+                  'مؤسسو Tyll بصفتهم الشخصية. ولم تُسجَّل Tyll بعد كشركة.',
+                  'Fondatori di Tyll, come persone fisiche. Tyll non è ancora una società registrata.',
                 )}
-              />
-            )
-          }
-        </dd>
-      </div>
+              </span>
+            </dd>
+          </div>
+        )
+      }
+      {
+        legal.address?.length && (
+          <div>
+            <dt>{L('Postal address', 'Anschrift', 'العنوان البريدي', 'Indirizzo postale')}</dt>
+            <dd>
+              <address>
+                {legal.address.map((l, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {l}
+                  </>
+                ))}
+              </address>
+            </dd>
+          </div>
+        )
+      }
       <div>
         <dt>{L('Contact', 'Kontakt', 'التواصل', 'Contatti')}</dt>
         <dd>
-          {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} dir="ltr">{legal.email}</a>
+          {L('Email', 'E-Mail', 'البريد الإلكتروني', 'Email')}: <a href={`mailto:${legal.email}`} data-track="email_click" data-track-from="legal" dir="ltr">{legal.email}</a>
           {legal.phone && <><br />{L('Phone', 'Telefon', 'الهاتف', 'Telefono')}: <span dir="ltr">{legal.phone}</span></>}
         </dd>
       </div>
-      <div>
-        <dt>{L('Register entry', 'Registereintrag', 'القيد في السجل التجاري', 'Iscrizione al registro delle imprese')}</dt>
-        <dd>
-          {
-            legal.register ?? (
-              <Missing
-                label={miss(
-                  'register court and number, if registered',
-                  'Registergericht und -nummer, falls eingetragen',
-                  'محكمة السجل ورقم القيد، إن وُجد تسجيل',
-                  'tribunale e numero di iscrizione, se iscritta',
-                )}
-              />
-            )
-          }
-        </dd>
-      </div>
-      <div>
-        <dt>
-          {L('VAT ID', 'Umsatzsteuer-ID', 'رقم ضريبة القيمة المضافة', 'Partita IVA')}
-          <span class="facts__law">{L('§ 27a UStG', '§ 27a UStG', 'المادة 27a من UStG', '§ 27a UStG')}</span>
-        </dt>
-        <dd>{legal.vatId ?? <Missing label={miss('VAT ID, if one exists', 'USt-IdNr., falls vorhanden', 'الرقم الضريبي، إن وُجد', 'partita IVA, se esistente')} />}</dd>
-      </div>
-      <div>
-        <dt>
-          {L('Responsible for content', 'Verantwortlich für den Inhalt', 'المسؤول عن المحتوى', 'Responsabile dei contenuti')}
-          <span class="facts__law">{L('§ 18 (2) MStV', '§ 18 Abs. 2 MStV', 'المادة 18 (2) من MStV', '§ 18 (2) MStV')}</span>
-        </dt>
-        <dd>
-          {legal.contentResponsible ?? <Missing label={miss('responsible person and address', 'verantwortliche Person mit Anschrift', 'الشخص المسؤول وعنوانه', 'persona responsabile e indirizzo')} />}
-        </dd>
-      </div>
+      {
+        legal.contentResponsible && (
+          <div>
+            <dt>
+              {L('Responsible for content', 'Verantwortlich für den Inhalt', 'المسؤول عن المحتوى', 'Responsabile dei contenuti')}
+              <span class="facts__law">{L('§ 18 (2) MStV', '§ 18 Abs. 2 MStV', 'المادة 18 (2) من MStV', '§ 18 (2) MStV')}</span>
+            </dt>
+            <dd>
+              {legal.contentResponsible}
+              <span class="facts__note">{L('Address as above.', 'Anschrift wie oben.', 'العنوان كما ورد أعلاه.', 'Indirizzo come sopra.')}</span>
+            </dd>
+          </div>
+        )
+      }
     </dl>
 
     <h2 id="disputes">{L('Consumer dispute resolution', 'Verbraucherstreitbeilegung', 'تسوية نزاعات المستهلكين', 'Risoluzione delle controversie dei consumatori')}</h2>
@@ -178,7 +161,8 @@ const miss = (en: string, de: string, ar: string, it: string) => `${missWord}: $
     font-weight: 500;
   }
 
-  .facts__law {
+  .facts__law,
+  .facts__note {
     display: block;
     color: var(--steel);
     font-size: var(--fs-small);
