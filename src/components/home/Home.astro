@@ -38,17 +38,7 @@ const schema = {
   <Hero lang={lang} />
   <AvailableNow lang={lang} />
   <ConnectStory lang={lang} />
-  <WorksWith lang={lang} />
   <WhyItMatters lang={lang} />
+  <WorksWith lang={lang} />
   <Invitation lang={lang} />
 </Base>
-
-<style is:global>
-  /* The 10+ finding keeps a full screen on desktop. Scroll snapping was tried and removed: next to the story
-     it pulled the page past the end of the animation. */
-  @media (min-width: 1024px) and (min-height: 700px) {
-    .why {
-      min-height: 100svh;
-    }
-  }
-</style>

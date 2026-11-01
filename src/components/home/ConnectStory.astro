@@ -30,7 +30,7 @@ const ownerRole = roleParts.join(', ');
 const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/) ?? [];
 ---
 
-<section class="story" id="story" aria-labelledby="story-title" data-story>
+<section class="story on-dark" id="story" aria-labelledby="story-title" data-story data-dark>
   <div class="story__light" aria-hidden="true"></div>
   <div class="wrap">
     <header class="story__head">
@@ -218,12 +218,18 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
 
 <style>
   /* ── The environment: pearl light, soft architectural shafts, no photograph ── */
+  /* Night blue, the one deep colour on the site: the white records and the amber finding stand out against it */
   .story {
+    --ch-on: #ffffff;
+    --ch-off: rgba(244, 245, 247, 0.48);
+    --ch-k: rgba(244, 245, 247, 0.72);
     position: relative;
     padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
     background:
-      radial-gradient(80% 60% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
-      linear-gradient(180deg, #f7f7f5 0%, #f0f1f2 55%, #e9ebee 100%);
+      radial-gradient(60% 50% at 82% 8%, rgba(92, 138, 204, 0.3) 0%, transparent 70%),
+      radial-gradient(50% 45% at 6% 96%, rgba(232, 180, 92, 0.12) 0%, transparent 70%),
+      linear-gradient(170deg, #0d1626 0%, #14233c 58%, #0f1a2d 100%);
+    color: var(--on-dark);
     overflow: hidden;
     isolation: isolate;
   }
@@ -240,14 +246,7 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     );
     -webkit-mask-image: radial-gradient(70% 60% at 62% 45%, #000 0%, transparent 75%);
     mask-image: radial-gradient(70% 60% at 62% 45%, #000 0%, transparent 75%);
-    opacity: 0.8;
-  }
-
-  /* Heading, chapters and stage share one column, so their edges line up */
-  .story__head,
-  .cine {
-    max-width: 1080px;
-    margin-inline: auto;
+    opacity: 0.05;
   }
 
   .story__head {
@@ -258,13 +257,14 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
   }
 
   .story__head h2 {
-    max-width: 18ch;
+    max-width: 16ch;
+    color: #fff;
     font-size: var(--fs-h2);
   }
 
   .story__intro > p:first-child {
     max-width: 34rem;
-    color: var(--steel);
+    color: rgba(244, 245, 247, 0.78);
     font-size: var(--fs-lead);
     line-height: 1.55;
   }
@@ -295,7 +295,7 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     display: grid;
     align-content: end;
     gap: 0.3rem;
-    color: var(--fog);
+    color: var(--ch-off);
   }
 
   .ch__k {
@@ -322,14 +322,14 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     position: relative;
     height: 1px;
     margin-top: 0.7rem;
-    background: var(--silver);
+    background: rgba(244, 245, 247, 0.2);
     overflow: hidden;
   }
 
   .ch__rail i {
     position: absolute;
     inset: 0;
-    background: var(--ink);
+    background: var(--ch-on);
     transform-origin: left;
   }
 
@@ -339,15 +339,15 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
 
   /* Final state: "With Tyll" leads; "Before Tyll" stays readable but quiet (the script runs the change) */
   .ch[data-ch='after'] {
-    color: var(--ink);
+    color: var(--ch-on);
   }
 
   .ch[data-ch='after'] .ch__k {
-    color: var(--steel);
+    color: var(--ch-k);
   }
 
   .ch[data-ch='before'] .ch__rail i {
-    background: var(--fog);
+    background: var(--ch-off);
   }
 
   .cine__ctrl {
@@ -357,10 +357,10 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     gap: 0.45rem;
     height: 40px;
     padding: 0 1rem 0 0.85rem;
-    border: 1px solid var(--silver);
+    border: 1px solid rgba(244, 245, 247, 0.3);
     border-radius: var(--pill);
-    background: rgba(255, 255, 255, 0.7);
-    color: var(--graphite);
+    background: rgba(244, 245, 247, 0.06);
+    color: var(--on-dark);
     font: inherit;
     font-size: 0.875rem;
     cursor: pointer;
@@ -375,9 +375,9 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
   }
 
   .cine__ctrl:hover {
-    border-color: var(--steel);
-    background: #fff;
-    color: var(--ink);
+    border-color: var(--on-dark);
+    background: rgba(244, 245, 247, 0.14);
+    color: #fff;
   }
 
   .cine__ctrl svg {
@@ -407,7 +407,7 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     z-index: -1;
     height: 60px;
     border-radius: 50%;
-    background: radial-gradient(closest-side, rgba(20, 22, 26, 0.16), transparent);
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.4), transparent);
     filter: blur(6px);
   }
 
@@ -570,6 +570,7 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
   .app {
     position: relative;
     z-index: 1;
+    color: var(--ink);
     display: grid;
     grid-template-columns: 60px minmax(0, 0.82fr) minmax(0, 1.5fr);
     grid-template-rows: auto 1fr;
@@ -1200,9 +1201,9 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     const build = () => {
       cancelAll();
       const css = getComputedStyle(cine);
-      const ink = css.getPropertyValue('--ink').trim();
-      const fog = css.getPropertyValue('--fog').trim();
-      const steel = css.getPropertyValue('--steel').trim();
+      const on = css.getPropertyValue('--ch-on').trim();
+      const off = css.getPropertyValue('--ch-off').trim();
+      const label = css.getPropertyValue('--ch-k').trim();
       const s = stage.getBoundingClientRect();
       builtWidth = s.width;
       const box = (el: HTMLElement) => {
@@ -1300,7 +1301,7 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
 
       // Before Tyll, the window's place is only a pale surface; Tyll forms around the records
       anims.push(
-        one('.app__shell').animate([{ offset: 0, opacity: 0.45, transform: 'scale(0.985)', boxShadow: 'none' }], {
+        one('.app__shell').animate([{ offset: 0, opacity: 0.07, transform: 'scale(0.985)', boxShadow: 'none' }], {
           delay: T.tyll,
           duration: 600,
           easing: EASE,
@@ -1346,13 +1347,13 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
       // The chapters: Before Tyll leads until the window forms, then With Tyll
       const [chB, chA] = all('.ch');
       const turn = T.tyll - 200;
-      enter(chB, turn, 500, { color: ink });
-      enter(chB.querySelector('.ch__k')!, turn, 500, { color: steel });
-      enter(chA, turn, 500, { color: fog });
-      enter(chA.querySelector('.ch__k')!, turn, 500, { color: fog });
+      enter(chB, turn, 500, { color: on });
+      enter(chB.querySelector('.ch__k')!, turn, 500, { color: label });
+      enter(chA, turn, 500, { color: off });
+      enter(chA.querySelector('.ch__k')!, turn, 500, { color: off });
       const [railB, railA] = all('.ch__rail i');
       anims.push(railB.animate([{ offset: 0, transform: 'scaleX(0)' }], { duration: T.tyll, easing: 'linear', fill: 'backwards' }));
-      enter(railB, turn, 500, { backgroundColor: ink });
+      enter(railB, turn, 500, { backgroundColor: on });
       anims.push(railA.animate([{ offset: 0, transform: 'scaleX(0)' }], { delay: T.tyll, duration: T.end - T.tyll, easing: 'linear', fill: 'backwards' }));
 
       // The clock: when it ends, the final view (the page's own) remains

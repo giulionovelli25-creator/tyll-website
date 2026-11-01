@@ -17,8 +17,8 @@ const de: Dict = {
   cta: {
     newTab: '(öffnet in neuem Tab)',
     book: 'Demo buchen →',
-    demo: 'Demo ansehen →',
-    demoLong: 'Interaktive Demo ansehen →',
+    demo: 'Demo ausprobieren →',
+    demoLong: 'Demo ausprobieren →',
     solutions: 'Lösungen entdecken →',
     allSolutions: 'Alle Lösungen ansehen →',
     comingSoon: 'Demnächst',
@@ -33,8 +33,8 @@ const de: Dict = {
   },
   home: {
     problem: {
-      title: 'Probleme früh erkennen. Sicher handeln.',
-      text: 'Weniger Suchen in verschiedenen Systemen. Weniger teure Versäumnisse. Klarere Entscheidungen für jedes Team.',
+      title: 'Acht Dosen sind verschwunden. Tyll hat es bemerkt.',
+      text: 'Jedes System kennt nur ein Stück. Tyll setzt sie zusammen und sagt der richtigen Person, was zu tun ist.',
       beforeLabel: 'Vor Tyll',
       before: 'Informationen überall.',
       afterLabel: 'Mit Tyll',
@@ -71,13 +71,12 @@ const de: Dict = {
       },
     },
     why: {
-      title: 'Mehr Systeme. Mehr Komplexität. Weniger Kontrolle.',
+      title: 'Softwaresysteme laufen in einem typischen Hotel.',
       figure: '10+',
-      text: 'Ein typisches Hotel nutzt mindestens 10 verschiedene Hotelsoftware-Systeme für seinen Betrieb. Getrennte Systeme machen den Betrieb komplex und erschweren es, aus Daten konkrete Entscheidungen abzuleiten.',
+      text: 'Tyll ist nicht noch eines davon. Es arbeitet mit denen, die Sie schon haben.',
       source: 'Quelle',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'Eine sonnige Hotellobby mit geschnitzten Holzbögen, Laternen und einem gefliesten Brunnen mit Blick aufs Meer.',
     },
     now: {
       label: 'Jetzt verfügbar',
@@ -91,13 +90,25 @@ const de: Dict = {
     },
     works: {
       title: 'Funktioniert mit Ihren bestehenden Systemen',
-      text: 'Tyll liest aus dem Kassensystem, das Sie bereits nutzen. Keine neuen Systeme nötig.',
+      text: 'Tyll liest aus dem Kassen- und Hotelsystem, das Sie bereits nutzen. Welche Systeme angebunden werden, wird mit jedem Hotel vereinbart.',
     },
     report: {
       title: 'Kostenlosen Einkaufsbericht anfordern',
       text: 'Senden Sie uns die Kassenumsätze Ihres letzten Monats. Innerhalb von 48 Stunden erhalten Sie einen Bericht, der zeigt, was Sie bestellen sollten und wo Bestand verloren geht. Kostenlos und unverbindlich.',
       subject: 'Kostenloser Einkaufsbericht',
-      fields: { name: 'Name', venue: 'Hotel oder Restaurant', role: 'Funktion', country: 'Land', pos: 'Kassensystem', choose: 'Kassensystem wählen', other: 'Anderes', email: 'E-Mail', phone: 'Telefon' },
+      sample: {
+        title: 'Ihr Einkaufsbericht',
+        tag: 'Beispiel',
+        head: ['Artikel', 'Ø pro Woche', 'Bestand', 'Kaufen'],
+        rows: [['Coca-Cola, Dosen', 38, 12, 26], ['Hähnchenbrust, kg', 64, 20, 44], ['Eier', 420, 150, 270], ['Olivenöl, Liter', 18, 6, 12], ['Basmatireis, kg', 30, 34, 0]] as [string, number, number, number][],
+        missing: 'Verschwunden: 8 Coca-Cola-Dosen in The Terrace',
+      },
+      fields: { name: 'Name', venue: 'Hotel oder Restaurant', role: 'Funktion', country: 'Land', pos: 'Kassensystem', other: 'Anderes', email: 'E-Mail', phone: 'Telefon' },
+      open: 'Kostenlosen Bericht starten',
+      steps: { you: 'Über Sie', venue: 'Ihr Hotel oder Restaurant', pos: 'Ihr Kassensystem' },
+      next: 'Weiter',
+      edit: 'Ändern',
+      doneAlt: 'Nichts geöffnet? Schreiben Sie uns an',
       submit: 'Kostenlosen Bericht anfordern →',
       how: 'Damit öffnet sich Ihr E-Mail-Programm mit Ihren Angaben. Hängen Sie den Export Ihrer Kassenumsätze (CSV oder Excel) an und senden Sie ihn an info@tyll.ai.',
       done: 'Ihr E-Mail-Programm sollte sich jetzt öffnen. Hängen Sie den Export Ihrer Kassenumsätze an und senden Sie die E-Mail.',
@@ -221,7 +232,7 @@ const de: Dict = {
     privacyDescription: 'Wie die Tyll-Website mit personenbezogenen Daten, Cookies und Terminanfragen umgeht.',
     homeTitle: 'Tyll – Wissen, was Sie einkaufen müssen. Jede Woche.',
     homeDescription:
-      'Tyll bündelt Informationen aus den bestehenden Systemen Ihres Hotels, zeigt Probleme auf, verbindet Abteilungen und macht sichtbar, was erledigt wurde.',
+      'Tyll liest Ihre Kassenumsätze und sagt Ihrem Einkauf, was jede Woche zu kaufen ist, und behält dabei Bestand und Abfall im Blick. Keine neuen Systeme nötig.',
   },
 };
 

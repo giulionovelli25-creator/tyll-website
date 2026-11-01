@@ -1,7 +1,11 @@
 ---
-// The free purchasing report request. The site has no form backend: like the booking page's email option, the
-// request goes out by email. On submit the visitor's email app opens with the details filled in, addressed to
-// info@tyll.ai, so they can attach their POS sales export and send it. Nothing is stored on this website.
+// The free purchasing report request. One button opens the form, which then unfolds three short steps one at a
+// time; a finished step folds away to a check mark and a summary, and can be reopened. The hero's "Get your free
+// report" button scrolls here and opens it. Without JavaScript all steps are simply shown and the form posts by email.
+//
+// The site has no form backend: on submit the visitor's email app opens with the details filled in, addressed to
+// info@tyll.ai, so they can attach their POS sales export. A link and the plain address stay on screen in case no
+// email app opens (for example with webmail). Nothing is stored on this website.
 import { site } from '../../config/site';
 import { integrations } from '../../config/integrations';
 import { t, type Locale } from '../../i18n';
@@ -13,66 +17,383 @@ interface Props {
 const { lang } = Astro.props;
 const v = t(lang).home.report;
 const f = v.fields;
+const check = 'M2.5 8.5 6.2 12 13.5 4';
+const steps = [v.steps.you, v.steps.venue, v.steps.pos];
+const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
 ---
 
-<form class="report" data-report data-email={site.email} data-subject={v.subject} novalidate>
-  <div class="report__grid">
-    <label class="field">
-      <span>{f.name} <b aria-hidden="true">*</b></span>
-      <input name="name" autocomplete="name" required />
-    </label>
-    <label class="field">
-      <span>{f.venue} <b aria-hidden="true">*</b></span>
-      <input name="venue" autocomplete="organization" required />
-    </label>
-    <label class="field">
-      <span>{f.role}</span>
-      <input name="role" autocomplete="organization-title" />
-    </label>
-    <label class="field">
-      <span>{f.country}</span>
-      <input name="country" autocomplete="country-name" />
-    </label>
-    <label class="field">
-      <span>{f.pos}</span>
-      <select name="pos">
-        <option value="">{f.choose}</option>
-        {integrations.map((i) => <option value={i.name}>{i.name}</option>)}
-        <option value={f.other}>{f.other}</option>
-      </select>
-    </label>
-    <label class="field">
-      <span>{f.email} <b aria-hidden="true">*</b></span>
-      <input name="email" type="email" autocomplete="email" required dir="ltr" />
-    </label>
-    <label class="field">
-      <span>{f.phone}</span>
-      <input name="phone" type="tel" autocomplete="tel" dir="ltr" />
-    </label>
+<div class="rf" data-report-wrap>
+  <div class="rf__closed" data-report-closed hidden>
+    <button type="button" class="btn btn--solid btn--lg rf__open" aria-expanded="false" aria-controls="report-panel" data-report-open>
+      {v.open}
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </button>
+    <ol class="rf__preview" aria-hidden="true">
+      {steps.map((s, i) => <li><span>{i + 1}</span>{s}</li>)}
+    </ol>
   </div>
-  <p class="report__error" role="alert" hidden>{v.error}</p>
-  <div class="report__actions">
-    <button type="submit" class="btn btn--solid btn--lg">{v.submit}</button>
-    <p class="report__how">{v.how}</p>
+
+  <div class="rf__panel" id="report-panel" data-report-panel>
+    <div class="rf__clip">
+      <form class="report" data-report data-email={site.email} data-subject={v.subject} action={`mailto:${site.email}`} method="post" enctype="text/plain" novalidate>
+        <ol class="steps">
+          <li class="step is-open" data-step>
+            <button type="button" class="step__head" aria-expanded="true" disabled>
+              <span class="step__no"><span class="step__n">1</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d={check} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+              <span class="step__title">{v.steps.you}</span>
+              <span class="step__sum" dir="auto"></span>
+              <span class="step__edit">{v.edit}</span>
+            </button>
+            <div class="step__body">
+              <div class="step__clip">
+                <div class="step__fields">
+                  <label class="field" style="--i:0">
+                    <span>{f.name} <b aria-hidden="true">*</b></span>
+                    <input name="name" autocomplete="name" required data-sum />
+                  </label>
+                  <label class="field" style="--i:1">
+                    <span>{f.email} <b aria-hidden="true">*</b></span>
+                    <input name="email" type="email" autocomplete="email" required dir="ltr" data-sum />
+                  </label>
+                  <label class="field" style="--i:2">
+                    <span>{f.phone}</span>
+                    <input name="phone" type="tel" autocomplete="tel" dir="ltr" />
+                  </label>
+                </div>
+                <p class="report__error" role="alert" hidden>{v.error}</p>
+                <button type="button" class="btn btn--solid step__next" data-next hidden>{v.next}</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="step is-open" data-step>
+            <button type="button" class="step__head" aria-expanded="true" disabled>
+              <span class="step__no"><span class="step__n">2</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d={check} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+              <span class="step__title">{v.steps.venue}</span>
+              <span class="step__sum" dir="auto"></span>
+              <span class="step__edit">{v.edit}</span>
+            </button>
+            <div class="step__body">
+              <div class="step__clip">
+                <div class="step__fields">
+                  <label class="field" style="--i:0">
+                    <span>{f.venue} <b aria-hidden="true">*</b></span>
+                    <input name="venue" autocomplete="organization" required data-sum />
+                  </label>
+                  <label class="field" style="--i:1">
+                    <span>{f.role}</span>
+                    <input name="role" autocomplete="organization-title" />
+                  </label>
+                  <label class="field" style="--i:2">
+                    <span>{f.country}</span>
+                    <input name="country" autocomplete="country-name" data-sum />
+                  </label>
+                </div>
+                <p class="report__error" role="alert" hidden>{v.error}</p>
+                <button type="button" class="btn btn--solid step__next" data-next hidden>{v.next}</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="step is-open" data-step>
+            <button type="button" class="step__head" aria-expanded="true" disabled>
+              <span class="step__no"><span class="step__n">3</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d={check} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+              <span class="step__title">{v.steps.pos}</span>
+              <span class="step__sum" dir="auto"></span>
+              <span class="step__edit">{v.edit}</span>
+            </button>
+            <div class="step__body">
+              <div class="step__clip">
+                <fieldset class="chips">
+                  <legend class="visually-hidden">{f.pos}</legend>
+                  {
+                    posChoices.map((i, n) => (
+                      <label class="chip" style={`--i:${n}`}>
+                        <input type="radio" name="pos" value={i.name} />
+                        <span dir="ltr">{i.name}</span>
+                      </label>
+                    ))
+                  }
+                  <label class="chip" style={`--i:${posChoices.length}`}>
+                    <input type="radio" name="pos" value={f.other} />
+                    <span>{f.other}</span>
+                  </label>
+                </fieldset>
+                <div class="report__actions">
+                  <button type="submit" class="btn btn--solid btn--lg">{v.submit}</button>
+                  <p class="report__how">{v.how}</p>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </form>
+
+      <div class="rf__done" data-report-done tabindex="-1" hidden>
+        <span class="rf__tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={check} fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        <p class="rf__done-title" role="status">{v.done}</p>
+        <p class="rf__done-alt">
+          {v.doneAlt}
+          <a data-report-mail href={`mailto:${site.email}`} dir="ltr">{site.email}</a>
+        </p>
+      </div>
+    </div>
   </div>
-  <p class="report__done" role="status" hidden>{v.done}</p>
-</form>
+</div>
 
 <style>
-  .report {
-    margin-top: clamp(2rem, 1.5rem + 2vw, 2.75rem);
+  .rf {
+    width: 100%;
     text-align: start;
   }
 
-  .report__grid {
+  /* Closed: one clear button and a glimpse of the three short steps */
+  .rf__closed {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+    transition:
+      opacity 0.3s var(--ease),
+      transform 0.4s var(--ease);
+  }
+
+  .rf__closed[hidden] {
+    display: none;
+  }
+
+  .rf__open svg {
+    width: 16px;
+    height: 16px;
+    margin-inline-start: 0.5rem;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .rf__open:hover svg {
+    transform: translateY(3px);
+  }
+
+  .rf__preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+    list-style: none;
+  }
+
+  .rf__preview li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .rf__preview span {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(244, 245, 247, 0.28);
+    border-radius: 50%;
+    font-size: 0.75rem;
+  }
+
+  /* The panel drops open from the button: its height follows its content */
+  .rf__panel {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.65s var(--ease);
+  }
+
+  .rf.is-enhanced .rf__panel {
+    grid-template-rows: 0fr;
+  }
+
+  .rf.is-enhanced.is-open .rf__panel {
+    grid-template-rows: 1fr;
+  }
+
+  .rf__clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .report,
+  .rf__done {
+    margin: 0;
+    padding: clamp(0.5rem, 0.25rem + 1vw, 0.85rem);
+    border: 1px solid rgba(244, 245, 247, 0.12);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(244, 245, 247, 0.07) 0%, rgba(244, 245, 247, 0.03) 100%);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+
+  .steps {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step + .step {
+    border-top: 1px solid rgba(244, 245, 247, 0.1);
+  }
+
+  .step__head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 1rem clamp(0.5rem, 0.25rem + 1vw, 1rem);
+    border: 0;
+    background: none;
+    color: var(--on-dark-muted);
+    font: inherit;
+    text-align: start;
+  }
+
+  .step__head:disabled {
+    cursor: default;
+  }
+
+  .step.is-done .step__head {
+    cursor: pointer;
+  }
+
+  .step.is-open .step__head {
+    color: var(--on-dark);
+  }
+
+  .step__no {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(244, 245, 247, 0.3);
+    border-radius: 50%;
+    font-size: 0.8125rem;
+    transition:
+      background-color 0.35s var(--ease),
+      border-color 0.35s var(--ease),
+      color 0.35s var(--ease);
+  }
+
+  .step__no svg {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    opacity: 0;
+  }
+
+  .step__no svg path {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+  }
+
+  .step.is-open .step__no {
+    border-color: var(--on-dark);
+  }
+
+  /* A finished step: the number gives way to a check mark that draws itself */
+  .step.is-done .step__no {
+    border-color: var(--on-dark);
+    background: var(--on-dark);
+    color: var(--ink);
+  }
+
+  .step.is-done .step__n {
+    opacity: 0;
+  }
+
+  .step.is-done .step__no svg {
+    opacity: 1;
+  }
+
+  .step.is-done .step__no svg path {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.45s var(--ease) 0.1s;
+  }
+
+  .step__title {
+    flex: none;
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  .step__sum {
+    overflow: hidden;
+    min-width: 0;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .step__edit {
+    display: none;
+    margin-inline-start: auto;
+    color: var(--on-dark);
+    font-size: var(--fs-small);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .step.is-done .step__edit {
+    display: inline;
+  }
+
+  /* Each step drops down in turn */
+  .step__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.55s var(--ease);
+  }
+
+  .step.is-open .step__body {
+    grid-template-rows: 1fr;
+  }
+
+  .step__clip {
+    min-height: 0;
+    overflow: hidden;
+    padding-inline: clamp(0.5rem, 0.25rem + 1vw, 1rem);
+    visibility: hidden;
+    transition: visibility 0s linear 0.55s;
+  }
+
+  .step.is-open .step__clip {
+    visibility: visible;
+    padding-bottom: 1.25rem;
+    transition: visibility 0s;
+  }
+
+  .step__fields {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem 1.25rem;
+    padding-top: 0.25rem;
   }
 
   .field {
     display: grid;
     gap: 0.4rem;
+  }
+
+  /* The fields and choices arrive one after another as a step opens */
+  .rf.is-enhanced .step.is-open :is(.field, .chip) {
+    animation: rf-rise 0.5s var(--ease) both;
+    animation-delay: calc(0.12s + var(--i, 0) * 0.07s);
+  }
+
+  @keyframes rf-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
   }
 
   .field span {
@@ -85,8 +406,7 @@ const f = v.fields;
     font-weight: 500;
   }
 
-  .field input,
-  .field select {
+  .field input {
     width: 100%;
     height: 50px;
     padding: 0 1rem;
@@ -101,33 +421,11 @@ const f = v.fields;
       background-color 0.2s var(--ease);
   }
 
-  .field select {
-    appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, rgba(244, 245, 247, 0.7) 50%), linear-gradient(135deg, rgba(244, 245, 247, 0.7) 50%, transparent 50%);
-    background-position:
-      calc(100% - 20px) 22px,
-      calc(100% - 15px) 22px;
-    background-size: 5px 5px;
-    background-repeat: no-repeat;
-  }
-
-  :global([dir='rtl']) .field select {
-    background-position:
-      15px 22px,
-      20px 22px;
-  }
-
-  .field select option {
-    color: var(--ink);
-  }
-
-  .field input:hover,
-  .field select:hover {
+  .field input:hover {
     border-color: rgba(244, 245, 247, 0.4);
   }
 
-  .field input:focus-visible,
-  .field select:focus-visible {
+  .field input:focus-visible {
     border-color: var(--on-dark);
     background: rgba(244, 245, 247, 0.1);
     outline: none;
@@ -137,10 +435,70 @@ const f = v.fields;
     border-color: #e8a29a;
   }
 
+  /* The POS systems as choices to tap, rather than another field to fill */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0.25rem 0 0;
+    border: 0;
+  }
+
+  .chip {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .chip span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 46px;
+    padding: 0 1.15rem;
+    border: 1px solid rgba(244, 245, 247, 0.22);
+    border-radius: var(--pill);
+    color: var(--on-dark);
+    font-size: 0.9375rem;
+    transition:
+      background-color 0.2s var(--ease),
+      border-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .chip:hover span {
+    border-color: rgba(244, 245, 247, 0.5);
+  }
+
+  .chip input:checked + span {
+    border-color: var(--on-dark);
+    background: var(--on-dark);
+    color: var(--ink);
+  }
+
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--on-dark);
+    outline-offset: 2px;
+  }
+
   .report__error {
-    margin-top: 1rem;
+    margin-top: 0.85rem;
     color: #f2b8b0;
     font-size: var(--fs-small);
+  }
+
+  .report__error[hidden],
+  .step__next[hidden] {
+    display: none;
+  }
+
+  .step__next {
+    margin-top: 1.25rem;
   }
 
   .report__actions {
@@ -151,63 +509,222 @@ const f = v.fields;
     margin-top: 1.5rem;
   }
 
-  .report__how,
-  .report__done {
-    max-width: 30rem;
+  .report__how {
+    flex: 1 1 16rem;
     color: var(--on-dark-muted);
     font-size: var(--fs-small);
     line-height: 1.5;
   }
 
-  .report__done {
-    margin-top: 1rem;
-    color: var(--on-dark);
+  /* Sent: the same panel, with the next thing to do */
+  .rf__done {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: clamp(1.75rem, 1.25rem + 2vw, 2.5rem);
+    text-align: center;
   }
 
-  [hidden] {
+  .rf__done[hidden] {
     display: none;
   }
 
+  .rf__done:focus {
+    outline: none;
+  }
+
+  .rf__tick {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--on-dark);
+    color: var(--ink);
+  }
+
+  .rf__tick svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .rf__done-title {
+    max-width: 30rem;
+    color: var(--on-dark);
+    font-size: 1.125rem;
+    line-height: 1.45;
+  }
+
+  .rf__done-alt {
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+  }
+
+  .rf__done-alt a {
+    color: var(--on-dark);
+    text-underline-offset: 3px;
+  }
+
   @media (max-width: 640px) {
-    .report__grid {
+    .step__fields {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .report__actions :global(.btn) {
-      flex: 1 1 100%;
+    .step__sum {
+      display: none;
+    }
+
+    .report__actions :global(.btn),
+    .rf__open,
+    .step__next {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .rf__closed {
+      justify-items: stretch;
+    }
+
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rf__panel,
+    .step__body,
+    .step__clip,
+    .step__no,
+    .step.is-done .step__no svg path {
+      transition: none;
+    }
+
+    .rf.is-enhanced .step.is-open :is(.field, .chip) {
+      animation: none;
     }
   }
 </style>
 
 <script>
-  document.querySelectorAll<HTMLFormElement>('[data-report]').forEach((form) => {
-    const error = form.querySelector<HTMLElement>('.report__error')!;
-    const done = form.querySelector<HTMLElement>('.report__done')!;
-    const labelOf = (el: Element) => el.closest('label')?.querySelector('span')?.firstChild?.textContent?.trim() ?? '';
+  document.querySelectorAll<HTMLElement>('[data-report-wrap]').forEach((wrap) => {
+    const form = wrap.querySelector<HTMLFormElement>('[data-report]')!;
+    const closed = wrap.querySelector<HTMLElement>('[data-report-closed]')!;
+    const openBtn = wrap.querySelector<HTMLButtonElement>('[data-report-open]')!;
+    const done = wrap.querySelector<HTMLElement>('[data-report-done]')!;
+    const steps = [...wrap.querySelectorAll<HTMLElement>('[data-step]')];
+    const fieldsOf = (step: Element) => [...step.querySelectorAll<HTMLInputElement>('input:not([type="radio"])')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const fields = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select')];
-      let firstBad: HTMLElement | null = null;
-      fields.forEach((el) => {
-        const bad = !el.checkValidity() || ((el as HTMLInputElement).required && !el.value.trim());
+    const setStep = (active: number, finished: Set<number>) => {
+      steps.forEach((step, i) => {
+        const open = i === active;
+        const isDone = finished.has(i) && !open;
+        step.classList.toggle('is-open', open);
+        step.classList.toggle('is-done', isDone);
+        const head = step.querySelector<HTMLButtonElement>('.step__head')!;
+        head.setAttribute('aria-expanded', String(open));
+        // Only a finished step can be reopened
+        head.disabled = !isDone;
+        const sum = step.querySelector<HTMLElement>('.step__sum')!;
+        sum.textContent = isDone
+          ? [...step.querySelectorAll<HTMLInputElement>('[data-sum]')]
+              .map((el) => el.value.trim())
+              .filter(Boolean)
+              .join(' · ')
+          : '';
+      });
+    };
+
+    const finished = new Set<number>();
+    let current = 0;
+
+    const check = (step: Element) => {
+      let firstBad: HTMLInputElement | null = null;
+      fieldsOf(step).forEach((el) => {
+        const bad = !el.checkValidity() || (el.required && !el.value.trim());
         el.setAttribute('aria-invalid', String(bad));
         if (bad && !firstBad) firstBad = el;
       });
-      error.hidden = !firstBad;
-      if (firstBad) {
-        (firstBad as HTMLElement).focus();
-        return;
+      const error = step.querySelector<HTMLElement>('.report__error');
+      if (error) error.hidden = !firstBad;
+      return firstBad as HTMLInputElement | null;
+    };
+
+    const focusStep = (i: number) => {
+      const target = steps[i].querySelector<HTMLInputElement>('input');
+      setTimeout(() => target?.focus({ preventScroll: true }), reduce.matches ? 0 : 320);
+    };
+
+    const go = (i: number) => {
+      current = i;
+      setStep(i, finished);
+      focusStep(i);
+    };
+
+    const open = () => {
+      if (wrap.classList.contains('is-open')) return;
+      wrap.classList.add('is-open');
+      openBtn.setAttribute('aria-expanded', 'true');
+      closed.hidden = true;
+      document.dispatchEvent(new CustomEvent('tyll:track', { detail: { event: 'report_form_opened', location: 'home' } }));
+      focusStep(0);
+    };
+
+    // Enhance: fold everything away behind the button. Without JavaScript the whole form simply stays visible.
+    wrap.classList.add('is-enhanced');
+    closed.hidden = false;
+    setStep(0, finished);
+    wrap.querySelectorAll<HTMLElement>('[data-next]').forEach((b) => (b.hidden = false));
+
+    openBtn.addEventListener('click', open);
+
+    steps.forEach((step, i) => {
+      step.querySelector('[data-next]')?.addEventListener('click', () => {
+        const bad = check(step);
+        if (bad) {
+          bad.focus();
+          return;
+        }
+        finished.add(i);
+        go(i + 1);
+      });
+      step.querySelector('.step__head')?.addEventListener('click', () => {
+        if (finished.has(i)) go(i);
+      });
+      // Enter moves on rather than sending the form early
+      step.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.target as Element).matches('input:not([type="radio"])') && i < steps.length - 1) {
+          e.preventDefault();
+          step.querySelector<HTMLButtonElement>('[data-next]')?.click();
+        }
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Everything required must be right, whichever step it is in
+      for (const [i, step] of steps.entries()) {
+        const bad = check(step);
+        if (bad) {
+          go(i);
+          return;
+        }
       }
-      // The email the visitor sends: every filled-in field, one per line
-      const lines = fields.filter((el) => el.value.trim()).map((el) => `${labelOf(el)}: ${el.value.trim()}`);
+      const labelOf = (el: Element) => el.closest('label')?.querySelector('span')?.firstChild?.textContent?.trim() ?? '';
+      const lines = steps.flatMap((step) => fieldsOf(step).filter((el) => el.value.trim()).map((el) => `${labelOf(el)}: ${el.value.trim()}`));
+      const pos = form.querySelector<HTMLInputElement>('input[name="pos"]:checked');
+      if (pos) lines.push(`${form.querySelector('legend')?.textContent?.trim()}: ${pos.value}`);
       const venue = (form.elements.namedItem('venue') as HTMLInputElement).value.trim();
-      const subject = `${form.dataset.subject} – ${venue}`;
-      const url = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n') + '\n\n')}`;
-      // Only that a request was started is counted: never the details
+      const url = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`${form.dataset.subject} – ${venue}`)}&body=${encodeURIComponent(lines.join('\n') + '\n\n')}`;
+      // Only that a request was made is counted: never the details
       document.dispatchEvent(new CustomEvent('tyll:track', { detail: { event: 'report_request_click', location: 'home' } }));
+      wrap.querySelector<HTMLAnchorElement>('[data-report-mail]')!.href = url;
+      form.hidden = true;
       done.hidden = false;
+      done.focus({ preventScroll: true });
       window.location.href = url;
     });
+
+    // The hero's button, or arriving at #report, opens the form
+    document.querySelectorAll('a[href="#report"]').forEach((a) => a.addEventListener('click', open));
+    if (location.hash === '#report') open();
+    addEventListener('hashchange', () => location.hash === '#report' && open());
   });
 </script>

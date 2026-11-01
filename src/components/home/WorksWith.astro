@@ -1,7 +1,7 @@
 ---
-// "Works with your existing systems": a quiet row of the POS systems in src/config/integrations.ts.
-// An entry without a logo file shows its name as text until the official logo is added.
-import { Image } from 'astro:assets';
+// "Works with your existing systems": the POS and PMS systems in src/config/integrations.ts drift by from right to
+// left, in every language. The band stays compact. It pauses under the pointer or when focused; with reduced motion
+// it stands still and can be scrolled sideways.
 import { integrations } from '../../config/integrations';
 import { t, type Locale } from '../../i18n';
 
@@ -11,6 +11,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const v = t(lang).home.works;
+const tones = ['amber', 'teal', 'blue', 'coral', 'violet', 'green'];
 ---
 
 <section class="works" aria-labelledby="works-title">
@@ -19,37 +20,37 @@ const v = t(lang).home.works;
       <h2 id="works-title">{v.title}</h2>
       <p>{v.text}</p>
     </div>
-    <ul class="works__logos">
-      {
-        integrations.map((i) => (
-          <li>
-            {i.logo ? (
-              <Image src={i.logo} alt={i.name} height={32} class="works__logo" />
-            ) : (
-              <span class="works__name" dir="ltr">
-                {i.name}
-              </span>
-            )}
-          </li>
-        ))
-      }
-    </ul>
+    <div class="ticker" dir="ltr" tabindex="0" role="group" aria-labelledby="works-title">
+      <div class="ticker__track">
+        {
+          [0, 1].map((copy) => (
+            <ul class="ticker__list" aria-hidden={copy === 1 ? 'true' : undefined}>
+              {integrations.map((i, n) => (
+                <li class:list={['sys', `sys--${tones[n % tones.length]}`]}>
+                  <span class="sys__type">{i.type.toUpperCase()}</span>
+                  {i.name}
+                </li>
+              ))}
+            </ul>
+          ))
+        }
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
   .works {
-    padding-block: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    padding-block: clamp(2.25rem, 2rem + 1.5vw, 3.25rem);
     border-block: 1px solid var(--line);
     background: #fff;
   }
 
   .works__inner {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 25rem) minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem 3rem;
+    gap: 1.5rem clamp(1.5rem, 1rem + 3vw, 3.5rem);
   }
 
   .works h2 {
@@ -62,37 +63,96 @@ const v = t(lang).home.works;
     margin-top: 0.3rem;
     color: var(--steel);
     font-size: var(--fs-small);
+    line-height: 1.45;
   }
 
-  .works__logos {
+  /* The names fade in and out at the band's edges */
+  .ticker {
+    overflow: hidden;
+    min-width: 0;
+    border-radius: var(--pill);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  }
+
+  .ticker:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  /* Two identical lists side by side: moving by half the width loops without a visible jump */
+  .ticker__track {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1rem;
+    width: max-content;
+    animation: ticker 70s linear infinite;
+  }
+
+  .ticker:hover .ticker__track,
+  .ticker:focus-within .ticker__track,
+  .ticker:focus .ticker__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .ticker__list {
+    display: flex;
+    flex: none;
+    gap: 0.6rem;
     margin: 0;
-    padding: 0;
+    padding: 0.2rem 0.3rem 0.2rem 0.3rem;
     list-style: none;
   }
 
-  /* Logos sit in one tone so no brand shouts louder than the page */
-  .works__logos :global(.works__logo) {
-    width: auto;
-    height: 28px;
-    filter: grayscale(1);
-    opacity: 0.75;
+  .sys {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.5rem;
+    height: 42px;
+    padding: 0 1rem 0 0.5rem;
+    border-radius: var(--pill);
+    background: var(--tone-bg);
+    color: var(--tone-ink);
+    font-size: 0.9375rem;
+    font-weight: 550;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
   }
 
-  .works__name {
-    display: inline-flex;
-    align-items: center;
-    height: 48px;
-    padding: 0 1.25rem;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: var(--cloud);
-    color: var(--graphite);
-    font-size: 1.0625rem;
+  .sys__type {
+    padding: 0.14rem 0.42rem;
+    border-radius: var(--pill);
+    background: rgba(255, 255, 255, 0.72);
+    font-size: 0.625rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.04em;
+  }
+
+  .sys--amber { --tone-bg: #fbf1dc; --tone-ink: #7a5310; }
+  .sys--teal { --tone-bg: #dcf3ee; --tone-ink: #0f5f58; }
+  .sys--blue { --tone-bg: #e2ecfb; --tone-ink: #1d4d8c; }
+  .sys--coral { --tone-bg: #fde7e1; --tone-ink: #983a22; }
+  .sys--violet { --tone-bg: #ebe7fb; --tone-ink: #4a3a98; }
+  .sys--green { --tone-bg: #e3f3e2; --tone-ink: #2b682d; }
+
+  @media (max-width: 860px) {
+    .works__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker {
+      overflow-x: auto;
+    }
+
+    .ticker__track {
+      animation: none;
+    }
   }
 </style>

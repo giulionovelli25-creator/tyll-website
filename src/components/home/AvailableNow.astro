@@ -1,6 +1,6 @@
 ---
 // Directly under the hero: the three products Tyll sells today, each linking to its solution page.
-import SolutionIcon from '../SolutionIcon.astro';
+import { Picture } from 'astro:assets';
 import { solutions } from '../../content/solutions';
 import { available } from '../../config/products';
 import { t, href, type Locale } from '../../i18n';
@@ -25,14 +25,26 @@ const v = d.home.now;
         available.map((key) => (
           <li>
             <a class="card" href={href(key, lang)}>
-              <span class="card__icon" aria-hidden="true">
-                <SolutionIcon name={solutions[key].icon} />
+              <span class="card__photo">
+                <Picture
+                  src={solutions[key].photo}
+                  alt=""
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  widths={[480, 720, 960]}
+                  sizes="(max-width: 860px) calc(100vw - 32px), 400px"
+                  loading="lazy"
+                  decoding="async"
+                  style={`object-position:${solutions[key].photoFocus}`}
+                />
               </span>
-              <h3 class="card__title">{v.items[key].title}</h3>
-              <p class="card__text">{v.items[key].text}</p>
-              <span class="card__more">
-                {v.more}
-                <span class="card__arrow flip-rtl" aria-hidden="true">→</span>
+              <span class="card__body">
+                <h3 class="card__title">{solutions[key].name[lang]}</h3>
+                <p class="card__text">{v.items[key].text}</p>
+                <span class="card__more">
+                  {v.more}
+                  <span class="card__arrow flip-rtl" aria-hidden="true">→</span>
+                </span>
               </span>
             </a>
           </li>
@@ -91,10 +103,10 @@ const v = d.home.now;
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    overflow: hidden;
     border: 1px solid rgba(20, 22, 26, 0.07);
     border-radius: var(--radius-lg);
-    background: linear-gradient(180deg, #ffffff 0%, #fbfbfa 100%);
+    background: #fff;
     color: var(--ink);
     text-decoration: none;
     box-shadow:
@@ -112,23 +124,37 @@ const v = d.home.now;
       0 32px 60px -30px rgba(20, 22, 26, 0.36);
   }
 
-  .card__icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: var(--ink);
-    color: #fff;
+  .card__photo {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    background: var(--mist);
   }
 
-  .card__icon :global(svg) {
-    width: 21px;
-    height: 21px;
+  .card__photo :global(picture),
+  .card__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .card__photo :global(img) {
+    object-fit: cover;
+    transition: transform 0.7s var(--ease);
+  }
+
+  .card:hover .card__photo :global(img) {
+    transform: scale(1.04);
+  }
+
+  .card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
   }
 
   .card__title {
-    margin-top: 1.5rem;
     font-size: var(--fs-h3);
     font-weight: 500;
     letter-spacing: -0.015em;
@@ -172,7 +198,8 @@ const v = d.home.now;
 
   @media (prefers-reduced-motion: reduce) {
     .card,
-    .card__arrow {
+    .card__arrow,
+    .card__photo :global(img) {
       transition: none;
     }
   }

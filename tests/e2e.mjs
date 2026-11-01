@@ -107,6 +107,21 @@ for (const lang of LANGS) {
     }));
     const nowPages = [SOL[lang][2], SOL[lang][0], SOL[lang][1]];
     if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 3) problems.push(`homepage products ${JSON.stringify(product)}`);
+    // The report form stays folded until asked for; the hero's button opens it, and it asks for one step at a time
+    const form = await page.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const wrap = document.querySelector('[data-report-wrap]');
+      const closed = !wrap.classList.contains('is-open') && document.querySelector('[data-report-panel]').getBoundingClientRect().height < 1;
+      document.querySelector('.hero__actions a[href="#report"]').click();
+      await wait(900);
+      const panel = document.querySelector('[data-report-panel]').getBoundingClientRect().height;
+      const openSteps = document.querySelectorAll('[data-step].is-open').length;
+      document.querySelector('[data-step] [data-next]').click();
+      await wait(200);
+      const blocked = document.querySelector('[data-step]').classList.contains('is-open') && !document.querySelector('.report__error').hidden;
+      return { closed, panel, openSteps, blocked };
+    });
+    if (!form.closed || form.panel < 200 || form.openSteps !== 1 || !form.blocked) problems.push(`report form ${JSON.stringify(form)}`);
     // The Solutions dropdown in the header still opens with all six solutions and the FAQ
     await go(page, `/${lang}/`);
     await page.click('#solutions-trigger');

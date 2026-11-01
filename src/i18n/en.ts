@@ -17,8 +17,8 @@ const en = {
   cta: {
     newTab: '(opens in a new tab)',
     book: 'Book a Demo →',
-    demo: 'Explore Demo →',
-    demoLong: 'Explore Interactive Demo →',
+    demo: 'Try the demo →',
+    demoLong: 'Try the demo →',
     solutions: 'Explore Solutions →',
     allSolutions: 'Explore All Solutions →',
     comingSoon: 'Coming soon',
@@ -33,8 +33,8 @@ const en = {
   },
   home: {
     problem: {
-      title: 'Spot problems early. Act with confidence.',
-      text: 'Less time searching across systems. Fewer costly oversights. Clearer decisions for every team.',
+      title: 'Eight cans disappeared. Tyll noticed.',
+      text: 'Each system holds one piece. Tyll puts them together and tells the right person what to do.',
       beforeLabel: 'Before Tyll',
       before: 'Information everywhere.',
       afterLabel: 'With Tyll',
@@ -71,13 +71,12 @@ const en = {
       },
     },
     why: {
-      title: 'More systems. More complexity. Less control.',
+      title: 'software systems run a typical hotel.',
       figure: '10+',
-      text: 'A typical hotel relies on at least 10 different hospitality software systems to run its operations. Managing disconnected systems creates operational complexity and makes it harder to turn data into actionable decisions.',
+      text: 'Tyll doesn’t add another one. It works with the ones you already have.',
       source: 'Source',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'A sunlit hotel lobby with carved wooden arches, lanterns and a tiled fountain leading to a view of the sea.',
     },
     now: {
       label: 'Available now',
@@ -91,13 +90,25 @@ const en = {
     },
     works: {
       title: 'Works with your existing systems',
-      text: 'Tyll reads from the POS you already use. No new systems needed.',
+      text: 'Tyll reads from the POS and PMS you already use. Which systems connect is agreed with each hotel.',
     },
     report: {
       title: 'Get your free purchasing report',
       text: 'Send us your last month of POS sales. Within 48 hours you get a report showing what to order and where stock is going missing. Free, no commitment.',
       subject: 'Free purchasing report',
-      fields: { name: 'Name', venue: 'Hotel or restaurant', role: 'Role', country: 'Country', pos: 'POS system', choose: 'Choose your POS', other: 'Other', email: 'Email', phone: 'Phone' },
+      sample: {
+        title: 'Your purchasing report',
+        tag: 'Example',
+        head: ['Item', 'Avg. per week', 'In stock', 'Buy'],
+        rows: [['Coca-Cola, cans', 38, 12, 26], ['Chicken breast, kg', 64, 20, 44], ['Eggs', 420, 150, 270], ['Olive oil, litres', 18, 6, 12], ['Basmati rice, kg', 30, 34, 0]] as [string, number, number, number][],
+        missing: 'Going missing: 8 Coca-Cola cans at The Terrace',
+      },
+      fields: { name: 'Name', venue: 'Hotel or restaurant', role: 'Role', country: 'Country', pos: 'POS system', other: 'Other', email: 'Email', phone: 'Phone' },
+      open: 'Start my free report',
+      steps: { you: 'About you', venue: 'Your hotel or restaurant', pos: 'Your POS system' },
+      next: 'Continue',
+      edit: 'Edit',
+      doneAlt: 'Didn’t open? Email us at',
       submit: 'Request my free report →',
       how: 'This opens your email app with your details filled in. Attach your POS sales export (CSV or Excel) and send it to info@tyll.ai.',
       done: 'Your email app should open now. Attach your POS sales export and press send.',
@@ -221,7 +232,7 @@ const en = {
     privacyDescription: 'How the Tyll website handles personal data, cookies and booking requests.',
     homeTitle: 'Tyll – Know exactly what to buy. Every week.',
     homeDescription:
-      'Tyll brings information from your hotel’s existing systems together, helps you find problems, coordinate departments and track what was fixed.',
+      'Tyll reads your POS sales history and tells your purchasing team what to buy each week, while tracking stock and waste. No new systems needed.',
   },
 };
 

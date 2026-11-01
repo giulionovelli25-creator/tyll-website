@@ -40,12 +40,40 @@ const frame = ribbon(0);
     </g>
   </svg>
   <div class="wrap invite__inner">
-    <Logo mark anim="draw" label="" class="invite__mark" />
-    <h2 id="invite-title">{v.title}</h2>
-    <p>{v.text}</p>
-    <div class="invite__form">
-      <ReportForm lang={lang} />
+    <div class="invite__main">
+      <Logo mark anim="draw" label="" class="invite__mark" />
+      <h2 id="invite-title">{v.title}</h2>
+      <p>{v.text}</p>
+      <div class="invite__form">
+        <ReportForm lang={lang} />
+      </div>
     </div>
+
+    <!-- What the visitor gets: an example of the report itself (fictional data) -->
+    <figure class="sample" aria-label={v.sample.title}>
+      <figcaption class="sample__head">
+        <span class="sample__title">{v.sample.title}</span>
+        <span class="sample__tag">{v.sample.tag}</span>
+      </figcaption>
+      <table>
+        <thead>
+          <tr>{v.sample.head.map((h) => <th scope="col">{h}</th>)}</tr>
+        </thead>
+        <tbody>
+          {
+            v.sample.rows.map(([name, week, stock, buy]) => (
+              <tr>
+                <td>{name}</td>
+                <td>{week}</td>
+                <td>{stock}</td>
+                <td class:list={['sample__buy', buy === 0 && 'is-none']}>{buy === 0 ? '–' : buy}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="sample__flag">{v.sample.missing}</p>
+    </figure>
   </div>
 </section>
 
@@ -96,50 +124,148 @@ const frame = ribbon(0);
   .invite__inner {
     width: 100%;
     display: grid;
-    justify-items: center;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+    gap: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
+    text-align: start;
   }
 
   .invite :global(.invite__mark) {
-    width: 44px;
+    width: 40px;
     height: auto;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     color: var(--on-dark);
   }
 
   .invite h2 {
-    max-width: 20ch;
-    font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+    max-width: 16ch;
+    font-size: clamp(2.25rem, 1.5rem + 2.6vw, 3.75rem);
     letter-spacing: -0.04em;
+    scroll-margin-top: calc(var(--header-h) + 1rem);
   }
 
-  .invite p {
-    max-width: 34rem;
-    margin-top: 1.5rem;
+  .invite__main > p {
+    max-width: 32rem;
+    margin-top: 1.25rem;
     color: rgba(244, 245, 247, 0.82);
     font-size: var(--fs-lead);
     line-height: 1.55;
   }
 
-  /* The form sits on a softly lit glass panel above the wave */
   .invite__form {
     width: 100%;
-    max-width: 46rem;
-    margin-top: clamp(2rem, 1.5rem + 2vw, 2.75rem);
-    padding: clamp(1.25rem, 0.75rem + 2vw, 2.25rem);
-    border: 1px solid rgba(244, 245, 247, 0.12);
+    margin-top: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
+  }
+
+  /* The example report: a sheet of paper resting on the dark, slightly turned */
+  .sample {
+    margin: 0;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
     border-radius: var(--radius-lg);
-    background: linear-gradient(180deg, rgba(244, 245, 247, 0.07) 0%, rgba(244, 245, 247, 0.03) 100%);
-    box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.6);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
+    background: #fff;
+    color: var(--ink);
+    box-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.2),
+      0 50px 90px -40px rgba(0, 0, 0, 0.8);
+    transform: rotate(1.2deg);
   }
 
-  .invite__form :global(.report) {
-    margin-top: 0;
+  :global([dir='rtl']) .sample {
+    transform: rotate(-1.2deg);
   }
 
-  .invite h2 {
-    scroll-margin-top: calc(var(--header-h) + 1rem);
+  .sample__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .sample__title {
+    font-size: 1.0625rem;
+    font-weight: 550;
+    letter-spacing: -0.015em;
+  }
+
+  .sample__tag {
+    padding: 0.12rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: var(--pill);
+    color: var(--steel);
+    font-size: 0.75rem;
+  }
+
+  .sample table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sample th {
+    padding: 0.5rem 0.4rem 0.5rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--steel);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25;
+    text-align: end;
+    vertical-align: bottom;
+  }
+
+  .sample td {
+    padding: 0.62rem 0.4rem 0.62rem 0;
+    border-bottom: 1px solid var(--mist);
+    color: var(--graphite);
+    text-align: end;
+  }
+
+  .sample th:first-child,
+  .sample td:first-child {
+    color: var(--ink);
+    text-align: start;
+  }
+
+  .sample th:first-child {
+    color: var(--steel);
+  }
+
+  .sample th:last-child,
+  .sample td:last-child {
+    padding-inline-end: 0;
+  }
+
+  .sample__buy {
+    color: var(--ink) !important;
+    font-weight: 650;
+  }
+
+  .sample__buy.is-none {
+    color: var(--fog) !important;
+    font-weight: 400;
+  }
+
+  .sample__flag {
+    margin: 0.9rem 0 0;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid #f1dfb8;
+    border-radius: 10px;
+    background: #fbf1dc;
+    color: #7a5310;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 960px) {
+    .invite__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sample,
+    :global([dir='rtl']) .sample {
+      transform: none;
+    }
   }
 </style>
 

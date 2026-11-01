@@ -18,8 +18,8 @@ const it: Dict = {
   cta: {
     newTab: '(si apre in una nuova scheda)',
     book: 'Prenota una demo →',
-    demo: 'Esplora la demo →',
-    demoLong: 'Esplora la demo interattiva →',
+    demo: 'Prova la demo →',
+    demoLong: 'Prova la demo →',
     solutions: 'Scopri le soluzioni →',
     allSolutions: 'Esplora tutte le soluzioni →',
     comingSoon: 'In arrivo',
@@ -34,8 +34,8 @@ const it: Dict = {
   },
   home: {
     problem: {
-      title: 'Individua i problemi in tempo. Agisci con sicurezza.',
-      text: 'Meno tempo a cercare tra i sistemi. Meno sviste costose. Decisioni più chiare per ogni team.',
+      title: 'Otto lattine sono sparite. Tyll se n’è accorto.',
+      text: 'Ogni sistema conosce solo un pezzo. Tyll li mette insieme e dice alla persona giusta cosa fare.',
       beforeLabel: 'Prima di Tyll',
       before: 'Informazioni ovunque.',
       afterLabel: 'Con Tyll',
@@ -72,13 +72,12 @@ const it: Dict = {
       },
     },
     why: {
-      title: 'Più sistemi. Più complessità. Meno controllo.',
+      title: 'sistemi software fanno funzionare un hotel tipico.',
       figure: '10+',
-      text: 'Un hotel tipico utilizza almeno 10 diversi sistemi software per gestire le sue attività. Sistemi non collegati rendono l’operatività più complessa e rendono più difficile trasformare i dati in decisioni concrete.',
+      text: 'Tyll non ne aggiunge un altro. Lavora con quelli che hai già.',
       source: 'Fonte',
       sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
       sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      photoAlt: 'La hall soleggiata di un hotel con archi in legno intagliato, lanterne e una fontana piastrellata che conduce alla vista sul mare.',
     },
     now: {
       label: 'Disponibile ora',
@@ -92,13 +91,25 @@ const it: Dict = {
     },
     works: {
       title: 'Funziona con i tuoi sistemi attuali',
-      text: 'Tyll legge dal sistema di cassa che usi già. Nessun nuovo sistema necessario.',
+      text: 'Tyll legge dal sistema di cassa e dal gestionale che usi già. Quali sistemi collegare viene concordato con ogni hotel.',
     },
     report: {
       title: 'Ricevi il tuo report acquisti gratuito',
       text: 'Inviaci le vendite di cassa dell’ultimo mese. Entro 48 ore ricevi un report che mostra cosa ordinare e dove si perde il magazzino. Gratis, senza impegno.',
       subject: 'Report acquisti gratuito',
-      fields: { name: 'Nome', venue: 'Hotel o ristorante', role: 'Ruolo', country: 'Paese', pos: 'Sistema di cassa', choose: 'Scegli il sistema di cassa', other: 'Altro', email: 'Email', phone: 'Telefono' },
+      sample: {
+        title: 'Il tuo report acquisti',
+        tag: 'Esempio',
+        head: ['Articolo', 'Media a settimana', 'In magazzino', 'Da comprare'],
+        rows: [['Coca-Cola, lattine', 38, 12, 26], ['Petto di pollo, kg', 64, 20, 44], ['Uova', 420, 150, 270], ['Olio d’oliva, litri', 18, 6, 12], ['Riso basmati, kg', 30, 34, 0]] as [string, number, number, number][],
+        missing: 'Sparite: 8 lattine di Coca-Cola al The Terrace',
+      },
+      fields: { name: 'Nome', venue: 'Hotel o ristorante', role: 'Ruolo', country: 'Paese', pos: 'Sistema di cassa', other: 'Altro', email: 'Email', phone: 'Telefono' },
+      open: 'Inizia il mio report gratuito',
+      steps: { you: 'I tuoi dati', venue: 'Il tuo hotel o ristorante', pos: 'Il tuo sistema di cassa' },
+      next: 'Continua',
+      edit: 'Modifica',
+      doneAlt: 'Non si è aperto nulla? Scrivici a',
       submit: 'Richiedi il report gratuito →',
       how: 'Si apre la tua app di posta con i dati già inseriti. Allega l’export delle vendite di cassa (CSV o Excel) e invialo a info@tyll.ai.',
       done: 'La tua app di posta dovrebbe aprirsi ora. Allega l’export delle vendite di cassa e premi invia.',
@@ -222,7 +233,7 @@ const it: Dict = {
     privacyDescription: 'Come il sito di Tyll tratta i dati personali, i cookie e le richieste di prenotazione.',
     homeTitle: 'Tyll – Sai esattamente cosa comprare. Ogni settimana.',
     homeDescription:
-      'Tyll riunisce le informazioni dei sistemi già presenti nel tuo hotel, ti aiuta a individuare i problemi, coordinare i reparti e seguire ciò che è stato risolto.',
+      'Tyll legge lo storico delle vendite di cassa e dice al team acquisti cosa comprare ogni settimana, tenendo sotto controllo magazzino e sprechi. Nessun nuovo sistema necessario.',
   },
 };
 

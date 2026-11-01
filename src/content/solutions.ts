@@ -9,7 +9,7 @@ import stockChef from '../assets/photos/stock-chef.jpg';
 import forecastProduce from '../assets/photos/forecast-produce.jpg';
 import eventsBanquet from '../assets/photos/events-banquet.jpg';
 import roomsSuite from '../assets/photos/rooms-suite.jpg';
-import receipts from '../assets/photos/tyll-problem-1.jpg';
+import reconciliation from '../assets/photos/reconciliation-reception.jpg';
 import salesBuffet from '../assets/photos/sales-buffet.jpg';
 import probStock from '../assets/photos/problem/problem-stock.jpg';
 import probFinance from '../assets/photos/problem/problem-finance.jpg';
@@ -71,12 +71,12 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Cuochi condiscono e impiattano sotto le lampade riscaldanti in rame nella cucina di un hotel.',
     ),
     photoFocus: '40% 72%',
-    name: t('Stock & Waste', 'Lager & Abfall', 'المخزون والهدر', 'Magazzino e sprechi'),
+    name: t('Stock Count and Waste', 'Inventur und Abfall', 'جرد المخزون والهدر', 'Inventario e sprechi'),
     menu: t(
-      'Find missing stock and understand waste.',
-      'Fehlenden Bestand finden und Abfall verstehen.',
-      'اكتشف المخزون المفقود وافهم الهدر.',
-      'Trova le giacenze mancanti e capisci gli sprechi.',
+      'One quick count, then tap minus 1 whenever something breaks or is wasted.',
+      'Einmal kurz zählen, dann bei jedem Bruch oder Abfall auf minus 1 tippen.',
+      'جرد سريع واحد، ثم انقر على «ناقص 1» كلما انكسر شيء أو أُهدر.',
+      'Un conteggio rapido, poi tocca «meno 1» ogni volta che qualcosa si rompe o viene sprecato.',
     ),
     headline: t('Know where your stock is going.', 'Wissen, wohin Ihr Bestand geht.', 'اعرف أين يذهب مخزونك.', 'Sai dove va a finire il tuo magazzino.'),
     intro: t(
@@ -241,20 +241,20 @@ export const solutions: Record<SolutionKey, Solution> = {
   finance: {
     key: 'finance',
     icon: 'finance',
-    photo: receipts,
+    photo: reconciliation,
     photoAlt: t(
-      'Receipts and a calculator on a dark desk under a brass lamp.',
-      'Belege und ein Taschenrechner auf einem dunklen Tisch unter einer Messinglampe.',
-      'إيصالات وآلة حاسبة على مكتب داكن تحت مصباح نحاسي.',
-      'Ricevute e una calcolatrice su una scrivania scura sotto una lampada in ottone.',
+      'A guest and a receptionist exchanging a card at a dark hotel reception desk with a service bell.',
+      'Gast und Rezeptionistin reichen sich an einer dunklen Hotelrezeption mit Tischglocke eine Karte.',
+      'ضيف وموظفة استقبال يتبادلان بطاقة عند مكتب استقبال داكن في فندق، وبجانبهما جرس خدمة.',
+      'Un ospite e una receptionist si scambiano una carta a un banco reception scuro con un campanello.',
     ),
-    photoFocus: '45% 60%',
-    name: t('Finance & Money', 'Finanzen & Zahlungen', 'المالية والأموال', 'Finanza e pagamenti'),
+    photoFocus: '72% 50%',
+    name: t('Reconciliation', 'Abgleich', 'المطابقة', 'Riconciliazione'),
     menu: t(
-      'Understand financial differences and keep track of costs.',
-      'Finanzielle Abweichungen verstehen und Kosten im Blick behalten.',
-      'افهم الفروقات المالية وتابع التكاليف.',
-      'Capisci le differenze finanziarie e tieni sotto controllo i costi.',
+      'Checks sales against payments and flags differences.',
+      'Gleicht Verkäufe mit Zahlungen ab und markiert Differenzen.',
+      'يطابق المبيعات مع المدفوعات ويُبرز الفروقات.',
+      'Confronta le vendite con i pagamenti e segnala le differenze.',
     ),
     headline: t('Know where your money stands.', 'Wissen, wo Ihr Geld steht.', 'اعرف وضع أموالك.', 'Sai sempre a che punto sono i tuoi soldi.'),
     intro: t(
@@ -411,7 +411,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Uno chef trita erbe fresche accanto a vassoi di limoni e verdure.',
     ),
     photoFocus: '60% 45%',
-    name: t('Forecasting & Purchasing', 'Prognose & Einkauf', 'التوقعات والمشتريات', 'Previsioni e acquisti'),
+    name: t('Purchasing Prediction', 'Einkaufsprognose', 'توقّع المشتريات', 'Previsione acquisti'),
     menu: t(
       'Know what to buy each week, from your POS sales.',
       'Wissen, was Sie jede Woche kaufen müssen – aus Ihren Kassendaten.',
