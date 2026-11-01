@@ -37,7 +37,6 @@ const [, count = w.figure, suffix = ''] = w.figure.match(/^(\d+)(.*)$/) ?? [];
         <p class="why__number" aria-hidden="true"><bdi dir="ltr"><span data-count={count}>{count}</span>{suffix}</bdi></p>
         <figcaption>
           <p class="why__text"><span class="visually-hidden">{w.figure}: </span>{w.text}</p>
-          <p class="why__context">{w.context}</p>
           <p class="why__source">
             {w.source}:{' '}
             <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
@@ -131,7 +130,6 @@ const [, count = w.figure, suffix = ''] = w.figure.match(/^(\d+)(.*)$/) ?? [];
     line-height: 1.5;
   }
 
-  .why__context,
   .why__source {
     margin-top: 0.75rem;
     color: var(--steel);

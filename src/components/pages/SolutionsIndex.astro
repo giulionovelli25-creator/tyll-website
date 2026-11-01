@@ -7,6 +7,7 @@ import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
 import { t, href, solutionKeys, type Locale } from '../../i18n';
+import { isComingSoon } from '../../config/products';
 
 interface Props {
   lang: Locale;
@@ -38,6 +39,7 @@ const d = t(lang);
                   style={`object-position:${s.photoFocus}`}
                 />
                 <span class="tile__shade" aria-hidden="true" />
+                {isComingSoon(k) && <span class="badge-soon tile__soon">{d.cta.comingSoon}</span>}
                 <span class="tile__body">
                   <SolutionIcon name={s.icon} />
                   <span class="tile__name">{s.name[lang]}</span>
@@ -54,6 +56,14 @@ const d = t(lang);
 </Base>
 
 <style>
+  /* Products in development carry the badge in the photo's top corner */
+  .tile__soon {
+    position: absolute;
+    top: 1rem;
+    inset-inline-start: 1rem;
+    z-index: 2;
+  }
+
   .tiles-wrap {
     padding-bottom: var(--section-y);
   }

@@ -37,7 +37,6 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
       <h2 id="story-title">{p.title}</h2>
       <div class="story__intro">
         <p>{p.text}</p>
-        <p class="story__note">{p.note}</p>
       </div>
     </header>
 
@@ -159,7 +158,6 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
                 ))
               }
             </ul>
-            <p class="list__foot" aria-hidden="true">{v.simulated}</p>
           </div>
 
           <article class="app__detail">
@@ -271,13 +269,6 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     line-height: 1.55;
   }
 
-  .story__note {
-    max-width: 30rem;
-    margin-top: 1rem;
-    color: var(--steel);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-  }
 
   /* ── Chapters: Before Tyll → With Tyll, each with a fine progress line ── */
   .cine {
@@ -707,12 +698,6 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
     border-inline-end: 1px solid var(--line);
   }
 
-  .list__foot {
-    margin: auto 0 0;
-    padding-top: 1.25rem;
-    color: var(--fog);
-    font-size: 0.75rem;
-  }
 
   .list__head {
     display: flex;
@@ -1025,9 +1010,6 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
       padding: 0.65rem 0.75rem;
     }
 
-    .list__foot {
-      display: none;
-    }
 
     .app__detail {
       margin: 0.5rem 1rem 0;
@@ -1331,7 +1313,6 @@ const [, lineNum = '', lineRest = v.issueLine] = v.issueLine.match(/^(\d+)(.*)$/
       all('.app__list, .app__detail').forEach((el) => enter(el, T.tyll + 100, 500, { borderColor: 'transparent' }));
       enter(one('.list__head'), T.tyll + 200, 450);
       all('.row').forEach((row, i) => enter(row, T.tyll + 280 + i * 90, 450));
-      enter(one('.list__foot'), T.settle, 400, { opacity: 0 });
 
       // 4 · The problem first: the Coca-Cola difference, then the 8 unexplained cans
       enter(one('.row--on'), T.problem, 500, { borderColor: 'transparent', backgroundColor: 'rgba(255, 250, 240, 0)', boxShadow: '0 0 0 0 rgba(236, 217, 176, 0)' });

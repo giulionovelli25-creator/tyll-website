@@ -1,7 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Hero from './Hero.astro';
+import AvailableNow from './AvailableNow.astro';
 import ConnectStory from './ConnectStory.astro';
+import WorksWith from './WorksWith.astro';
 import WhyItMatters from './WhyItMatters.astro';
 import Invitation from './Invitation.astro';
 import { site } from '../../config/site';
@@ -32,18 +34,20 @@ const schema = {
 
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
+  <!-- What Tyll sells today first, and the free report request at the end (the hero links to it) -->
   <Hero lang={lang} />
-  <WhyItMatters lang={lang} />
+  <AvailableNow lang={lang} />
   <ConnectStory lang={lang} />
+  <WorksWith lang={lang} />
+  <WhyItMatters lang={lang} />
   <Invitation lang={lang} />
 </Base>
 
 <style is:global>
-  /* The homepage reads as four chapters: on desktop each one fills the screen. Scroll snapping was tried
-     and removed: next to the pinned story it pulled the page past the end of the animation. */
+  /* The 10+ finding keeps a full screen on desktop. Scroll snapping was tried and removed: next to the story
+     it pulled the page past the end of the animation. */
   @media (min-width: 1024px) and (min-height: 700px) {
-    .why,
-    .invite {
+    .why {
       min-height: 100svh;
     }
   }

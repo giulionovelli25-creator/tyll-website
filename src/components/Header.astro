@@ -5,6 +5,7 @@ import SolutionIcon from './SolutionIcon.astro';
 import { site } from '../config/site';
 import { solutions } from '../content/solutions';
 import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
+import { isComingSoon } from '../config/products';
 
 interface Props {
   lang: Locale;
@@ -16,7 +17,7 @@ interface Props {
 const { lang, page, overHero = false } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
-const items = solutionKeys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k }));
+const items = solutionKeys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k, soon: isComingSoon(k) }));
 const fwd = lang === 'ar' ? '←' : '→';
 const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).includes(page);
 ---
@@ -83,7 +84,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     <div class="wrap panel__layout">
       <ul class="panel__grid">
         {
-          items.map(({ key, s, url, current }) => (
+          items.map(({ key, s, url, current, soon }) => (
             <li>
               <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
                 <span class="panel__icon">
@@ -92,6 +93,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
                 <span class="panel__text">
                   <span class="panel__name">
                     {s.name[lang]}
+                    {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
                     <span class="panel__arrow" aria-hidden="true">{fwd}</span>
                   </span>
                   <span class="panel__desc">{s.menu[lang]}</span>
@@ -150,11 +152,12 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <summary>{d.nav.solutions}</summary>
         <ul>
           {
-            items.map(({ s, url, current }) => (
+            items.map(({ s, url, current, soon }) => (
               <li>
                 <a href={url} aria-current={current ? 'page' : undefined}>
                   <SolutionIcon name={s.icon} />
                   <span>{s.name[lang]}</span>
+                  {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
                 </a>
               </li>
             ))
@@ -449,6 +452,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .panel__name {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
     font-size: 1.0625rem;

@@ -1,8 +1,8 @@
 ---
 import { Picture } from 'astro:assets';
 import poster from '../../assets/hero-operations.jpg';
-import Logo from '../Logo.astro';
-import { t, href, type Locale } from '../../i18n';
+import { site } from '../../config/site';
+import { t, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -10,6 +10,8 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
+// "Try the demo" opens the public demo; without one configured, the report button stands alone
+const demo = site.demoUrl;
 ---
 
 <section class="hero on-dark" data-hero aria-labelledby="hero-title">
@@ -37,28 +39,26 @@ const d = t(lang);
   <div class="wrap hero__inner">
     <h1 id="hero-title">
       {
-        d.hero.title.split(/(?<=\.)\s+/).map((line, i, all) => (
+        d.hero.title.split(/(?<=\.)\s+/).map((line, i) => (
           <span class="hero__line" style={`--d:${i}`}>
-            {line}
-            {i === all.length - 1 && (
-              <span class="hero__seal" data-check-manual>
-                <Logo mark anim="draw" label="" />
-              </span>
-            )}{' '}
+            {line}{' '}
           </span>
         ))
       }
     </h1>
-    <div class="hero__body">
-      {d.hero.body.map((p) => <p>{p}</p>)}
-    </div>
     <div class="hero__actions">
-      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="hero">{d.home.invite.demo}</a>
-      <a class="btn btn--line btn--lg" href={href('solutions', lang)} data-track="explore_solutions_click" data-track-from="hero">
-        {d.cta.solutions}
+      {
+        demo && (
+          <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="hero">
+            {d.hero.try}
+            <span class="visually-hidden"> {d.cta.newTab}</span>
+          </a>
+        )
+      }
+      <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href="#report" data-track="report_cta_click" data-track-from="hero">
+        {d.hero.report}
       </a>
     </div>
-    <p class="hero__note">{d.home.invite.note}</p>
   </div>
 
   <button class="hero__toggle" type="button" aria-pressed="false" data-pause={d.hero.pause} data-play={d.hero.play} hidden>
@@ -69,13 +69,6 @@ const d = t(lang);
 </section>
 
 <style>
-  /* What to expect from the call, right under the buttons */
-  .hero__note {
-    margin-top: 1rem;
-    color: var(--on-dark-muted);
-    font-size: var(--fs-small);
-  }
-
   .hero {
     position: relative;
     display: flex;
@@ -120,34 +113,35 @@ const d = t(lang);
     opacity: 1;
   }
 
-  /* Just enough shade on the text side for white type; the footage keeps its daylight colour elsewhere */
+  /* A deep shade on the text side so the white headline reads clearly on any frame of the film; the footage
+     keeps its daylight colour on the far side */
   .hero__shade {
     z-index: -1;
     background:
-      linear-gradient(90deg, rgba(14, 15, 17, 0.66) 0%, rgba(14, 15, 17, 0.3) 45%, rgba(14, 15, 17, 0) 70%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.6) 0%, rgba(14, 15, 17, 0.08) 50%, rgba(14, 15, 17, 0.08) 80%, rgba(14, 15, 17, 0.62) 100%);
+      linear-gradient(90deg, rgba(14, 15, 17, 0.86) 0%, rgba(14, 15, 17, 0.62) 38%, rgba(14, 15, 17, 0.18) 66%, rgba(14, 15, 17, 0) 82%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.55) 0%, rgba(14, 15, 17, 0.05) 45%, rgba(14, 15, 17, 0.05) 80%, rgba(14, 15, 17, 0.6) 100%);
   }
 
   /* Right-to-left: the text sits on the right, so the shade does too */
   :global([dir='rtl']) .hero__shade {
     background:
-      linear-gradient(270deg, rgba(14, 15, 17, 0.66) 0%, rgba(14, 15, 17, 0.3) 45%, rgba(14, 15, 17, 0) 70%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.6) 0%, rgba(14, 15, 17, 0.08) 50%, rgba(14, 15, 17, 0.08) 80%, rgba(14, 15, 17, 0.62) 100%);
+      linear-gradient(270deg, rgba(14, 15, 17, 0.86) 0%, rgba(14, 15, 17, 0.62) 38%, rgba(14, 15, 17, 0.18) 66%, rgba(14, 15, 17, 0) 82%),
+      linear-gradient(0deg, rgba(14, 15, 17, 0.55) 0%, rgba(14, 15, 17, 0.05) 45%, rgba(14, 15, 17, 0.05) 80%, rgba(14, 15, 17, 0.6) 100%);
   }
 
   .hero__inner {
     text-shadow: 0 1px 28px rgba(14, 15, 17, 0.28);
     padding-top: calc(var(--header-h) + 3rem);
-    padding-bottom: clamp(3.5rem, 2rem + 6vh, 7rem);
+    padding-bottom: clamp(4.5rem, 3rem + 8vh, 9rem);
   }
 
-  /* The headline carries the page: large, light and tightly set */
-  /* About a fifth smaller than before, so the video shows more and the line always fits */
+  /* The headline carries the page on its own: semibold, two lines on desktop, with room around it */
   .hero h1 {
-    font-size: clamp(2.5rem, 1.1rem + 5vw, 6.25rem);
-    font-weight: 380;
-    letter-spacing: -0.045em;
-    line-height: 0.98;
+    max-width: 16ch;
+    font-size: clamp(2.375rem, 1.2rem + 3.6vw, 4.75rem);
+    font-weight: 560;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
   }
 
   /* One sentence per line; from tablet width up a sentence never breaks inside itself */
@@ -161,19 +155,6 @@ const d = t(lang);
     }
   }
 
-  /* The Tyll checkmark closes the headline: "Finally connected." */
-  .hero__seal {
-    display: inline-block;
-    width: 0.42em;
-    margin-inline-start: 0.18em;
-    vertical-align: 0.02em;
-  }
-
-  .hero__seal :global(svg) {
-    width: 100%;
-    height: auto;
-  }
-
   /* One orchestrated entrance: the lines rise in turn, then the copy and buttons settle */
   @media (prefers-reduced-motion: no-preference) {
     .hero__line {
@@ -181,16 +162,9 @@ const d = t(lang);
       animation-delay: calc(0.08s + var(--d) * 0.14s);
     }
 
-    .hero__body,
-    .hero__actions,
-    .hero__note {
+    .hero__actions {
       animation: hero-fade 0.9s var(--ease) both;
       animation-delay: 0.5s;
-    }
-
-    .hero__actions,
-    .hero__note {
-      animation-delay: 0.62s;
     }
   }
 
@@ -208,19 +182,11 @@ const d = t(lang);
     }
   }
 
-  .hero__body {
-    max-width: 33rem;
-    margin-top: clamp(1.5rem, 1rem + 1.4vw, 2.25rem);
-    color: rgba(244, 245, 247, 0.84);
-    font-size: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);
-    line-height: 1.5;
-  }
-
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    margin-top: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
   }
 
   .hero__toggle {
@@ -283,14 +249,6 @@ const d = t(lang);
 </style>
 
 <script>
-  // The headline's checkmark draws once the three lines have risen in
-  import { drawCheck, hideCheck } from '../../scripts/checkmark';
-  const seal = document.querySelector<SVGSVGElement>('.hero__seal svg');
-  if (seal && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    hideCheck(seal);
-    setTimeout(() => drawCheck(seal, 900), 750);
-  }
-
   // The text is plain HTML and shows at once; the video only fades in over the poster once it is actually playing.
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const video = hero?.querySelector('video');

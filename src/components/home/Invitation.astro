@@ -1,7 +1,9 @@
 ---
-// Homepage section 4: the closing invitation, as calm and dark as the opening.
+// The homepage's closing section, as calm and dark as the opening: the free purchasing report request, which the
+// hero's "Get your free report" button scrolls to (#report).
 import Logo from '../Logo.astro';
-import { t, href, type Locale } from '../../i18n';
+import ReportForm from './ReportForm.astro';
+import { t, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -9,7 +11,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
-const v = d.home.invite;
+const v = d.home.report;
 
 // The silver wave: one ribbon of fine lines that moves as a single formation, like a slow ocean swell or silver
 // fabric. Every line follows the same shape and the same travelling motion; the lines are only offset from each
@@ -21,7 +23,7 @@ import { ribbon } from '../../scripts/wave';
 const frame = ribbon(0);
 ---
 
-<section class="invite on-dark" data-dark aria-labelledby="invite-title">
+<section class="invite on-dark" id="report" data-dark aria-labelledby="invite-title">
   <div class="invite__light" aria-hidden="true"></div>
   <svg class="invite__waves" viewBox="0 0 1440 800" preserveAspectRatio="none" aria-hidden="true">
     <defs>
@@ -41,13 +43,9 @@ const frame = ribbon(0);
     <Logo mark anim="draw" label="" class="invite__mark" />
     <h2 id="invite-title">{v.title}</h2>
     <p>{v.text}</p>
-    <div class="invite__actions">
-      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="final">{v.demo}</a>
-      <a class="btn btn--line btn--lg" href={href('solutions', lang)} data-track="explore_solutions_click" data-track-from="final">
-        {d.cta.solutions}
-      </a>
+    <div class="invite__form">
+      <ReportForm lang={lang} />
     </div>
-    <p class="invite__note">{v.note}</p>
   </div>
 </section>
 
@@ -110,7 +108,7 @@ const frame = ribbon(0);
 
   .invite h2 {
     max-width: 20ch;
-    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.75rem);
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
     letter-spacing: -0.04em;
   }
 
@@ -122,24 +120,26 @@ const frame = ribbon(0);
     line-height: 1.55;
   }
 
-  .invite__actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-top: 2.5rem;
+  /* The form sits on a softly lit glass panel above the wave */
+  .invite__form {
+    width: 100%;
+    max-width: 46rem;
+    margin-top: clamp(2rem, 1.5rem + 2vw, 2.75rem);
+    padding: clamp(1.25rem, 0.75rem + 2vw, 2.25rem);
+    border: 1px solid rgba(244, 245, 247, 0.12);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(244, 245, 247, 0.07) 0%, rgba(244, 245, 247, 0.03) 100%);
+    box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
   }
 
-  .invite .invite__note {
-    margin-top: 1.25rem;
-    color: var(--on-dark-muted);
-    font-size: var(--fs-small);
+  .invite__form :global(.report) {
+    margin-top: 0;
   }
 
-  @media (max-width: 640px) {
-    .invite__actions :global(.btn) {
-      flex: 1 1 100%;
-    }
+  .invite h2 {
+    scroll-margin-top: calc(var(--header-h) + 1rem);
   }
 </style>
 

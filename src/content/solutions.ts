@@ -50,6 +50,8 @@ export type Solution = {
   steps: [Step, Step, Step];
   /** Independent research shown with the problem, always with its source */
   proof?: { text: Text; context: Text; source: Text; url: string };
+  /** Features of this product that are still in development, shown as a small Coming soon note */
+  soonNote?: Text;
   walkTitle: Text;
   frames: Frame[];
   note?: Text;
@@ -411,10 +413,10 @@ export const solutions: Record<SolutionKey, Solution> = {
     photoFocus: '60% 45%',
     name: t('Forecasting & Purchasing', 'Prognose & Einkauf', 'التوقعات والمشتريات', 'Previsioni e acquisti'),
     menu: t(
-      'Know what to buy, prepare and approve.',
-      'Wissen, was gekauft, vorbereitet und freigegeben werden muss.',
-      'اعرف ما يجب شراؤه وتحضيره واعتماده.',
-      'Sai cosa comprare, preparare e approvare.',
+      'Know what to buy each week, from your POS sales.',
+      'Wissen, was Sie jede Woche kaufen müssen – aus Ihren Kassendaten.',
+      'اعرف ما يجب شراؤه كل أسبوع، من مبيعات نقاط البيع لديك.',
+      'Sai cosa comprare ogni settimana, dalle vendite di cassa.',
     ),
     headline: t(
       'Know what to buy before you run out.',
@@ -423,47 +425,53 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Sai cosa comprare prima che finisca.',
     ),
     intro: t(
-      'Plan ahead, create purchase requests and keep approvals moving.',
-      'Vorausplanen, Bestellanforderungen erstellen und Freigaben in Bewegung halten.',
-      'خطّط مسبقًا، وأنشئ طلبات الشراء، وحافظ على سير الموافقات.',
-      'Pianifica in anticipo, crea richieste d’acquisto e fai avanzare le approvazioni.',
+      'Tyll reads your POS sales history and gives your purchasing team a clear report of what to buy.',
+      'Tyll liest Ihre Kassenumsätze und gibt Ihrem Einkauf einen klaren Bericht, was zu kaufen ist.',
+      'يقرأ Tyll سجل مبيعات نقاط البيع لديك ويقدّم لفريق المشتريات تقريرًا واضحًا بما يجب شراؤه.',
+      'Tyll legge lo storico delle vendite di cassa e dà al team acquisti un report chiaro di cosa comprare.',
     ),
     problem: t(
-      'When demand, stock and events are tracked separately, you over-order or run short.',
-      'Wenn Nachfrage, Bestand und Events getrennt erfasst werden, bestellt man zu viel oder zu wenig.',
-      'عندما تُتابَع التوقعات والمخزون والفعاليات كلٌّ على حدة، تطلب أكثر من اللازم أو ينفد ما تحتاجه.',
-      'Quando domanda, magazzino ed eventi sono gestiti separatamente, si ordina troppo o si resta senza.',
+      'Without a clear view of what you actually use each week, purchasing guesses – and you over-order or run short.',
+      'Ohne klaren Blick darauf, was Sie pro Woche tatsächlich verbrauchen, schätzt der Einkauf – und bestellt zu viel oder zu wenig.',
+      'من دون رؤية واضحة لما تستهلكه فعلًا كل أسبوع، تعتمد المشتريات على التخمين، فتطلب أكثر من اللازم أو ينفد ما تحتاجه.',
+      'Senza una visione chiara di ciò che consumi davvero ogni settimana, gli acquisti vanno a intuito: si ordina troppo o si resta senza.',
     ),
     problemPhoto: probForecast,
     problemPhotoAlt: t('A chef plating a long row of dishes before a large event.', 'Ein Koch richtet vor einer großen Veranstaltung eine lange Reihe von Tellern an.', 'طاهٍ يجهّز صفًا طويلًا من الأطباق قبل فعالية كبيرة.', 'Uno chef impiatta una lunga fila di piatti prima di un grande evento.'),
     problemFocus: '50% 45%',
     steps: [
-      { label: t('Plan', 'Planen', 'التخطيط', 'Pianifica'), frame: 0 },
-      { label: t('Order', 'Bestellen', 'الطلب', 'Ordina'), frame: 1 },
-      { label: t('Approve', 'Freigeben', 'الاعتماد', 'Approva'), frame: 3 },
+      { label: t('Connect', 'Verbinden', 'الربط', 'Collega'), frame: 0 },
+      { label: t('Calculate', 'Berechnen', 'الحساب', 'Calcola'), frame: 1 },
+      { label: t('Report', 'Bericht', 'التقرير', 'Report'), frame: 1 },
     ],
     helps: {
       en: [
-        'Expected guests come from reservations, occupancy and confirmed events – and any figure can be adjusted.',
-        'Tyll suggests quantities and flags what runs short before the next delivery.',
-        'Requests move through purchasing, accounting and, for larger orders, the general manager.',
+        'Tyll connects to your POS and scans your past sales.',
+        'It calculates the average weekly use of every item.',
+        'Your purchasing team gets a clear report of what to buy.',
       ],
       de: [
-        'Erwartete Gäste ergeben sich aus Reservierungen, Belegung und bestätigten Veranstaltungen – jede Zahl lässt sich anpassen.',
-        'Tyll schlägt Mengen vor und markiert, was vor der nächsten Lieferung knapp wird.',
-        'Anforderungen laufen über Einkauf, Buchhaltung und bei größeren Bestellungen die Direktion.',
+        'Tyll verbindet sich mit Ihrem Kassensystem und wertet Ihre bisherigen Verkäufe aus.',
+        'Es berechnet den durchschnittlichen Wochenverbrauch jedes Artikels.',
+        'Ihr Einkauf erhält einen klaren Bericht, was zu kaufen ist.',
       ],
       ar: [
-        'يُحسب عدد الضيوف المتوقع من الحجوزات ونسبة الإشغال والفعاليات المؤكدة، ويمكن تعديل أي رقم.',
-        'يقترح Tyll الكميات وينبّه إلى ما سينفد قبل التوريد التالي.',
-        'تمر الطلبات عبر المشتريات والمحاسبة، والمدير العام في الطلبات الأكبر.',
+        'يتصل Tyll بنظام نقاط البيع لديك ويحلّل مبيعاتك السابقة.',
+        'يحسب متوسط الاستهلاك الأسبوعي لكل صنف.',
+        'يحصل فريق المشتريات على تقرير واضح بما يجب شراؤه.',
       ],
       it: [
-        'Gli ospiti attesi derivano da prenotazioni, occupazione ed eventi confermati, e ogni cifra si può modificare.',
-        'Tyll suggerisce le quantità e segnala ciò che finirà prima della prossima consegna.',
-        'Le richieste passano da acquisti, contabilità e, per gli ordini più grandi, dal direttore generale.',
+        'Tyll si collega al tuo sistema di cassa e analizza le vendite passate.',
+        'Calcola il consumo medio settimanale di ogni articolo.',
+        'Il team acquisti riceve un report chiaro di cosa comprare.',
       ],
     },
+    soonNote: t(
+      'Expected guests from reservations, occupancy and events, and approval workflows for purchase requests. The demo below already shows how they will work.',
+      'Erwartete Gäste aus Reservierungen, Belegung und Veranstaltungen sowie Freigabe-Abläufe für Bestellanforderungen. Die Demo unten zeigt bereits, wie sie funktionieren werden.',
+      'الضيوف المتوقعون من الحجوزات ونسبة الإشغال والفعاليات، ومسارات اعتماد طلبات الشراء. ويوضح العرض التوضيحي أدناه بالفعل طريقة عملها.',
+      'Ospiti attesi da prenotazioni, occupazione ed eventi, e flussi di approvazione per le richieste d’acquisto. La demo qui sotto mostra già come funzioneranno.',
+    ),
     walkTitle: t(
       'From expected guests to goods received',
       'Von erwarteten Gästen bis zur Warenannahme',

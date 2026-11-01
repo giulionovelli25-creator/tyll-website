@@ -1,0 +1,179 @@
+---
+// Directly under the hero: the three products Tyll sells today, each linking to its solution page.
+import SolutionIcon from '../SolutionIcon.astro';
+import { solutions } from '../../content/solutions';
+import { available } from '../../config/products';
+import { t, href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const v = d.home.now;
+---
+
+<section class="now" aria-labelledby="now-title">
+  <div class="wrap">
+    <header class="now__head">
+      <p class="now__label"><span class="now__dot" aria-hidden="true"></span>{v.label}</p>
+      <h2 id="now-title">{v.title}</h2>
+    </header>
+    <ul class="now__cards">
+      {
+        available.map((key) => (
+          <li>
+            <a class="card" href={href(key, lang)}>
+              <span class="card__icon" aria-hidden="true">
+                <SolutionIcon name={solutions[key].icon} />
+              </span>
+              <h3 class="card__title">{v.items[key].title}</h3>
+              <p class="card__text">{v.items[key].text}</p>
+              <span class="card__more">
+                {v.more}
+                <span class="card__arrow flip-rtl" aria-hidden="true">→</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .now {
+    position: relative;
+    padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
+    background:
+      radial-gradient(70% 60% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+      linear-gradient(180deg, #f7f7f5 0%, #f0f1f2 100%);
+  }
+
+  .now__head {
+    max-width: 40rem;
+  }
+
+  .now__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  /* A small live dot: these are on sale today */
+  .now__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2f8f5b;
+    box-shadow: 0 0 0 4px rgba(47, 143, 91, 0.14);
+  }
+
+  .now h2 {
+    margin-top: 0.75rem;
+    font-size: var(--fs-h2);
+  }
+
+  .now__cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1rem, 0.5rem + 1.5vw, 1.5rem);
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    border: 1px solid rgba(20, 22, 26, 0.07);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, #ffffff 0%, #fbfbfa 100%);
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow:
+      0 1px 2px rgba(20, 22, 26, 0.04),
+      0 24px 48px -30px rgba(20, 22, 26, 0.28);
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 1px 2px rgba(20, 22, 26, 0.05),
+      0 32px 60px -30px rgba(20, 22, 26, 0.36);
+  }
+
+  .card__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .card__icon :global(svg) {
+    width: 21px;
+    height: 21px;
+  }
+
+  .card__title {
+    margin-top: 1.5rem;
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .card__text {
+    margin-top: 0.5rem;
+    color: var(--graphite);
+    line-height: 1.55;
+  }
+
+  .card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .card__arrow {
+    display: inline-block;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .card:hover .card__arrow {
+    transform: translateX(4px);
+  }
+
+  :global([dir='rtl']) .card:hover .card__arrow {
+    transform: scaleX(-1) translateX(4px);
+  }
+
+  @media (max-width: 860px) {
+    .now__cards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .card__arrow {
+      transition: none;
+    }
+  }
+</style>

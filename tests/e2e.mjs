@@ -78,7 +78,7 @@ for (const lang of LANGS) {
   try {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
-    if (!/One hotel|Ein Hotel|فندق واحد|Un hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
+    if (!/Know exactly what to buy|Wissen, was Sie einkaufen|اعرف بالضبط|Sai esattamente/.test(h1)) problems.push(`hero headline is "${h1}"`);
     // The product sequence: starts when well in view, ends on the final Tyll view (button shows Replay), never holds the page
     const story = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -97,15 +97,16 @@ for (const lang of LANGS) {
     if (!['0', '1'].includes(story.early.scene) || story.early.state !== 'playing' || story.early.pieces !== 4) problems.push(`story did not start from the beginning (${JSON.stringify(story.early)})`);
     if (!(story.end.scene === '6' && story.end.state === 'done' && story.end.shell > 0.95 && story.end.next > 0.95 && story.end.recs === 2 && story.end.rows === 3)) problems.push(`story end ${JSON.stringify(story.end)}`);
     if (!story.moved) problems.push('page did not continue past the story');
-    // "Explore Solutions" in the hero and the closing section go to the overview page with all six solutions
-    for (const sel of ['.hero__actions a[data-track="explore_solutions_click"]', '.invite__actions a[data-track="explore_solutions_click"]']) {
-      await go(page, `/${lang}/`);
-      await page.$eval(sel, (a) => a.scrollIntoView({ block: 'center', behavior: 'instant' }));
-      await sleep(300);
-      await Promise.all([page.waitForNavigation(), page.click(sel)]);
-      const overview = await page.evaluate(() => ({ path: location.pathname, tiles: [...document.querySelectorAll('.tiles a')].map((a) => a.getAttribute('href')) }));
-      if (overview.path !== PAGES[lang][5] || overview.tiles.join() !== SOL[lang].join()) problems.push(`Explore Solutions (${sel.split(' ')[0]}) → ${JSON.stringify(overview)}`);
-    }
+    // The homepage leads with what is on sale: the hero's report button reaches the form and "Available now" links
+    // the three products; the menu marks the other three as Coming soon
+    await go(page, `/${lang}/`);
+    const product = await page.evaluate(() => ({
+      report: document.querySelector('.hero__actions a[href="#report"]') && !!document.querySelector('#report form[data-report]'),
+      now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
+      menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
+    }));
+    const nowPages = [SOL[lang][2], SOL[lang][0], SOL[lang][1]];
+    if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 3) problems.push(`homepage products ${JSON.stringify(product)}`);
     // The Solutions dropdown in the header still opens with all six solutions and the FAQ
     await go(page, `/${lang}/`);
     await page.click('#solutions-trigger');
@@ -233,7 +234,7 @@ for (const lang of LANGS) {
     const logo = document.querySelector('.header__logo').getBoundingClientRect();
     const burger = document.querySelector('.header__burger').getBoundingClientRect();
     const h1 = document.querySelector('h1').getBoundingClientRect();
-    return { logoRight: logo.right > innerWidth / 2, burgerLeft: burger.left < innerWidth / 2, h1Right: Math.round(innerWidth - h1.right), font: getComputedStyle(document.body).fontFamily, cta: document.querySelector('.hero__actions .btn').textContent.trim() };
+    return { logoRight: logo.right > innerWidth / 2, burgerLeft: burger.left < innerWidth / 2, h1Right: Math.round(innerWidth - h1.right), font: getComputedStyle(document.body).fontFamily, cta: document.querySelector('.hero__actions .btn').firstChild.textContent.trim() };
   });
   if (!head.logoRight || !head.burgerLeft) p.push(`header not mirrored ${JSON.stringify(head)}`);
   if (head.h1Right > 40) p.push(`headline not right-aligned (${head.h1Right}px from the right)`);
@@ -302,20 +303,20 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
       return { first: btn && btn.bottom <= innerHeight, purpose: !!document.querySelector('.booking__purpose')?.textContent.trim(), mail: !!document.querySelector('.book__email a[href^="mailto:info@tyll.ai"]'), privacy: document.querySelector('.booking__privacy a')?.getAttribute('href'), photo: !!document.querySelector('.book__photo img') };
     });
     if (!book.first || !book.purpose || !book.mail || !/#calendly$/.test(book.privacy || '') || !book.photo) p.push(`${lang}: booking page ${JSON.stringify(book)}`);
-    // Hero: headline fits on screen, one supporting sentence
+    // Hero: only the headline and two buttons; the headline fits on screen
     await go(page, `/${lang}/`);
     const hero = await page.evaluate(() => {
       const h1 = document.querySelector('.hero h1'); const rg = document.createRange(); rg.selectNodeContents(h1);
       const rects = [...rg.getClientRects()].filter((x) => x.width > 0);
-      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), sentences: document.querySelector('.hero__body').textContent.trim().split(/[.!?。]\s|\.$/).filter(Boolean).length };
+      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), extraText: document.querySelectorAll('.hero__inner p').length, mark: document.querySelectorAll('.hero__inner svg').length };
     });
-    if (!hero.fits || hero.fs > 100 || hero.sentences !== 1) p.push(`${lang}: hero ${JSON.stringify(hero)}`);
+    if (!hero.fits || hero.fs > 100 || hero.extraText || hero.mark) p.push(`${lang}: hero ${JSON.stringify(hero)}`);
     // Each solution page ends with a link to all solutions
     await go(page, SOL[lang][0]);
     const all = await page.$eval('.others__all', (a) => a.getAttribute('href')).catch(() => null);
     if (all !== PAGES[lang][5]) p.push(`${lang}: All Solutions link ${all}`);
     if (!home.sources.some((s) => /hero-operations/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
-    if (lang === 'en' && home.h1 !== 'One hotel. Many systems. Finally connected.') p.push(`hero headline changed: "${home.h1}"`);
+    if (lang === 'en' && home.h1 !== 'Know exactly what to buy. Every week.') p.push(`hero headline changed: "${home.h1}"`);
     if (home.ctas !== 2) p.push(`${lang}: hero has ${home.ctas} buttons`);
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);

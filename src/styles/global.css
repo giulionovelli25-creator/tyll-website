@@ -320,3 +320,20 @@ html[lang='ar'] .problem__text {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* "Coming soon": the one warm accent on the site, for products still in development (menu, overview, homepage,
+   solution pages). Amber like the review marks in the product. */
+.badge-soon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  padding: 0.16rem 0.6rem;
+  border: 1px solid #f1dfb8;
+  border-radius: var(--pill);
+  background: #fbf1dc;
+  color: #7a5310;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
