@@ -42,9 +42,9 @@ const variant = order % 3;
 const wave = ribbon(0.32);
 ---
 
-<Base lang={lang} page={solution} title={`${name} – Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`} overHero>
+<Base lang={lang} page={solution} title={`${name} | Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`} overHero>
   <!-- 1. Opening -->
-  <section class="open on-dark" data-hero aria-labelledby="sol-title">
+  <section class="open on-dark" data-dark aria-labelledby="sol-title">
     <Picture
       src={s.photo}
       alt={s.photoAlt[lang]}
@@ -81,13 +81,13 @@ const wave = ribbon(0.32);
       <div class="open__actions">
         {
           demo && (
-            <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-top`}>
-              {fill(p.tryNamed)}
+            <a class:list={['btn btn--lg', soon ? 'btn--line' : 'btn--solid']} href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-top`}>
+              {t(lang).hero.try}
               <span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
           )
         }
-        <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-top`}>
+        <a class:list={['btn btn--lg', demo && !soon ? 'btn--line' : 'btn--solid', soon && 'is-first']} href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-top`}>
           {d.cta.book}
         </a>
       </div>
@@ -154,7 +154,7 @@ const wave = ribbon(0.32);
   <section class:list={['product', `product--${ex.tone}`, ex.tone === 'dark' && 'on-dark']} data-dark={ex.tone === 'dark' ? '' : undefined} aria-labelledby="sol-product">
     <div class="product__wrap">
       <header class="product__head">
-        <h2 id="sol-product">{s.walkTitle[lang]}</h2>
+        <h2 id="sol-product" class="display">{s.walkTitle[lang]}</h2>
       </header>
       <ProductExplorer lang={lang} solution={s} explore={ex} id={`ex-${solution}`} />
       {s.note && <p class="product__note">{s.note[lang]}</p>}
@@ -168,11 +168,11 @@ const wave = ribbon(0.32);
         <svg class="cta__wave" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
           <defs>
             <linearGradient id={`cta-silver-${solution}`} x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0" stop-color="#c8cdd4" stop-opacity="0" />
-              <stop offset="0.35" stop-color="#c8cdd4" stop-opacity="0.3" />
-              <stop offset="0.62" stop-color="#eef0f3" stop-opacity="0.8" />
-              <stop offset="0.85" stop-color="#a3a9b2" stop-opacity="0.45" />
-              <stop offset="1" stop-color="#c8cdd4" stop-opacity="0.15" />
+              <stop offset="0" stop-color="var(--silver)" stop-opacity="0" />
+              <stop offset="0.35" stop-color="var(--silver)" stop-opacity="0.3" />
+              <stop offset="0.62" stop-color="var(--silver-light)" stop-opacity="0.8" />
+              <stop offset="0.85" stop-color="var(--silver-deep)" stop-opacity="0.45" />
+              <stop offset="1" stop-color="var(--silver)" stop-opacity="0.15" />
             </linearGradient>
           </defs>
           <g fill="none" stroke={`url(#cta-silver-${solution})`} stroke-width="1">
@@ -180,18 +180,18 @@ const wave = ribbon(0.32);
           </g>
         </svg>
         <div class="cta__copy">
+          <h2 id="sol-final" class="display">{fill(p.finalTitle)}</h2>
           <p class="cta__outcome">{ex.outcome[lang]}</p>
-          <h2 id="sol-final">{fill(p.finalTitle)}</h2>
           <div class="close__actions">
             {
               demo && (
-                <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-final`}>
-                  {fill(p.tryNamed)}
+                <a class:list={['btn btn--lg', soon ? 'btn--line' : 'btn--solid']} href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-final`}>
+                  {t(lang).hero.try}
                   <span class="visually-hidden"> {d.cta.newTab}</span>
                 </a>
               )
             }
-            <a class:list={['btn btn--lg', demo ? 'btn--line' : 'btn--solid']} href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-final`}>
+            <a class:list={['btn btn--lg', demo && !soon ? 'btn--line' : 'btn--solid', soon && 'is-first']} href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-final`}>
               {d.cta.book}
             </a>
           </div>
@@ -220,7 +220,10 @@ const wave = ribbon(0.32);
                   decoding="async"
                   style={`object-position:${solutions[k].photoFocus}`}
                 />
-                <span class="others__name">{solutions[k].name[lang]}</span>
+                <span class="others__name">
+                  {solutions[k].name[lang]}
+                  {isComingSoon(k) && <span class="badge-soon">{d.cta.comingSoon}</span>}
+                </span>
                 <span class="others__menu">{solutions[k].menu[lang]}</span>
               </a>
             </li>
@@ -266,14 +269,16 @@ const wave = ribbon(0.32);
   .open__shade {
     z-index: -1;
     background:
-      linear-gradient(90deg, rgba(14, 15, 17, 0.74) 0%, rgba(14, 15, 17, 0.36) 55%, rgba(14, 15, 17, 0) 100%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.62) 0%, transparent 55%);
+      linear-gradient(180deg, rgb(var(--shade-rgb) / 0.5) 0%, transparent 26%),
+      linear-gradient(90deg, rgb(var(--shade-rgb) / 0.74) 0%, rgb(var(--shade-rgb) / 0.36) 55%, rgb(var(--shade-rgb) / 0) 100%),
+      linear-gradient(0deg, rgb(var(--shade-rgb) / 0.62) 0%, transparent 55%);
   }
 
   :global([dir='rtl']) .open__shade {
     background:
-      linear-gradient(270deg, rgba(14, 15, 17, 0.74) 0%, rgba(14, 15, 17, 0.36) 55%, rgba(14, 15, 17, 0) 100%),
-      linear-gradient(0deg, rgba(14, 15, 17, 0.62) 0%, transparent 55%);
+      linear-gradient(180deg, rgb(var(--shade-rgb) / 0.5) 0%, transparent 26%),
+      linear-gradient(270deg, rgb(var(--shade-rgb) / 0.74) 0%, rgb(var(--shade-rgb) / 0.36) 55%, rgb(var(--shade-rgb) / 0) 100%),
+      linear-gradient(0deg, rgb(var(--shade-rgb) / 0.62) 0%, transparent 55%);
   }
 
   .open__inner {
@@ -299,19 +304,27 @@ const wave = ribbon(0.32);
   }
 
   .open h1 {
-    max-width: 14ch;
-    font-size: clamp(2.75rem, 1.5rem + 4.6vw, 6rem);
-    font-weight: 380;
-    letter-spacing: -0.042em;
-    line-height: 1;
+    max-width: 16ch;
+    font-size: var(--fs-hero);
   }
 
   .open__intro {
     max-width: 34rem;
     margin-top: clamp(1.25rem, 1rem + 1vw, 2rem);
-    color: rgba(244, 245, 247, 0.84);
+    color: rgb(var(--on-dark-rgb) / 0.84);
     font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
     line-height: 1.5;
+  }
+
+  .open__actions :global(.is-first),
+  .close__actions :global(.is-first) {
+    order: -1;
+  }
+
+  /* Photographs share one tone (the product screens are in their own component and stay untouched) */
+  .open :global(.open__photo),
+  .context__photo :global(img) {
+    filter: var(--photo-grade);
   }
 
   .open__actions,
@@ -330,9 +343,9 @@ const wave = ribbon(0.32);
     gap: 0.5rem 0.85rem;
     margin-bottom: 1.75rem;
     padding: 0.55rem 1rem 0.55rem 0.6rem;
-    border: 1px solid rgba(244, 245, 247, 0.22);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.22);
     border-radius: var(--pill);
-    background: rgba(20, 22, 26, 0.45);
+    background: rgb(var(--ink-rgb) / 0.45);
     color: var(--on-dark);
     font-size: 0.9375rem;
     -webkit-backdrop-filter: blur(8px);
@@ -348,8 +361,8 @@ const wave = ribbon(0.32);
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #e8b45c;
-    box-shadow: 0 0 0 4px rgba(232, 180, 92, 0.2);
+    background: var(--amber-400);
+    box-shadow: 0 0 0 4px rgb(var(--amber-glow-rgb) / 0.2);
   }
 
   .soon-banner a {
@@ -375,7 +388,7 @@ const wave = ribbon(0.32);
      side with space between them (about 58/42); the photograph keeps its own shape and rounded corners. */
   .context {
     padding-block: clamp(4rem, 2.5rem + 5vw, 7.5rem);
-    background: #f5f3ee;
+    background: var(--page);
   }
 
   .context__grid {
@@ -400,8 +413,8 @@ const wave = ribbon(0.32);
     aspect-ratio: 4 / 5;
     overflow: hidden;
     border-radius: var(--radius-lg);
-    background: #e8e4dc;
-    box-shadow: 0 40px 80px -48px rgba(20, 22, 26, 0.45);
+    background: var(--sand-400);
+    box-shadow: 0 40px 80px -48px rgb(var(--ink-rgb) / 0.45);
   }
 
   /* Page-to-page variation: shape, height and proportion */
@@ -451,7 +464,7 @@ const wave = ribbon(0.32);
     place-items: center;
     width: 40px;
     height: 40px;
-    border: 1px solid rgba(20, 22, 26, 0.14);
+    border: 1px solid rgb(var(--ink-rgb) / 0.14);
     border-radius: 12px;
     color: var(--graphite);
   }
@@ -465,10 +478,12 @@ const wave = ribbon(0.32);
     max-width: 21ch;
     margin-top: 1.25rem;
     color: var(--ink);
-    font-size: clamp(1.875rem, 1.3rem + 2.1vw, 3rem);
-    font-weight: 380;
-    letter-spacing: -0.032em;
-    line-height: 1.1;
+    font-family: var(--font-display);
+    font-size: var(--fs-h2);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-wrap: balance;
   }
 
   .context__helps-title {
@@ -506,7 +521,7 @@ const wave = ribbon(0.32);
     height: 9px;
     border: 1px solid var(--steel);
     border-radius: 50%;
-    background: #f5f3ee;
+    background: var(--page);
   }
 
   /* The line down to the next step */
@@ -517,7 +532,7 @@ const wave = ribbon(0.32);
     bottom: calc(-1.6rem + 0.42rem - 3px);
     inset-inline-start: calc(-1.9rem + 4px);
     width: 1px;
-    background: rgba(20, 22, 26, 0.16);
+    background: rgb(var(--ink-rgb) / 0.16);
   }
 
   /* Independent research beside the problem, always with its source */
@@ -579,15 +594,13 @@ const wave = ribbon(0.32);
 
   .product--dark {
     background:
-      radial-gradient(60% 40% at 50% 0%, rgba(255, 255, 255, 0.07), transparent 70%),
-      linear-gradient(180deg, #1d1f23 0%, #15171a 100%);
+      radial-gradient(60% 40% at 50% 0%, rgb(var(--paper-rgb) / 0.07), transparent 70%),
+      linear-gradient(180deg, var(--char-2) 0%, var(--char-3) 100%);
     color: var(--on-dark);
   }
 
   .product--light {
-    background:
-      radial-gradient(60% 40% at 50% 0%, rgba(255, 255, 255, 0.7), transparent 70%),
-      linear-gradient(180deg, #ecebe7 0%, #e3e2de 100%);
+    background: var(--paper);
   }
 
   .product__wrap {
@@ -633,21 +646,21 @@ const wave = ribbon(0.32);
      the footer, then the other solutions as a navigation strip */
   .close {
     padding-block: clamp(3.5rem, 2.5rem + 3vw, 5.5rem) clamp(3.5rem, 2.5rem + 3vw, 5rem);
-    background: linear-gradient(180deg, #f6f5f2 0%, #efeeea 100%);
+    background: linear-gradient(180deg, var(--sand-100) 0%, var(--sand-200) 100%);
   }
 
   .cta {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: clamp(420px, 30vw + 160px, 560px);
+    min-height: clamp(320px, 18vw + 160px, 420px);
     padding: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
     border-radius: 28px;
     background:
-      radial-gradient(70% 90% at 100% 100%, rgba(200, 205, 212, 0.12), transparent 70%),
-      linear-gradient(135deg, #202226 0%, #15171a 60%, #111315 100%);
+      radial-gradient(70% 90% at 100% 100%, rgb(var(--silver-rgb) / 0.12), transparent 70%),
+      linear-gradient(135deg, var(--char-1) 0%, var(--char-3) 60%, var(--char-4) 100%);
     color: var(--on-dark);
-    box-shadow: 0 50px 100px -60px rgba(20, 22, 26, 0.55);
+    box-shadow: 0 50px 100px -60px rgb(var(--ink-rgb) / 0.55);
     overflow: hidden;
     isolation: isolate;
   }
@@ -660,8 +673,8 @@ const wave = ribbon(0.32);
     width: 100%;
     height: 100%;
     opacity: 0.9;
-    -webkit-mask-image: linear-gradient(90deg, transparent 28%, rgba(0, 0, 0, 0.5) 52%, #000 75%);
-    mask-image: linear-gradient(90deg, transparent 28%, rgba(0, 0, 0, 0.5) 52%, #000 75%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 28%, rgb(var(--black-rgb) / 0.5) 52%, var(--black) 75%);
+    mask-image: linear-gradient(90deg, transparent 28%, rgb(var(--black-rgb) / 0.5) 52%, var(--black) 75%);
     pointer-events: none;
   }
 
@@ -674,9 +687,10 @@ const wave = ribbon(0.32);
   }
 
   .cta__outcome {
-    max-width: 30rem;
-    color: rgba(244, 245, 247, 0.62);
-    font-size: 0.9375rem;
+    max-width: 34rem;
+    margin-top: var(--s-2);
+    color: var(--on-dark-muted);
+    font-size: var(--fs-lead);
     line-height: 1.55;
   }
 
@@ -684,9 +698,6 @@ const wave = ribbon(0.32);
     max-width: 16ch;
     margin-top: 1rem;
     font-size: clamp(2.25rem, 1.5rem + 2.8vw, 3.75rem);
-    font-weight: 380;
-    letter-spacing: -0.035em;
-    line-height: 1.04;
   }
 
   .others {
@@ -753,6 +764,11 @@ const wave = ribbon(0.32);
 
   .others a:hover :global(img) {
     transform: scale(1.03);
+  }
+
+  .others__name .badge-soon {
+    margin-inline-start: 0.35rem;
+    vertical-align: 0.1em;
   }
 
   .others__name {
@@ -828,7 +844,7 @@ const wave = ribbon(0.32);
   @media (max-width: 700px) {
     .open__shade,
     :global([dir='rtl']) .open__shade {
-      background: linear-gradient(0deg, rgba(14, 15, 17, 0.82) 0%, rgba(14, 15, 17, 0.5) 55%, rgba(14, 15, 17, 0.28) 100%);
+      background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.88) 0%, rgb(var(--shade-rgb) / 0.66) 55%, rgb(var(--shade-rgb) / 0.42) 100%);
     }
   }
 
@@ -842,8 +858,8 @@ const wave = ribbon(0.32);
     .cta__wave {
       top: auto;
       height: 9rem;
-      -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 60%);
-      mask-image: linear-gradient(180deg, transparent 0%, #000 60%);
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, var(--black) 60%);
+      mask-image: linear-gradient(180deg, transparent 0%, var(--black) 60%);
     }
 
     .open__actions :global(.btn),

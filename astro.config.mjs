@@ -8,7 +8,9 @@ const deployEnv = process.env.DEPLOY_ENV || process.env.VERCEL_ENV || 'developme
 const buildDate = new Date().toISOString().slice(0, 10);
 
 export default defineConfig({
-  vite: { define: { 'import.meta.env.DEPLOY_ENV': JSON.stringify(deployEnv), 'import.meta.env.BUILD_DATE': JSON.stringify(buildDate) } },
+  vite: {
+    define: { 'import.meta.env.DEPLOY_ENV': JSON.stringify(deployEnv), 'import.meta.env.BUILD_DATE': JSON.stringify(buildDate) },
+  },
   site: process.env.PUBLIC_SITE_URL || 'https://tyll.ai',
   trailingSlash: 'always',
   devToolbar: { enabled: false },

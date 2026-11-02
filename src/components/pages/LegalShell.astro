@@ -76,8 +76,8 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     padding-bottom: clamp(2.25rem, 1.5rem + 2vw, 3.5rem);
     border-bottom: 1px solid var(--line);
     background:
-      radial-gradient(60% 120% at 85% 0%, rgba(200, 205, 212, 0.28), transparent 70%),
-      linear-gradient(180deg, #f6f5f2 0%, #fbfbfa 100%);
+      radial-gradient(60% 120% at 85% 0%, rgb(var(--silver-rgb) / 0.28), transparent 70%),
+      linear-gradient(180deg, var(--sand-100) 0%, var(--sand-50) 100%);
   }
 
   .legal__band-inner {
@@ -92,7 +92,7 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     height: 2px;
     margin-bottom: 1.5rem;
     border-radius: 2px;
-    background: linear-gradient(90deg, #a3a9b2, #e2e5e9);
+    background: linear-gradient(90deg, var(--silver-deep), var(--line));
   }
 
   h1 {
@@ -124,10 +124,10 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
   .legal__missing {
     margin-top: 0;
     padding: 1.25rem 1.5rem;
-    border: 1px solid #e3c98f;
+    border: 1px solid var(--amber-300);
     border-radius: var(--radius-sm);
-    background: #fbf5e7;
-    color: #5c430e;
+    background: var(--amber-50);
+    color: var(--amber-900);
     font-size: 0.9375rem;
   }
 
@@ -285,8 +285,8 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
   .legal__body :global(.missing) {
     padding: 0.05em 0.35em;
     border-radius: 4px;
-    background: #fbf0d6;
-    color: #6b4d0f;
+    background: var(--amber-150);
+    color: var(--amber-800);
     font-size: 0.9375em;
   }
 </style>

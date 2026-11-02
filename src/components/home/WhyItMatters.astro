@@ -1,6 +1,8 @@
 ---
-// One sourced finding, said in a single breath: the figure counts up and reads straight into the statement beside it.
-// Industry research, never a Tyll result. It leads into "Works with your existing systems" just below.
+// "Two numbers worth knowing": two sourced findings on one panel, read as a pair. Each number is drawn as what it means:
+// ten systems tumble into a pile as the count rises, then seven coins land on a scale against one, tipping it. The second
+// only starts after the first, so the eye is led across both. Industry research, never a Tyll result. The page's HTML is
+// the final frame, so without JavaScript or with reduced motion both are simply there. The system names only illustrate.
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -9,119 +11,436 @@ interface Props {
 
 const { lang } = Astro.props;
 const w = t(lang).home.why;
-// The figure counts up when it first comes into view; the suffix (the "+") stays where it is
-const [, count = w.figure, suffix = ''] = w.figure.match(/^(\d+)(.*)$/) ?? [];
+const parts = (figure: string) => {
+  const [, before = '', count = figure, after = ''] = figure.match(/^(\D*)(\d+)(.*)$/) ?? [];
+  return { before, count, after };
+};
+const one = parts(w.figure);
+const two = parts(w.second.figure);
+const tilt = [-4, 3, -2, 5, -6, 2, -3, 6, -1, 4];
+const lift = [2, -4, 5, -2, 4, -5, 3, -3, 5, -2];
 ---
 
-<section class="why" aria-labelledby="why-title">
-  <div class="wrap why__inner">
-    <p class="why__number" aria-hidden="true"><bdi dir="ltr"><span data-count={count}>{count}</span>{suffix}</bdi></p>
-    <div class="why__copy">
-      <h2 id="why-title"><span class="visually-hidden">{w.figure} </span>{w.title}</h2>
-      <p class="why__text">{w.text}</p>
-      <p class="why__source">
-        {w.source}:{' '}
-        <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
-      </p>
+<section class="why" aria-labelledby="why-title" data-why>
+  <div class="wrap">
+    <h2 id="why-title" class="display why__title">{w.heading}</h2>
+    <div class="why__panel">
+      <article class="stat" data-stat>
+        <div class="stat__top">
+          <p class="stat__number" aria-hidden="true"><bdi dir="ltr"><span data-count={one.count}>{one.count}</span>{one.after}</bdi></p>
+          <ul class="pile" aria-hidden="true">
+            {w.systems.map((name, i) => <li style={`--i:${i};--r:${tilt[i]}deg;--y:${lift[i]}px`}>{name}</li>)}
+            <li class="pile__more" style={`--i:10;--r:-3deg;--y:2px`}>+</li>
+          </ul>
+        </div>
+        <h3 class="display stat__title"><span class="visually-hidden">{w.figure} </span>{w.title}</h3>
+        <p class="stat__text">{w.text}</p>
+        <p class="stat__source">
+          {w.source}:{' '}
+          <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
+        </p>
+      </article>
+
+      <span class="why__next" aria-hidden="true"><span class="flip-rtl">→</span></span>
+
+      <article class="stat stat--money" data-stat>
+        <div class="stat__top">
+          <p class="stat__number" aria-hidden="true"><bdi dir="ltr">{two.before}<span data-count={two.count}>{two.count}</span>{two.after}</bdi></p>
+          <svg class="scale" viewBox="0 0 320 180" aria-hidden="true">
+            <path class="scale__post" d="M160 34V170M124 172h72"></path>
+            <g class="scale__beam"><path d="M50 34h220"></path><circle cx="160" cy="34" r="5"></circle></g>
+            <g class="scale__pan scale__pan--left">
+              <path class="scale__string" d="M50 34 10 120M50 34 90 120"></path>
+              <path class="scale__dish" d="M8 120h84c-4 10-14 14-42 14S12 130 8 120Z"></path>
+              <g class="coin" style="--i:0"><ellipse cx="50" cy="116" rx="18" ry="6" class="coin__edge"></ellipse><ellipse cx="50" cy="113" rx="18" ry="6" class="coin__face"></ellipse></g>
+              <text x="50" y="100" text-anchor="middle">$1</text>
+            </g>
+            <g class="scale__pan scale__pan--right">
+              <path class="scale__string" d="M270 34 230 120M270 34 310 120"></path>
+              <path class="scale__dish" d="M228 120h84c-4 10-14 14-42 14s-38-4-42-14Z"></path>
+              {
+                Array.from({ length: 7 }, (_, i) => (
+                  <g class="coin" style={`--i:${i + 1}`}>
+                    <ellipse cx="270" cy={116 - i * 6.5} rx="18" ry="6" class="coin__edge"></ellipse>
+                    <ellipse cx="270" cy={113 - i * 6.5} rx="18" ry="6" class="coin__face"></ellipse>
+                  </g>
+                ))
+              }
+            </g>
+          </svg>
+        </div>
+        <h3 class="display stat__title"><span class="visually-hidden">{w.second.figure} </span>{w.second.title}</h3>
+        <p class="stat__text">{w.second.text}</p>
+        <p class="stat__source">
+          {w.source}:{' '}
+          <a href={w.second.sourceUrl} target="_blank" rel="noopener">{w.second.sourceName}</a>
+        </p>
+      </article>
     </div>
   </div>
 </section>
 
 <style>
   .why {
-    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
-    background: linear-gradient(180deg, #ffffff 0%, #f6f7f8 100%);
+    padding-block: var(--section-y);
+    background: var(--page);
+    color: var(--text-1);
   }
 
-  .why__inner {
+  .why__title {
+    font-size: var(--fs-h2);
+    text-align: center;
+  }
+
+  /* One panel, so the two read as one thought */
+  .why__panel {
+    position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 1.5rem clamp(2.5rem, 1rem + 6vw, 7rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: var(--s-5);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    box-shadow: var(--shadow-2);
   }
 
-  /* The number is the section: very large, fine-lined, fading from ink into the night blue of the story above */
-  .why__number {
+  .stat {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--s-5);
+  }
+
+  .stat + .why__next + .stat {
+    border-inline-start: 1px solid var(--hair);
+  }
+
+  .stat__top {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: 11rem;
+  }
+
+  .stat__number {
+    flex: none;
+    max-width: none;
     margin: 0;
-    background: linear-gradient(135deg, #14161a 25%, #2d4a78 100%);
+    background: linear-gradient(160deg, var(--ink) 20%, var(--fog) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    font-size: clamp(7rem, 4rem + 13vw, 15rem);
-    font-weight: 200;
-    letter-spacing: -0.06em;
-    line-height: 0.9;
-  }
-
-  .why__copy {
-    max-width: 34rem;
-  }
-
-  .why h2 {
-    font-size: var(--fs-h2);
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 3rem + 4.4vw, 7.5rem);
     letter-spacing: -0.03em;
-    line-height: 1.08;
+    line-height: 0.95;
   }
 
-  .why__text {
-    margin-top: 1rem;
-    color: var(--graphite);
-    font-size: var(--fs-lead);
-    line-height: 1.5;
+  .stat--money .stat__number {
+    background-image: linear-gradient(160deg, var(--gold) 15%, var(--amber-400) 100%);
   }
 
-  .why__source {
-    margin-top: 1rem;
-    color: var(--steel);
-    font-size: var(--fs-small);
+  .stat__title {
+    margin-top: var(--s-3);
+    font-size: clamp(1.625rem, 1.4rem + 0.7vw, 2.125rem);
+    letter-spacing: -0.015em;
+    line-height: 1.14;
   }
 
-  .why__source a {
-    color: var(--steel);
+  .stat__text {
+    margin-top: var(--s-2);
+    color: var(--text-2);
+  }
+
+  .stat__source {
+    margin-top: auto;
+    padding-top: var(--s-3);
+    color: var(--text-3);
+    font-size: var(--fs-caption);
+  }
+
+  .stat__source a {
     text-underline-offset: 3px;
   }
 
-  @media (max-width: 760px) {
-    .why__inner {
+  .stat__source a:hover {
+    color: var(--text-1);
+  }
+
+  /* From the first number to the second */
+  .why__next {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: -22px;
+    border: 1px solid var(--hair-strong);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: var(--shadow-1);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .why__panel.is-waiting .why__next {
+    transform: scale(0.7);
+  }
+
+  /* Ten systems in a heap. Pointing at them puts them in order, which is rather the idea. */
+  .pile {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 0.45rem 0.35rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pile li {
+    padding: 0.28rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--cloud);
+    color: var(--graphite);
+    font-size: var(--fs-caption);
+    line-height: 1.3;
+    white-space: nowrap;
+    transform: translateY(var(--y)) rotate(var(--r));
+    transition:
+      opacity 0.3s var(--ease),
+      transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition-delay: calc(var(--i) * 80ms);
+  }
+
+  .pile .pile__more {
+    border-style: dashed;
+    border-color: var(--silver-deep);
+    background: none;
+  }
+
+  .stat:hover .pile li {
+    transform: none;
+    transition-delay: calc(var(--i) * 15ms);
+  }
+
+  .stat.is-waiting .pile li {
+    opacity: 0;
+    transform: translateY(-22px) rotate(calc(var(--r) * 3));
+  }
+
+  /* The scale: one coin against seven */
+  .scale {
+    --t: 8;
+    flex: 1;
+    min-width: 0;
+    max-width: 19rem;
+    overflow: visible;
+  }
+
+  .stat.is-waiting .scale {
+    --t: -6;
+  }
+
+  .scale__post,
+  .scale__beam path,
+  .scale__string {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .scale__post {
+    stroke: var(--ink);
+    stroke-width: 2.5;
+  }
+
+  .scale__beam path {
+    stroke: var(--ink);
+    stroke-width: 3;
+  }
+
+  .scale__beam circle {
+    fill: var(--ink);
+  }
+
+  .scale__string {
+    stroke: var(--silver-deep);
+    stroke-width: 1;
+  }
+
+  .scale__dish {
+    fill: var(--silver);
+    stroke: var(--silver-deep);
+    stroke-width: 1;
+  }
+
+  .scale text {
+    fill: var(--gold);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .scale__beam,
+  .scale__pan {
+    transition: transform 1.3s cubic-bezier(0.34, 1.35, 0.64, 1) 0.35s;
+  }
+
+  .scale__beam {
+    transform: rotate(calc(var(--t) * 1deg));
+    transform-box: view-box;
+    transform-origin: 160px 34px;
+  }
+
+  /* The pans hang straight and follow the ends of the beam: 110 units from its centre, 1.92 per degree */
+  .scale__pan--right {
+    transform: translateY(calc(var(--t) * 1.92px));
+  }
+
+  .scale__pan--left {
+    transform: translateY(calc(var(--t) * -1.92px));
+  }
+
+  .coin__face {
+    fill: var(--amber-400);
+    stroke: var(--amber-500);
+    stroke-width: 1;
+  }
+
+  .coin__edge {
+    fill: var(--amber-500);
+  }
+
+  .coin {
+    transition:
+      opacity 0.2s linear,
+      transform 0.4s cubic-bezier(0.5, 0, 0.75, 0);
+    transition-delay: calc(0.1s + var(--i) * 130ms);
+  }
+
+  .stat.is-waiting .coin {
+    opacity: 0;
+    transform: translateY(-34px);
+    transition: none;
+  }
+
+  @media (max-width: 960px) {
+    .why__panel {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .stat {
+      padding: var(--s-4) var(--s-3);
+    }
+
+    .stat + .why__next + .stat {
+      border-inline-start: 0;
+      border-top: 1px solid var(--hair);
+      padding-top: var(--s-5);
+    }
+
+    .stat__top {
+      min-height: 0;
+    }
+
+    .why__next {
+      position: static;
+      justify-self: center;
+      height: 44px;
+      margin: -22px 0;
+    }
+
+    .why__next span {
+      rotate: 90deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pile li,
+    .scale__beam,
+    .scale__pan,
+    .coin,
+    .why__next {
+      transition: none;
     }
   }
 </style>
 
 <script>
-  // Counts the figure up from 1 the first time it comes into view (about 0.9 s, easing out), once per visit.
-  // While counting, the number keeps the width of its final value, so the "+" beside it never moves.
-  // With reduced motion, or without JavaScript, the final figure simply shows.
-  const el = document.querySelector<HTMLElement>('.why__number [data-count]');
-  if (el && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const target = Number(el.dataset.count);
-    // Measured with the final value in place (and again when counting starts, once the web font has loaded)
-    const hold = () => {
-      el.removeAttribute('style');
-      el.textContent = String(target);
-      const width = el.getBoundingClientRect().width;
-      Object.assign(el.style, { display: 'inline-block', width: `${width}px`, textAlign: 'right' });
+  // Both numbers play once: the first when it comes into view, the second after it and when it is in view too. While
+  // counting, a number keeps the width of its final value, so nothing beside it moves.
+  const root = document.querySelector<HTMLElement>('[data-why]');
+  if (root && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const panel = root.querySelector<HTMLElement>('.why__panel')!;
+    const [first, second] = [...root.querySelectorAll<HTMLElement>('[data-stat]')];
+
+    const prepare = (stat: HTMLElement) => {
+      stat.classList.add('is-waiting');
+      const el = stat.querySelector<HTMLElement>('[data-count]')!;
+      el.textContent = '1';
     };
-    hold();
-    el.textContent = '1';
-    const io = new IntersectionObserver(
+
+    const play = (stat: HTMLElement, ms: number) => {
+      const el = stat.querySelector<HTMLElement>('[data-count]')!;
+      const target = Number(el.dataset.count);
+      el.textContent = String(target);
+      Object.assign(el.style, { display: 'inline-block', width: `${el.getBoundingClientRect().width}px`, textAlign: 'right' });
+      el.textContent = '1';
+      stat.classList.remove('is-waiting');
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / ms);
+        el.textContent = String(Math.max(1, Math.round(1 + (1 - (1 - p) ** 2) * (target - 1))));
+        if (p < 1) requestAnimationFrame(step);
+        else el.removeAttribute('style');
+      };
+      requestAnimationFrame(step);
+    };
+
+    panel.classList.add('is-waiting');
+    prepare(first);
+    prepare(second);
+
+    let firstDone = false;
+    let secondSeen = false;
+    const playSecond = () => {
+      if (firstDone && secondSeen) {
+        play(second, 1200);
+        secondSeen = false;
+        firstDone = false;
+      }
+    };
+
+    const seeFirst = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        io.disconnect();
-        hold();
-        el.textContent = '1';
-        const start = performance.now();
-        const step = (now: number) => {
-          const p = Math.min(1, (now - start) / 900);
-          const eased = 1 - (1 - p) ** 3;
-          el.textContent = String(Math.max(1, Math.round(1 + eased * (target - 1))));
-          if (p < 1) requestAnimationFrame(step);
-          else el.removeAttribute('style');
-        };
-        requestAnimationFrame(step);
+        seeFirst.disconnect();
+        play(first, 1000);
+        setTimeout(() => {
+          panel.classList.remove('is-waiting');
+          firstDone = true;
+          playSecond();
+        }, 1300);
       },
-      { threshold: 0.6 },
+      { threshold: 0.35 },
     );
-    io.observe(el);
+    seeFirst.observe(first);
+
+    const seeSecond = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        seeSecond.disconnect();
+        secondSeen = true;
+        playSecond();
+      },
+      { threshold: 0.35 },
+    );
+    seeSecond.observe(second);
   }
 </script>

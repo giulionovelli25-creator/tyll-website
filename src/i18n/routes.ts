@@ -2,7 +2,7 @@ export const locales = ['en', 'de', 'ar', 'it'] as const;
 export type Locale = (typeof locales)[number];
 
 /** The six solutions, in menu order. */
-export const solutionKeys = ['stock', 'finance', 'forecasting', 'events', 'rooms', 'sales'] as const;
+export const solutionKeys = ['forecasting', 'stock', 'finance', 'events', 'rooms', 'sales'] as const;
 export type SolutionKey = (typeof solutionKeys)[number];
 
 // Every page and its address in each language. The language switch uses this to land on the matching page.

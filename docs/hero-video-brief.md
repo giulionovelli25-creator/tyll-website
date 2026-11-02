@@ -1,15 +1,16 @@
 # Hero video: replacement brief
 
-**Status (16 Oct 2026): replaced.** The homepage now opens on a 9.5-second "hotel in motion" edit in three scenes:
+**Status (2 Nov 2026): replaced with calmer, darker footage.** The homepage opens on one continuous 12-second film:
 
-1. a chef seasoning a long row of plates at a bright kitchen pass
-2. a housekeeper preparing a bed in a daylit room
-3. a white-gloved server pouring coffee at a breakfast table with pastries and flowers
+1. a guest rings the reception bell
+2. a chef finishes a plate in a dim kitchen
+3. the camera tilts slowly down to a chandelier in a dark lobby
 
-All three clips are free Pexels footage under the Pexels License; sources are in `src/assets/photos/CREDITS.md`. The scenes cross-fade gently over 0.8 seconds, and the last frame dissolves back into the first so the loop has no visible cut.
+All three clips are free Pexels footage under the Pexels License; sources are in `src/assets/photos/CREDITS.md`. They are stitched into one file with 0.5-second dissolves, and the last frame dissolves back into the first, so the film never shows a black frame or a loading flash between scenes.
 
-- **Encoding:** H.264 with no audio. 1920×1080 at about 2.1 MB for desktop, 1280×720 at about 0.94 MB for phones (chosen with `media`), plus a poster still.
-- **Rejected:** a room-service trolley clip, because wine glasses are visible on it.
+- **Grade (the same on every scene):** saturation at 74%, highlights capped at 86%, a soft vignette. See `docs/hero-film-master.sh`. On the page only a shade on the text side, under the header and at the foot sits on top. The owner found a darker first grade too dark.
+- **Encoding, no audio:** wide, narrow landscape and upright cuts, each as webm and mp4, all under 2 MB.
+- **Kept out of frame (no alcohol):** bottles on a far shelf in the kitchen, and bottles and a "Cabaret" sign later in the chandelier clip.
 - **Still open:** the shots are free stock, so the same footage can appear on other sites. For an opening only Tyll uses, the options below still apply.
 
 ## The goal

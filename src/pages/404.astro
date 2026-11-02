@@ -1,0 +1,48 @@
+---
+// The page anyone reaches through a wrong or old link. Kept out of search results.
+import Base from '../layouts/Base.astro';
+import { t, href } from '../i18n';
+
+const lang = 'en';
+const d = t(lang);
+---
+
+<Base lang={lang} page="home" title="Page not found | Tyll" description="This page does not exist." noindex>
+  <section class="missing">
+    <div class="wrap">
+      <h1>This page isn’t here.</h1>
+      <p>The link may be old or mistyped. These will get you back on track.</p>
+      <div class="missing__links">
+        <a class="btn btn--solid btn--lg" href={href('home', lang)}>Tyll home →</a>
+        <a class="btn btn--line btn--lg" href={href('solutions', lang)}>{d.nav.solutions} →</a>
+        <a class="btn btn--line btn--lg" href={href('book', lang)}>{d.cta.book}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .missing {
+    display: flex;
+    align-items: center;
+    min-height: 70svh;
+    padding-block: calc(var(--header-h) + var(--s-6)) var(--s-7);
+  }
+
+  .missing h1 {
+    font-size: var(--fs-display);
+  }
+
+  .missing p {
+    margin-top: var(--s-2);
+    color: var(--text-2);
+    font-size: var(--fs-lead);
+  }
+
+  .missing__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-top: var(--s-4);
+  }
+</style>

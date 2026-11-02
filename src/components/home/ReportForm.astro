@@ -8,7 +8,7 @@
 // email app opens (for example with webmail). Nothing is stored on this website.
 import { site } from '../../config/site';
 import { integrations } from '../../config/integrations';
-import { t, type Locale } from '../../i18n';
+import { t, href, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -31,6 +31,10 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     <ol class="rf__preview" aria-hidden="true">
       {steps.map((s, i) => <li><span>{i + 1}</span>{s}</li>)}
     </ol>
+    <p class="rf__alt">
+      {v.alt} <a href={`mailto:${site.email}`} dir="ltr" data-track="email_click">{site.email}</a>
+      <a href={href('book', lang)} data-track="book_demo_click" data-track-from="report">{t(lang).cta.book}</a>
+    </p>
   </div>
 
   <div class="rf__panel" id="report-panel" data-report-panel>
@@ -150,7 +154,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
   /* Closed: one clear button and a glimpse of the three short steps */
   .rf__closed {
     display: grid;
-    justify-items: start;
+    justify-items: center;
     gap: 1.25rem;
     transition:
       opacity 0.3s var(--ease),
@@ -175,6 +179,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
   .rf__preview {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5rem 1.5rem;
     margin: 0;
     padding: 0;
@@ -194,9 +199,26 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     place-items: center;
     width: 22px;
     height: 22px;
-    border: 1px solid rgba(244, 245, 247, 0.28);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.28);
     border-radius: 50%;
     font-size: 0.75rem;
+  }
+
+  .rf__alt {
+    max-width: none;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+    text-align: center;
+  }
+
+  .rf__alt a {
+    color: var(--on-dark);
+    text-underline-offset: 3px;
+  }
+
+  .rf__alt a + a {
+    display: block;
+    margin-top: 0.35rem;
   }
 
   /* The panel drops open from the button: its height follows its content */
@@ -223,9 +245,9 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
   .rf__done {
     margin: 0;
     padding: clamp(0.5rem, 0.25rem + 1vw, 0.85rem);
-    border: 1px solid rgba(244, 245, 247, 0.12);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.12);
     border-radius: var(--radius-lg);
-    background: linear-gradient(180deg, rgba(244, 245, 247, 0.07) 0%, rgba(244, 245, 247, 0.03) 100%);
+    background: linear-gradient(180deg, rgb(var(--on-dark-rgb) / 0.07) 0%, rgb(var(--on-dark-rgb) / 0.03) 100%);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
   }
@@ -238,7 +260,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
   }
 
   .step + .step {
-    border-top: 1px solid rgba(244, 245, 247, 0.1);
+    border-top: 1px solid rgb(var(--on-dark-rgb) / 0.1);
   }
 
   .step__head {
@@ -273,7 +295,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     place-items: center;
     width: 30px;
     height: 30px;
-    border: 1px solid rgba(244, 245, 247, 0.3);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.3);
     border-radius: 50%;
     font-size: 0.8125rem;
     transition:
@@ -410,9 +432,9 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     width: 100%;
     height: 50px;
     padding: 0 1rem;
-    border: 1px solid rgba(244, 245, 247, 0.22);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.22);
     border-radius: 12px;
-    background: rgba(244, 245, 247, 0.06);
+    background: rgb(var(--on-dark-rgb) / 0.06);
     color: var(--on-dark);
     font: inherit;
     font-size: 1rem;
@@ -422,17 +444,17 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
   }
 
   .field input:hover {
-    border-color: rgba(244, 245, 247, 0.4);
+    border-color: rgb(var(--on-dark-rgb) / 0.4);
   }
 
   .field input:focus-visible {
     border-color: var(--on-dark);
-    background: rgba(244, 245, 247, 0.1);
+    background: rgb(var(--on-dark-rgb) / 0.1);
     outline: none;
   }
 
   .field input[aria-invalid='true'] {
-    border-color: #e8a29a;
+    border-color: var(--error-line);
   }
 
   /* The POS systems as choices to tap, rather than another field to fill */
@@ -461,7 +483,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     align-items: center;
     min-height: 46px;
     padding: 0 1.15rem;
-    border: 1px solid rgba(244, 245, 247, 0.22);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.22);
     border-radius: var(--pill);
     color: var(--on-dark);
     font-size: 0.9375rem;
@@ -472,7 +494,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
   }
 
   .chip:hover span {
-    border-color: rgba(244, 245, 247, 0.5);
+    border-color: rgb(var(--on-dark-rgb) / 0.5);
   }
 
   .chip input:checked + span {
@@ -488,7 +510,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
 
   .report__error {
     margin-top: 0.85rem;
-    color: #f2b8b0;
+    color: var(--error-text);
     font-size: var(--fs-small);
   }
 
@@ -584,7 +606,6 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     .rf__closed {
       justify-items: stretch;
     }
-
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -712,7 +733,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
       const pos = form.querySelector<HTMLInputElement>('input[name="pos"]:checked');
       if (pos) lines.push(`${form.querySelector('legend')?.textContent?.trim()}: ${pos.value}`);
       const venue = (form.elements.namedItem('venue') as HTMLInputElement).value.trim();
-      const url = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`${form.dataset.subject} – ${venue}`)}&body=${encodeURIComponent(lines.join('\n') + '\n\n')}`;
+      const url = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`${form.dataset.subject}: ${venue}`)}&body=${encodeURIComponent(lines.join('\n') + '\n\n')}`;
       // Only that a request was made is counted: never the details
       document.dispatchEvent(new CustomEvent('tyll:track', { detail: { event: 'report_request_click', location: 'home' } }));
       wrap.querySelector<HTMLAnchorElement>('[data-report-mail]')!.href = url;

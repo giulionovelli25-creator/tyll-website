@@ -19,10 +19,10 @@ const [, bookText = d.cta.book, bookArrow = ''] = d.cta.book.match(/^(.*?)\s*([â
 const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
 ---
 
-<footer class="footer on-dark" data-dark>
+<footer class="footer">
   <div class="wrap footer__top">
     <div class="footer__brand">
-      <a href={home} class="footer__logo" aria-label="Tyll â€“ home">
+      <a href={home} class="footer__logo" aria-label="Tyll home">
         <Logo anim="loop" label="Tyll" />
       </a>
       <p>{taglineParts.map((part, i) => <><span class="footer__phrase">{part}</span>{i < taglineParts.length - 1 && ' '}</>)}</p>
@@ -93,9 +93,9 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
 
 <style>
   .footer {
-    border-top: 1px solid rgba(244, 245, 247, 0.1);
-    background: var(--ink);
-    color: var(--on-dark);
+    border-top: 1px solid var(--hair);
+    background: var(--page);
+    color: var(--ink);
     /* While the cookie banner is showing, the footer gets room so nothing sits under the banner */
     padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) calc(2rem + var(--consent-space, 0px));
   }
@@ -120,9 +120,10 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
   .footer__brand p {
     margin-top: 1.25rem;
     max-width: 28ch;
-    color: var(--on-dark-muted);
-    font-size: 1.0625rem;
-    line-height: 1.45;
+    color: var(--graphite);
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.25;
   }
 
   .footer__phrase {
@@ -144,7 +145,7 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
 
   .footer h2 {
     margin-bottom: 1rem;
-    color: var(--fog);
+    color: var(--steel);
     font-size: var(--fs-small);
     font-weight: 500;
     letter-spacing: 0;
@@ -159,7 +160,7 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
   }
 
   .footer a {
-    color: var(--on-dark);
+    color: var(--ink);
     font-size: 0.9375rem;
     text-decoration: none;
     opacity: 0.86;
@@ -169,7 +170,7 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
     padding: 0;
     border: 0;
     background: none;
-    color: var(--on-dark);
+    color: var(--ink);
     font: inherit;
     font-size: 0.9375rem;
     text-align: start;
@@ -184,7 +185,7 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
     text-underline-offset: 4px;
   }
 
-  /* The one call to action in the footer: full white, a little heavier, its arrow moving on hover */
+  /* The one call to action in the footer: full ink, a little heavier, its arrow moving on hover */
   .footer a.footer__book {
     display: inline-flex;
     align-items: baseline;
@@ -230,8 +231,8 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
     justify-content: space-between;
     gap: 1rem 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(244, 245, 247, 0.12);
-    color: var(--fog);
+    border-top: 1px solid var(--hair);
+    color: var(--steel);
     font-size: var(--fs-small);
   }
 

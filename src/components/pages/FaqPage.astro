@@ -147,15 +147,15 @@ const schema = {
     height: 520px;
     background: url('/media/tyll-waves.webp') center / cover no-repeat;
     opacity: 0.7;
-    -webkit-mask-image: linear-gradient(200deg, #000 20%, transparent 75%);
-    mask-image: linear-gradient(200deg, #000 20%, transparent 75%);
+    -webkit-mask-image: linear-gradient(200deg, var(--black) 20%, transparent 75%);
+    mask-image: linear-gradient(200deg, var(--black) 20%, transparent 75%);
     pointer-events: none;
     z-index: -1;
   }
 
   :global([dir='rtl'] main:has(.faq))::before {
-    -webkit-mask-image: linear-gradient(160deg, #000 20%, transparent 75%);
-    mask-image: linear-gradient(160deg, #000 20%, transparent 75%);
+    -webkit-mask-image: linear-gradient(160deg, var(--black) 20%, transparent 75%);
+    mask-image: linear-gradient(160deg, var(--black) 20%, transparent 75%);
   }
 
   :global(main:has(.faq)) {
@@ -175,6 +175,7 @@ const schema = {
   }
 
   .faq__side :global(.faq__photo) {
+    filter: var(--photo-grade);
     display: block;
     width: 100%;
     aspect-ratio: 16 / 10;

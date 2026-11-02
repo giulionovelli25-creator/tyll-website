@@ -7,7 +7,7 @@ import type { Locale, SolutionKey } from '../i18n/routes';
 
 import stockChef from '../assets/photos/stock-chef.jpg';
 import forecastProduce from '../assets/photos/forecast-produce.jpg';
-import eventsBanquet from '../assets/photos/events-banquet.jpg';
+import eventsBallroom from '../assets/photos/events-ballroom.jpg';
 import roomsSuite from '../assets/photos/rooms-suite.jpg';
 import reconciliation from '../assets/photos/reconciliation-reception.jpg';
 import salesBuffet from '../assets/photos/sales-buffet.jpg';
@@ -80,10 +80,10 @@ export const solutions: Record<SolutionKey, Solution> = {
     ),
     headline: t('Know where your stock is going.', 'Wissen, wohin Ihr Bestand geht.', 'اعرف أين يذهب مخزونك.', 'Sai dove va a finire il tuo magazzino.'),
     intro: t(
-      'Find out where stock goes missing, and act before it happens again.',
-      'Erkennen Sie, wo Bestand verloren geht, und handeln Sie, bevor es wieder passiert.',
-      'اعرف أين يضيع المخزون، وتصرّف قبل أن يتكرر ذلك.',
-      'Scopri dove si perde il magazzino e intervieni prima che succeda di nuovo.',
+      'One quick count, then tap minus 1 whenever something breaks or is wasted. Tyll shows what doesn’t add up.',
+      'Einmal kurz zählen, dann bei jedem Bruch oder Abfall auf minus 1 tippen. Tyll zeigt, was nicht aufgeht.',
+      'جرد سريع واحد، ثم انقر على «ناقص 1» كلما انكسر شيء أو أُهدر. ويُظهر Tyll ما لا يتطابق.',
+      'Un conteggio rapido, poi tocca «meno 1» ogni volta che qualcosa si rompe o viene sprecato. Tyll mostra ciò che non torna.',
     ),
     problem: t(
       'Your stock count doesn’t match what was sold, and no one can quickly say why.',
@@ -107,7 +107,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       ],
       de: [
         'Tyll vergleicht Zählungen, Lieferungen, Verkäufe und Abfall und zeigt, was nicht aufgeht.',
-        'Es nennt, was zu prüfen ist – ohne jemandem etwas zu unterstellen.',
+        'Es nennt, was zu prüfen ist, ohne jemandem etwas zu unterstellen.',
         'Die richtige Person fasst nach, und das Ergebnis bleibt dokumentiert.',
       ],
       ar: [
@@ -143,10 +143,10 @@ export const solutions: Record<SolutionKey, Solution> = {
       url: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
     },
     walkTitle: t(
-      'Eight cans of Coca-Cola, investigated',
-      'Acht Dosen Coca-Cola, untersucht',
-      'ثماني علب Coca-Cola قيد التحقيق',
-      'Otto lattine di Coca-Cola, sotto esame',
+      'Eight cans of Coca-\u2060Cola, investigated',
+      'Acht Dosen Coca-\u2060Cola, untersucht',
+      'ثماني علب Coca-\u2060Cola قيد التحقيق',
+      'Otto lattine di Coca-\u2060Cola, sotto esame',
     ),
     frames: [
       {
@@ -185,8 +185,8 @@ export const solutions: Record<SolutionKey, Solution> = {
         img: screen('story-3-records'),
         title: t('The records are laid out', 'Die Belege liegen offen', 'تُعرض السجلات', 'I dati vengono messi in fila'),
         text: t(
-          'A Coke removed from a bill after it went to the bar – one of several things to check.',
-          'Eine Cola, die nach der Bestellung an der Bar von der Rechnung entfernt wurde – eine von mehreren Spuren.',
+          'A Coke removed from a bill after it went to the bar. One of several things to check.',
+          'Eine Cola, die nach der Bestellung an der Bar von der Rechnung entfernt wurde. Eine von mehreren Spuren.',
           'علبة Coca-Cola حُذفت من الفاتورة بعد إرسالها إلى البار، وهي واحدة من عدة أمور يجب التحقق منها.',
           'Una Coca-Cola tolta dal conto dopo essere stata servita dal bar: una delle diverse cose da verificare.',
         ),
@@ -256,16 +256,16 @@ export const solutions: Record<SolutionKey, Solution> = {
       'يطابق المبيعات مع المدفوعات ويُبرز الفروقات.',
       'Confronta le vendite con i pagamenti e segnala le differenze.',
     ),
-    headline: t('Know where your money stands.', 'Wissen, wo Ihr Geld steht.', 'اعرف وضع أموالك.', 'Sai sempre a che punto sono i tuoi soldi.'),
+    headline: t('Know when sales and payments don’t match.', 'Wissen, wann Verkäufe und Zahlungen nicht übereinstimmen.', 'اعرف متى لا تتطابق المبيعات مع المدفوعات.', 'Sai quando vendite e pagamenti non coincidono.'),
     intro: t(
       'Spot voids, missed room charges and invoice differences, and follow each one up.',
-      'Stornos, fehlende Zimmerbelastungen und Rechnungsdifferenzen erkennen – und jede nachverfolgen.',
+      'Stornos, fehlende Zimmerbelastungen und Rechnungsdifferenzen erkennen, und jede nachverfolgen.',
       'اكتشف الإلغاءات ورسوم الغرف الفائتة وفروقات الفواتير، وتابع كلًّا منها.',
       'Individua storni, addebiti in camera mancati e differenze nelle fatture, e segui ognuno.',
     ),
     problem: t(
       'Payments, room charges and invoices sit in different systems, so differences slip through.',
-      'Zahlungen, Zimmerbelastungen und Rechnungen liegen in verschiedenen Systemen – so rutschen Abweichungen durch.',
+      'Zahlungen, Zimmerbelastungen und Rechnungen liegen in verschiedenen Systemen. So rutschen Abweichungen durch.',
       'المدفوعات ورسوم الغرف والفواتير موزعة على أنظمة مختلفة، فتمرّ الفروقات دون أن يلاحظها أحد.',
       'Pagamenti, addebiti in camera e fatture stanno in sistemi diversi, e le differenze sfuggono.',
     ),
@@ -286,7 +286,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       de: [
         'Ungewöhnliche Stornos, Rabatte und Erstattungen werden mit der zugehörigen Bestellung markiert.',
         'Belastungen, die auf Gästerechnungen fehlen, und Rechnungen, die von der Lieferung abweichen, kommen zur Prüfung.',
-        'Jeder markierte Punkt hat eine verantwortliche Person und ein Ergebnis – in einer Liste.',
+        'Jeder markierte Punkt hat eine verantwortliche Person und ein Ergebnis, in einer Liste.',
       ],
       ar: [
         'تُرصد الإلغاءات والخصومات والمبالغ المستردة غير المعتادة مع الطلب الذي تنتمي إليه.',
@@ -364,7 +364,7 @@ export const solutions: Record<SolutionKey, Solution> = {
         title: t('Invoices against deliveries', 'Rechnungen gegen Lieferungen', 'الفواتير مقابل التوريدات', 'Fatture a confronto con le consegne'),
         text: t(
           'Supplier invoices that differ from what actually arrived, ready to check.',
-          'Lieferantenrechnungen, die von der tatsächlichen Lieferung abweichen – bereit zur Prüfung.',
+          'Lieferantenrechnungen, die von der tatsächlichen Lieferung abweichen, bereit zur Prüfung.',
           'فواتير الموردين التي تختلف عمّا وصل فعلًا، جاهزة للتحقق.',
           'Fatture dei fornitori diverse da ciò che è arrivato davvero, pronte da verificare.',
         ),
@@ -380,7 +380,7 @@ export const solutions: Record<SolutionKey, Solution> = {
         title: t('One list for every follow-up', 'Eine Liste für jede Rückfrage', 'قائمة واحدة لكل متابعة', 'Un solo elenco per ogni verifica'),
         text: t(
           'Who is responsible, by when, and what came of it.',
-          'Wer verantwortlich ist, bis wann – und was dabei herauskam.',
+          'Wer verantwortlich ist, bis wann, und was dabei herauskam.',
           'مَن المسؤول، وحتى متى، وما الذي أسفرت عنه.',
           'Chi è responsabile, entro quando e con quale esito.',
         ),
@@ -414,7 +414,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     name: t('Purchasing Prediction', 'Einkaufsprognose', 'توقّع المشتريات', 'Previsione acquisti'),
     menu: t(
       'Know what to buy each week, from your POS sales.',
-      'Wissen, was Sie jede Woche kaufen müssen – aus Ihren Kassendaten.',
+      'Wissen, was Sie jede Woche kaufen müssen, aus Ihren Kassendaten.',
       'اعرف ما يجب شراؤه كل أسبوع، من مبيعات نقاط البيع لديك.',
       'Sai cosa comprare ogni settimana, dalle vendite di cassa.',
     ),
@@ -431,8 +431,8 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Tyll legge lo storico delle vendite di cassa e dà al team acquisti un report chiaro di cosa comprare.',
     ),
     problem: t(
-      'Without a clear view of what you actually use each week, purchasing guesses – and you over-order or run short.',
-      'Ohne klaren Blick darauf, was Sie pro Woche tatsächlich verbrauchen, schätzt der Einkauf – und bestellt zu viel oder zu wenig.',
+      'Without a clear view of what you actually use each week, purchasing guesses. You over-order or run short.',
+      'Ohne klaren Blick darauf, was Sie pro Woche tatsächlich verbrauchen, schätzt der Einkauf, und bestellt zu viel oder zu wenig.',
       'من دون رؤية واضحة لما تستهلكه فعلًا كل أسبوع، تعتمد المشتريات على التخمين، فتطلب أكثر من اللازم أو ينفد ما تحتاجه.',
       'Senza una visione chiara di ciò che consumi davvero ogni settimana, gli acquisti vanno a intuito: si ordina troppo o si resta senza.',
     ),
@@ -441,8 +441,8 @@ export const solutions: Record<SolutionKey, Solution> = {
     problemFocus: '50% 45%',
     steps: [
       { label: t('Connect', 'Verbinden', 'الربط', 'Collega'), frame: 0 },
-      { label: t('Calculate', 'Berechnen', 'الحساب', 'Calcola'), frame: 1 },
-      { label: t('Report', 'Bericht', 'التقرير', 'Report'), frame: 1 },
+      { label: t('Calculate', 'Berechnen', 'الحساب', 'Calcola'), frame: 0 },
+      { label: t('Report', 'Bericht', 'التقرير', 'Report'), frame: 0 },
     ],
     helps: {
       en: [
@@ -473,28 +473,12 @@ export const solutions: Record<SolutionKey, Solution> = {
       'Ospiti attesi da prenotazioni, occupazione ed eventi, e flussi di approvazione per le richieste d’acquisto. La demo qui sotto mostra già come funzioneranno.',
     ),
     walkTitle: t(
-      'From expected guests to goods received',
-      'Von erwarteten Gästen bis zur Warenannahme',
-      'من الضيوف المتوقعين إلى استلام البضائع',
-      'Dagli ospiti attesi alla merce ricevuta',
+      'This week’s buying list',
+      'Die Einkaufsliste dieser Woche',
+      'قائمة مشتريات هذا الأسبوع',
+      'La lista d’acquisto di questa settimana',
     ),
     frames: [
-      {
-        img: screen('fc-1'),
-        title: t('Expected demand', 'Erwartete Nachfrage', 'الطلب المتوقع', 'Domanda prevista'),
-        text: t(
-          'Reservations, walk-ins, occupancy and event guests for the next three days.',
-          'Reservierungen, Laufkundschaft, Belegung und Eventgäste für die nächsten drei Tage.',
-          'الحجوزات والزوار دون حجز ونسبة الإشغال وضيوف الفعاليات للأيام الثلاثة القادمة.',
-          'Prenotazioni, clienti senza prenotazione, occupazione e ospiti degli eventi per i prossimi tre giorni.',
-        ),
-        alt: t(
-          'Order stock, expected demand: restaurant reservations, walk-in guests, hotel occupancy and confirmed event guests.',
-          'Order stock, erwartete Nachfrage: Reservierungen, Laufkundschaft, Belegung und bestätigte Eventgäste.',
-          'شاشة Order stock، الطلب المتوقع: حجوزات المطعم، والزوار دون حجز، ونسبة إشغال الفندق، وضيوف الفعاليات المؤكدة.',
-          'Order stock, domanda prevista: prenotazioni del ristorante, clienti senza prenotazione, occupazione dell’hotel e ospiti degli eventi confermati.',
-        ),
-      },
       {
         img: screen('fc-2'),
         title: t('What to buy', 'Was gekauft werden muss', 'ما يجب شراؤه', 'Cosa comprare'),
@@ -512,27 +496,27 @@ export const solutions: Record<SolutionKey, Solution> = {
         ),
       },
       {
-        img: screen('fc-3'),
-        title: t('A request goes to Purchasing', 'Die Anforderung geht an den Einkauf', 'يُرسل الطلب إلى المشتريات', 'Una richiesta va agli acquisti'),
+        img: screen('fc-1'),
+        title: t('Expected demand', 'Erwartete Nachfrage', 'الطلب المتوقع', 'Domanda prevista'),
         text: t(
-          'The manager sends it and can follow every approval step.',
-          'Die Managerin sendet sie ab und kann jeden Freigabeschritt verfolgen.',
-          'ترسله المديرة ويمكنها متابعة كل خطوة من خطوات الموافقة.',
-          'La responsabile la invia e può seguire ogni passaggio di approvazione.',
+          'Reservations, walk-ins, occupancy and event guests for the next three days.',
+          'Reservierungen, Laufkundschaft, Belegung und Eventgäste für die nächsten drei Tage.',
+          'الحجوزات والزوار دون حجز ونسبة الإشغال وضيوف الفعاليات للأيام الثلاثة القادمة.',
+          'Prenotazioni, clienti senza prenotazione, occupazione e ospiti degli eventi per i prossimi tre giorni.',
         ),
         alt: t(
-          'Purchase request PR-DXB-0001 sent to Purchasing, with its approval steps shown.',
-          'Bestellanforderung PR-DXB-0001 an den Einkauf gesendet, mit den Freigabeschritten.',
-          'طلب الشراء PR-DXB-0001 مُرسَل إلى المشتريات، مع عرض خطوات الموافقة عليه.',
-          'Richiesta d’acquisto PR-DXB-0001 inviata agli acquisti, con i passaggi di approvazione.',
+          'Order stock, expected demand: restaurant reservations, walk-in guests, hotel occupancy and confirmed event guests.',
+          'Order stock, erwartete Nachfrage: Reservierungen, Laufkundschaft, Belegung und bestätigte Eventgäste.',
+          'شاشة Order stock، الطلب المتوقع: حجوزات المطعم، والزوار دون حجز، ونسبة إشغال الفندق، وضيوف الفعاليات المؤكدة.',
+          'Order stock, domanda prevista: prenotazioni del ristorante, clienti senza prenotazione, occupazione dell’hotel e ospiti degli eventi confermati.',
         ),
       },
       {
         img: screen('fc-4'),
         title: t('Purchasing reviews it', 'Der Einkauf prüft sie', 'تراجعه المشتريات', 'Gli acquisti la esaminano'),
         text: t(
-          'Approve, request changes or reject – with the budget in view.',
-          'Freigeben, Änderungen anfordern oder ablehnen – mit Blick aufs Budget.',
+          'Approve, request changes or reject, with the budget in view.',
+          'Freigeben, Änderungen anfordern oder ablehnen, mit Blick aufs Budget.',
           'الموافقة أو طلب تعديلات أو الرفض، مع إبقاء الميزانية في الحسبان.',
           'Approvare, chiedere modifiche o rifiutare, con il budget sotto gli occhi.',
         ),
@@ -547,8 +531,8 @@ export const solutions: Record<SolutionKey, Solution> = {
         img: screen('fc-5'),
         title: t('Goods are recorded on arrival', 'Ware wird bei Ankunft erfasst', 'تُسجَّل البضائع عند وصولها', 'La merce viene registrata all’arrivo'),
         text: t(
-          'Stock rises only when the delivery is recorded – not when the order is placed.',
-          'Der Bestand steigt erst, wenn die Lieferung erfasst ist – nicht schon bei der Bestellung.',
+          'Stock rises only when the delivery is recorded, not when the order is placed.',
+          'Der Bestand steigt erst, wenn die Lieferung erfasst ist, nicht schon bei der Bestellung.',
           'لا يزداد المخزون إلا عند تسجيل التوريد، وليس عند تقديم الطلب.',
           'Le giacenze aumentano solo quando la consegna viene registrata, non quando si fa l’ordine.',
         ),
@@ -565,14 +549,14 @@ export const solutions: Record<SolutionKey, Solution> = {
   events: {
     key: 'events',
     icon: 'events',
-    photo: eventsBanquet,
+    photo: eventsBallroom,
     photoAlt: t(
-      'Banquet staff setting a long table with flowers before an event.',
-      'Bankettpersonal deckt vor einer Veranstaltung eine lange Tafel mit Blumen ein.',
-      'فريق المآدب يجهّز طاولة طويلة بالزهور قبل فعالية.',
-      'Il personale di banqueting apparecchia una lunga tavola con fiori prima di un evento.',
+      'A hotel ballroom set with round tables under two chandeliers, ready for an event.',
+      'Ein Hotelballsaal mit runden Tischen unter zwei Kronleuchtern, bereit für eine Veranstaltung.',
+      'قاعة فندق مجهّزة بطاولات مستديرة تحت ثريتين، جاهزة لفعالية.',
+      'Una sala da ballo d’albergo con tavoli rotondi sotto due lampadari, pronta per un evento.',
     ),
-    photoFocus: '72% 40%',
+    photoFocus: '50% 55%',
     name: t('Events & Staffing', 'Events & Personal', 'الفعاليات والموظفون', 'Eventi e personale'),
     menu: t(
       'Plan events and coordinate your team.',
@@ -580,12 +564,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       'خطّط للفعاليات ونسّق عمل فريقك.',
       'Pianifica gli eventi e coordina il tuo team.',
     ),
-    headline: t(
-      'Great events need great coordination.',
-      'Gute Veranstaltungen brauchen gute Abstimmung.',
-      'الفعاليات الرائعة تحتاج إلى تنسيق رائع.',
-      'I grandi eventi richiedono un grande coordinamento.',
-    ),
+    headline: t('Know what every event still needs.', 'Wissen, was jede Veranstaltung noch braucht.', 'اعرف ما تحتاجه كل فعالية.', 'Sai cosa manca a ogni evento.'),
     intro: t(
       'Plan what each event needs and get the right staff in place.',
       'Planen Sie, was jedes Event braucht, und haben Sie das richtige Personal vor Ort.',
@@ -594,7 +573,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     ),
     problem: t(
       'One event touches the kitchen, purchasing and staffing, and gaps are easy to miss.',
-      'Ein Event betrifft Küche, Einkauf und Personal – und Lücken übersieht man leicht.',
+      'Ein Event betrifft Küche, Einkauf und Personal. Lücken übersieht man leicht.',
       'تمسّ الفعالية الواحدة المطبخ والمشتريات والموظفين، ومن السهل أن تفوتك الثغرات.',
       'Un evento coinvolge cucina, acquisti e personale, ed è facile non accorgersi delle lacune.',
     ),
@@ -610,7 +589,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       en: [
         'Each event shows what it needs: food, drinks, ingredients to buy and staff.',
         'Missing staff can be requested from departments that have free people.',
-        'The lending manager decides, and everyone sees where the event stands.',
+        'That team’s manager says yes or no, and everyone sees where the event stands.',
       ],
       de: [
         'Jede Veranstaltung zeigt, was sie braucht: Speisen, Getränke, einzukaufende Zutaten und Personal.',
@@ -720,12 +699,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       'حافظ على سير جاهزية الغرف وطلبات الضيوف.',
       'Fai avanzare la preparazione delle camere e le richieste degli ospiti.',
     ),
-    headline: t(
-      'Better teamwork. Better guest experiences.',
-      'Bessere Zusammenarbeit. Bessere Gästeerlebnisse.',
-      'عمل جماعي أفضل. تجارب أفضل للضيوف.',
-      'Più collaborazione. Esperienze migliori per gli ospiti.',
-    ),
+    headline: t('Know which rooms won’t be ready in time.', 'Wissen, welche Zimmer nicht rechtzeitig fertig werden.', 'اعرف أي الغرف لن تكون جاهزة في الوقت المحدد.', 'Sai quali camere non saranno pronte in tempo.'),
     intro: t(
       'Keep room readiness, guest requests and department updates moving.',
       'Zimmerbereitschaft, Gästewünsche und Rückmeldungen zwischen Abteilungen in Bewegung halten.',
@@ -749,12 +723,12 @@ export const solutions: Record<SolutionKey, Solution> = {
     helps: {
       en: [
         'Front office sees which arriving guests may have to wait, and why.',
-        'Requests go straight to the team that can act – including staff on their phones.',
+        'Requests go straight to the team that can act, including staff on their phones.',
         'Everyone sees progress as it happens, from cleaning to inspection.',
       ],
       de: [
-        'Die Rezeption sieht, welche anreisenden Gäste warten müssen – und warum.',
-        'Anliegen gehen direkt an das Team, das handeln kann – auch an Mitarbeitende auf dem Handy.',
+        'Die Rezeption sieht, welche anreisenden Gäste warten müssen, und warum.',
+        'Anliegen gehen direkt an das Team, das handeln kann, auch an Mitarbeitende auf dem Handy.',
         'Alle sehen den Fortschritt in Echtzeit, von der Reinigung bis zur Abnahme.',
       ],
       ar: [
@@ -877,7 +851,7 @@ export const solutions: Record<SolutionKey, Solution> = {
       'افهم الفرص واطّلع على أداء العمل.',
       'Capisci le opportunità e guarda come sta andando il business.',
     ),
-    headline: t('See the bigger picture.', 'Das große Ganze sehen.', 'شاهد الصورة الكاملة.', 'Guarda il quadro completo.'),
+    headline: t('Know how the whole business is doing.', 'Wissen, wie das ganze Unternehmen läuft.', 'اعرف أداء أعمالك بالكامل.', 'Sai come sta andando tutta l’attività.'),
     intro: t(
       'See revenue, open issues and the sales pipeline in one view.',
       'Umsatz, offene Punkte und Vertriebspipeline in einer Ansicht.',
@@ -886,7 +860,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     ),
     problem: t(
       'Performance figures and sales opportunities sit in different places, so the full picture arrives late.',
-      'Kennzahlen und Verkaufschancen liegen an verschiedenen Orten – das Gesamtbild kommt zu spät.',
+      'Kennzahlen und Verkaufschancen liegen an verschiedenen Orten. Das Gesamtbild kommt zu spät.',
       'أرقام الأداء وفرص البيع موزعة في أماكن مختلفة، فتصل الصورة الكاملة متأخرة.',
       'Dati di performance e opportunità commerciali stanno in posti diversi, e il quadro completo arriva tardi.',
     ),
@@ -901,12 +875,12 @@ export const solutions: Record<SolutionKey, Solution> = {
     helps: {
       en: [
         'Owners and general managers see revenue, estimated contribution and open issues together.',
-        'Sales follows opportunities and proposals – always kept apart from confirmed business.',
+        'Sales follows opportunities and proposals, always kept apart from confirmed business.',
         'Confirmed deals link to their event, so operations can prepare in time.',
       ],
       de: [
         'Eigentümer und Direktion sehen Umsatz, geschätzten Deckungsbeitrag und offene Punkte zusammen.',
-        'Der Vertrieb verfolgt Chancen und Angebote – immer getrennt von bestätigtem Geschäft.',
+        'Der Vertrieb verfolgt Chancen und Angebote, immer getrennt von bestätigtem Geschäft.',
         'Bestätigte Abschlüsse sind mit ihrer Veranstaltung verknüpft, damit der Betrieb rechtzeitig planen kann.',
       ],
       ar: [
@@ -932,7 +906,7 @@ export const solutions: Record<SolutionKey, Solution> = {
         title: t('The owner’s overview', 'Der Überblick der Eigentümerin', 'نظرة المالكة العامة', 'La panoramica della proprietaria'),
         text: t(
           'Revenue, estimated contribution and potential losses, with what needs attention.',
-          'Umsatz, geschätzter Deckungsbeitrag und mögliche Verluste – mit dem, was Aufmerksamkeit braucht.',
+          'Umsatz, geschätzter Deckungsbeitrag und mögliche Verluste, mit dem, was Aufmerksamkeit braucht.',
           'الإيرادات والمساهمة المقدّرة والخسائر المحتملة، مع ما يتطلب الانتباه.',
           'Ricavi, margine stimato e perdite potenziali, con ciò che richiede attenzione.',
         ),

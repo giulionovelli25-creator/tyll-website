@@ -29,20 +29,18 @@ export type Explore = {
   spots: Spot[];
   /** What the team can do as a result, shown with the final call to action. Describes the demo, claims no results. */
   outcome: Text;
-  /** The stage behind the product: charcoal for contrast, or light stone */
+  /** The band behind the product. All six are light now; dark remains possible for a page that needs it. */
   tone: 'dark' | 'light';
 };
 
 const t = (en: string, de: string, ar: string, it: string): Text => ({ en, de, ar, it });
 
-const plan = t('Plan', 'Planen', 'التخطيط', 'Pianifica');
-const order = t('Order', 'Bestellen', 'الطلب', 'Ordina');
-const approve = t('Approve', 'Freigeben', 'الاعتماد', 'Approva');
-const receive = t('Receive', 'Annehmen', 'الاستلام', 'Ricevi');
+const onSale = t('Available now', 'Jetzt verfügbar', 'متاح الآن', 'Disponibile ora');
+const soon = t('Coming soon', 'Demnächst', 'قريبًا', 'In arrivo');
 
 export const explore: Record<SolutionKey, Explore> = {
   stock: {
-    tone: 'dark',
+    tone: 'light',
     outcome: t(
       'A stock difference is surfaced with its evidence, checked by the right person and closed with a recorded outcome.',
       'Eine Bestandsabweichung wird mit ihren Belegen sichtbar, von der richtigen Person geprüft und mit dokumentiertem Ergebnis abgeschlossen.',
@@ -67,7 +65,7 @@ export const explore: Record<SolutionKey, Explore> = {
         label: t('Value involved', 'Betroffener Wert', 'القيمة المعنية', 'Valore coinvolto'),
         text: t(
           'AED 28 at today’s price. It is not a confirmed loss: it becomes one only if the outcome says so.',
-          'AED 28 zum heutigen Preis. Das ist kein bestätigter Verlust – erst das Ergebnis der Prüfung macht ihn dazu.',
+          'AED 28 zum heutigen Preis. Das ist kein bestätigter Verlust. Erst das Ergebnis der Prüfung macht ihn dazu.',
           '28 درهمًا بسعر اليوم. وهي ليست خسارة مؤكدة، ولا تصبح كذلك إلا إذا أثبتت النتيجة ذلك.',
           'AED 28 al prezzo di oggi. Non è una perdita confermata: lo diventa solo se l’esito lo stabilisce.',
         ),
@@ -114,7 +112,7 @@ export const explore: Record<SolutionKey, Explore> = {
   },
 
   finance: {
-    tone: 'dark',
+    tone: 'light',
     outcome: t(
       'A mismatch is reviewed with the records behind it, instead of disappearing inside separate reports.',
       'Eine Abweichung wird mit den zugehörigen Daten geprüft, statt in getrennten Berichten unterzugehen.',
@@ -151,7 +149,7 @@ export const explore: Record<SolutionKey, Explore> = {
         label: t('Every step, in order', 'Jeder Schritt der Reihe nach', 'كل خطوة بالترتيب', 'Ogni passaggio, in ordine'),
         text: t(
           'Each step at the point of sale, including the removal, which has no reason or approval on record.',
-          'Jeder Schritt an der Kasse, auch die Entfernung – ohne erfassten Grund oder Freigabe.',
+          'Jeder Schritt an der Kasse, auch die Entfernung. Ohne erfassten Grund oder Freigabe.',
           'كل خطوة في نقطة البيع، بما فيها الحذف، دون سبب أو موافقة مسجّلة.',
           'Ogni passaggio alla cassa, compresa la rimozione, senza motivo né approvazione registrati.',
         ),
@@ -189,15 +187,29 @@ export const explore: Record<SolutionKey, Explore> = {
   forecasting: {
     tone: 'light',
     outcome: t(
-      'Purchasing is planned from expected guests, and every request moves through clear approvals to the delivery.',
-      'Der Einkauf wird anhand der erwarteten Gäste geplant, und jede Anforderung durchläuft klare Freigaben bis zur Lieferung.',
-      'تُخطَّط المشتريات وفق عدد الضيوف المتوقع، ويمرّ كل طلب بموافقات واضحة حتى الاستلام.',
-      'Gli acquisti si pianificano sugli ospiti attesi, e ogni richiesta segue approvazioni chiare fino alla consegna.',
+      'Your purchasing team gets one clear list: what to buy, how much, and by when.',
+      'Ihr Einkauf erhält eine klare Liste: was, wie viel und bis wann.',
+      'يحصل فريق المشتريات على قائمة واحدة واضحة: ماذا يشتري، وكم، وحتى متى.',
+      'Il team acquisti riceve un’unica lista chiara: cosa comprare, quanto e entro quando.',
     ),
     spots: [
       {
         frame: 0,
-        stage: plan,
+        stage: onSale,
+        label: t('What to buy', 'Was zu kaufen ist', 'ما يجب شراؤه', 'Cosa comprare'),
+        text: t(
+          '15 items need ordering, each with a suggested quantity, an order-by date and whether it runs short before the next delivery.',
+          '15 Artikel müssen bestellt werden, jeweils mit Mengenvorschlag, Bestelldatum und dem Hinweis, ob sie vor der nächsten Lieferung knapp werden.',
+          '15 صنفًا تحتاج إلى طلب، لكلٍّ منها كمية مقترحة وتاريخ أقصى للطلب، وما إذا كان سينفد قبل التوريد التالي.',
+          '15 articoli da ordinare, ognuno con quantità suggerita, data entro cui ordinare e se finisce prima della prossima consegna.',
+        ),
+        focus: [0.1799, 0.5517, 0.8187, 0.4468],
+        fade: true,
+        mark: [0.638, 0.568, 0.13, 0.026],
+      },
+      {
+        frame: 1,
+        stage: soon,
         label: t('Expected guests', 'Erwartete Gäste', 'الضيوف المتوقعون', 'Ospiti attesi'),
         text: t(
           'Reservations, recent walk-in patterns, hotel occupancy and Thursday’s conference add up to 589 expected guests. Any figure can be changed.',
@@ -210,39 +222,12 @@ export const explore: Record<SolutionKey, Explore> = {
         mark: [0.205, 0.712, 0.33, 0.032],
       },
       {
-        frame: 1,
-        stage: order,
-        label: t('What to buy', 'Was zu kaufen ist', 'ما يجب شراؤه', 'Cosa comprare'),
-        text: t(
-          '15 items need ordering, each with a suggested quantity, an order-by date and whether it runs short before the next delivery.',
-          '15 Artikel müssen bestellt werden, jeweils mit Mengenvorschlag, Bestelldatum und dem Hinweis, ob sie vor der nächsten Lieferung knapp werden.',
-          '15 صنفًا تحتاج إلى طلب، لكلٍّ منها كمية مقترحة وتاريخ أقصى للطلب، وما إذا كان سينفد قبل التوريد التالي.',
-          '15 articoli da ordinare, ognuno con quantità suggerita, data entro cui ordinare e se finisce prima della prossima consegna.',
-        ),
-        focus: [0.1799, 0.2798, 0.8187, 0.5073],
-        fade: true,
-        mark: [0.205, 0.383, 0.122, 0.04],
-      },
-      {
         frame: 2,
-        stage: order,
-        label: t('The purchase request', 'Die Bestellanforderung', 'طلب الشراء', 'La richiesta d’acquisto'),
-        text: t(
-          'The request goes to Purchasing, and every approval step is visible: purchasing, accounting and, above AED 5,000, the general manager.',
-          'Die Anforderung geht an den Einkauf, und jeder Freigabeschritt ist sichtbar: Einkauf, Buchhaltung und ab AED 5.000 der General Manager.',
-          'يذهب الطلب إلى المشتريات، وتظهر كل خطوة موافقة: المشتريات، ثم المحاسبة، ثم المدير العام للطلبات التي تتجاوز 5,000 درهم.',
-          'La richiesta va agli Acquisti e ogni passaggio di approvazione è visibile: acquisti, contabilità e, sopra AED 5.000, il direttore generale.',
-        ),
-        focus: [0.1799, 0.2782, 0.8187, 0.2444],
-        mark: [0.205, 0.455, 0.68, 0.04],
-      },
-      {
-        frame: 3,
-        stage: approve,
+        stage: soon,
         label: t('Purchasing review', 'Prüfung im Einkauf', 'مراجعة المشتريات', 'Revisione acquisti'),
         text: t(
           'Purchasing approves, asks for changes or rejects, with the budget left after this request in view. Budgets are demo planning figures.',
-          'Der Einkauf gibt frei, fordert Änderungen an oder lehnt ab – mit dem Budget, das nach dieser Anforderung bleibt. Budgets sind Planungszahlen der Demo.',
+          'Der Einkauf gibt frei, fordert Änderungen an oder lehnt ab, mit dem Budget, das nach dieser Anforderung bleibt. Budgets sind Planungszahlen der Demo.',
           'توافق المشتريات أو تطلب تعديلات أو ترفض، مع رؤية الميزانية المتبقية بعد هذا الطلب. والميزانيات أرقام تخطيطية في العرض التوضيحي.',
           'Gli Acquisti approvano, chiedono modifiche o rifiutano, con il budget residuo dopo questa richiesta sotto gli occhi. I budget sono cifre di pianificazione della demo.',
         ),
@@ -250,24 +235,24 @@ export const explore: Record<SolutionKey, Explore> = {
         mark: [0.208, 0.633, 0.24, 0.034],
       },
       {
-        frame: 4,
-        stage: receive,
+        frame: 3,
+        stage: soon,
         label: t('Goods received', 'Ware angenommen', 'استلام البضائع', 'Merce ricevuta'),
         text: t(
           'Stock rises only when the delivery is recorded, not when the order is placed.',
-          'Der Bestand steigt erst, wenn die Lieferung erfasst ist – nicht schon bei der Bestellung.',
+          'Der Bestand steigt erst, wenn die Lieferung erfasst ist, nicht schon bei der Bestellung.',
           'لا يرتفع المخزون إلا عند تسجيل التوريد، وليس عند إرسال الطلب.',
           'Le giacenze aumentano solo quando la consegna viene registrata, non quando si ordina.',
         ),
-        focus: [0.1799, 0.0573, 0.8187, 0.4427],
+        focus: [0.1799, 0.268, 0.4, 0.45],
         fade: true,
-        mark: [0.205, 0.118, 0.37, 0.022],
+        mark: [0.208, 0.288, 0.36, 0.04],
       },
     ],
   },
 
   events: {
-    tone: 'dark',
+    tone: 'light',
     outcome: t(
       'A staffing request reaches the department that can help, and everyone can follow the decision.',
       'Eine Personalanfrage erreicht die Abteilung, die helfen kann, und alle können die Entscheidung verfolgen.',
@@ -413,10 +398,10 @@ export const explore: Record<SolutionKey, Explore> = {
   },
 
   sales: {
-    tone: 'dark',
+    tone: 'light',
     outcome: t(
       'Owners, managers and sales see performance and the pipeline in one place, with estimates clearly marked.',
-      'Eigentümer, Management und Vertrieb sehen Performance und Pipeline an einem Ort – Schätzungen klar gekennzeichnet.',
+      'Eigentümer, Management und Vertrieb sehen Performance und Pipeline an einem Ort, Schätzungen klar gekennzeichnet.',
       'يرى الملّاك والمديرون وفريق المبيعات الأداء وفرص البيع في مكان واحد، مع تمييز التقديرات بوضوح.',
       'Proprietà, direzione e vendite vedono performance e pipeline in un unico posto, con le stime chiaramente indicate.',
     ),
@@ -438,7 +423,7 @@ export const explore: Record<SolutionKey, Explore> = {
         label: t('What needs attention', 'Was Aufmerksamkeit braucht', 'ما يتطلب الانتباه', 'Cosa richiede attenzione'),
         text: t(
           'The open issues behind the figures, with the value involved, their priority and who is on them.',
-          'Die offenen Punkte hinter den Zahlen – mit betroffenem Wert, Priorität und wer sich darum kümmert.',
+          'Die offenen Punkte hinter den Zahlen, mit betroffenem Wert, Priorität und wer sich darum kümmert.',
           'المسائل المفتوحة وراء الأرقام، مع القيمة المعنية وأولويتها ومن يتولاها.',
           'Le questioni aperte dietro i numeri, con il valore coinvolto, la priorità e chi se ne occupa.',
         ),

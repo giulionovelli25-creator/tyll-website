@@ -15,10 +15,10 @@ const BASE = process.env.BASE_URL || 'http://localhost:4321';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const TRACKERS = /googletagmanager\.com|google-analytics\.com|plausible\.io|connect\.facebook\.net|facebook\.com\/tr/;
 const SOL = {
-  en: ['stock-waste', 'finance-money', 'forecasting-purchasing', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/en/solutions/${s}/`),
-  de: ['lager-abfall', 'finanzen', 'prognose-einkauf', 'events-personal', 'zimmer-gaeste', 'vertrieb-performance'].map((s) => `/de/loesungen/${s}/`),
-  ar: ['stock-waste', 'finance-money', 'forecasting-purchasing', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/ar/solutions/${s}/`),
-  it: ['magazzino-sprechi', 'finanza', 'previsioni-acquisti', 'eventi-personale', 'camere-ospiti', 'vendite-performance'].map((s) => `/it/soluzioni/${s}/`),
+  en: ['forecasting-purchasing', 'stock-waste', 'finance-money', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/en/solutions/${s}/`),
+  de: ['prognose-einkauf', 'lager-abfall', 'finanzen', 'events-personal', 'zimmer-gaeste', 'vertrieb-performance'].map((s) => `/de/loesungen/${s}/`),
+  ar: ['forecasting-purchasing', 'stock-waste', 'finance-money', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/ar/solutions/${s}/`),
+  it: ['previsioni-acquisti', 'magazzino-sprechi', 'finanza', 'eventi-personale', 'camere-ospiti', 'vendite-performance'].map((s) => `/it/soluzioni/${s}/`),
 };
 const LANGS = ['en', 'de', 'ar', 'it'];
 // Same order in every language, so index i is the same page
@@ -43,6 +43,8 @@ const browser = await puppeteer.launch({ executablePath: CHROME, headless: true,
 async function freshPage({ width = 1440, height = 900, mobile = false, reduce = false } = {}) {
   const ctx = await browser.createBrowserContext();
   const page = await ctx.newPage();
+  // The dev server builds each image on first request, which can take longer than the default 30 s
+  page.setDefaultNavigationTimeout(120000);
   await page.setViewport({ width, height, isMobile: mobile, hasTouch: mobile });
   if (reduce) await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   page.trackerHits = [];
@@ -79,24 +81,35 @@ for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/Know exactly what to buy|Wissen, was Sie einkaufen|اعرف بالضبط|Sai esattamente/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // The product sequence: starts when well in view, ends on the final Tyll view (button shows Replay), never holds the page
-    const story = await page.evaluate(async () => {
+    // The product is explained question by question, beside its real screen
+    const tour = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-      const cine = document.querySelector('[data-cine]');
-      const before = scrollY;
-      cine.scrollIntoView({ block: 'start', behavior: 'instant' });
-      await wait(400);
-      const early = { scene: cine.dataset.scene, state: cine.dataset.state, pieces: [...cine.querySelectorAll('[data-piece]')].filter((e) => getComputedStyle(e).visibility === 'visible' && +getComputedStyle(e).opacity > 0.9).length };
-      await wait(10200);
-      const op = (sel) => +getComputedStyle(cine.querySelector(sel)).opacity;
-      const end = { scene: cine.dataset.scene, state: cine.dataset.state, shell: op('.app__shell'), next: op('.d__next'), recs: cine.querySelectorAll('[data-rec]').length, rows: cine.querySelectorAll('.row').length };
-      scrollTo({ top: cine.getBoundingClientRect().bottom + scrollY + 200, behavior: 'instant' });
-      await wait(200);
-      return { early, end, moved: scrollY > before };
+      const root = document.querySelector('[data-tour]');
+      root.scrollIntoView({ block: 'start', behavior: 'instant' });
+      const buttons = [...root.querySelectorAll('.tour__q')];
+      const open = () => buttons.findIndex((b) => b.getAttribute('aria-expanded') === 'true');
+      const first = open();
+      buttons[1].click();
+      await wait(600);
+      const layer = root.querySelector('.tour__layer.is-on')?.dataset.layer;
+      const part = root.querySelector('.tour__layer.is-on img');
+      if (part) { part.loading = 'eager'; await part.decode().catch(() => {}); }
+      return { items: buttons.length, first, second: open(), layer, loaded: (part?.naturalWidth ?? 0) > 500, alt: (part?.alt ?? '').length > 20, links: root.querySelectorAll('.tour__link').length, steps: root.querySelectorAll('.tour__steps li').length };
     });
-    if (!['0', '1'].includes(story.early.scene) || story.early.state !== 'playing' || story.early.pieces !== 4) problems.push(`story did not start from the beginning (${JSON.stringify(story.early)})`);
-    if (!(story.end.scene === '6' && story.end.state === 'done' && story.end.shell > 0.95 && story.end.next > 0.95 && story.end.recs === 2 && story.end.rows === 3)) problems.push(`story end ${JSON.stringify(story.end)}`);
-    if (!story.moved) problems.push('page did not continue past the story');
+    if (!(tour.items === 3 && tour.first === 0 && tour.second === 1 && tour.layer === '1' && tour.loaded && tour.alt && tour.links === 3 && tour.steps === 3)) problems.push(`product tour ${JSON.stringify(tour)}`);
+    // Two sourced statistics, each with its source
+    const stats = await page.evaluate(() => ({ figures: [...document.querySelectorAll('.stat__number')].map((n) => n.textContent.trim()), sources: document.querySelectorAll('.stat__source a[href^="https://"]').length }));
+    if (stats.figures.length !== 2 || !stats.figures[1].startsWith('$') || stats.sources !== 2) problems.push(`statistics ${JSON.stringify(stats)}`);
+    // The integrations band: ten real logos, each with its product name as alt text; logos are never links
+    const band = await page.evaluate(() => {
+      const set = document.querySelector('.band__set:not([aria-hidden])');
+      const imgs = [...set.querySelectorAll('img')];
+      const broken = imgs.filter((i) => { i.loading = 'eager'; return !i.getAttribute('src').startsWith('/logos/integrations/'); }).length;
+      return { logos: imgs.length, sets: document.querySelectorAll('.band__set').length, alts: imgs.filter((i) => i.alt.length > 2).length, links: document.querySelectorAll('.band a').length, broken, note: document.querySelector('.works__note a')?.getAttribute('href') ?? '', spin: getComputedStyle(document.querySelector('.band__track')).animationDuration };
+    });
+    if (band.logos !== 10 || band.sets !== 2 || band.alts !== 10 || band.links || band.broken || !/\//.test(band.note)) problems.push(`logo band ${JSON.stringify(band)}`);
+    const seconds = parseFloat(band.spin);
+    if (!(seconds >= 30 && seconds <= 40)) problems.push(`logo band loop is ${band.spin}`);
     // The homepage leads with what is on sale: the hero's report button reaches the form and "Available now" links
     // the three products; the menu marks the other three as Coming soon
     await go(page, `/${lang}/`);
@@ -105,7 +118,7 @@ for (const lang of LANGS) {
       now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
       menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
     }));
-    const nowPages = [SOL[lang][2], SOL[lang][0], SOL[lang][1]];
+    const nowPages = SOL[lang].slice(0, 3);
     if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 3) problems.push(`homepage products ${JSON.stringify(product)}`);
     // The report form stays folded until asked for; the hero's button opens it, and it asks for one step at a time
     const form = await page.evaluate(async () => {
@@ -263,14 +276,10 @@ for (const lang of LANGS) {
   const menu = await page.evaluate(() => ({ open: !document.getElementById('mobile-menu').hidden, links: [...document.querySelectorAll('#mobile-menu details li a')].map((a) => a.getAttribute('href')) }));
   if (!menu.open || menu.links.length !== 7 || !menu.links.every((h) => h.startsWith('/ar/'))) p.push(`mobile menu ${JSON.stringify(menu)}`);
   await page.keyboard.press('Escape');
-  // The product sequence stays inside the screen and ends on the final view
-  const story = await page.evaluate(async () => {
-    const cine = document.querySelector('[data-cine]');
-    cine.scrollIntoView({ block: 'start', behavior: 'instant' });
-    await new Promise((r) => setTimeout(r, 10200));
+  // The product section stays inside the screen
+  const story = await page.evaluate(() => {
     const out = [];
-    cine.querySelectorAll('.app, .rec, .ch, .cine__ctrl').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
-    if (cine.dataset.scene !== '6') out.push(`scene ${cine.dataset.scene}`);
+    document.querySelectorAll('.tour__head, .tour__item, .tour__inline, .tour__steps').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
@@ -301,15 +310,18 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
-      recs: [...document.querySelectorAll('[data-cine] [data-rec]')].map((e) => e.dataset.rec).join(),
-      oldDiagram: document.querySelectorAll('[data-flow], .story .link, .frag').length,
+      shots: document.querySelectorAll('.tour__item').length,
+      oldShelf: document.querySelectorAll('[data-story], .shot, .sample, .ticker').length,
+      oldDiagram: document.querySelectorAll('[data-flow], [data-cine], .frag').length,
+      quiet: !!document.querySelector('.hero__actions a.hero__quiet[href="#report"]'),
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
       ctas: document.querySelectorAll('.hero__actions .btn').length,
       ar: document.querySelector('.lang a[hreflang="ar"]')?.textContent.trim(),
       codes: [...document.querySelectorAll('.header__end .lang a')].map((a) => a.querySelector('[aria-hidden="true"], .lang__ar').textContent.trim()).join(' '),
     }));
-    if (home.recs !== 'stock,pos') p.push(`${lang}: sequence records ${home.recs}`);
+    if (home.shots !== 3) p.push(`${lang}: ${home.shots} questions in the product section`);
+    if (home.oldShelf) p.push(`${lang}: removed story, example report or ticker still present`);
     if (home.oldDiagram) p.push(`${lang}: old diagram still present`);
     // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
     await go(page, PAGES[lang][1]);
@@ -323,42 +335,19 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     const hero = await page.evaluate(() => {
       const h1 = document.querySelector('.hero h1'); const rg = document.createRange(); rg.selectNodeContents(h1);
       const rects = [...rg.getClientRects()].filter((x) => x.width > 0);
-      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), extraText: document.querySelectorAll('.hero__inner p').length, mark: document.querySelectorAll('.hero__inner svg').length };
+      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), extraText: document.querySelectorAll('.hero__inner p:not(.hero__sub)').length, mark: document.querySelectorAll('.hero__inner svg').length };
     });
     if (!hero.fits || hero.fs > 100 || hero.extraText || hero.mark) p.push(`${lang}: hero ${JSON.stringify(hero)}`);
     // Each solution page ends with a link to all solutions
     await go(page, SOL[lang][0]);
     const all = await page.$eval('.others__all', (a) => a.getAttribute('href')).catch(() => null);
     if (all !== PAGES[lang][5]) p.push(`${lang}: All Solutions link ${all}`);
-    if (!home.sources.some((s) => /hero-operations/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
+    if (!home.sources.some((s) => /hero-film/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
     if (lang === 'en' && home.h1 !== 'Know exactly what to buy. Every week.') p.push(`hero headline changed: "${home.h1}"`);
-    if (home.ctas !== 2) p.push(`${lang}: hero has ${home.ctas} buttons`);
+    if (home.ctas !== 1 || !home.quiet) p.push(`${lang}: hero has ${home.ctas} buttons, quiet link ${home.quiet}`);
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
-  // Pause holds the sequence; Play continues it; Replay runs it again from the start
-  await go(page, '/en/');
-  const ctl = await page.evaluate(async () => {
-    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-    const cine = document.querySelector('[data-cine]');
-    const btn = cine.querySelector('[data-ctrl]');
-    cine.scrollIntoView({ block: 'start', behavior: 'instant' });
-    await wait(1000);
-    btn.click();
-    const pausedAt = cine.dataset.scene;
-    await wait(3500);
-    const paused = { state: cine.dataset.state, scene: cine.dataset.scene, label: btn.textContent.trim() };
-    btn.click();
-    await wait(9500);
-    const done = { state: cine.dataset.state, scene: cine.dataset.scene, label: btn.textContent.trim() };
-    btn.click();
-    await wait(300);
-    const again = { state: cine.dataset.state, scene: cine.dataset.scene };
-    return { visible: getComputedStyle(btn).display !== 'none', pausedAt, paused, done, again };
-  });
-  if (!ctl.visible || ctl.paused.state !== 'paused' || ctl.paused.scene !== ctl.pausedAt || ctl.paused.label !== 'Play') p.push(`pause ${JSON.stringify(ctl)}`);
-  if (ctl.done.state !== 'done' || ctl.done.scene !== '6' || ctl.done.label !== 'Replay') p.push(`resume ${JSON.stringify(ctl.done)}`);
-  if (ctl.again.state !== 'playing' || !['0', '1'].includes(ctl.again.scene)) p.push(`replay ${JSON.stringify(ctl.again)}`);
   // The closing silver wave flows while on screen as one formation: every line changes, and all lines keep the
   // same shape (the gaps between neighbouring lines stay nearly constant along the ribbon)
   await go(page, '/en/');
@@ -387,13 +376,13 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     return { playing, src: v.currentSrc.split('/').pop(), pausedAfter: v.paused, w: v.videoWidth };
   });
   if (!video.playing || !video.pausedAfter) p.push(`hero video ${JSON.stringify(video)}`);
-  if (mobile ? video.w !== 1280 : video.w !== 1920) p.push(`hero video on ${where} is ${video.w}px wide (${video.src})`);
+  if (mobile ? video.w !== 720 : video.w !== 1920) p.push(`hero video on ${where} is ${video.w}px wide (${video.src})`);
   // The product explorer on every solution page: click or tap, keyboard, one explanation at a time, a detail panel
   // for parts on another screen, the whole screen on request, and every screen in the viewer
   for (const lang of ['en', 'ar']) {
     for (const url of SOL[lang]) {
       await go(page, url);
-      await page.evaluate(() => document.querySelector('[data-ex]').scrollIntoView({ block: 'center' }));
+      await page.evaluate(() => document.querySelector('[data-ex]').scrollIntoView({ block: 'center', behavior: 'instant' }));
       const tabs = await page.$$('[data-ex] [role=tab]');
       if (tabs.length < 4) { p.push(`${url}: ${tabs.length} parts`); continue; }
       const state = () => page.evaluate(() => {
@@ -649,8 +638,11 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     hiddenText: [...document.querySelectorAll('.step__text')].filter((e) => getComputedStyle(e).opacity !== '1').length,
     toggle: !!document.querySelector('.hero__toggle:not([hidden])'),
   }));
-  const still = await page.evaluate(() => { const c = document.querySelector('[data-cine]'); return { scene: c.dataset.scene, ctrl: c.querySelector('[data-ctrl]').hidden, next: getComputedStyle(c.querySelector('.d__next')).opacity, shell: getComputedStyle(c.querySelector('.app__shell')).opacity }; });
-  if (still.scene !== '6' || !still.ctrl || still.next !== '1' || still.shell !== '1') p.push(`story not shown complete under reduced motion: ${JSON.stringify(still)}`);
+  const still = await page.evaluate(() => {
+    const band = document.querySelector('.band__set[aria-hidden]');
+    return { bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
+  });
+  if (still.bandAnimation !== 'none' || still.secondSet !== 'none' || still.wrap !== 'wrap') p.push(`logo band not a still grid under reduced motion: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   const wavePaused = await page.evaluate(async () => {
     const path = document.querySelector('.invite__waves path');

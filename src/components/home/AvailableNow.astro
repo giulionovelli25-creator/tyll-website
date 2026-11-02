@@ -18,7 +18,7 @@ const v = d.home.now;
   <div class="wrap">
     <header class="now__head">
       <p class="now__label"><span class="now__dot" aria-hidden="true"></span>{v.label}</p>
-      <h2 id="now-title">{v.title}</h2>
+      <h2 id="now-title" class="display">{v.title}</h2>
     </header>
     <ul class="now__cards">
       {
@@ -56,72 +56,64 @@ const v = d.home.now;
 
 <style>
   .now {
-    position: relative;
-    padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
-    background:
-      radial-gradient(70% 60% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
-      linear-gradient(180deg, #f7f7f5 0%, #f0f1f2 100%);
-  }
-
-  .now__head {
-    max-width: 40rem;
+    padding-block: var(--section-y);
+    background: var(--page);
+    color: var(--text-1);
   }
 
   .now__label {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    color: var(--steel);
+    gap: var(--s-1);
+    color: var(--text-2);
     font-size: var(--fs-small);
-    font-weight: 500;
   }
 
-  /* A small live dot: these are on sale today */
   .now__dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: #2f8f5b;
-    box-shadow: 0 0 0 4px rgba(47, 143, 91, 0.14);
+    background: var(--text-1);
+    box-shadow: 0 0 0 4px var(--hair);
   }
 
   .now h2 {
-    margin-top: 0.75rem;
+    max-width: 18ch;
+    margin-top: var(--s-2);
     font-size: var(--fs-h2);
   }
 
   .now__cards {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(1rem, 0.5rem + 1.5vw, 1.5rem);
-    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    gap: var(--s-3);
+    margin: var(--s-5) 0 0;
     padding: 0;
     list-style: none;
   }
 
+  /* A layered surface on a raised panel */
   .card {
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    border: 1px solid rgba(20, 22, 26, 0.07);
+    border: 1px solid var(--hair);
     border-radius: var(--radius-lg);
-    background: #fff;
-    color: var(--ink);
+    background: var(--paper);
+    color: var(--text-1);
     text-decoration: none;
-    box-shadow:
-      0 1px 2px rgba(20, 22, 26, 0.04),
-      0 24px 48px -30px rgba(20, 22, 26, 0.28);
+    box-shadow: var(--edge), var(--shadow-2);
     transition:
-      transform 0.35s var(--ease),
-      box-shadow 0.35s var(--ease);
+      transform 0.45s var(--ease),
+      border-color 0.3s var(--ease),
+      box-shadow 0.45s var(--ease);
   }
 
   .card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 1px 2px rgba(20, 22, 26, 0.05),
-      0 32px 60px -30px rgba(20, 22, 26, 0.36);
+    transform: translateY(-4px);
+    border-color: var(--hair-strong);
+    box-shadow: var(--edge), var(--shadow-3);
   }
 
   .card__photo {
@@ -140,7 +132,8 @@ const v = d.home.now;
 
   .card__photo :global(img) {
     object-fit: cover;
-    transition: transform 0.7s var(--ease);
+    filter: var(--photo-grade);
+    transition: transform 0.8s var(--ease);
   }
 
   .card:hover .card__photo :global(img) {
@@ -151,18 +144,18 @@ const v = d.home.now;
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
+    padding: var(--s-3);
   }
 
   .card__title {
     font-size: var(--fs-h3);
     font-weight: 500;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.012em;
   }
 
   .card__text {
-    margin-top: 0.5rem;
-    color: var(--graphite);
+    margin-top: var(--s-1);
+    color: var(--text-2);
     line-height: 1.55;
   }
 
@@ -171,15 +164,15 @@ const v = d.home.now;
     align-items: center;
     gap: 0.4rem;
     margin-top: auto;
-    padding-top: 1.5rem;
-    color: var(--ink);
+    padding-top: var(--s-3);
+    color: var(--text-1);
     font-size: 0.9375rem;
     font-weight: 500;
   }
 
   .card__arrow {
     display: inline-block;
-    transition: transform 0.3s var(--ease);
+    transition: transform 0.35s var(--ease);
   }
 
   .card:hover .card__arrow {

@@ -1,0 +1,241 @@
+---
+// "Works with the systems you already use": the real logos from src/config/integrations.ts in an endless band.
+// The set is drawn twice and the band moves by exactly one set, so the loop has no visible jump. It uses a CSS
+// transform only, pauses under the pointer, under a finger and when focused, and always reads left to right, also in
+// Arabic. With reduced motion it stands still as a centred, wrapping grid. Logos are never links.
+import { logos, logoBox } from '../../config/integrations';
+import { t, href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const v = t(lang).home.works;
+---
+
+<section class="works" aria-labelledby="works-title">
+  <div class="wrap works__head">
+    <h2 id="works-title" class="display">{v.title}</h2>
+    <p>{v.text}</p>
+  </div>
+
+  <div class="band" dir="ltr" tabindex="0" role="group" aria-labelledby="works-title" data-band>
+    <div class="band__track">
+      {
+        [0, 1].map((copy) => (
+          <ul class="band__set" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {logos.map((l) => {
+              const b = logoBox(l);
+              return (
+                <li class="logo" style={`--tone:${l.tone ?? 1}`}>
+                  <img
+                    class:list={[l.whiteFile && 'is-white']}
+                    src={`/logos/integrations/${l.file}`}
+                    alt={copy === 1 ? '' : l.name}
+                    style={`--w:${b.width};--h:${b.height};--mt:${b.top};--mr:${b.right};--mb:${b.bottom};--ml:${b.left}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  {l.text && <span aria-hidden="true">{l.text}</span>}
+                </li>
+              );
+            })}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+
+  <p class="works__note">
+    <a href={href('book', lang)} data-track="book_demo_click" data-track-from="integrations">{v.note}</a>
+  </p>
+</section>
+
+<style>
+  .works {
+    --logo-scale: 1;
+    --logo-gap: 4.5rem;
+    padding-block: var(--section-y);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .works__head {
+    max-width: calc(44rem + var(--gut) * 2);
+    text-align: center;
+  }
+
+  .works h2 {
+    font-size: var(--fs-h2);
+  }
+
+  .works__head p {
+    margin: var(--s-3) auto 0;
+    color: var(--steel);
+    font-size: var(--fs-lead);
+  }
+
+  /* The logos fade in and out at the edges of the band */
+  .band {
+    overflow: hidden;
+    margin-top: var(--s-7);
+    padding-block: var(--s-2);
+    -webkit-mask-image: linear-gradient(90deg, transparent, var(--black) 12%, var(--black) 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, var(--black) 12%, var(--black) 88%, transparent);
+  }
+
+  .band:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+
+  .band__track {
+    display: flex;
+    width: max-content;
+    animation: band 36s linear infinite;
+  }
+
+  .band:hover .band__track,
+  .band:focus .band__track,
+  .band.is-held .band__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes band {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .band__set {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--logo-gap);
+    margin: 0;
+    /* The same space after the last logo as between all the others, so the join cannot be seen */
+    padding: 0 var(--logo-gap) 0 0;
+    list-style: none;
+  }
+
+  /* Monochrome grey until the pointer reaches a logo. The files themselves are never altered. */
+  .logo {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: calc(0.7rem * var(--logo-scale));
+    height: calc(36px * var(--logo-scale));
+  }
+
+  /* Each file is sized so its visible mark, not its empty margin, sets the height. */
+  .logo img {
+    flex: none;
+    width: calc(var(--w) * var(--logo-scale) * 1px);
+    max-width: none;
+    height: calc(var(--h) * var(--logo-scale) * 1px);
+    margin: calc(var(--mt) * var(--logo-scale) * 1px) calc(var(--mr) * var(--logo-scale) * 1px) calc(var(--mb) * var(--logo-scale) * 1px) calc(var(--ml) * var(--logo-scale) * 1px);
+    opacity: 0.48;
+    filter: grayscale(1) brightness(var(--tone));
+    transition:
+      opacity 0.3s var(--ease),
+      filter 0.3s var(--ease);
+  }
+
+  .logo:hover img {
+    opacity: 1;
+    filter: none;
+  }
+
+  /* The maker only publishes this one in white, so it is darkened here to show on the white band */
+  .logo img.is-white,
+  .logo:hover img.is-white {
+    filter: brightness(0);
+  }
+
+  /* The product name beside a company logo, in the site's own type */
+  .logo span {
+    color: var(--text-3);
+    transition: color 0.3s var(--ease);
+    font-size: calc(1.25rem * var(--logo-scale));
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .logo:hover span {
+    color: var(--ink);
+  }
+
+  .works__note {
+    margin: var(--s-6) auto 0;
+    padding-inline: var(--gut);
+    color: var(--steel);
+    font-size: var(--fs-small);
+    text-align: center;
+  }
+
+  .works__note a {
+    text-decoration: underline;
+    text-decoration-color: var(--silver);
+    text-underline-offset: 4px;
+    transition:
+      color 0.2s var(--ease),
+      text-decoration-color 0.2s var(--ease);
+  }
+
+  .works__note a:hover {
+    color: var(--ink);
+    text-decoration-color: var(--ink);
+  }
+
+  @media (max-width: 760px) {
+    .works {
+      --logo-scale: 0.74;
+      --logo-gap: 3rem;
+    }
+
+    .band {
+      margin-top: var(--s-5);
+    }
+
+    .works__note {
+      margin-top: var(--s-5);
+    }
+  }
+
+  /* Reduced motion: a still, centred grid of one set */
+  @media (prefers-reduced-motion: reduce) {
+    .band {
+      overflow: visible;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .band__track {
+      width: auto;
+      animation: none;
+    }
+
+    .band__set {
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--s-4) var(--logo-gap);
+      padding: 0 var(--gut);
+    }
+
+    .band__set[aria-hidden='true'] {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // A finger on the band holds it still, as the pointer does on a desktop
+  document.querySelectorAll<HTMLElement>('[data-band]').forEach((band) => {
+    band.addEventListener('touchstart', () => band.classList.add('is-held'), { passive: true });
+    for (const end of ['touchend', 'touchcancel']) band.addEventListener(end, () => band.classList.remove('is-held'), { passive: true });
+  });
+</script>

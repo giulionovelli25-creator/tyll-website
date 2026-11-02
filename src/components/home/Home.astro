@@ -2,8 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import Hero from './Hero.astro';
 import AvailableNow from './AvailableNow.astro';
-import ConnectStory from './ConnectStory.astro';
-import WorksWith from './WorksWith.astro';
+import ProductTour from './ProductTour.astro';
+import Integrations from './Integrations.astro';
 import WhyItMatters from './WhyItMatters.astro';
 import Invitation from './Invitation.astro';
 import { site } from '../../config/site';
@@ -37,8 +37,8 @@ const schema = {
   <!-- What Tyll sells today first, and the free report request at the end (the hero links to it) -->
   <Hero lang={lang} />
   <AvailableNow lang={lang} />
-  <ConnectStory lang={lang} />
+  <ProductTour lang={lang} />
   <WhyItMatters lang={lang} />
-  <WorksWith lang={lang} />
+  <Integrations lang={lang} />
   <Invitation lang={lang} />
 </Base>

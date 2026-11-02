@@ -51,10 +51,6 @@ const camStyle = (i: number) => {
   const [x, y, z] = views[i].cam.split(',');
   return `--x:${x}%;--y:${y}%;--z:${z};--clip:inset(${views[i].clip} round calc(14px / ${z}));--fade:${spots[i].fade ? `${views[i].fade}%` : '200%'}`;
 };
-const wholeStyle = (() => {
-  const [x, y, z] = wholeCam.split(',');
-  return `--x:${x}%;--y:${y}%;--z:${z}`;
-})();
 const pct = (r: Rect) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
 // Every screen of this solution, full size, for the viewer
 const full = await Promise.all(frames.map((f) => getImage({ src: f.img, width: f.img.width, format: 'webp', quality: 85 })));
@@ -116,9 +112,6 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
       {
         layers.map((l, k) => (
           <div class:list={['ex__layer', k === 0 && 'is-on']} data-layer={l.frame} aria-hidden={k === 0 ? undefined : 'true'}>
-            <div class="ex__backdrop" style={wholeStyle} aria-hidden="true">
-              <Picture src={frames[l.frame].img} alt="" formats={['avif', 'webp']} fallbackFormat="webp" widths={[1440, 2880]} sizes="1280px" loading="lazy" decoding="async" />
-            </div>
             <div class="ex__cam" style={camStyle(l.first)}>
               <div class="ex__canvas">
                 <Picture
@@ -201,7 +194,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
 
 <style>
   .ex {
-    --ring: #b7791f;
+    --ring: var(--amber-500);
     --ex-gap: clamp(0.75rem, 0.5rem + 0.6vw, 1.125rem);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -284,11 +277,11 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
   .ex__window {
     margin: 0;
     border-radius: 16px;
-    background: #fff;
+    background: var(--paper);
     box-shadow:
       0 0 0 1px var(--ex-frame),
-      0 60px 120px -60px rgba(0, 0, 0, 0.55),
-      0 24px 48px -32px rgba(0, 0, 0, 0.35);
+      0 60px 120px -60px rgb(var(--black-rgb) / 0.55),
+      0 24px 48px -32px rgb(var(--black-rgb) / 0.35);
     overflow: hidden;
   }
 
@@ -299,7 +292,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     height: 44px;
     padding: 0 0.6rem 0 1rem;
     border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, #fbfbfc, #f2f3f5);
+    background: linear-gradient(180deg, var(--cloud), var(--mist));
   }
 
   .ex__dots {
@@ -322,7 +315,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     gap: 0.35rem;
     padding: 0.2rem 0.9rem;
     border-radius: var(--pill);
-    background: #fff;
+    background: var(--paper);
     box-shadow: 0 0 0 1px var(--line);
     color: var(--steel);
     font-size: 0.75rem;
@@ -348,7 +341,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     padding: 0 0.75rem;
     border: 1px solid var(--line);
     border-radius: var(--pill);
-    background: #fff;
+    background: var(--paper);
     color: var(--graphite);
     font: inherit;
     font-size: 0.8125rem;
@@ -380,7 +373,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     position: relative;
     aspect-ratio: 1.66;
     overflow: hidden;
-    background: #e9ebee;
+    background: var(--mist);
   }
 
   .ex__layer {
@@ -388,7 +381,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     inset: 0;
     opacity: 0;
     visibility: hidden;
-    filter: drop-shadow(0 18px 30px rgba(20, 22, 26, 0.14)) drop-shadow(0 2px 4px rgba(20, 22, 26, 0.06));
+    filter: drop-shadow(0 18px 30px rgb(var(--ink-rgb) / 0.14)) drop-shadow(0 2px 4px rgb(var(--ink-rgb) / 0.06));
     transition:
       opacity 0.5s var(--ease),
       visibility 0s linear 0.5s;
@@ -402,8 +395,6 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
       visibility 0s;
   }
 
-  /* The whole screen, softly, so the part in front keeps its context */
-  .ex__backdrop,
   .ex__cam {
     position: absolute;
     top: 0;
@@ -414,14 +405,6 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     transform: translate(var(--x), var(--y)) scale(var(--z));
   }
 
-  .ex__backdrop {
-    opacity: 0.55;
-    filter: blur(2px) saturate(0.8);
-    transition: opacity 0.6s var(--ease);
-  }
-
-  .ex__backdrop :global(picture),
-  .ex__backdrop :global(img),
   .ex__canvas :global(picture),
   .ex__canvas :global(.ex__img) {
     display: block;
@@ -429,11 +412,11 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     height: 100%;
   }
 
-  /* The part itself: sharp and complete, lifted slightly from the screen behind it */
+  /* The part itself: sharp and complete, lifted slightly from the product's own ground */
   .ex__cam {
     clip-path: var(--clip);
-    -webkit-mask-image: linear-gradient(180deg, #000 calc(var(--fade) - 4%), transparent var(--fade));
-    mask-image: linear-gradient(180deg, #000 calc(var(--fade) - 4%), transparent var(--fade));
+    -webkit-mask-image: linear-gradient(180deg, var(--black) calc(var(--fade) - 4%), transparent var(--fade));
+    mask-image: linear-gradient(180deg, var(--black) calc(var(--fade) - 4%), transparent var(--fade));
     transition:
       transform 0.85s var(--ease),
       clip-path 0.85s var(--ease);
@@ -442,10 +425,6 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
   .ex__canvas {
     position: absolute;
     inset: 0;
-  }
-
-  .ex.is-whole .ex__backdrop {
-    opacity: 0;
   }
 
   /* The exact detail: a fine amber ring */
@@ -462,13 +441,13 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
   }
 
   .ex__mark:hover {
-    box-shadow: 0 0 0 calc(1.5px / var(--z)) rgba(183, 121, 31, 0.55);
+    box-shadow: 0 0 0 calc(1.5px / var(--z)) rgb(var(--amber-rgb) / 0.55);
   }
 
   .ex__mark.is-on {
     box-shadow:
       0 0 0 calc(2px / var(--z)) var(--ring),
-      0 0 0 calc(7px / var(--z)) rgba(183, 121, 31, 0.16);
+      0 0 0 calc(7px / var(--z)) rgb(var(--amber-rgb) / 0.16);
     cursor: default;
   }
 
@@ -490,10 +469,10 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     border: 0;
     border-radius: var(--pill);
     background: var(--ink);
-    color: #fff;
+    color: var(--paper);
     font: inherit;
     font-size: 0.8125rem;
-    box-shadow: 0 10px 24px -10px rgba(20, 22, 26, 0.5);
+    box-shadow: 0 10px 24px -10px rgb(var(--ink-rgb) / 0.5);
     cursor: pointer;
     transform: translateX(-50%);
   }
@@ -581,11 +560,11 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
   /* ── Tones: charcoal or light stone behind the product ── */
   .ex--dark {
     --ex-text: var(--on-dark);
-    --ex-muted: rgba(244, 245, 247, 0.74);
-    --ex-line: rgba(244, 245, 247, 0.24);
+    --ex-muted: rgb(var(--on-dark-rgb) / 0.74);
+    --ex-line: rgb(var(--on-dark-rgb) / 0.24);
     --ex-on-bg: var(--on-dark);
     --ex-on-text: var(--ink);
-    --ex-frame: rgba(255, 255, 255, 0.08);
+    --ex-frame: rgb(var(--paper-rgb) / 0.08);
   }
 
   .ex--light {
@@ -593,8 +572,8 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     --ex-muted: var(--graphite);
     --ex-line: var(--silver);
     --ex-on-bg: var(--ink);
-    --ex-on-text: #fff;
-    --ex-frame: rgba(20, 22, 26, 0.08);
+    --ex-on-text: var(--paper);
+    --ex-frame: rgb(var(--ink-rgb) / 0.08);
   }
 
   /* ── Viewer ── */
@@ -606,12 +585,12 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     margin: 0;
     padding: 0;
     border: 0;
-    background: rgba(14, 15, 17, 0.96);
+    background: rgb(var(--shade-rgb) / 0.96);
     color: var(--on-dark);
   }
 
   .viewer::backdrop {
-    background: rgba(14, 15, 17, 0.6);
+    background: rgb(var(--shade-rgb) / 0.6);
   }
 
   .viewer[open] {
@@ -625,7 +604,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     justify-content: space-between;
     gap: 1rem;
     padding: 0.75rem max(16px, 2vw);
-    border-bottom: 1px solid rgba(244, 245, 247, 0.1);
+    border-bottom: 1px solid rgb(var(--on-dark-rgb) / 0.1);
   }
 
   .viewer__title {
@@ -647,7 +626,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     min-width: 40px;
     height: 40px;
     padding: 0 0.6rem;
-    border: 1px solid rgba(244, 245, 247, 0.22);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.22);
     border-radius: 999px;
     background: transparent;
     color: var(--on-dark);
@@ -696,6 +675,84 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     width: 390px;
   }
 
+  /* Wide screens: the parts and their explanation beside the screen, the same pattern as the homepage. Only where the
+     screen can stay at least 900 px wide, the limit for readable demo text; narrower windows keep the tabs on top. */
+  @media (min-width: 1320px) {
+    .ex {
+      grid-template-columns: 16rem minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: var(--s-3) var(--s-4);
+      align-items: start;
+      width: 100%;
+      max-width: var(--wrap);
+    }
+
+    .ex__parts {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      width: auto;
+      max-width: none;
+    }
+
+    .ex__stage-name {
+      margin: var(--s-2) 0 0.25rem;
+    }
+
+    .ex__stage-name:first-child {
+      margin-top: 0;
+    }
+
+    .ex__part {
+      min-height: 46px;
+      padding: 0.6rem 0.25rem;
+      border: 0;
+      border-bottom: 1px solid var(--hair);
+      border-radius: 0;
+      background: none;
+      font-size: var(--fs-body);
+      text-align: start;
+      transition:
+        color 0.25s var(--ease),
+        padding 0.25s var(--ease);
+    }
+
+    .ex__part:hover {
+      background: none;
+    }
+
+    .ex__part[aria-selected='true'] {
+      padding-inline-start: 0.85rem;
+      border-color: var(--hair);
+      background: none;
+      color: var(--ex-text);
+      font-weight: 500;
+      box-shadow: inset 2px 0 0 var(--ex-text);
+    }
+
+    :global([dir='rtl']) .ex__part[aria-selected='true'] {
+      box-shadow: inset -2px 0 0 var(--ex-text);
+    }
+
+    .ex__window {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+
+    .ex__notes {
+      grid-column: 1;
+    }
+
+    /* The selected part in the list already names it */
+    .ex__note-title {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+  }
+
   /* ── Phones: the part at a readable size, scrolling sideways when it is wider than the phone ── */
   @media (max-width: 900px) {
     .ex__view {
@@ -715,16 +772,12 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
 
     /* While part of the screen is still to the right, its edge fades so the sideways scroll is obvious */
     .ex__view.is-more {
-      -webkit-mask-image: linear-gradient(90deg, #000 82%, rgba(0, 0, 0, 0.25) 100%);
-      mask-image: linear-gradient(90deg, #000 82%, rgba(0, 0, 0, 0.25) 100%);
+      -webkit-mask-image: linear-gradient(90deg, var(--black) 82%, rgb(var(--black-rgb) / 0.25) 100%);
+      mask-image: linear-gradient(90deg, var(--black) 82%, rgb(var(--black-rgb) / 0.25) 100%);
     }
 
     .ex__layer.is-on {
       display: block;
-    }
-
-    .ex__backdrop {
-      display: none;
     }
 
     .ex__cam {
@@ -736,7 +789,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
       border-radius: 10px;
       transform: none;
       clip-path: none;
-      box-shadow: 0 6px 16px -8px rgba(20, 22, 26, 0.25);
+      box-shadow: 0 6px 16px -8px rgb(var(--ink-rgb) / 0.25);
       transition: none;
     }
 
@@ -755,7 +808,7 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     .ex__mark.is-on {
       box-shadow:
         0 0 0 2px var(--ring),
-        0 0 0 6px rgba(183, 121, 31, 0.16);
+        0 0 0 6px rgb(var(--amber-rgb) / 0.16);
     }
 
     .ex__more {
@@ -795,7 +848,12 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
     }
 
     .ex__tool span {
-      display: none;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     .ex__tool {
@@ -817,7 +875,6 @@ const stageStart = spots.map((s, i) => (s.stage && (i === 0 || spots[i - 1].stag
 
   @media (prefers-reduced-motion: reduce) {
     .ex__cam,
-    .ex__backdrop,
     .ex__layer,
     .ex__layer.is-on,
     .ex.is-ready .ex__note,

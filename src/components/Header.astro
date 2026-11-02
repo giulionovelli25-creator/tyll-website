@@ -24,7 +24,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
 <header class:list={['header', overHero && 'on-dark']} data-tone={overHero ? 'dark' : 'light'} id="site-header">
   <div class="wrap header__bar">
-    <a class="header__logo" href={home} aria-label="Tyll – home">
+    <a class="header__logo" href={home} aria-label="Tyll home">
       <Logo label="Tyll" />
     </a>
 
@@ -94,7 +94,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
                   <span class="panel__name">
                     {s.name[lang]}
                     {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                    <span class="panel__arrow" aria-hidden="true">{fwd}</span>
+                    {!soon && <span class="panel__arrow" aria-hidden="true">{fwd}</span>}
                   </span>
                   <span class="panel__desc">{s.menu[lang]}</span>
                 </span>
@@ -148,7 +148,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
           )
         }
       </div>
-      <details class="mobile-menu__group" open={inSolutions || undefined}>
+      <details class="mobile-menu__group" open>
         <summary>{d.nav.solutions}</summary>
         <ul>
           {
@@ -186,7 +186,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     inset: 0 0 auto;
     z-index: 50;
     color: var(--ink);
-    background: rgba(255, 255, 255, 0.9);
+    background: rgb(var(--paper-rgb) / 0.9);
     -webkit-backdrop-filter: saturate(1.5) blur(16px);
     backdrop-filter: saturate(1.5) blur(16px);
     border-bottom: 1px solid var(--line);
@@ -206,8 +206,8 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   /* Scrolled, but still over the dark opening: a dark frosted bar so text never shows through */
   .header[data-tone='dark'].is-scrolled {
-    background: rgba(20, 22, 26, 0.62);
-    border-bottom-color: rgba(244, 245, 247, 0.08);
+    background: rgb(var(--ink-rgb) / 0.62);
+    border-bottom-color: rgb(var(--on-dark-rgb) / 0.08);
     -webkit-backdrop-filter: saturate(1.4) blur(16px);
     backdrop-filter: saturate(1.4) blur(16px);
   }
@@ -271,7 +271,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .header__trigger:hover,
   .header__trigger[aria-expanded='true'] {
-    background: rgba(127, 132, 140, 0.14);
+    background: rgb(var(--steel-mid-rgb) / 0.14);
   }
 
   .header__trigger svg {
@@ -331,7 +331,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     border-top: 1px solid var(--line);
     background: var(--paper);
     color: var(--ink);
-    box-shadow: 0 40px 60px -40px rgba(20, 22, 26, 0.35);
+    box-shadow: 0 40px 60px -40px rgb(var(--ink-rgb) / 0.35);
     animation: panel-in 0.32s var(--ease);
   }
 
@@ -403,7 +403,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     position: absolute;
     inset: auto 0 0;
     padding: 2.5rem 1.1rem 1rem;
-    background: linear-gradient(0deg, rgba(14, 15, 17, 0.85), transparent);
+    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.85), transparent);
     color: var(--on-dark);
     font-size: 1rem;
     line-height: 1.3;
@@ -564,6 +564,11 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     transform: rotate(-45deg);
   }
 
+  /* The menu has its own booking button, so the one in the bar steps aside while it is open */
+  .header:has(.header__burger[aria-expanded='true']) .header__book {
+    visibility: hidden;
+  }
+
   .mobile-menu {
     height: calc(100svh - var(--header-h));
     overflow-y: auto;
@@ -704,9 +709,9 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   const menu = document.getElementById('mobile-menu')!;
   const label = burger.querySelector<HTMLElement>('[data-open-label]')!;
 
-  // White-on-dark while a dark chapter (hero, photo, closing section, footer) sits under the header,
+  // White-on-dark while a dark chapter (film, photo, cans section, closing section) sits under the header,
   // light over everything else. Only the strip behind the header counts.
-  const darks = [...document.querySelectorAll('[data-hero], [data-dark]')];
+  const darks = [...document.querySelectorAll('[data-dark]')];
   if (darks.length) {
     const under = new Set<Element>();
     const setTone = () => {
@@ -724,7 +729,8 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
           entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
           setTone();
         },
-        { rootMargin: `0px 0px -${Math.max(0, innerHeight - h)}px 0px` },
+        // The top pixel is left out: a dark section ending exactly at the top of the window is not under the header
+        { rootMargin: `-1px 0px -${Math.max(0, innerHeight - h)}px 0px` },
       );
       darks.forEach((el) => io!.observe(el));
     };

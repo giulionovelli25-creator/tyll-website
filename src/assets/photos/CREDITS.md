@@ -17,7 +17,8 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | book-lobby.jpg | https://unsplash.com/photos/elegant-interior-with-a-stunning-outdoor-view-2emvg3WMluM (Book a Call; cropped to the left part so a shop sign outside the window is not in frame) | Unsplash License |
 | stock-chef.jpg | https://unsplash.com/photos/chef-preparing-foods-0sYLBZjgTTw | Unsplash License |
 | forecast-produce.jpg | https://unsplash.com/photos/person-slicing-parsleys-_SC2X6gphkg | Unsplash License |
-| events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww | Unsplash License |
+| events-ballroom.jpg | https://www.pexels.com/photo/33914525/ (The Visionary Vows; Events & Staffing, added 2 Nov 2026) | Pexels License (free commercial use, no attribution required) |
+| events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww (no longer used since 2 Nov 2026: stemware in the foreground) | Unsplash License |
 | sales-buffet.jpg | https://unsplash.com/photos/man-pick-some-food-at-buffet-table-ZjEEJ-TjJgs (Sales & Performance opening, added 17 Oct 2026) | Unsplash License |
 | problem/problem-sales-frontdesk.jpg | https://unsplash.com/photos/a-woman-is-standing-at-the-front-desk-of-a-restaurant-wOkEwfChQqM (Sales & Performance, added 17 Oct 2026) | Unsplash License |
 | problem/problem-rooms-housekeeping.jpg | https://unsplash.com/photos/person-holding-white-pillow-5-S_JpT7NGQ (Rooms & Guest Experience, added 17 Oct 2026) | Unsplash License |
@@ -35,17 +36,19 @@ Removed on 16 Oct 2026: story-arches.jpg (the homepage Before Tyll background is
 
 ## Hero video
 
-`public/media/hero-operations.mp4` (1920×1080) and `hero-operations-720.mp4` (phones), poster `src/assets/hero-operations.jpg` (its first frame). A 9.5-second edit of three Pexels clips, Pexels License (free commercial use, no attribution required), checked 16 Oct 2026:
+`public/media/hero-film-1080.{webm,mp4}` (1920x1080), `hero-film-720.{webm,mp4}` (narrow landscape screens) and `hero-film-phone.{webm,mp4}` (720x960 for upright screens up to 820 px, each scene framed on its subject). Posters: `src/assets/hero-film.jpg` and `src/assets/hero-film-phone.jpg` (their first frames). One 12-second loop of three Pexels clips, Pexels License (free commercial use, no attribution required), re-cut on 2 Nov 2026. Build script: `docs/hero-film-master.sh`.
 
-| Scene | Source |
-| --- | --- |
-| Kitchen pass: a chef seasoning a row of plates | https://www.pexels.com/video/a-chef-is-preparing-food-on-plates-19905887/ |
-| Housekeeping: a housekeeper preparing a bed in daylight | https://www.pexels.com/video/a-woman-in-a-white-uniform-is-reaching-for-a-bed-9473226/ |
-| Guest service: coffee poured at a breakfast table | https://www.pexels.com/video/person-pouring-coffee-in-a-cup-6466351/ |
+| Scene | Source | Used |
+| --- | --- | --- |
+| A guest rings the reception bell | https://www.pexels.com/video/close-up-video-of-a-hotel-desk-bell-5378937/ (cottonbro studio) | 0 to 4.5 s, mirrored |
+| A chef finishes a plate in a dim kitchen | https://www.pexels.com/video/a-man-making-the-food-presentable-4555805/ (Roman Odintsov) | 2 to 6.5 s, cropped so the bottles on a far shelf are out of frame |
+| A chandelier in a dark lobby | https://www.pexels.com/video/elegant-chandelier-in-luxurious-hotel-lobby-34555902/ (Caleb Oquendo) | 0 to 1.9 s slowed to 4.5 s; later in the clip a sign and bottles come into view, so they are not used |
 
-Removed on 16 Oct 2026: the reception film (`hero-reception.mp4` and its poster), replaced by the footage above. A room-service trolley clip was considered and rejected because wine glasses are visible on it.
+Removed on 2 Nov 2026: room service at a suite door, the kitchen pass and the coffee pour (too bright, with a fade through black between them). Removed earlier: the housekeeping scene and the reception film. A room-service clip with wine glasses on the trolley was rejected.
 
-## Font
+## Fonts
+
+`public/fonts/geist-latin.woff2` and `geist-latin-ext.woff2`: Geist by Vercel, SIL Open Font License 1.1. `public/fonts/instrument-serif-latin.woff2` and `instrument-serif-latin-ext.woff2`: Instrument Serif by Rodrigo Fuenzalida and Jordan Egstad, SIL Open Font License 1.1. Both from the Fontsource packages, added 1 Nov 2026; they replace Inter on the site (the demo screenshots keep their own type).
 
 `public/fonts/noto-sans-arabic-var.woff2` and its nine-glyph subset `noto-sans-arabic-label.woff2` (the word العربية, for the language switch): Noto Sans Arabic (variable, Arabic subset) by Google, SIL Open Font License 1.1, from the Fontsource package @fontsource-variable/noto-sans-arabic 5.2.5.
 Removed on 18 Oct 2026 (no longer used): why-reception.jpg (receptionist at a front-desk computer; replaced by why-lobby.jpg at the owner's request).

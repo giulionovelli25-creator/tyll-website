@@ -1,13 +1,13 @@
 ---
-// The solutions overview: six large photo tiles. Reached from "All solutions" in the menu and from every
+// The solutions overview: what is on sale as large photo tiles, what is coming below them, smaller and quieter. Reached from "All solutions" in the menu and from every
 // "Explore Solutions" button; the Solutions dropdown in the header stays the quick way to one solution.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
-import { t, href, solutionKeys, type Locale } from '../../i18n';
-import { isComingSoon } from '../../config/products';
+import { t, href, type Locale, type SolutionKey } from '../../i18n';
+import { available, comingSoon } from '../../config/products';
 
 interface Props {
   lang: Locale;
@@ -20,37 +20,42 @@ const d = t(lang);
 <Base lang={lang} page="solutions" title={d.meta.solutionsTitle} description={d.meta.solutionsDescription}>
   <PageIntro title={d.solutionPage.indexTitle} intro={d.solutionPage.indexIntro} />
   <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
-    <ul class="tiles">
-      {
-        solutionKeys.map((k) => {
-          const s = solutions[k];
-          return (
-            <li>
-              <a class="tile on-dark" href={href(k, lang)}>
-                <Picture
-                  src={s.photo}
-                  alt=""
-                  formats={['avif', 'webp']}
-                  fallbackFormat="jpg"
-                  widths={[480, 720, 1080]}
-                  sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1100px) 45vw, 380px"
-                  loading="lazy"
-                  decoding="async"
-                  style={`object-position:${s.photoFocus}`}
-                />
-                <span class="tile__shade" aria-hidden="true" />
-                {isComingSoon(k) && <span class="badge-soon tile__soon">{d.cta.comingSoon}</span>}
-                <span class="tile__body">
-                  <SolutionIcon name={s.icon} />
-                  <span class="tile__name">{s.name[lang]}</span>
-                  <span class="tile__desc">{s.menu[lang]}</span>
-                </span>
-              </a>
-            </li>
-          );
-        })
-      }
-    </ul>
+    {
+      ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).map(([keys, soon]) => (
+        <Fragment>
+          <h2 class="tiles__label">{soon ? d.cta.comingSoon : d.home.now.label}</h2>
+          <ul class:list={['tiles', soon && 'tiles--soon']}>
+            {keys.map((k) => {
+              const s = solutions[k];
+              return (
+                <li>
+                  <a class="tile on-dark" href={href(k, lang)}>
+                    <Picture
+                      src={s.photo}
+                      alt=""
+                      formats={['avif', 'webp']}
+                      fallbackFormat="jpg"
+                      widths={[480, 720, 1080]}
+                      sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1100px) 45vw, 380px"
+                      loading="lazy"
+                      decoding="async"
+                      style={`object-position:${s.photoFocus}`}
+                    />
+                    <span class="tile__shade" aria-hidden="true" />
+                    {soon && <span class="badge-soon tile__soon">{d.cta.comingSoon}</span>}
+                    <span class="tile__body">
+                      <SolutionIcon name={s.icon} />
+                      <span class="tile__name">{s.name[lang]}</span>
+                      <span class="tile__desc">{s.menu[lang]}</span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </Fragment>
+      ))
+    }
     <p class="tiles__faq"><a href={href('faq', lang)}>{d.nav.faq}</a></p>
   </section>
 </Base>
@@ -66,6 +71,30 @@ const d = t(lang);
 
   .tiles-wrap {
     padding-bottom: var(--section-y);
+  }
+
+  .tiles__label {
+    margin: var(--s-5) 0 var(--s-2);
+    color: var(--text-2);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .tiles__label:first-child {
+    margin-top: 0;
+  }
+
+  .tiles--soon .tile {
+    aspect-ratio: 16 / 11;
+  }
+
+  .tiles--soon .tile :global(img) {
+    filter: saturate(0.5) brightness(0.86);
+  }
+
+  .tiles--soon .tile__name {
+    font-size: 1.25rem;
   }
 
   .tiles {
@@ -104,6 +133,7 @@ const d = t(lang);
 
   .tile :global(img) {
     object-fit: cover;
+    filter: var(--photo-grade);
     transition: transform 0.8s var(--ease);
   }
 
@@ -113,7 +143,7 @@ const d = t(lang);
 
   .tile__shade {
     z-index: -1;
-    background: linear-gradient(0deg, rgba(14, 15, 17, 0.88) 0%, rgba(14, 15, 17, 0.35) 55%, rgba(14, 15, 17, 0.15) 100%);
+    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.88) 0%, rgb(var(--shade-rgb) / 0.35) 55%, rgb(var(--shade-rgb) / 0.15) 100%);
   }
 
   .tile__body {
