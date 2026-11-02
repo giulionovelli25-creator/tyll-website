@@ -81,22 +81,24 @@ for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/Know exactly what to buy|Wissen, was Sie einkaufen|اعرف بالضبط|Sai esattamente/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // The product is explained question by question, beside its real screen
-    const tour = await page.evaluate(async () => {
+    // The scroll story: the hotel starts as a drawing in a mess, the text follows the scroll, and it ends finished
+    const hotel = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-      const root = document.querySelector('[data-tour]');
-      root.scrollIntoView({ block: 'start', behavior: 'instant' });
-      const buttons = [...root.querySelectorAll('.tour__q')];
-      const open = () => buttons.findIndex((b) => b.getAttribute('aria-expanded') === 'true');
-      const first = open();
-      buttons[1].click();
-      await wait(600);
-      const layer = root.querySelector('.tour__layer.is-on')?.dataset.layer;
-      const part = root.querySelector('.tour__layer.is-on img');
-      if (part) { part.loading = 'eager'; await part.decode().catch(() => {}); }
-      return { items: buttons.length, first, second: open(), layer, loaded: (part?.naturalWidth ?? 0) > 500, alt: (part?.alt ?? '').length > 20, links: root.querySelectorAll('.tour__link').length, steps: root.querySelectorAll('.tour__steps li').length };
+      const root = document.querySelector('[data-hs]');
+      const box = root.querySelector('[data-hs-steps]');
+      const steps = [...root.querySelectorAll('[data-hs-step]')];
+      const to = (b) => { const pin = parseFloat(getComputedStyle(steps[0].firstElementChild).top); scrollTo({ top: scrollY + box.getBoundingClientRect().top - pin + b * steps[0].offsetHeight, behavior: 'instant' }); };
+      const shown = () => [...root.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity > 0.5 && getComputedStyle(e).visibility !== 'hidden').length;
+      const read = () => ({ active: steps.findIndex((s) => s.classList.contains('is-active')), count: root.querySelectorAll('.hs__step.is-active').length, shown: shown(), on: root.querySelectorAll('.hs__card.is-on').length, alive: root.classList.contains('is-alive') });
+      to(0.02); await wait(250); const start = read();
+      to(3.7); await wait(350); const end = read();
+      to(1.7); await wait(250); const back = read();
+      return { start, end, back, steps: steps.length, total: root.querySelectorAll('[data-b]:not([data-ob])').length, pinned: getComputedStyle(root.querySelector('.hs__scene')).position, cta: root.querySelector('.hs__cta')?.getAttribute('href'), sign: root.querySelectorAll('.c-sign').length };
     });
-    if (!(tour.items === 3 && tour.first === 0 && tour.second === 1 && tour.layer === '1' && tour.loaded && tour.alt && tour.links === 3 && tour.steps === 3)) problems.push(`product tour ${JSON.stringify(tour)}`);
+    if (hotel.steps !== 4 || hotel.pinned !== 'sticky' || hotel.cta !== '#report' || hotel.sign !== 5) problems.push(`hotel story ${JSON.stringify(hotel)}`);
+    if (!(hotel.start.active === 0 && hotel.start.count === 1 && hotel.start.on === 0 && !hotel.start.alive && hotel.start.shown < hotel.total * 0.25)) problems.push(`hotel start ${JSON.stringify(hotel.start)}`);
+    if (!(hotel.end.active === 3 && hotel.end.on === 4 && hotel.end.alive && hotel.end.shown === hotel.total)) problems.push(`hotel end ${JSON.stringify({ end: hotel.end, total: hotel.total })}`);
+    if (!(hotel.back.active === 1 && !hotel.back.alive && hotel.back.shown < hotel.end.shown && hotel.back.on === 3)) problems.push(`hotel scrolled back ${JSON.stringify(hotel.back)}`);
     // Two sourced statistics, each with its source
     const stats = await page.evaluate(() => ({ figures: [...document.querySelectorAll('.stat__number')].map((n) => n.textContent.trim()), sources: document.querySelectorAll('.stat__source a[href^="https://"]').length }));
     if (stats.figures.length !== 2 || !stats.figures[1].startsWith('$') || stats.sources !== 2) problems.push(`statistics ${JSON.stringify(stats)}`);
@@ -276,10 +278,11 @@ for (const lang of LANGS) {
   const menu = await page.evaluate(() => ({ open: !document.getElementById('mobile-menu').hidden, links: [...document.querySelectorAll('#mobile-menu details li a')].map((a) => a.getAttribute('href')) }));
   if (!menu.open || menu.links.length !== 7 || !menu.links.every((h) => h.startsWith('/ar/'))) p.push(`mobile menu ${JSON.stringify(menu)}`);
   await page.keyboard.press('Escape');
-  // The product section stays inside the screen
+  // The hotel story stays inside the screen, and its scene reads left to right
   const story = await page.evaluate(() => {
     const out = [];
-    document.querySelectorAll('.tour__head, .tour__item, .tour__inline, .tour__steps').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    if (document.querySelector('[data-hs-stage]').getAttribute('dir') !== 'ltr') out.push('scene direction');
+    document.querySelectorAll('.hs__head, .hs__scene, .hs__stage, .hs__step').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
@@ -310,8 +313,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
-      shots: document.querySelectorAll('.tour__item').length,
-      oldShelf: document.querySelectorAll('[data-story], .shot, .sample, .ticker').length,
+      shots: document.querySelectorAll('.hs__step').length,
+      oldShelf: document.querySelectorAll('[data-story], [data-tour], .shot, .sample, .ticker').length,
       oldDiagram: document.querySelectorAll('[data-flow], [data-cine], .frag').length,
       quiet: !!document.querySelector('.hero__actions a.hero__quiet[href="#report"]'),
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
@@ -320,7 +323,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
       ar: document.querySelector('.lang a[hreflang="ar"]')?.textContent.trim(),
       codes: [...document.querySelectorAll('.header__end .lang a')].map((a) => a.querySelector('[aria-hidden="true"], .lang__ar').textContent.trim()).join(' '),
     }));
-    if (home.shots !== 3) p.push(`${lang}: ${home.shots} questions in the product section`);
+    if (home.shots !== 4) p.push(`${lang}: ${home.shots} steps in the hotel story`);
     if (home.oldShelf) p.push(`${lang}: removed story, example report or ticker still present`);
     if (home.oldDiagram) p.push(`${lang}: old diagram still present`);
     // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
@@ -640,8 +643,10 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   }));
   const still = await page.evaluate(() => {
     const band = document.querySelector('.band__set[aria-hidden]');
-    return { bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
+    const hs = document.querySelector('[data-hs]');
+    return { hotelHidden: [...hs.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity < 1).length, hotelAlive: hs.classList.contains('is-alive'), bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
   });
+  if (still.hotelHidden || still.hotelAlive) p.push(`hotel not shown finished and still under reduced motion: ${JSON.stringify(still)}`);
   if (still.bandAnimation !== 'none' || still.secondSet !== 'none' || still.wrap !== 'wrap') p.push(`logo band not a still grid under reduced motion: ${JSON.stringify(still)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   const wavePaused = await page.evaluate(async () => {

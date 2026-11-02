@@ -37,16 +37,16 @@ const it: Dict = {
     tour: {
       title: 'Le domande a cui Tyll risponde.',
       text: 'Tyll legge i sistemi che usi già e dà al tuo team una risposta chiara.',
-      items: {
-        forecasting: { q: 'Cosa dobbiamo ordinare questa settimana?', a: 'Tyll legge le vendite di cassa e calcola ciò che consumi davvero ogni settimana. Il team acquisti riceve un’unica lista chiara.', points: ['Una quantità suggerita per ogni articolo', 'Una data entro cui ordinare', 'Un avviso quando qualcosa sta per finire'] },
-        stock: { q: 'Dove va a finire il nostro magazzino?', a: 'Un conteggio rapido, poi tocca «meno 1» quando qualcosa si rompe o viene sprecato. Tyll confronta conteggi, consegne e vendite e mostra ciò che non torna.', points: ['Conteggi e vendite a confronto', 'La differenza e quanto potrebbe costare', 'Chi se ne occupa e entro quando'] },
-        finance: { q: 'Vendite e pagamenti coincidono?', a: 'Tyll confronta ciò che è stato addebitato con ciò che arriva sul conto dell’ospite e segnala ogni differenza.', points: ['Ristorante, servizio in camera, minibar e spa', 'Importi mancanti, doppi o errati', 'Un responsabile e un esito per ogni segnalazione'] },
-      },
-      how: 'Come funziona',
+      scene: 'Un grand hotel, all’inizio solo un disegno circondato da transazioni sparse, un magazzino in disordine e troppa merce fuori. Tyll risolve un problema dopo l’altro, ogni parte dell’edificio viene completata e l’hotel finito apre la sera con ospiti che arrivano e partono.',
+      more: 'Scopri come funziona',
+      zones: { store: 'Magazzino', bar: 'Bar' },
+      button: 'Ricevi il report acquisti gratuito',
+      cards: { pos: 'POS', pms: 'PMS', stock: 'Magazzino', payments: 'Pagamenti' },
       steps: [
-        { title: 'Collega', text: 'Tyll legge dai sistemi POS, PMS e di pagamento che usi già. Non li modifica.' },
-        { title: 'Confronta', text: 'Vendite, magazzino, consegne e pagamenti vengono messi a confronto.' },
-        { title: 'Agisci', text: 'La persona giusta riceve un passo chiaro da seguire e l’esito resta documentato.' },
+        { label: 'Riconciliazione', headline: 'Vendite e pagamenti coincidono?', problem: 'Migliaia di transazioni in sistemi separati, e nessuno può controllarle tutte.', bullets: ['Vendite, pagamenti e fatture confrontati insieme', 'Solo le differenze arrivano al responsabile', 'Ognuna spiegata con parole semplici'], shot: 'Tyll mostra un conto finale che differisce di AED 22 dall’ordine originale.' },
+        { label: 'Inventario e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce tra una consegna e l’altra, e nessuno sa dire dove.', bullets: ['Un conteggio rapido sul telefono', 'Un tocco quando qualcosa si rompe o va sprecato', 'Merce mancante mostrata in denaro'], shot: 'Tyll mostra 8 lattine non spiegate, con un costo stimato di AED 28.' },
+        { label: 'Previsione acquisti', headline: 'Cosa dobbiamo ordinare questa settimana?', problem: 'Troppo di una cosa va sprecato, mentre un’altra finisce.', bullets: ['Una quantità suggerita per ogni articolo', 'Una data entro cui ordinare', 'Un avviso prima che qualcosa finisca'], shot: 'Tyll suggerisce 15 kg di lattuga romana e 3 kg di cioccolato fondente, ciascuno con una data entro cui ordinare.' },
+        { label: 'Il risultato', headline: 'Un hotel. Una risposta chiara.', problem: '', bullets: ['Tutti i sistemi collegati', 'La persona giusta sa cosa fare', 'Denaro perso ritrovato prima che sparisca'], shot: '' },
       ],
     },
     why: {

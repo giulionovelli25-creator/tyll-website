@@ -54,9 +54,9 @@ const ogImage = abs(`/media/og-${lang}.jpg`);
     <link rel="apple-touch-icon" href="/media/tyll-icon-512.png" />
     <!-- The browser bar's colour: a meta tag cannot read the CSS tokens, so these repeat --night-0 and --page -->
     <meta name="theme-color" content={overHero ? '#090c12' : '#f6f4ef'} />
-    <link rel="preload" href="/fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
-    {lang === 'ar' && <link rel="preload" href="/fonts/noto-sans-arabic-var.woff2" as="font" type="font/woff2" crossorigin />}
+    <link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {lang === 'ar' && <link rel="preload" href="/fonts/noto-naskh-arabic.woff2" as="font" type="font/woff2" crossorigin />}
     <slot name="head" />
   </head>
   <body>

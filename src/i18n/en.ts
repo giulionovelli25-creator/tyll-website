@@ -36,16 +36,16 @@ const en = {
     tour: {
       title: 'The questions Tyll answers.',
       text: 'Tyll reads the systems you already use and gives your team a clear answer.',
-      items: {
-        forecasting: { q: 'What should we order this week?', a: 'Tyll reads your POS sales and works out what you really use each week. Your purchasing team gets one clear list.', points: ['A suggested quantity for every item', 'An order-by date for each one', 'A warning when something will run short'] },
-        stock: { q: 'Where is our stock going?', a: 'One quick count, then tap minus 1 when something breaks or is wasted. Tyll compares counts, deliveries and sales, and shows what doesn’t add up.', points: ['Stock counts and sales side by side', 'The difference, and what it could cost', 'Who follows up, and by when'] },
-        finance: { q: 'Do our sales and payments match?', a: 'Tyll checks what was charged against what reached the guest bill, and flags every difference.', points: ['Restaurant, room service, minibar and spa', 'Missing, duplicated or wrong amounts', 'An owner and an outcome for every flag'] },
-      },
-      how: 'How it works',
+      scene: 'A grand hotel, at first only a drawing surrounded by loose transactions, a storeroom in disorder and too much stock outside. Tyll deals with each problem in turn, each part of the building is completed, and the finished hotel opens in the evening with guests coming and going.',
+      more: 'See how it works',
+      zones: { store: 'Storeroom', bar: 'Bar' },
+      button: 'Get your free purchasing report',
+      cards: { pos: 'POS', pms: 'PMS', stock: 'Stock', payments: 'Payments' },
       steps: [
-        { title: 'Connect', text: 'Tyll reads from the POS, PMS and payment systems you already use. It does not change them.' },
-        { title: 'Compare', text: 'Sales, stock, deliveries and payments are put side by side.' },
-        { title: 'Act', text: 'The right person gets a clear next step, and the outcome stays on record.' },
+        { label: 'Reconciliation', headline: 'Do our sales and payments match?', problem: 'Thousands of transactions in separate systems, and nobody can check them all.', bullets: ['Sales, payments and invoices checked together', 'Only the differences reach your manager', 'Each one explained in plain words'], shot: 'Tyll showing a final bill that differs from the original order by AED 22.' },
+        { label: 'Stock count and waste', headline: 'Where is our stock going?', problem: 'Stock goes missing between deliveries, and nobody can say where.', bullets: ['A quick count on a phone', 'One tap when something breaks or is wasted', 'Missing stock shown in money'], shot: 'Tyll showing 8 unexplained cans, with an estimated cost of AED 28.' },
+        { label: 'Purchasing prediction', headline: 'What should we order this week?', problem: 'Too much of one thing goes to waste while another runs out.', bullets: ['A suggested quantity for every item', 'An order by date for each one', 'A warning before something runs short'], shot: 'Tyll suggesting 15 kg of romaine lettuce and 3 kg of dark chocolate, each with an order by date.' },
+        { label: 'The result', headline: 'One hotel. One clear answer.', problem: '', bullets: ['Every system connected', 'The right person told what to do', 'Lost money found before it is gone'], shot: '' },
       ],
     },
     why: {

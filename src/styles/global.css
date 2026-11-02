@@ -1,62 +1,73 @@
-/* Type: Geist for the interface and reading text, Instrument Serif for headlines. Both are self-hosted under the SIL
-   Open Font Licence and preloaded in Base.astro. font-display: block, with fallbacks matched to their metrics, so text
-   never flashes in another typeface and the layout does not jump. */
+/* Type: Newsreader for headlines, Source Sans 3 for the interface and reading text, in the manner of the great hotel
+   houses: a classical serif set light and open, and a quiet humanist sans. Both are self-hosted under the SIL Open Font
+   Licence and preloaded in Base.astro. The serif file holds only the weights in use (300 to 400) at a display optical
+   size. font-display: block, with fallbacks matched to their metrics, so text never flashes in another typeface. */
 @font-face {
-  font-family: Geist;
+  font-family: 'Source Sans 3';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 200 900;
   font-display: block;
-  src: url('/fonts/geist-latin.woff2') format('woff2');
+  src: url('/fonts/source-sans-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: Geist;
+  font-family: 'Source Sans 3';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 200 900;
   font-display: block;
-  src: url('/fonts/geist-latin-ext.woff2') format('woff2');
+  src: url('/fonts/source-sans-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: 'Instrument Serif';
+  font-family: Newsreader;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300 400;
   font-display: block;
-  src: url('/fonts/instrument-serif-latin.woff2') format('woff2');
+  src: url('/fonts/newsreader-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Instrument Serif';
+  font-family: Newsreader;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300 400;
   font-display: block;
-  src: url('/fonts/instrument-serif-latin-ext.woff2') format('woff2');
+  src: url('/fonts/newsreader-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 /* Local fonts adjusted to the same widths, used only until the real fonts arrive */
 @font-face {
-  font-family: 'Geist Fallback';
+  font-family: 'Sans Fallback';
   src: local('Arial');
-  size-adjust: 102.5%;
-  ascent-override: 98.5%;
-  descent-override: 28.3%;
+  size-adjust: 87%;
+  ascent-override: 117.7%;
+  descent-override: 46%;
   line-gap-override: 0%;
 }
 
 @font-face {
   font-family: 'Serif Fallback';
   src: local('Times New Roman');
-  size-adjust: 81.4%;
-  ascent-override: 121.6%;
-  descent-override: 38.1%;
+  size-adjust: 104%;
+  ascent-override: 70.7%;
+  descent-override: 25.5%;
   line-gap-override: 0%;
 }
 
-/* Arabic: Noto Sans Arabic (SIL Open Font Licence), Arabic characters only, so Latin text keeps Geist */
+/* Arabic headlines: Noto Naskh Arabic, the classical counterpart to the serif (SIL Open Font Licence) */
+@font-face {
+  font-family: 'Tyll Arabic Serif';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/noto-naskh-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* Arabic: Noto Sans Arabic (SIL Open Font Licence), Arabic characters only, so Latin text keeps Source Sans */
 @font-face {
   font-family: 'Tyll Arabic';
   font-style: normal;
@@ -144,6 +155,31 @@
   --amber-800: #6b4d0f;
   --amber-900: #5c430e;
 
+  /* The hotel drawing on the homepage */
+  --stone-1: #efe7d8;
+  --stone-2: #e2d8c5;
+  --stone-3: #d4c8b2;
+  --stone-line: #cbbfa8;
+  --stone-road: #bdb6a8;
+  --earth: #6f6456;
+  --glass: #4d5460;
+  --window-a: #edc98a;
+  --window-b: #f3dfb4;
+  --leaf-1: #7b8577;
+  --leaf-2: #5f6b5e;
+  --leaf-1-dusk: #4f5c52;
+  --leaf-2-dusk: #3d4a44;
+  --mount: #e4e7ea;
+  --mount-dusk: #6a6c85;
+  --skin: #c9a585;
+  --sky-1: #e9edf1;
+  --sky-2: #f6f4ef;
+  --dusk-1: #48536c;
+  --dusk-2: #9a97a9;
+  --dusk-3: #edd3b8;
+  --dusk-veil: #2f2a3a;
+  --text-faded: #70757c;
+
   /* Form errors on the dark closing section */
   --error-line: #e8a29a;
   --error-text: #f2b8b0;
@@ -165,16 +201,16 @@
   --gold-soft: rgb(var(--amber-rgb) / 0.12);
 
   /* Type */
-  --font: Geist, 'Geist Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Instrument Serif', 'Serif Fallback', 'Times New Roman', serif;
-  --fs-hero: clamp(2.75rem, 0.75rem + 4.9vw, 5.5rem); /* 64 to 88 px on desktop */
-  --fs-display: clamp(2.5rem, 1.25rem + 3vw, 4.5rem);
-  --fs-h2: clamp(2.25rem, 1.5rem + 2.4vw, 3.75rem);
-  --fs-h3: clamp(1.1875rem, 1.1rem + 0.35vw, 1.375rem);
-  --fs-lead: clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem); /* 17 to 18 px */
-  --fs-body: 1.0625rem; /* 17 px */
-  --fs-small: 0.875rem; /* 14 px */
-  --fs-caption: 0.8125rem; /* 13 px */
+  --font: 'Source Sans 3', 'Sans Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: Newsreader, 'Serif Fallback', 'Times New Roman', serif;
+  --fs-hero: clamp(2.625rem, 1.2rem + 3.4vw, 4.5rem); /* 56 to 72 px on desktop */
+  --fs-display: clamp(2.25rem, 1.5rem + 2vw, 3.5rem);
+  --fs-h2: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+  --fs-h3: clamp(1.3125rem, 1.25rem + 0.3vw, 1.5rem);
+  --fs-lead: clamp(1.125rem, 1.1rem + 0.15vw, 1.25rem); /* 18 to 20 px */
+  --fs-body: 1.125rem; /* 18 px */
+  --fs-small: 0.9375rem; /* 15 px */
+  --fs-caption: 0.875rem; /* 14 px */
   --measure: 65ch;
 
   /* Spacing: an 8 px grid */
@@ -273,32 +309,22 @@ p {
   margin: 0;
 }
 
-/* Headlines: the editorial serif, tight and balanced. Small headings and labels stay in Geist. */
+/* Headlines: the classical serif, light and open, never tight. Labels and buttons stay in the sans. */
 h1,
+h2,
+h3,
 .display {
   font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  text-wrap: balance;
-}
-
-h2 {
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-weight: 300;
+  letter-spacing: 0.002em;
+  line-height: 1.16;
   text-wrap: balance;
 }
 
 h3 {
   font-size: var(--fs-h3);
-  font-weight: 500;
-  letter-spacing: -0.012em;
-  line-height: 1.3;
-}
-
-h3 {
-  text-wrap: balance;
+  font-weight: 400;
+  line-height: 1.25;
 }
 
 p {
@@ -365,7 +391,7 @@ a {
   font: inherit;
   font-size: 1rem;
   font-weight: 500;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
@@ -444,8 +470,8 @@ a {
 
 /* Arabic: Arabic script has no tracking and needs taller lines than Latin display type */
 html[lang='ar'] {
-  --font: 'Tyll Arabic', Geist, 'Geist Fallback', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
-  --font-display: 'Tyll Arabic', 'Instrument Serif', 'Serif Fallback', serif;
+  --font: 'Tyll Arabic', 'Source Sans 3', 'Sans Fallback', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  --font-display: 'Tyll Arabic Serif', Newsreader, 'Serif Fallback', serif;
 }
 
 html[lang='ar'] body {

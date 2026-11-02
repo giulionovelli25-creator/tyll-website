@@ -48,7 +48,7 @@ Removed on 2 Nov 2026: room service at a suite door, the kitchen pass and the co
 
 ## Fonts
 
-`public/fonts/geist-latin.woff2` and `geist-latin-ext.woff2`: Geist by Vercel, SIL Open Font License 1.1. `public/fonts/instrument-serif-latin.woff2` and `instrument-serif-latin-ext.woff2`: Instrument Serif by Rodrigo Fuenzalida and Jordan Egstad, SIL Open Font License 1.1. Both from the Fontsource packages, added 1 Nov 2026; they replace Inter on the site (the demo screenshots keep their own type).
+`public/fonts/source-sans-latin.woff2` and `source-sans-latin-ext.woff2`: Source Sans 3 by Adobe, SIL Open Font License 1.1. `public/fonts/newsreader-latin.woff2` and `newsreader-latin-ext.woff2`: Newsreader by Production Type, SIL Open Font License 1.1, reduced to weights 300 to 400 at a display optical size. `public/fonts/noto-naskh-arabic.woff2`: Noto Naskh Arabic by Google, SIL Open Font License 1.1. All from Google Fonts.
 
 `public/fonts/noto-sans-arabic-var.woff2` and its nine-glyph subset `noto-sans-arabic-label.woff2` (the word العربية, for the language switch): Noto Sans Arabic (variable, Arabic subset) by Google, SIL Open Font License 1.1, from the Fontsource package @fontsource-variable/noto-sans-arabic 5.2.5.
 Removed on 18 Oct 2026 (no longer used): why-reception.jpg (receptionist at a front-desk computer; replaced by why-lobby.jpg at the owner's request).

@@ -36,16 +36,16 @@ const de: Dict = {
     tour: {
       title: 'Die Fragen, die Tyll beantwortet.',
       text: 'Tyll liest die Systeme, die Sie bereits nutzen, und gibt Ihrem Team eine klare Antwort.',
-      items: {
-        forecasting: { q: 'Was sollten wir diese Woche bestellen?', a: 'Tyll liest Ihre Kassenumsätze und ermittelt, was Sie pro Woche wirklich verbrauchen. Ihr Einkauf erhält eine klare Liste.', points: ['Ein Mengenvorschlag für jeden Artikel', 'Ein Bestelldatum für jeden Artikel', 'Ein Hinweis, wenn etwas knapp wird'] },
-        stock: { q: 'Wohin geht unser Bestand?', a: 'Einmal kurz zählen, dann bei Bruch oder Abfall auf minus 1 tippen. Tyll vergleicht Zählungen, Lieferungen und Verkäufe und zeigt, was nicht aufgeht.', points: ['Zählungen und Verkäufe nebeneinander', 'Die Differenz und was sie kosten könnte', 'Wer nachfasst und bis wann'] },
-        finance: { q: 'Stimmen Verkäufe und Zahlungen überein?', a: 'Tyll prüft, was berechnet wurde und was auf der Gästerechnung ankam, und markiert jede Abweichung.', points: ['Restaurant, Zimmerservice, Minibar und Spa', 'Fehlende, doppelte oder falsche Beträge', 'Für jeden Hinweis eine Person und ein Ergebnis'] },
-      },
-      how: 'So funktioniert es',
+      scene: 'Ein Grandhotel, zunächst nur eine Zeichnung, umgeben von losen Buchungen, einem unordentlichen Lager und zu viel Ware vor der Tür. Tyll löst ein Problem nach dem anderen, jeder Teil des Gebäudes wird fertig, und das vollendete Hotel öffnet am Abend mit ankommenden und abreisenden Gästen.',
+      more: 'So funktioniert es',
+      zones: { store: 'Lager', bar: 'Bar' },
+      button: 'Kostenlosen Einkaufsbericht anfordern',
+      cards: { pos: 'Kasse', pms: 'PMS', stock: 'Lager', payments: 'Zahlungen' },
       steps: [
-        { title: 'Verbinden', text: 'Tyll liest aus den Kassen-, PMS- und Zahlungssystemen, die Sie bereits nutzen. Es ändert nichts daran.' },
-        { title: 'Vergleichen', text: 'Verkäufe, Bestand, Lieferungen und Zahlungen stehen nebeneinander.' },
-        { title: 'Handeln', text: 'Die richtige Person erhält einen klaren nächsten Schritt, und das Ergebnis bleibt dokumentiert.' },
+        { label: 'Abgleich', headline: 'Stimmen Verkäufe und Zahlungen überein?', problem: 'Tausende Buchungen in getrennten Systemen, und niemand kann alle prüfen.', bullets: ['Verkäufe, Zahlungen und Rechnungen gemeinsam geprüft', 'Nur die Abweichungen erreichen Ihre Leitung', 'Jede in klaren Worten erklärt'], shot: 'Tyll zeigt eine Endrechnung, die um AED 22 von der ursprünglichen Bestellung abweicht.' },
+        { label: 'Inventur und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Zwischen den Lieferungen verschwindet Ware, und niemand kann sagen, wo.', bullets: ['Eine schnelle Zählung auf dem Handy', 'Ein Tipp, wenn etwas bricht oder verdirbt', 'Fehlender Bestand in Geld'], shot: 'Tyll zeigt 8 ungeklärte Dosen mit geschätzten Kosten von AED 28.' },
+        { label: 'Einkaufsprognose', headline: 'Was sollten wir diese Woche bestellen?', problem: 'Vom einen zu viel, das verdirbt, vom anderen zu wenig.', bullets: ['Ein Mengenvorschlag für jeden Artikel', 'Ein Bestelldatum für jeden Artikel', 'Eine Warnung, bevor etwas knapp wird'], shot: 'Tyll schlägt 15 kg Romanasalat und 3 kg dunkle Schokolade vor, jeweils mit Bestelldatum.' },
+        { label: 'Das Ergebnis', headline: 'Ein Hotel. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Die richtige Person weiß, was zu tun ist', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
       ],
     },
     why: {

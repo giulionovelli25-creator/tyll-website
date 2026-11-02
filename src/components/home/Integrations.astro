@@ -28,7 +28,7 @@ const v = t(lang).home.works;
             {logos.map((l) => {
               const b = logoBox(l);
               return (
-                <li class="logo" style={`--tone:${l.tone ?? 1}`}>
+                <li class="logo">
                   <img
                     class:list={[l.whiteFile && 'is-white']}
                     src={`/logos/integrations/${l.file}`}
@@ -119,7 +119,7 @@ const v = t(lang).home.works;
     list-style: none;
   }
 
-  /* Monochrome grey until the pointer reaches a logo. The files themselves are never altered. */
+  /* Each logo in its maker's own colours. The files themselves are never altered. */
   .logo {
     display: flex;
     flex: none;
@@ -135,37 +135,21 @@ const v = t(lang).home.works;
     max-width: none;
     height: calc(var(--h) * var(--logo-scale) * 1px);
     margin: calc(var(--mt) * var(--logo-scale) * 1px) calc(var(--mr) * var(--logo-scale) * 1px) calc(var(--mb) * var(--logo-scale) * 1px) calc(var(--ml) * var(--logo-scale) * 1px);
-    opacity: 0.48;
-    filter: grayscale(1) brightness(var(--tone));
-    transition:
-      opacity 0.3s var(--ease),
-      filter 0.3s var(--ease);
-  }
-
-  .logo:hover img {
-    opacity: 1;
-    filter: none;
   }
 
   /* The maker only publishes this one in white, so it is darkened here to show on the white band */
-  .logo img.is-white,
-  .logo:hover img.is-white {
+  .logo img.is-white {
     filter: brightness(0);
   }
 
   /* The product name beside a company logo, in the site's own type */
   .logo span {
-    color: var(--text-3);
-    transition: color 0.3s var(--ease);
+    color: var(--ink);
     font-size: calc(1.25rem * var(--logo-scale));
-    font-weight: 500;
-    letter-spacing: -0.012em;
+    font-weight: 400;
+    letter-spacing: 0;
     line-height: 1;
     white-space: nowrap;
-  }
-
-  .logo:hover span {
-    color: var(--ink);
   }
 
   .works__note {
