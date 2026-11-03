@@ -14,7 +14,7 @@ const { lang } = Astro.props;
 const v = t(lang).home.works;
 ---
 
-<section class="works" aria-labelledby="works-title">
+<section class="works" id="integrations" aria-labelledby="works-title">
   <div class="wrap works__head">
     <h2 id="works-title" class="display">{v.title}</h2>
     <p>{v.text}</p>

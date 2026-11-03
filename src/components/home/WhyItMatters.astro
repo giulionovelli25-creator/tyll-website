@@ -126,21 +126,16 @@ const lift = [2, -4, 5, -2, 4, -5, 3, -3, 5, -2];
     flex: none;
     max-width: none;
     margin: 0;
-    background: linear-gradient(160deg, var(--ink) 20%, var(--fog) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--text-1);
     font-family: var(--font-display);
     font-size: clamp(5rem, 3rem + 4.4vw, 7.5rem);
     letter-spacing: 0;
     line-height: 0.95;
   }
 
-  .stat--money .stat__number {
-    background-image: linear-gradient(160deg, var(--gold) 15%, var(--amber-400) 100%);
-  }
-
+  /* Two lines kept for each title, so the sentences under the two numbers start level */
   .stat__title {
+    min-height: 2.28em;
     margin-top: var(--s-3);
     font-size: clamp(1.625rem, 1.4rem + 0.7vw, 2.125rem);
     letter-spacing: 0;
@@ -281,10 +276,9 @@ const lift = [2, -4, 5, -2, 4, -5, 3, -3, 5, -2];
   }
 
   .scale text {
-    fill: var(--gold);
+    fill: var(--text-1);
     font-family: var(--font);
-    font-size: 14px;
-    font-weight: 400;
+    font-size: 16px;
   }
 
   .scale__beam,
@@ -349,6 +343,10 @@ const lift = [2, -4, 5, -2, 4, -5, 3, -3, 5, -2];
       min-height: 0;
     }
 
+    .stat__title {
+      min-height: 0;
+    }
+
     .why__next {
       position: static;
       justify-self: center;
@@ -358,6 +356,26 @@ const lift = [2, -4, 5, -2, 4, -5, 3, -3, 5, -2];
 
     .why__next span {
       rotate: 90deg;
+    }
+  }
+
+  /* On a phone each number gets the full width, with its picture beneath it */
+  @media (max-width: 560px) {
+    .stat__top {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s-2);
+    }
+
+    .pile {
+      flex: none;
+      width: 100%;
+    }
+
+    .scale {
+      flex: none;
+      width: 100%;
+      max-width: 17rem;
     }
   }
 

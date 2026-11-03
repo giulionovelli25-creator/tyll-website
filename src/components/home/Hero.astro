@@ -36,7 +36,7 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
     </picture>
     <!-- No poster attribute: the still image above already shows until the video is actually playing -->
     <video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
-      <!-- One continuous film with dissolves and no black frames: the reception bell, the kitchen, the lobby (Pexels License; see docs/hero-video-brief.md) -->
+      <!-- One continuous film with dissolves and no black frames: a stock count on a shelf, the reception bell, the kitchen (Pexels License; see docs/hero-video-brief.md) -->
       <source src="/media/hero-film-phone.webm" type="video/webm" media={UPRIGHT} />
       <source src="/media/hero-film-phone.mp4" type="video/mp4" media={UPRIGHT} />
       <source src="/media/hero-film-720.webm" type="video/webm" media="(max-width: 760px)" />
@@ -112,7 +112,7 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
   .hero__media :global(img),
   .hero__media video {
     object-fit: cover;
-    /* Keeps the bell, the plate and the chandelier in frame as the screen narrows */
+    /* Keeps the shelf, the bell and the plate in frame as the screen narrows */
     object-position: 52% 50%;
   }
 
@@ -120,6 +120,15 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
     .hero__media :global(img),
     .hero__media video {
       object-position: 64% 50%;
+    }
+  }
+
+  /* In Arabic the words sit on the right, so the picture is mirrored and its subject stays clear of them. Upright phones
+     keep the film as a window above the words, so nothing is mirrored there. */
+  @media (orientation: landscape) {
+    :global([dir='rtl']) .hero__media :global(img),
+    :global([dir='rtl']) .hero__media video {
+      transform: scaleX(-1);
     }
   }
 

@@ -21,7 +21,7 @@ const d = t(lang);
   <PageIntro title={d.solutionPage.indexTitle} intro={d.solutionPage.indexIntro} />
   <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
     {
-      ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).map(([keys, soon]) => (
+      ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).filter(([keys]) => keys.length).map(([keys, soon]) => (
         <Fragment>
           <h2 class="tiles__label">{soon ? d.cta.comingSoon : d.home.now.label}</h2>
           <ul class:list={['tiles', soon && 'tiles--soon']}>
@@ -56,6 +56,7 @@ const d = t(lang);
         </Fragment>
       ))
     }
+    <p class="tiles__soonline">{d.home.now.soon}</p>
     <p class="tiles__faq"><a href={href('faq', lang)}>{d.nav.faq}</a></p>
   </section>
 </Base>
@@ -71,6 +72,12 @@ const d = t(lang);
 
   .tiles-wrap {
     padding-bottom: var(--section-y);
+  }
+
+  .tiles__soonline {
+    margin-top: var(--s-4);
+    color: var(--text-2);
+    font-size: var(--fs-small);
   }
 
   .tiles__label {

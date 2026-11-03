@@ -1,20 +1,20 @@
 export const locales = ['en', 'de', 'ar', 'it'] as const;
 export type Locale = (typeof locales)[number];
 
-/** The six solutions, in menu order. */
-export const solutionKeys = ['forecasting', 'stock', 'finance', 'events', 'rooms', 'sales'] as const;
+/** The six solutions, in the demo's order. */
+export const solutionKeys = ['waste', 'stock', 'forecasting', 'revenue', 'finance', 'pour'] as const;
 export type SolutionKey = (typeof solutionKeys)[number];
 
 // Every page and its address in each language. The language switch uses this to land on the matching page.
 export const pages = {
   home: { en: '/en/', de: '/de/', ar: '/ar/', it: '/it/' },
   solutions: { en: '/en/solutions/', de: '/de/loesungen/', ar: '/ar/solutions/', it: '/it/soluzioni/' },
+  waste: { en: '/en/solutions/log-waste/', de: '/de/loesungen/abfall-erfassen/', ar: '/ar/solutions/log-waste/', it: '/it/soluzioni/registra-sprechi/' },
+  revenue: { en: '/en/solutions/revenue/', de: '/de/loesungen/umsatz/', ar: '/ar/solutions/revenue/', it: '/it/soluzioni/ricavi/' },
+  pour: { en: '/en/solutions/pour-control/', de: '/de/loesungen/pour-control/', ar: '/ar/solutions/pour-control/', it: '/it/soluzioni/pour-control/' },
   stock: { en: '/en/solutions/stock-waste/', de: '/de/loesungen/lager-abfall/', ar: '/ar/solutions/stock-waste/', it: '/it/soluzioni/magazzino-sprechi/' },
   finance: { en: '/en/solutions/finance-money/', de: '/de/loesungen/finanzen/', ar: '/ar/solutions/finance-money/', it: '/it/soluzioni/finanza/' },
   forecasting: { en: '/en/solutions/forecasting-purchasing/', de: '/de/loesungen/prognose-einkauf/', ar: '/ar/solutions/forecasting-purchasing/', it: '/it/soluzioni/previsioni-acquisti/' },
-  events: { en: '/en/solutions/events-staffing/', de: '/de/loesungen/events-personal/', ar: '/ar/solutions/events-staffing/', it: '/it/soluzioni/eventi-personale/' },
-  rooms: { en: '/en/solutions/rooms-guest-experience/', de: '/de/loesungen/zimmer-gaeste/', ar: '/ar/solutions/rooms-guest-experience/', it: '/it/soluzioni/camere-ospiti/' },
-  sales: { en: '/en/solutions/sales-performance/', de: '/de/loesungen/vertrieb-performance/', ar: '/ar/solutions/sales-performance/', it: '/it/soluzioni/vendite-performance/' },
   book: { en: '/en/book-a-call/', de: '/de/gespraech-buchen/', ar: '/ar/book-a-call/', it: '/it/prenota-una-chiamata/' },
   faq: { en: '/en/faq/', de: '/de/faq/', ar: '/ar/faq/', it: '/it/faq/' },
   legal: { en: '/en/legal-notice/', de: '/de/impressum/', ar: '/ar/legal-notice/', it: '/it/note-legali/' },

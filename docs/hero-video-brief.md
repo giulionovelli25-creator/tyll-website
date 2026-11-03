@@ -1,16 +1,17 @@
 # Hero video: replacement brief
 
-**Status (2 Nov 2026): replaced with calmer, darker footage.** The homepage opens on one continuous 12-second film:
+**Status (3 Nov 2026): the chandelier was replaced so the film says what Tyll does.** The homepage opens on one continuous 12-second film:
 
-1. a guest rings the reception bell
-2. a chef finishes a plate in a dim kitchen
-3. the camera tilts slowly down to a chandelier in a dark lobby
+1. a gloved hand checks stock on a shelf (also the poster)
+2. a pen writes the count in a stock book
+3. a guest rings the reception bell
+4. a chef finishes a plate in a dim kitchen
 
 All three clips are free Pexels footage under the Pexels License; sources are in `src/assets/photos/CREDITS.md`. They are stitched into one file with 0.5-second dissolves, and the last frame dissolves back into the first, so the film never shows a black frame or a loading flash between scenes.
 
 - **Grade (the same on every scene):** saturation at 74%, highlights capped at 86%, a soft vignette. See `docs/hero-film-master.sh`. On the page only a shade on the text side, under the header and at the foot sits on top. The owner found a darker first grade too dark.
 - **Encoding, no audio:** wide, narrow landscape and upright cuts, each as webm and mp4, all under 2 MB.
-- **Kept out of frame (no alcohol):** bottles on a far shelf in the kitchen, and bottles and a "Cabaret" sign later in the chandelier clip.
+- **Kept out of frame (no alcohol):** bottles on a far shelf in the kitchen.
 - **Still open:** the shots are free stock, so the same footage can appear on other sites. For an opening only Tyll uses, the options below still apply.
 
 ## The goal

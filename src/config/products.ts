@@ -4,9 +4,9 @@
 import type { SolutionKey } from '../i18n/routes';
 
 /** Sold today, in the order the homepage shows them. Each links to its existing solution page. */
-export const available = ['forecasting', 'stock', 'finance'] as const satisfies readonly SolutionKey[];
+export const available = ['waste', 'stock', 'forecasting', 'revenue', 'finance', 'pour'] as const satisfies readonly SolutionKey[];
 
 /** In development: shown with a "Coming soon" badge; their pages stay live with a banner. */
-export const comingSoon: SolutionKey[] = ['events', 'rooms', 'sales'];
+export const comingSoon: SolutionKey[] = [];
 
 export const isComingSoon = (key: SolutionKey) => comingSoon.includes(key);

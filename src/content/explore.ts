@@ -8,7 +8,7 @@
 //   fade   – the content carries on below the frame (a long list or form); the frame fades out and points to the
 //            whole screen
 // Focus rectangles are snapped to the gaps between cards, so a frame never cuts through a block of the interface.
-// Every sentence describes only what the referenced screen shows. Checked against the demo captures on 17 Oct 2026.
+// Every sentence describes only what the referenced screen shows. Checked against the demo captures on 3 Nov 2026.
 
 import type { Locale, SolutionKey } from '../i18n/routes';
 
@@ -35,437 +35,171 @@ export type Explore = {
 
 const t = (en: string, de: string, ar: string, it: string): Text => ({ en, de, ar, it });
 
-const onSale = t('Available now', 'Jetzt verfügbar', 'متاح الآن', 'Disponibile ora');
-const soon = t('Coming soon', 'Demnächst', 'قريبًا', 'In arrivo');
-
 export const explore: Record<SolutionKey, Explore> = {
-  stock: {
+  waste: {
     tone: 'light',
-    outcome: t(
-      'A stock difference is surfaced with its evidence, checked by the right person and closed with a recorded outcome.',
-      'Eine Bestandsabweichung wird mit ihren Belegen sichtbar, von der richtigen Person geprüft und mit dokumentiertem Ergebnis abgeschlossen.',
-      'يظهر فرق المخزون مع أدلته، ويتحقق منه الشخص المناسب، ويُغلق بنتيجة موثّقة.',
-      'Una differenza di magazzino emerge con le sue prove, viene verificata dalla persona giusta e chiusa con un esito documentato.',
-    ),
+    outcome: t('Your team logs waste and breakage as it happens, and you see what it cost.', 'Ihr Team erfasst Abfall und Bruch, wenn sie passieren, und Sie sehen, was es gekostet hat.', 'يسجّل فريقك الهدر والكسر فور حدوثهما، وترى كم كلّفا.', 'Il tuo team registra sprechi e rotture quando accadono, e tu vedi quanto sono costati.'),
     spots: [
       {
-        frame: 1,
-        label: t('Counts against sales', 'Zählung gegen Verkäufe', 'الجرد مقابل المبيعات', 'Conteggi e vendite'),
-        text: t(
-          'Stock counts on one side, sales and recipes on the other: 38 cans used, 30 explained. The 8-can difference is what needs checking.',
-          'Zählungen auf der einen Seite, Verkäufe und Rezepturen auf der anderen: 38 Dosen verbraucht, 30 erklärt. Die Differenz von 8 Dosen ist zu prüfen.',
-          'الجرد في جهة، والمبيعات والوصفات في الجهة الأخرى: استُهلكت 38 علبة، وتفسّر السجلات 30 منها. فرق العلب الثماني هو ما يحتاج إلى تحقق.',
-          'Da una parte i conteggi, dall’altra vendite e ricette: 38 lattine usate, 30 spiegate. La differenza di 8 lattine è ciò che va verificato.',
-        ),
-        focus: [0.1799, 0.3863, 0.5125, 0.4847],
-        mark: [0.207, 0.682, 0.466, 0.152],
+        frame: 0,
+        label: t('Two taps', 'Zwei Tipps', 'نقرتان', 'Due tocchi'),
+        text: t('Food, Drinks or Inventory, then the item and the number. A prepared dish or a note is one more link.', 'Food, Drinks oder Inventory, dann Artikel und Zahl. Ein zubereitetes Gericht oder eine Notiz ist nur ein Link mehr.', 'Food أو Drinks أو Inventory، ثم الصنف والرقم. والطبق الجاهز أو الملاحظة على بُعد رابط واحد.', 'Food, Drinks o Inventory, poi l’articolo e il numero. Un piatto pronto o una nota sono un link in più.'),
+        focus: [0.1833, 0.2586, 0.7944, 0.3012],
+      },
+      {
+        frame: 0,
+        label: t('Lost today', 'Heutiger Verlust', 'خسارة اليوم', 'Perso oggi'),
+        text: t('AED 337 lost today, split into wasted and broken.', 'AED 337 Verlust heute, aufgeteilt in verdorben und zerbrochen.', 'خسارة 337 درهمًا اليوم، مقسّمة بين الهدر والكسر.', 'AED 337 persi oggi, divisi tra sprecato e rotto.'),
+        focus: [0.1833, 0.1602, 0.7944, 0.0855],
       },
       {
         frame: 1,
-        label: t('Value involved', 'Betroffener Wert', 'القيمة المعنية', 'Valore coinvolto'),
-        text: t(
-          'AED 28 at today’s price. It is not a confirmed loss: it becomes one only if the outcome says so.',
-          'AED 28 zum heutigen Preis. Das ist kein bestätigter Verlust. Erst das Ergebnis der Prüfung macht ihn dazu.',
-          '28 درهمًا بسعر اليوم. وهي ليست خسارة مؤكدة، ولا تصبح كذلك إلا إذا أثبتت النتيجة ذلك.',
-          'AED 28 al prezzo di oggi. Non è una perdita confermata: lo diventa solo se l’esito lo stabilisce.',
-        ),
-        focus: [0.1799, 0.0556, 0.8187, 0.354],
-        mark: [0.705, 0.25, 0.27, 0.135],
-      },
-      {
-        frame: 2,
-        label: t('Possible explanations', 'Mögliche Erklärungen', 'التفسيرات المحتملة', 'Possibili spiegazioni'),
-        text: t(
-          'Each possible cause is listed with what the records show. Nothing is concluded until a manager checks.',
-          'Jede mögliche Ursache steht mit dem, was die Daten zeigen. Entschieden ist nichts, bis jemand prüft.',
-          'يُعرض كل سبب محتمل مع ما تُظهره السجلات، ولا يُستنتج شيء قبل أن يتحقق مدير.',
-          'Ogni possibile causa è elencata con ciò che mostrano i dati. Nulla è stabilito finché un responsabile non verifica.',
-        ),
-        focus: [0.1799, 0.4129, 0.5125, 0.3919],
-        mark: [0.207, 0.505, 0.465, 0.045],
-      },
-      {
-        frame: 3,
-        label: t('Who follows up', 'Wer nachfasst', 'من يتابع', 'Chi se ne occupa'),
-        text: t(
-          'The F&B director takes the case, with a deadline. It stays on his list until an outcome is recorded.',
-          'Der F&B-Direktor übernimmt den Fall mit Frist. Er bleibt auf seiner Liste, bis ein Ergebnis dokumentiert ist.',
-          'يتولى مدير الأغذية والمشروبات الحالة مع موعد نهائي، وتبقى في قائمته حتى تُسجَّل نتيجة.',
-          'Il direttore F&B prende in carico il caso, con una scadenza. Resta nella sua lista finché non viene registrato un esito.',
-        ),
-        focus: [0.6792, 0.1298, 0.3194, 0.315],
-        mark: [0.705, 0.192, 0.27, 0.04],
-      },
-      {
-        frame: 1,
-        label: t('Recording the outcome', 'Ergebnis festhalten', 'تسجيل النتيجة', 'Registrare l’esito'),
-        text: t(
-          'When the check is done, the manager records what it found: a legitimate correction, a confirmed loss, revenue recovered or no finding.',
-          'Nach der Prüfung wird festgehalten, was sie ergab: eine berechtigte Korrektur, ein bestätigter Verlust, zurückgeholter Umsatz oder kein Befund.',
-          'بعد التحقق، يسجّل المدير ما توصل إليه: تصحيح مشروع، أو خسارة مؤكدة، أو إيراد مسترد، أو عدم وجود نتيجة.',
-          'A verifica conclusa, il responsabile registra cosa è emerso: una correzione legittima, una perdita confermata, un ricavo recuperato o nessun riscontro.',
-        ),
-        focus: [0.6792, 0.7145, 0.3194, 0.2798],
-        mark: [0.705, 0.745, 0.265, 0.25],
+        label: t('Today’s log', 'Heutiges Protokoll', 'سجل اليوم', 'Registro di oggi'),
+        text: t('Eleven entries with amount, reason, outlet and cost.', 'Elf Einträge mit Menge, Grund, Outlet und Kosten.', 'أحد عشر إدخالًا بالكمية والسبب والمنفذ والتكلفة.', 'Undici voci con quantità, motivo, punto vendita e costo.'),
+        focus: [0.1833, 0.3775, 0.7944, 0.4726],
       },
     ],
   },
 
-  finance: {
+  stock: {
     tone: 'light',
-    outcome: t(
-      'A mismatch is reviewed with the records behind it, instead of disappearing inside separate reports.',
-      'Eine Abweichung wird mit den zugehörigen Daten geprüft, statt in getrennten Berichten unterzugehen.',
-      'يُراجَع عدم التطابق مع السجلات التي تقف خلفه، بدلًا من أن يضيع في تقارير منفصلة.',
-      'Una discrepanza viene esaminata con i dati che la riguardano, invece di perdersi in report separati.',
-    ),
+    outcome: t('Your team sees what runs out first, and counts only what differs.', 'Ihr Team sieht, was zuerst ausgeht, und korrigiert nur, was abweicht.', 'يرى فريقك ما سينفد أولًا، ولا يعدّل إلا ما يختلف.', 'Il tuo team vede cosa finisce per primo e corregge solo ciò che è diverso.'),
     spots: [
       {
-        frame: 1,
-        label: t('The flag', 'Der Hinweis', 'التنبيه', 'La segnalazione'),
-        text: t(
-          'One order at The Terrace: a Coca-Cola removed six minutes after it was sent to the bar, with AED 22 involved.',
-          'Eine Bestellung auf The Terrace: eine Coca-Cola, sechs Minuten nach der Bestellung an der Bar entfernt, AED 22 betroffen.',
-          'طلب واحد في The Terrace: حُذفت Coca-Cola بعد ست دقائق من إرسالها إلى البار، بقيمة 22 درهمًا.',
-          'Un ordine a The Terrace: una Coca-Cola tolta sei minuti dopo l’invio al bar, con AED 22 coinvolti.',
-        ),
-        focus: [0.1799, 0.0556, 0.8187, 0.2782],
-        mark: [0.198, 0.255, 0.776, 0.062],
+        frame: 0,
+        label: t('Critical, low, fine', 'Critical, low, fine', 'Critical وlow وfine', 'Critical, low, fine'),
+        text: t('5 critical, 10 low, 48 fine, with Start count beside them.', '5 critical, 10 low, 48 fine, daneben Start count.', '5 حرجة و10 منخفضة و48 جيدة، وبجانبها Start count.', '5 critical, 10 low, 48 fine, con accanto Start count.'),
+        focus: [0.1833, 0.1602, 0.7944, 0.071],
+      },
+      {
+        frame: 0,
+        label: t('Critical items', 'Kritische Artikel', 'الأصناف الحرجة', 'Articoli critici'),
+        text: t('An order placed today would arrive too late. Each item shows what is left and when it runs out.', 'Eine heutige Bestellung käme zu spät. Jeder Artikel zeigt den Rest und wann er ausgeht.', 'طلب يُرسل اليوم سيصل متأخرًا. يبيّن كل صنف ما بقي ومتى ينفد.', 'Un ordine di oggi arriverebbe troppo tardi. Ogni articolo mostra cosa resta e quando finisce.'),
+        focus: [0.1833, 0.2924, 0.7944, 0.2338],
       },
       {
         frame: 1,
-        label: t('Order against bill', 'Bestellung gegen Rechnung', 'الطلب مقابل الفاتورة', 'Ordine e conto'),
-        text: t(
-          'The original order and the final bill side by side. The AED 22 difference is the drink that was removed.',
-          'Ursprüngliche Bestellung und Endrechnung nebeneinander. Die Differenz von AED 22 ist das entfernte Getränk.',
-          'الطلب الأصلي والفاتورة النهائية جنبًا إلى جنب. فرق الـ 22 درهمًا هو المشروب الذي حُذف.',
-          'L’ordine originale e il conto finale fianco a fianco. La differenza di AED 22 è la bevanda tolta.',
-        ),
-        focus: [0.1799, 0.3185, 0.8187, 0.2387],
-        mark: [0.598, 0.475, 0.375, 0.03],
-      },
-      {
-        frame: 1,
-        label: t('Every step, in order', 'Jeder Schritt der Reihe nach', 'كل خطوة بالترتيب', 'Ogni passaggio, in ordine'),
-        text: t(
-          'Each step at the point of sale, including the removal, which has no reason or approval on record.',
-          'Jeder Schritt an der Kasse, auch die Entfernung. Ohne erfassten Grund oder Freigabe.',
-          'كل خطوة في نقطة البيع، بما فيها الحذف، دون سبب أو موافقة مسجّلة.',
-          'Ogni passaggio alla cassa, compresa la rimozione, senza motivo né approvazione registrati.',
-        ),
-        focus: [0.1799, 0.5435, 0.4146, 0.4508],
-        mark: [0.205, 0.8, 0.38, 0.045],
-      },
-      {
-        frame: 2,
-        label: t('Room charges', 'Zimmerbelastungen', 'رسوم الغرف', 'Addebiti in camera'),
-        text: t(
-          'Charges from outlets are matched to guest bills: 1,882 checked this week, an AED 576 difference and 17 postings flagged.',
-          'Belastungen aus den Outlets werden mit den Gästerechnungen abgeglichen: 1.882 diese Woche geprüft, AED 576 Differenz, 17 Buchungen markiert.',
-          'تُطابَق رسوم المنافذ مع فواتير الضيوف: فُحص 1,882 رسمًا هذا الأسبوع، بفرق 576 درهمًا، ورُصد 17 قيدًا.',
-          'Gli addebiti dei punti vendita vengono confrontati con i conti degli ospiti: 1.882 controllati questa settimana, una differenza di AED 576 e 17 registrazioni segnalate.',
-        ),
-        focus: [0.1799, 0.2371, 0.8187, 0.3089],
-        mark: [0.205, 0.335, 0.69, 0.065],
-      },
-      {
-        frame: 3,
-        label: t('Invoices against deliveries', 'Rechnungen gegen Lieferungen', 'الفواتير مقابل التوريدات', 'Fatture e consegne'),
-        text: t(
-          'Supplier invoices that bill for more than arrived, or above the agreed price, are listed with the amount to check.',
-          'Lieferantenrechnungen, die mehr berechnen als ankam oder über dem vereinbarten Preis liegen, stehen mit dem zu prüfenden Betrag in der Liste.',
-          'تُدرج فواتير الموردين التي تحتسب أكثر مما وصل، أو بسعر أعلى من المتفق عليه، مع المبلغ الذي يجب التحقق منه.',
-          'Le fatture dei fornitori che addebitano più di quanto arrivato, o sopra il prezzo concordato, sono elencate con l’importo da verificare.',
-        ),
-        focus: [0.1799, 0.2573, 0.8187, 0.3298],
-        fade: true,
-        mark: [0.2, 0.35, 0.775, 0.035],
+        label: t('Stock count', 'Zählung', 'الجرد', 'Conteggio'),
+        text: t('The expected amount is filled in. Change it only if it differs, then Looks right, next. Whole screen shows the full step, item 1 of 63.', 'Die erwartete Menge ist eingetragen. Nur ändern, wenn sie abweicht, dann Looks right, next. Whole screen zeigt den ganzen Schritt, Artikel 1 von 63.', 'الكمية المتوقعة مكتوبة. غيّرها فقط إذا اختلفت، ثم Looks right, next. ويعرض Whole screen الخطوة كاملة، الصنف 1 من 63.', 'La quantità attesa è già inserita. Cambiala solo se è diversa, poi Looks right, next. Whole screen mostra il passaggio intero, articolo 1 di 63.'),
+        focus: [0.3444, 0.79, 0.3111, 0.2],
       },
     ],
   },
 
   forecasting: {
     tone: 'light',
-    outcome: t(
-      'Your purchasing team gets one clear list: what to buy, how much, and by when.',
-      'Ihr Einkauf erhält eine klare Liste: was, wie viel und bis wann.',
-      'يحصل فريق المشتريات على قائمة واحدة واضحة: ماذا يشتري، وكم، وحتى متى.',
-      'Il team acquisti riceve un’unica lista chiara: cosa comprare, quanto e entro quando.',
-    ),
+    outcome: t('Your purchasing team gets one clear list: what to buy, how much, and when.', 'Ihr Einkauf erhält eine klare Liste: was, wie viel und wann.', 'يحصل فريق المشتريات على قائمة واحدة واضحة: ماذا يشتري، وكم، ومتى.', 'Il team acquisti riceve un’unica lista chiara: cosa comprare, quanto e quando.'),
     spots: [
       {
         frame: 0,
-        stage: onSale,
-        label: t('What to buy', 'Was zu kaufen ist', 'ما يجب شراؤه', 'Cosa comprare'),
-        text: t(
-          '15 items need ordering, each with a suggested quantity, an order-by date and whether it runs short before the next delivery.',
-          '15 Artikel müssen bestellt werden, jeweils mit Mengenvorschlag, Bestelldatum und dem Hinweis, ob sie vor der nächsten Lieferung knapp werden.',
-          '15 صنفًا تحتاج إلى طلب، لكلٍّ منها كمية مقترحة وتاريخ أقصى للطلب، وما إذا كان سينفد قبل التوريد التالي.',
-          '15 articoli da ordinare, ognuno con quantità suggerita, data entro cui ordinare e se finisce prima della prossima consegna.',
-        ),
-        focus: [0.1799, 0.5517, 0.8187, 0.4468],
+        label: t('Order today', 'Heute bestellen', 'اطلب اليوم', 'Ordina oggi'),
+        text: t('Five items to order today, each with the amount and what it costs.', 'Fünf Artikel für heute, jeweils mit Menge und Kosten.', 'خمسة أصناف للطلب اليوم، لكلٍّ منها الكمية والتكلفة.', 'Cinque articoli da ordinare oggi, ognuno con quantità e costo.'),
+        focus: [0.1833, 0.2441, 0.7944, 0.2148],
+      },
+      {
+        frame: 0,
+        label: t('To month end', 'Bis Monatsende', 'حتى نهاية الشهر', 'A fine mese'),
+        text: t('AED 310.7k to 31 October, 51 items to order, next order today.', 'AED 310,7k bis 31. Oktober, 51 Artikel, nächste Bestellung heute.', '310.7 ألف درهم حتى 31 أكتوبر، 51 صنفًا، والطلب التالي اليوم.', 'AED 310,7k fino al 31 ottobre, 51 articoli, prossimo ordine oggi.'),
+        focus: [0.1833, 0.1602, 0.7944, 0.071],
+      },
+      {
+        frame: 0,
+        label: t('How it is calculated', 'So wird gerechnet', 'طريقة الحساب', 'Come si calcola'),
+        text: t('10,994 forecast covers, 1 event and the last 4 weeks of usage. Confidence high.', '10.994 erwartete Gedecke, 1 Veranstaltung und der Verbrauch der letzten 4 Wochen. Sicherheit hoch.', '10,994 ضيفًا متوقعًا وفعالية واحدة واستهلاك آخر 4 أسابيع. الثقة عالية.', '10.994 coperti previsti, 1 evento e i consumi delle ultime 4 settimane. Affidabilità alta.'),
+        focus: [0.1833, 0.5444, 0.7944, 0.44],
         fade: true,
-        mark: [0.638, 0.568, 0.13, 0.026],
       },
       {
         frame: 1,
-        stage: soon,
-        label: t('Expected guests', 'Erwartete Gäste', 'الضيوف المتوقعون', 'Ospiti attesi'),
-        text: t(
-          'Reservations, recent walk-in patterns, hotel occupancy and Thursday’s conference add up to 589 expected guests. Any figure can be changed.',
-          'Reservierungen, Laufkundschaft der letzten Wochen, Hotelauslastung und die Konferenz am Donnerstag ergeben 589 erwartete Gäste. Jede Zahl lässt sich anpassen.',
-          'تجتمع الحجوزات وأنماط الزوار دون حجز وإشغال الفندق ومؤتمر الخميس لتعطي 589 ضيفًا متوقعًا. ويمكن تعديل أي رقم.',
-          'Prenotazioni, clienti senza prenotazione delle ultime settimane, occupazione e la conferenza di giovedì danno 589 ospiti attesi. Ogni cifra si può modificare.',
-        ),
-        focus: [0.1799, 0.2798, 0.8187, 0.52],
+        label: t('Build order', 'Build order', 'Build order', 'Build order'),
+        text: t('One draft of 51 items from 6 suppliers. Nothing is sent until it is approved.', 'Ein Entwurf mit 51 Artikeln von 6 Lieferanten. Nichts wird ohne Freigabe gesendet.', 'مسودة واحدة من 51 صنفًا و6 مورّدين. لا يُرسل شيء قبل الاعتماد.', 'Una bozza di 51 articoli da 6 fornitori. Nulla viene inviato prima dell’approvazione.'),
+        focus: [0.6, 0, 0.4, 0.42],
         fade: true,
-        mark: [0.205, 0.712, 0.33, 0.032],
-      },
-      {
-        frame: 2,
-        stage: soon,
-        label: t('Purchasing review', 'Prüfung im Einkauf', 'مراجعة المشتريات', 'Revisione acquisti'),
-        text: t(
-          'Purchasing approves, asks for changes or rejects, with the budget left after this request in view. Budgets are demo planning figures.',
-          'Der Einkauf gibt frei, fordert Änderungen an oder lehnt ab, mit dem Budget, das nach dieser Anforderung bleibt. Budgets sind Planungszahlen der Demo.',
-          'توافق المشتريات أو تطلب تعديلات أو ترفض، مع رؤية الميزانية المتبقية بعد هذا الطلب. والميزانيات أرقام تخطيطية في العرض التوضيحي.',
-          'Gli Acquisti approvano, chiedono modifiche o rifiutano, con il budget residuo dopo questa richiesta sotto gli occhi. I budget sono cifre di pianificazione della demo.',
-        ),
-        focus: [0.1799, 0.454, 0.8187, 0.2984],
-        mark: [0.208, 0.633, 0.24, 0.034],
-      },
-      {
-        frame: 3,
-        stage: soon,
-        label: t('Goods received', 'Ware angenommen', 'استلام البضائع', 'Merce ricevuta'),
-        text: t(
-          'Stock rises only when the delivery is recorded, not when the order is placed.',
-          'Der Bestand steigt erst, wenn die Lieferung erfasst ist, nicht schon bei der Bestellung.',
-          'لا يرتفع المخزون إلا عند تسجيل التوريد، وليس عند إرسال الطلب.',
-          'Le giacenze aumentano solo quando la consegna viene registrata, non quando si ordina.',
-        ),
-        focus: [0.1799, 0.268, 0.4, 0.45],
-        fade: true,
-        mark: [0.208, 0.288, 0.36, 0.04],
       },
     ],
   },
 
-  events: {
+  revenue: {
     tone: 'light',
-    outcome: t(
-      'A staffing request reaches the department that can help, and everyone can follow the decision.',
-      'Eine Personalanfrage erreicht die Abteilung, die helfen kann, und alle können die Entscheidung verfolgen.',
-      'يصل طلب الموظفين إلى القسم القادر على المساعدة، ويستطيع الجميع متابعة القرار.',
-      'Una richiesta di personale raggiunge il reparto che può aiutare, e tutti possono seguire la decisione.',
-    ),
+    outcome: t('You see what each day and each outlet made, without waiting for a report.', 'Sie sehen, was jeder Tag und jedes Outlet gebracht hat, ohne auf einen Bericht zu warten.', 'ترى ما حققه كل يوم وكل منفذ، من دون انتظار تقرير.', 'Vedi quanto hanno reso ogni giorno e ogni punto vendita, senza aspettare un report.'),
     spots: [
       {
-        frame: 1,
-        label: t('The event', 'Das Event', 'الفعالية', 'L’evento'),
-        text: t(
-          'The regional sales conference dinner: 180 guests on Thursday in the Grand Ballroom, still in planning.',
-          'Das Abendessen der regionalen Vertriebskonferenz: 180 Gäste am Donnerstag im Grand Ballroom, noch in Planung.',
-          'عشاء مؤتمر المبيعات الإقليمي: 180 ضيفًا يوم الخميس في Grand Ballroom، وما زال قيد التخطيط.',
-          'La cena della conferenza vendite regionale: 180 ospiti giovedì nel Grand Ballroom, ancora in pianificazione.',
-        ),
-        focus: [0.1799, 0.3218, 0.8187, 0.45],
-        mark: [0.205, 0.348, 0.77, 0.046],
+        frame: 0,
+        label: t('Revenue and profit', 'Umsatz und Gewinn', 'الإيرادات والربح', 'Ricavi e profitto'),
+        text: t('Revenue and estimated profit over the last 14 days, on one chart.', 'Umsatz und geschätzter Gewinn der letzten 14 Tage in einem Diagramm.', 'الإيرادات والربح المقدّر خلال آخر 14 يومًا في رسم واحد.', 'Ricavi e profitto stimato degli ultimi 14 giorni in un grafico.'),
+        focus: [0.1833, 0.309, 0.7944, 0.2818],
       },
       {
-        frame: 1,
-        label: t('Cost and price', 'Kosten und Preis', 'التكلفة والسعر', 'Costi e prezzo'),
-        text: t(
-          'Food, drinks and labour are estimated against the agreed price. Demo estimates, not accounting figures.',
-          'Speisen, Getränke und Personal werden gegen den vereinbarten Preis geschätzt. Schätzwerte der Demo, keine Buchhaltungszahlen.',
-          'تُقدَّر تكلفة الطعام والمشروبات والعمالة مقابل السعر المتفق عليه. تقديرات العرض التوضيحي، وليست أرقامًا محاسبية.',
-          'Cibo, bevande e personale sono stimati rispetto al prezzo concordato. Stime della demo, non dati contabili.',
-        ),
-        focus: [0.1799, 0.3218, 0.8187, 0.45],
-        mark: [0.207, 0.5, 0.375, 0.06],
+        frame: 0,
+        label: t('Three totals', 'Drei Summen', 'ثلاثة إجماليات', 'Tre totali'),
+        text: t('Today so far, the last 7 days and the last 30 days, each with its change and estimated profit.', 'Heute bisher, die letzten 7 und 30 Tage, jeweils mit Veränderung und geschätztem Gewinn.', 'اليوم حتى الآن وآخر 7 أيام وآخر 30 يومًا، ولكلٍّ منها التغيّر والربح المقدّر.', 'Oggi finora, ultimi 7 e ultimi 30 giorni, ognuno con variazione e profitto stimato.'),
+        focus: [0.1833, 0.1602, 0.7944, 0.0875],
       },
       {
-        frame: 1,
-        label: t('What still needs doing', 'Was noch fehlt', 'ما يزال مطلوبًا', 'Cosa manca ancora'),
-        text: t(
-          'Six more waiters and other roles still to fill, plus ingredients to buy. Each line leads to the place to act on it.',
-          'Sechs weitere Servicekräfte und andere Rollen sind offen, dazu Zutaten zum Einkaufen. Jede Zeile führt dorthin, wo man handeln kann.',
-          'ما يزال هناك ستة نُدُل إضافيين وأدوار أخرى يجب شغلها، إضافة إلى مكونات للشراء. وكل سطر يقود إلى المكان المناسب للتصرف.',
-          'Mancano altri sei camerieri e altri ruoli, più ingredienti da comprare. Ogni riga porta al punto in cui intervenire.',
-        ),
-        focus: [0.1799, 0.3218, 0.8187, 0.45],
-        mark: [0.59, 0.433, 0.375, 0.026],
-      },
-      {
-        frame: 2,
-        label: t('Finding staff', 'Personal finden', 'إيجاد الموظفين', 'Trovare personale'),
-        text: t(
-          'Waiters: 12 needed, 6 confirmed. Tyll lists the people with the right skill who are free for the whole event.',
-          'Servicekräfte: 12 benötigt, 6 bestätigt. Tyll zeigt die Personen mit passender Qualifikation, die das ganze Event über frei sind.',
-          'النُدُل: المطلوب 12، والمؤكد 6. ويعرض Tyll الأشخاص ذوي المهارة المناسبة المتفرغين طوال الفعالية.',
-          'Camerieri: 12 necessari, 6 confermati. Tyll elenca le persone con la competenza giusta libere per tutto l’evento.',
-        ),
-        focus: [0.1799, 0.3218, 0.8187, 0.3476],
+        frame: 0,
+        label: t('By outlet', 'Nach Outlet', 'حسب المنفذ', 'Per punto vendita'),
+        text: t('Five outlets, 7 to 13 October, with revenue, cost and net profit estimates.', 'Fünf Outlets, 7. bis 13. Oktober, mit Umsatz sowie geschätzten Kosten und Nettogewinn.', 'خمسة منافذ، من 7 إلى 13 أكتوبر، بالإيرادات وتقديرات التكلفة وصافي الربح.', 'Cinque punti vendita, dal 7 al 13 ottobre, con ricavi e stime di costi e utile netto.'),
+        focus: [0.1833, 0.6036, 0.7944, 0.39],
         fade: true,
-        mark: [0.68, 0.433, 0.3, 0.03],
-      },
-      {
-        frame: 3,
-        label: t('The request', 'Die Anfrage', 'الطلب', 'La richiesta'),
-        text: t(
-          'Six waiters are requested from another department. The restaurant manager sees the request, and it shows 0 of 6 confirmed until she decides.',
-          'Sechs Servicekräfte werden bei einer anderen Abteilung angefragt. Die Restaurantleiterin sieht die Anfrage; bis sie entscheidet, steht dort 0 von 6 bestätigt.',
-          'يُطلب ستة نُدُل من قسم آخر. ترى مديرة المطعم الطلب، ويظهر «0 من 6 مؤكد» حتى تتخذ قرارها.',
-          'Sei camerieri vengono richiesti a un altro reparto. La responsabile del ristorante vede la richiesta, che mostra 0 su 6 confermati finché non decide.',
-        ),
-        focus: [0.1799, 0.1927, 0.8187, 0.3306],
-        mark: [0.2, 0.365, 0.78, 0.033],
       },
     ],
   },
 
-  rooms: {
+  finance: {
     tone: 'light',
-    outcome: t(
-      'Front office, housekeeping and the room attendant work from the same picture, so a late room gets the attention it needs.',
-      'Rezeption, Housekeeping und Zimmerreinigung arbeiten mit demselben Bild, damit ein spätes Zimmer die nötige Aufmerksamkeit bekommt.',
-      'يعمل الاستقبال والتدبير الفندقي وعامل الغرف من الصورة نفسها، فتحظى الغرفة المتأخرة بالاهتمام الذي تحتاجه.',
-      'Ricevimento, housekeeping e addetti alle camere lavorano sullo stesso quadro, così una camera in ritardo riceve l’attenzione necessaria.',
-    ),
+    outcome: t('A difference is reviewed with the records behind it, before the invoice is approved.', 'Eine Abweichung wird mit den zugehörigen Daten geprüft, bevor die Rechnung freigegeben wird.', 'يُراجَع الفرق مع السجلات التي تقف خلفه قبل اعتماد الفاتورة.', 'Una differenza viene esaminata con i dati che la riguardano, prima di approvare la fattura.'),
     spots: [
       {
         frame: 0,
-        label: t('Today’s arrivals', 'Heutige Anreisen', 'وصول اليوم', 'Arrivi di oggi'),
-        text: t(
-          'Front office sees that 4 arriving guests may have to wait: 12 rooms ready, 4 being cleaned and 3 waiting to be cleaned.',
-          'Die Rezeption sieht, dass 4 anreisende Gäste warten könnten: 12 Zimmer fertig, 4 in Reinigung, 3 warten auf Reinigung.',
-          'يرى الاستقبال أن 4 ضيوف قادمين قد ينتظرون: 12 غرفة جاهزة، و4 قيد التنظيف، و3 بانتظار التنظيف.',
-          'Il ricevimento vede che 4 ospiti in arrivo potrebbero dover aspettare: 12 camere pronte, 4 in pulizia e 3 in attesa di pulizia.',
-        ),
-        focus: [0.1799, 0.2371, 0.8187, 0.1726],
-        mark: [0.205, 0.335, 0.42, 0.04],
-      },
-      {
-        frame: 0,
-        label: t('Rooms running late', 'Verspätete Zimmer', 'غرف متأخرة', 'Camere in ritardo'),
-        text: t(
-          'Each room shows its cleaning status, an estimated ready time and how long a guest has been waiting. Estimates, not guarantees.',
-          'Jedes Zimmer zeigt Reinigungsstatus, voraussichtliche Fertigstellung und wie lange ein Gast schon wartet. Schätzungen, keine Zusagen.',
-          'تعرض كل غرفة حالة تنظيفها والوقت المتوقع لجاهزيتها ومدة انتظار الضيف. تقديرات وليست ضمانات.',
-          'Ogni camera mostra lo stato della pulizia, l’orario stimato in cui sarà pronta e da quanto un ospite aspetta. Stime, non garanzie.',
-        ),
-        focus: [0.1799, 0.396, 0.8187, 0.2935],
+        label: t('Supplier invoices', 'Lieferantenrechnungen', 'فواتير الموردين', 'Fatture fornitori'),
+        text: t('Invoice, supplier, date, total, difference and status, with 23 to review.', 'Rechnung, Lieferant, Datum, Summe, Abweichung und Status, 23 zu prüfen.', 'الفاتورة والمورّد والتاريخ والإجمالي والفرق والحالة، و23 للمراجعة.', 'Fattura, fornitore, data, totale, differenza e stato, con 23 da rivedere.'),
+        focus: [0.1833, 0.2472, 0.7944, 0.42],
         fade: true,
-        mark: [0.2, 0.48, 0.78, 0.045],
       },
       {
         frame: 1,
-        label: t('A priority request', 'Eine Prioritätsanfrage', 'طلب أولوية', 'Una richiesta prioritaria'),
-        text: t(
-          'The VIP guest for suite 1211 is already here. Front office asks housekeeping to prioritise the suite, and the request is recorded in the room’s history.',
-          'Der VIP-Gast für Suite 1211 ist schon da. Die Rezeption bittet das Housekeeping um Vorrang, und die Anfrage steht im Verlauf des Zimmers.',
-          'وصل الضيف المهم لجناح 1211 بالفعل. يطلب الاستقبال من التدبير الفندقي إعطاء الأولوية للجناح، ويُسجَّل الطلب في سجل الغرفة.',
-          'L’ospite VIP della suite 1211 è già arrivato. Il ricevimento chiede all’housekeeping di dare priorità alla suite, e la richiesta resta nella cronologia della camera.',
-        ),
-        focus: [0.1799, 0.2734, 0.8187, 0.5121],
-        mark: [0.205, 0.305, 0.775, 0.13],
+        label: t('One invoice', 'Eine Rechnung', 'فاتورة واحدة', 'Una fattura'),
+        text: t('Ordered AED 6,262, received AED 5,898, invoiced AED 6,262. The list shows why: 2 kg more invoiced than received.', 'Bestellt AED 6.262, erhalten AED 5.898, berechnet AED 6.262. Die Liste zeigt warum: 2 kg mehr berechnet als erhalten.', 'المطلوب 6,262 درهمًا، والمستلم 5,898، والمفوتر 6,262. وتبيّن القائمة السبب: 2 كغ مفوترة زيادة على المستلم.', 'Ordinato AED 6.262, ricevuto AED 5.898, fatturato AED 6.262. L’elenco spiega perché: 2 kg fatturati in più del ricevuto.'),
+        focus: [0.1833, 0.2359, 0.7944, 0.39],
       },
       {
-        frame: 2,
-        label: t('Housekeeping board', 'Housekeeping-Übersicht', 'لوحة التدبير الفندقي', 'Bacheca housekeeping'),
-        text: t(
-          'The suite moves to the top of the housekeeping board, where the team also sees which rooms are waiting and who is assigned.',
-          'Die Suite rückt im Housekeeping nach oben, wo das Team auch sieht, welche Zimmer warten und wer zugeteilt ist.',
-          'ينتقل الجناح إلى أعلى لوحة التدبير الفندقي، حيث يرى الفريق أيضًا الغرف المنتظرة ومن كُلّف بها.',
-          'La suite sale in cima alla bacheca dell’housekeeping, dove il team vede anche quali camere aspettano e a chi sono assegnate.',
-        ),
-        focus: [0.1799, 0.2371, 0.8187, 0.3105],
-        mark: [0.2, 0.49, 0.78, 0.035],
-      },
-      {
-        frame: 4,
-        label: t('Awaiting inspection', 'Wartet auf Abnahme', 'بانتظار الفحص', 'In attesa di ispezione'),
-        text: t(
-          'The room attendant marks it cleaned on her phone. Front office then sees suite 1211 awaiting inspection.',
-          'Die Zimmerreinigung meldet es auf dem Smartphone als gereinigt. Die Rezeption sieht Suite 1211 dann als „wartet auf Abnahme“.',
-          'تضع عاملة الغرف علامة «تم التنظيف» من هاتفها، فيرى الاستقبال الجناح 1211 بانتظار الفحص.',
-          'L’addetta lo segna come pulito dal telefono. Il ricevimento vede quindi la suite 1211 in attesa di ispezione.',
-        ),
-        focus: [0.1799, 0.2734, 0.8187, 0.5323],
-        mark: [0.205, 0.305, 0.235, 0.026],
+        frame: 1,
+        label: t('Your decision', 'Ihre Entscheidung', 'قرارك', 'La tua decisione'),
+        text: t('Flag the difference, request a correction, or approve with the difference accepted. Approving needs a note saying why.', 'Abweichung markieren, Korrektur anfordern oder mit akzeptierter Abweichung freigeben. Die Freigabe braucht eine Notiz mit der Begründung.', 'أشر إلى الفرق أو اطلب تصحيحًا أو اعتمد مع قبول الفرق. ويتطلب الاعتماد ملاحظة تبيّن السبب.', 'Segnala la differenza, chiedi una correzione o approva accettando la differenza. L’approvazione richiede una nota che spieghi perché.'),
+        focus: [0.1833, 0.62, 0.7944, 0.195],
       },
     ],
   },
 
-  sales: {
+  pour: {
     tone: 'light',
-    outcome: t(
-      'Owners, managers and sales see performance and the pipeline in one place, with estimates clearly marked.',
-      'Eigentümer, Management und Vertrieb sehen Performance und Pipeline an einem Ort, Schätzungen klar gekennzeichnet.',
-      'يرى الملّاك والمديرون وفريق المبيعات الأداء وفرص البيع في مكان واحد، مع تمييز التقديرات بوضوح.',
-      'Proprietà, direzione e vendite vedono performance e pipeline in un unico posto, con le stime chiaramente indicate.',
-    ),
+    outcome: t('You see where the gap is and what it is worth, and check pour size and measures first.', 'Sie sehen, wo die Differenz liegt und was sie wert ist, und prüfen zuerst Ausschankmenge und Maße.', 'ترى أين الفرق وما قيمته، وتتحقق أولًا من حجم السكب والمقاييس.', 'Vedi dov’è la differenza e quanto vale, e controlli prima dosi e misure.'),
     spots: [
       {
         frame: 0,
-        label: t('Revenue and contribution', 'Umsatz und Beitrag', 'الإيراد والمساهمة', 'Ricavi e contributo'),
-        text: t(
-          'Owners and general managers see revenue, estimated operating contribution and potential losses for the week, each with its trend.',
-          'Eigentümer und General Manager sehen Umsatz, geschätzten Betriebsbeitrag und mögliche Verluste der Woche, jeweils mit Trend.',
-          'يرى الملّاك والمديرون العامون الإيراد والمساهمة التشغيلية المقدّرة والخسائر المحتملة للأسبوع، مع اتجاه كلٍّ منها.',
-          'Proprietà e direttori generali vedono ricavi, contributo operativo stimato e perdite potenziali della settimana, ciascuno con il suo andamento.',
-        ),
-        focus: [0.1799, 0.3363, 0.8187, 0.4758],
-        mark: [0.198, 0.352, 0.78, 0.12],
+        label: t('The gap', 'Die Differenz', 'الفرق', 'La differenza'),
+        text: t('61 glasses of wine not billed this week, worth AED 3,433.', '61 Gläser Wein diese Woche nicht berechnet, im Wert von AED 3.433.', '61 كأس نبيذ لم تُفوتَر هذا الأسبوع، بقيمة 3,433 درهمًا.', '61 bicchieri di vino non fatturati questa settimana, per AED 3.433.'),
+        focus: [0.1833, 0.2924, 0.7944, 0.2214],
       },
       {
         frame: 0,
-        label: t('What needs attention', 'Was Aufmerksamkeit braucht', 'ما يتطلب الانتباه', 'Cosa richiede attenzione'),
-        text: t(
-          'The open issues behind the figures, with the value involved, their priority and who is on them.',
-          'Die offenen Punkte hinter den Zahlen, mit betroffenem Wert, Priorität und wer sich darum kümmert.',
-          'المسائل المفتوحة وراء الأرقام، مع القيمة المعنية وأولويتها ومن يتولاها.',
-          'Le questioni aperte dietro i numeri, con il valore coinvolto, la priorità e chi se ne occupa.',
-        ),
-        focus: [0.1799, 0.3363, 0.8187, 0.4758],
-        mark: [0.205, 0.585, 0.77, 0.155],
+        label: t('Per wine', 'Je Wein', 'لكل نبيذ', 'Per vino'),
+        text: t('Bottles opened, glasses sold, expected per bottle and actual yield for each wine.', 'Geöffnete Flaschen, verkaufte Gläser, Soll je Flasche und tatsächliche Ausbeute für jeden Wein.', 'الزجاجات المفتوحة والكؤوس المبيعة والمتوقع لكل زجاجة والعائد الفعلي لكل نبيذ.', 'Bottiglie aperte, bicchieri venduti, attesi per bottiglia e resa effettiva per ogni vino.'),
+        focus: [0.2007, 0.5191, 0.7597, 0.3041],
       },
       {
         frame: 1,
-        label: t('Opportunities', 'Verkaufschancen', 'فرص البيع', 'Opportunità'),
-        text: t(
-          'Sales follows open opportunities and the next step for each. Expected values are sales estimates, never shown as revenue.',
-          'Der Vertrieb verfolgt offene Verkaufschancen und den nächsten Schritt. Erwartete Werte sind Vertriebsschätzungen, nie Umsatz.',
-          'يتابع فريق المبيعات الفرص المفتوحة والخطوة التالية لكل منها. والقيم المتوقعة تقديرات بيعية، ولا تُعرض أبدًا كإيراد.',
-          'Le vendite seguono le opportunità aperte e il prossimo passo di ciascuna. I valori attesi sono stime commerciali, mai mostrate come ricavi.',
-        ),
-        focus: [0.1799, 0.2863, 0.8187, 0.2516],
-        mark: [0.205, 0.315, 0.45, 0.04],
+        label: t('Where and when', 'Wo und wann', 'أين ومتى', 'Dove e quando'),
+        text: t('Glasses each bottle gave, by outlet and shift. Red is below the threshold. No names.', 'Gläser pro Flasche, nach Outlet und Schicht. Rot liegt unter dem Schwellenwert. Keine Namen.', 'الكؤوس التي أعطتها كل زجاجة، حسب المنفذ والمناوبة. الأحمر دون الحد. لا أسماء.', 'Bicchieri per bottiglia, per punto vendita e turno. Il rosso è sotto soglia. Nessun nome.'),
+        focus: [0.2011, 0.35, 0.3744, 0.35],
       },
       {
-        frame: 3,
-        label: t('Confirmed business', 'Bestätigtes Geschäft', 'الأعمال المؤكدة', 'Affari confermati'),
-        text: t(
-          'Each confirmed deal links to its event, so operations can see what it needs. This conference still needs 15 staff.',
-          'Jeder bestätigte Abschluss ist mit seinem Event verknüpft, so sieht der Betrieb, was gebraucht wird. Für diese Konferenz fehlen noch 15 Mitarbeitende.',
-          'ترتبط كل صفقة مؤكدة بفعاليتها، فترى العمليات ما تحتاجه. وما يزال هذا المؤتمر بحاجة إلى 15 موظفًا.',
-          'Ogni affare confermato è collegato al suo evento, così l’operatività vede cosa serve. Per questa conferenza mancano ancora 15 persone.',
-        ),
-        focus: [0.1792, 0.2371, 0.8194, 0.2484],
-        mark: [0.205, 0.425, 0.775, 0.035],
-      },
-      {
-        frame: 4,
-        label: t('Monthly summary', 'Monatsübersicht', 'الملخص الشهري', 'Riepilogo mensile'),
-        text: t(
-          'Revenue, direct costs and estimated operating contribution, month to date. The screen states that this is not net profit.',
-          'Umsatz, direkte Kosten und geschätzter Betriebsbeitrag im laufenden Monat. Die Ansicht sagt klar, dass dies kein Nettogewinn ist.',
-          'الإيراد والتكاليف المباشرة والمساهمة التشغيلية المقدّرة منذ بداية الشهر. وتوضح الشاشة أن هذا ليس صافي الربح.',
-          'Ricavi, costi diretti e contributo operativo stimato del mese in corso. La schermata precisa che non si tratta di utile netto.',
-        ),
-        focus: [0.1799, 0.2573, 0.8187, 0.4694],
-        mark: [0.205, 0.44, 0.42, 0.03],
+        frame: 1,
+        label: t('Flags to check', 'Flags to check', 'Flags to check', 'Flags to check'),
+        text: t('Patterns over the last 4 weeks, largest first, with the money involved.', 'Muster der letzten 4 Wochen, die größten zuerst, mit dem betroffenen Betrag.', 'أنماط آخر 4 أسابيع، الأكبر أولًا، مع المبلغ المعني.', 'Schemi delle ultime 4 settimane, prima i più grandi, con l’importo coinvolto.'),
+        focus: [0.5867, 0.35, 0.3733, 0.435],
       },
     ],
   },
+
 };

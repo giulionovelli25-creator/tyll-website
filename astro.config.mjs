@@ -13,6 +13,21 @@ export default defineConfig({
   },
   site: process.env.PUBLIC_SITE_URL || 'https://tyll.ai',
   trailingSlash: 'always',
+  // Solutions the demo now lists as Coming soon no longer have pages. Their old addresses lead to the overview.
+  redirects: {
+    '/en/solutions/events-staffing/': '/en/solutions/',
+    '/en/solutions/rooms-guest-experience/': '/en/solutions/',
+    '/en/solutions/sales-performance/': '/en/solutions/',
+    '/ar/solutions/events-staffing/': '/ar/solutions/',
+    '/ar/solutions/rooms-guest-experience/': '/ar/solutions/',
+    '/ar/solutions/sales-performance/': '/ar/solutions/',
+    '/de/loesungen/events-personal/': '/de/loesungen/',
+    '/de/loesungen/zimmer-gaeste/': '/de/loesungen/',
+    '/de/loesungen/vertrieb-performance/': '/de/loesungen/',
+    '/it/soluzioni/eventi-personale/': '/it/soluzioni/',
+    '/it/soluzioni/camere-ospiti/': '/it/soluzioni/',
+    '/it/soluzioni/vendite-performance/': '/it/soluzioni/',
+  },
   devToolbar: { enabled: false },
   build: { format: 'directory' },
   i18n: {

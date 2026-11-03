@@ -15,10 +15,10 @@ const BASE = process.env.BASE_URL || 'http://localhost:4321';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const TRACKERS = /googletagmanager\.com|google-analytics\.com|plausible\.io|connect\.facebook\.net|facebook\.com\/tr/;
 const SOL = {
-  en: ['forecasting-purchasing', 'stock-waste', 'finance-money', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/en/solutions/${s}/`),
-  de: ['prognose-einkauf', 'lager-abfall', 'finanzen', 'events-personal', 'zimmer-gaeste', 'vertrieb-performance'].map((s) => `/de/loesungen/${s}/`),
-  ar: ['forecasting-purchasing', 'stock-waste', 'finance-money', 'events-staffing', 'rooms-guest-experience', 'sales-performance'].map((s) => `/ar/solutions/${s}/`),
-  it: ['previsioni-acquisti', 'magazzino-sprechi', 'finanza', 'eventi-personale', 'camere-ospiti', 'vendite-performance'].map((s) => `/it/soluzioni/${s}/`),
+  en: ['log-waste', 'stock-waste', 'forecasting-purchasing', 'revenue', 'finance-money', 'pour-control'].map((s) => `/en/solutions/${s}/`),
+  de: ['abfall-erfassen', 'lager-abfall', 'prognose-einkauf', 'umsatz', 'finanzen', 'pour-control'].map((s) => `/de/loesungen/${s}/`),
+  ar: ['log-waste', 'stock-waste', 'forecasting-purchasing', 'revenue', 'finance-money', 'pour-control'].map((s) => `/ar/solutions/${s}/`),
+  it: ['registra-sprechi', 'magazzino-sprechi', 'previsioni-acquisti', 'ricavi', 'finanza', 'pour-control'].map((s) => `/it/soluzioni/${s}/`),
 };
 const LANGS = ['en', 'de', 'ar', 'it'];
 // Same order in every language, so index i is the same page
@@ -113,15 +113,15 @@ for (const lang of LANGS) {
     const seconds = parseFloat(band.spin);
     if (!(seconds >= 30 && seconds <= 40)) problems.push(`logo band loop is ${band.spin}`);
     // The homepage leads with what is on sale: the hero's report button reaches the form and "Available now" links
-    // the three products; the menu marks the other three as Coming soon
+    // the six products, none of them marked Coming soon
     await go(page, `/${lang}/`);
     const product = await page.evaluate(() => ({
       report: document.querySelector('.hero__actions a[href="#report"]') && !!document.querySelector('#report form[data-report]'),
       now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
       menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
     }));
-    const nowPages = SOL[lang].slice(0, 3);
-    if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 3) problems.push(`homepage products ${JSON.stringify(product)}`);
+    const nowPages = SOL[lang];
+    if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 0) problems.push(`homepage products ${JSON.stringify(product)}`);
     // The report form stays folded until asked for; the hero's button opens it, and it asks for one step at a time
     const form = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -158,7 +158,7 @@ for (const lang of LANGS) {
         demo: [...document.querySelectorAll('main a[data-track="explore_demo_click"]')].map((a) => a.getAttribute('href')),
         book: !!document.querySelector('main a[data-track="book_demo_click"]'),
       }));
-      if (sol.path !== url || sol.h1 !== 1 || sol.steps < 4 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
+      if (sol.path !== url || sol.h1 !== 1 || sol.steps < 3 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
       if (sol.demo.length && sol.demo.some((h) => !new URL(h).search && !new URL(h).pathname.match(/\/\w/))) problems.push(`${url}: demo link without a solution route`);
       // The parts of the screen can be chosen, and the explanation follows
       await page.evaluate(() => document.querySelectorAll('[data-ex] [role=tab]')[2].click());
@@ -287,7 +287,7 @@ for (const lang of LANGS) {
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
   // Product explorer: the viewer's arrow keys follow the reading direction
-  await go(page, '/ar/solutions/rooms-guest-experience/');
+  await go(page, '/ar/solutions/stock-waste/');
   await page.evaluate(() => document.querySelector('[data-ex] [data-enlarge]').click());
   await sleep(500);
   const t0 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
@@ -387,7 +387,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
       await go(page, url);
       await page.evaluate(() => document.querySelector('[data-ex]').scrollIntoView({ block: 'center', behavior: 'instant' }));
       const tabs = await page.$$('[data-ex] [role=tab]');
-      if (tabs.length < 4) { p.push(`${url}: ${tabs.length} parts`); continue; }
+      if (tabs.length < 3) { p.push(`${url}: ${tabs.length} parts`); continue; }
       const state = () => page.evaluate(() => {
         const ex = document.querySelector('[data-ex]');
         const tabs = [...ex.querySelectorAll('[role=tab]')];

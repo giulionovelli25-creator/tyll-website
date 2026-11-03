@@ -40,9 +40,9 @@ Removed on 16 Oct 2026: story-arches.jpg (the homepage Before Tyll background is
 
 | Scene | Source | Used |
 | --- | --- | --- |
+| A gloved hand checking stock on a shelf (first scene and poster), then a pen writing the count in a stock book | https://www.pexels.com/video/woman-stock-associate-is-checking-inventory-at-a-grocery-store-5103992/ (Gustavo Fring) | 8 to 11.6 s and 2.2 to 5.8 s, each a close framing with no face |
 | A guest rings the reception bell | https://www.pexels.com/video/close-up-video-of-a-hotel-desk-bell-5378937/ (cottonbro studio) | 0 to 4.5 s, mirrored |
 | A chef finishes a plate in a dim kitchen | https://www.pexels.com/video/a-man-making-the-food-presentable-4555805/ (Roman Odintsov) | 2 to 6.5 s, cropped so the bottles on a far shelf are out of frame |
-| A chandelier in a dark lobby | https://www.pexels.com/video/elegant-chandelier-in-luxurious-hotel-lobby-34555902/ (Caleb Oquendo) | 0 to 1.9 s slowed to 4.5 s; later in the clip a sign and bottles come into view, so they are not used |
 
 Removed on 2 Nov 2026: room service at a suite door, the kitchen pass and the coffee pour (too bright, with a fade through black between them). Removed earlier: the housekeeping scene and the reception film. A room-service clip with wine glasses on the trolley was rejected.
 
