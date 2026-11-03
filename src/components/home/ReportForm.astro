@@ -3,9 +3,9 @@
 // time; a finished step folds away to a check mark and a summary, and can be reopened. The hero's "Get your free
 // report" button scrolls here and opens it. Without JavaScript all steps are simply shown and the form posts by email.
 //
-// The site has no form backend: on submit the visitor's email app opens with the details filled in, addressed to
-// info@tyll.ai, so they can attach their POS sales export. A link and the plain address stay on screen in case no
-// email app opens (for example with webmail). Nothing is stored on this website.
+// With PUBLIC_REPORT_ENDPOINT set, submitting sends the details straight to that form service, and the visitor stays on
+// the page. Without it, or if sending fails, it falls back to the visitor's email app, addressed to info@tyll.ai.
+// A hidden field catches bots. Nothing is stored on this website.
 import { site } from '../../config/site';
 import { integrations } from '../../config/integrations';
 import { t, href, type Locale } from '../../i18n';
@@ -39,7 +39,8 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
 
   <div class="rf__panel" id="report-panel" data-report-panel>
     <div class="rf__clip">
-      <form class="report" data-report data-email={site.email} data-subject={v.subject} action={`mailto:${site.email}`} method="post" enctype="text/plain" novalidate>
+      <form class="report" data-report data-email={site.email} data-subject={v.subject} data-endpoint={site.reportEndpoint} action={`mailto:${site.email}`} method="post" enctype="text/plain" novalidate>
+        <input class="visually-hidden" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
         <ol class="steps">
           <li class="step is-open" data-step>
             <button type="button" class="step__head" aria-expanded="true" disabled>
@@ -124,8 +125,9 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
                   </label>
                 </fieldset>
                 <div class="report__actions">
-                  <button type="submit" class="btn btn--solid btn--lg">{v.submit}</button>
-                  <p class="report__how">{v.how}</p>
+                  <button type="submit" class="btn btn--solid btn--lg" data-sending={v.sending}>{v.submit}</button>
+                  <p class="report__how">{site.reportEndpoint ? v.sentHow : v.how}</p>
+                  <p class="report__error" role="alert" data-send-error hidden>{v.sendError} <a href={`mailto:${site.email}`} dir="ltr">{site.email}</a></p>
                 </div>
               </div>
             </div>
@@ -135,8 +137,8 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
 
       <div class="rf__done" data-report-done tabindex="-1" hidden>
         <span class="rf__tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={check} fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-        <p class="rf__done-title" role="status">{v.done}</p>
-        <p class="rf__done-alt">
+        <p class="rf__done-title" role="status" data-done-sent={v.sentDone}>{v.done}</p>
+        <p class="rf__done-alt" data-done-alt>
           {v.doneAlt}
           <a data-report-mail href={`mailto:${site.email}`} dir="ltr">{site.email}</a>
         </p>
@@ -718,7 +720,7 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
       });
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       // Everything required must be right, whichever step it is in
       for (const [i, step] of steps.entries()) {
@@ -736,10 +738,38 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
       const url = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`${form.dataset.subject}: ${venue}`)}&body=${encodeURIComponent(lines.join('\n') + '\n\n')}`;
       // Only that a request was made is counted: never the details
       document.dispatchEvent(new CustomEvent('tyll:track', { detail: { event: 'report_request_click', location: 'home' } }));
+      const finish = () => {
+        form.hidden = true;
+        done.hidden = false;
+        done.focus({ preventScroll: true });
+      };
+      const endpoint = form.dataset.endpoint;
+      if (endpoint) {
+        const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        const label = button.textContent;
+        const failed = form.querySelector<HTMLElement>('[data-send-error]')!;
+        const data = new FormData(form);
+        data.set('_subject', `${form.dataset.subject}: ${venue}`);
+        button.disabled = true;
+        button.textContent = button.dataset.sending ?? label;
+        failed.hidden = true;
+        try {
+          const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+          if (!res.ok) throw new Error(String(res.status));
+          const title = done.querySelector<HTMLElement>('[data-done-sent]')!;
+          title.textContent = title.dataset.doneSent ?? '';
+          done.querySelector<HTMLElement>('[data-done-alt]')!.hidden = true;
+          finish();
+        } catch {
+          // The details stay in the form, so nothing has to be typed again
+          failed.hidden = false;
+          button.disabled = false;
+          button.textContent = label;
+        }
+        return;
+      }
       wrap.querySelector<HTMLAnchorElement>('[data-report-mail]')!.href = url;
-      form.hidden = true;
-      done.hidden = false;
-      done.focus({ preventScroll: true });
+      finish();
       window.location.href = url;
     });
 

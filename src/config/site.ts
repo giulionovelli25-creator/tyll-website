@@ -6,6 +6,7 @@ const DEFAULTS = {
   demo: 'https://demo.tyll.ai',
   calendly: 'https://calendly.com/besher-asfari-code/new-meeting',
   linkedin: 'https://www.linkedin.com/company/tyll.ai/',
+  reportEndpoint: 'https://formspree.io/f/mpppovdg',
 };
 
 const env = import.meta.env;
@@ -35,4 +36,6 @@ export const site = {
     id: value(env.PUBLIC_ANALYTICS_ID),
   },
   metaPixelId: value(env.PUBLIC_META_PIXEL_ID),
+  /** Form service that receives report requests (for example a Formspree form address). The owner's Formspree form is the default. */
+  reportEndpoint: value(env.PUBLIC_REPORT_ENDPOINT) ?? DEFAULTS.reportEndpoint,
 };

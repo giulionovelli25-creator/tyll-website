@@ -87,7 +87,7 @@ for (const lang of LANGS) {
       const root = document.querySelector('[data-hs]');
       const box = root.querySelector('[data-hs-steps]');
       const steps = [...root.querySelectorAll('[data-hs-step]')];
-      const to = (b) => { const pin = parseFloat(getComputedStyle(steps[0].firstElementChild).top); scrollTo({ top: scrollY + box.getBoundingClientRect().top - pin + b * steps[0].offsetHeight, behavior: 'instant' }); };
+      const to = (b) => { const pin = parseFloat(getComputedStyle(steps[0].firstElementChild).top); const i = Math.floor(b); scrollTo({ top: scrollY + steps[i].getBoundingClientRect().top - pin + (b - i) * steps[0].offsetHeight, behavior: 'instant' }); };
       const shown = () => [...root.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity > 0.5 && getComputedStyle(e).visibility !== 'hidden').length;
       const read = () => ({ active: steps.findIndex((s) => s.classList.contains('is-active')), count: root.querySelectorAll('.hs__step.is-active').length, shown: shown(), on: root.querySelectorAll('.hs__card.is-on').length, alive: root.classList.contains('is-alive') });
       to(0.02); await wait(250); const start = read();
@@ -120,7 +120,7 @@ for (const lang of LANGS) {
       now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
       menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
     }));
-    const nowPages = SOL[lang];
+    const nowPages = SOL[lang].slice(1, 4);
     if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 0) problems.push(`homepage products ${JSON.stringify(product)}`);
     // The report form stays folded until asked for; the hero's button opens it, and it asks for one step at a time
     const form = await page.evaluate(async () => {

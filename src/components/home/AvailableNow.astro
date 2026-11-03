@@ -1,8 +1,8 @@
 ---
-// Directly under the hero: the three products Tyll sells today, each linking to its solution page.
+// Directly under the hero: everything Tyll does, grouped into three parts that fit one laptop screen. Each links to the
+// solution page that leads that part.
 import { Picture } from 'astro:assets';
 import { solutions } from '../../content/solutions';
-import { available } from '../../config/products';
 import { t, href, type Locale } from '../../i18n';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const v = d.home.now;
+const parts = (['stock', 'forecasting', 'revenue'] as const).map((key, i) => ({ key, ...v.cards[i] }));
 ---
 
 <section class="now" aria-labelledby="now-title">
@@ -22,7 +23,7 @@ const v = d.home.now;
     </header>
     <ul class="now__cards">
       {
-        available.map((key) => (
+        parts.map(({ key, title, text }) => (
           <li>
             <a class="card" href={href(key, lang)}>
               <span class="card__photo">
@@ -39,8 +40,8 @@ const v = d.home.now;
                 />
               </span>
               <span class="card__body">
-                <h3 class="card__title">{solutions[key].name[lang]}</h3>
-                <p class="card__text">{solutions[key].menu[lang]}</p>
+                <h3 class="card__title">{title}</h3>
+                <p class="card__text">{text}</p>
                 <span class="card__more">
                   {v.more}
                   <span class="card__arrow flip-rtl" aria-hidden="true">→</span>
@@ -56,7 +57,7 @@ const v = d.home.now;
 
 <style>
   .now {
-    padding-block: var(--section-y);
+    padding-block: clamp(2rem, 6svh, 4.5rem);
     background: var(--page);
     color: var(--text-1);
   }
@@ -78,7 +79,6 @@ const v = d.home.now;
   }
 
   .now h2 {
-    max-width: 18ch;
     margin-top: var(--s-2);
     font-size: var(--fs-h2);
   }
@@ -87,7 +87,7 @@ const v = d.home.now;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-3);
-    margin: var(--s-5) 0 0;
+    margin: clamp(1.25rem, 3.5svh, 2.5rem) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -119,7 +119,7 @@ const v = d.home.now;
   .card__photo {
     display: block;
     overflow: hidden;
-    aspect-ratio: 16 / 10;
+    height: clamp(7.5rem, 26svh, 15rem);
     background: var(--mist);
   }
 
@@ -186,6 +186,11 @@ const v = d.home.now;
   @media (max-width: 860px) {
     .now__cards {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .card__photo {
+      height: auto;
+      aspect-ratio: 16 / 9;
     }
   }
 

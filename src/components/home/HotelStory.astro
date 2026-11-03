@@ -232,17 +232,26 @@ const systems = [
       <header class="hs__head" data-hs-head>
         <h2 id="hs-title" class="display">{v.title}</h2>
         <p>{v.text}</p>
+        <ol class="hs__progress" aria-hidden="true">
+          {v.steps.map((step, i) => <li data-hs-dot={i}>{step.label}</li>)}
+        </ol>
       </header>
       <ol class="hs__steps" data-hs-steps>
         {
           v.steps.map((step, i) => (
             <li class="hs__step is-active is-fixed" data-hs-step={i}>
               <div>
-                <p class="hs__label">{step.label}</p>
+                <p class="hs__label"><span>{v.stepOf.replace('{n}', String(i + 1)).replace('{t}', String(v.steps.length))}</span> {step.label}</p>
                 <h3 class="display">{step.headline}</h3>
                 <div class="hs__flip">
-                  <p class="hs__problem">{step.problem}</p>
+                  {step.problem && (
+                    <div class="hs__problem">
+                      <p class="hs__tag">{v.before}</p>
+                      <p>{step.problem}</p>
+                    </div>
+                  )}
                   <div class="hs__fix">
+                    <p class="hs__tag hs__tag--on">{v.after}</p>
                     <ul>
                       {step.bullets.map((bullet) => <li>{bullet}</li>)}
                     </ul>
@@ -530,12 +539,12 @@ const systems = [
             <!-- Step 3: the bar, with an empty back bar until the delivery comes in -->
             <g>
               <rect class="c-room-off" x="696" y="644" width="104" height="86"></rect>
-              <rect class="c-room" x="696" y="644" width="104" height="86" {...A(2.3, 0.2)}></rect>
+              <rect class="c-room" x="696" y="644" width="104" height="86" {...A(2.04, 0.1)}></rect>
               <path class="c-rack" d="M700 680H796M700 697H796"></path>
               {[716, 748, 780].map((x) => <path class="c-furniture" d={`M${x} 644v8`}></path>)}
             </g>
-            {[716, 748, 780].map((x) => <circle class="c-lamp" cx={x} cy="655" r="3" {...A(2.3, 0.14)}></circle>)}
-            {barStock.map((item) => <rect class="c-missing" x={item.x} y={item.y} width={item.w} height={item.h} {...A(-1, 0.01, { s: 1.88, ob: 2.3, od: 0.06 })}></rect>)}
+            {[716, 748, 780].map((x) => <circle class="c-lamp" cx={x} cy="655" r="3" {...A(2.04, 0.08)}></circle>)}
+            {barStock.map((item) => <rect class="c-missing" x={item.x} y={item.y} width={item.w} height={item.h} {...A(-1, 0.01, { s: 1.88, ob: 2.2, od: 0.06 })}></rect>)}
             {
               barStock.map((item, i) => (
                 <g transform={`translate(${item.x} ${item.y})`}>
@@ -543,7 +552,7 @@ const systems = [
                 </g>
               ))
             }
-            <g data-dl="barman" {...A(2.26, 0.06)}>
+            <g data-dl="barman" {...A(2.02, 0.04)}>
               <HotelPerson x={716} foot={728} h={46} role="bartender">
                 <g class="hs__polish" data-dl="polish">
                   <use href={`#hs-${dry ? 'tumbler' : 'wineglass'}`} x="16" y="-66" width="14" height="21"></use>
@@ -721,7 +730,7 @@ const systems = [
           <li class="hs__note"><i></i>{v.labels.romaine}</li>
           <li class="hs__note"><i></i>{v.labels.eggs}</li>
         </ul>
-        <span class="hs__zone" data-hs-zone="2.08,2.62">{v.zones.bar}</span>
+        <span class="hs__zone" data-hs-zone="2.04,2.9">{v.zones.bar}</span>
       </div>
     </div>
   </div>
@@ -795,6 +804,11 @@ const systems = [
   }
 
   /* The last step is pinned for a full step, and leaves together with the hotel */
+  /* The bar scene needs time on screen, so this step gets more scrolling while the camera is in */
+  .hs__step:nth-child(3) {
+    min-height: calc(var(--hs-step) * 2.2);
+  }
+
   .hs__step:last-child {
     min-height: calc(var(--hs-step) + 100svh - var(--hs-pin));
   }
@@ -807,29 +821,67 @@ const systems = [
     color: var(--ink);
   }
 
+  /* Where the reader is in the story */
+  .hs__progress {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    justify-content: start;
+    gap: var(--s-2);
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-caption);
+  }
+
+  .hs__progress li {
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--hair);
+    color: var(--text-3);
+    transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+
+  .hs__progress li.is-on {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
   .hs__label {
+    display: none;
     font-size: var(--fs-small);
-    letter-spacing: 0.02em;
+  }
+
+  .hs__label span {
+    color: var(--text-3);
   }
 
   .hs__step h3 {
-    margin-top: 0.35rem;
     font-size: clamp(1.625rem, 1.4rem + 0.8vw, 2.125rem);
     font-weight: 300;
   }
 
   .hs__flip {
+    display: grid;
+    gap: var(--s-2);
     margin-top: var(--s-2);
+  }
+
+  .hs__tag {
+    margin-bottom: 0.2rem;
+    color: var(--text-3);
+    font-size: var(--fs-caption);
+  }
+
+  .hs__tag--on {
+    color: inherit;
+    font-weight: 500;
   }
 
   .hs__problem {
     color: inherit;
-    font-size: var(--fs-lead);
-    line-height: 1.5;
-  }
-
-  .hs__problem:empty {
-    display: none;
+    font-size: var(--fs-body);
+    line-height: 1.4;
+    transition: opacity 0.45s var(--ease);
   }
 
   .hs__step ul {
@@ -844,59 +896,47 @@ const systems = [
 
   .hs__step ul li {
     position: relative;
-    padding-inline-start: 1rem;
+    padding-inline-start: 1.3rem;
   }
 
   .hs__step ul li::before {
     position: absolute;
     inset-inline-start: 0;
-    top: 0.62em;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: currentColor;
+    top: 0.35em;
+    width: 0.7em;
+    height: 0.38em;
+    border-bottom: 1.5px solid currentColor;
+    border-inline-start: 1.5px solid currentColor;
     content: '';
+    transform: rotate(-45deg);
   }
 
-  /* With the scroll running, the problem gives way to what Tyll does about it */
-  .hs.is-live .hs__flip {
-    display: grid;
+  :global([dir='rtl']) .hs__step ul li::before {
+    transform: rotate(45deg);
   }
 
-  .hs.is-live .hs__problem,
-  .hs.is-live .hs__fix {
-    grid-area: 1 / 1;
-    transition:
-      opacity 0.45s var(--ease),
-      transform 0.45s var(--ease),
-      visibility 0.45s;
-  }
-
+  /* With the scroll running, what Tyll does appears once the problem has been read. Its place is kept, so nothing jumps. */
   .hs.is-live .hs__fix {
     opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
+    transform: translateY(8px);
+    transition:
+      opacity 0.45s var(--ease),
+      transform 0.45s var(--ease);
   }
 
   .hs.is-live .is-fixed .hs__fix {
     opacity: 1;
-    visibility: visible;
     transform: none;
   }
 
   .hs.is-live .is-fixed .hs__problem {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .hs:not(.is-live) .hs__fix {
-    margin-top: var(--s-2);
+    opacity: 0.55;
   }
 
   /* A close framing of the real screen */
   .hs__shot {
     display: block;
-    margin-top: var(--s-2);
+    margin-top: 0.75rem;
     color: inherit;
     text-decoration: none;
   }
@@ -922,7 +962,7 @@ const systems = [
 
   .hs__more {
     display: inline-block;
-    margin-top: 0.5rem;
+    margin-top: 0.35rem;
     border-bottom: 1px solid currentColor;
     font-size: var(--fs-small);
   }
@@ -1438,6 +1478,43 @@ const systems = [
     to { stroke-dashoffset: 0; }
   }
 
+  /* Short laptop screens: the heading gives up its second line, so a whole step fits beside the hotel */
+  @media (min-width: 1001px) and (max-height: 820px) {
+    .hs__head {
+      padding-block: var(--s-2) var(--s-1);
+    }
+
+    .hs__head h2 {
+      font-size: 1.75rem;
+    }
+
+    .hs__head > p {
+      display: none;
+    }
+
+    .hs__progress {
+      margin-top: var(--s-1);
+    }
+
+    .hs__step > div {
+      padding-block: var(--s-1);
+    }
+
+    .hs__step h3 {
+      font-size: 1.5rem;
+    }
+
+    .hs__flip {
+      gap: var(--s-1);
+      margin-top: var(--s-1);
+    }
+
+    .hs__step ul,
+    .hs__problem {
+      font-size: var(--fs-small);
+    }
+  }
+
   /* ── Tablets and phones: hotel on top, held while the text passes beneath it ── */
   @media (max-width: 1000px) {
     .hs {
@@ -1488,6 +1565,19 @@ const systems = [
 
     .hs__step > div {
       padding-block: var(--s-2);
+    }
+
+    .hs__progress {
+      display: none;
+    }
+
+    .hs__tag {
+      display: none;
+    }
+
+    .hs__label {
+      display: block;
+      margin-bottom: 0.2rem;
     }
 
     .hs__card,
@@ -1542,23 +1632,37 @@ const systems = [
     const stepsBox = root.querySelector<HTMLElement>('[data-hs-steps]')!;
     const steps = [...root.querySelectorAll<HTMLElement>('[data-hs-step]')];
     const firstText = steps[0].firstElementChild as HTMLElement;
+    const dots = [...root.querySelectorAll<HTMLElement>('[data-hs-dot]')];
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
     // A step's text pins at `pin`. The step counts as the current one once the next text is on its way up.
     let pin = 0;
     let stepH = 1;
+    let tops: number[] = [];
+    let heights: number[] = [];
     let lead = 0.12;
     const measure = () => {
       root.style.setProperty('--hs-head', `${head.offsetHeight}px`);
       pin = parseFloat(getComputedStyle(firstText).top) || 0;
       stepH = steps[0].offsetHeight || 1;
+      const start = stepsBox.getBoundingClientRect().top;
+      tops = steps.map((step) => step.getBoundingClientRect().top - start);
+      heights = steps.map((step) => step.offsetHeight);
       lead = Math.max(0.08, Math.min(0.2, (firstText.offsetHeight * 0.35) / stepH));
     };
-    const position = () => (pin - stepsBox.getBoundingClientRect().top) / stepH + lead;
+    const position = () => {
+      // Steps can differ in length, so each one counts as 1 however long it is. The last runs on at the normal rate.
+      const y = pin - stepsBox.getBoundingClientRect().top;
+      if (y <= 0) return y / stepH + lead;
+      let i = steps.length - 1;
+      while (i > 0 && y < tops[i]) i--;
+      return i + (y - tops[i]) / (i === steps.length - 1 ? stepH : heights[i]) + lead;
+    };
 
     const setActive = (b: number) => {
       const active = Math.max(0, Math.min(steps.length - 1, Math.floor(b)));
       steps.forEach((step, i) => step.classList.toggle('is-active', i === active));
+      dots.forEach((dot, i) => dot.classList.toggle('is-on', i === active));
     };
 
     measure();
@@ -1663,11 +1767,13 @@ const systems = [
     // The camera goes in to the storeroom and to the bar and comes back out; the stylesheet eases each move over a second
     const SHOTS = [
       { from: 1.02, to: 1.62, cx: 225, cy: 662, z: 4 },
-      { from: 2.02, to: 2.62, cx: 815, cy: 668, z: 2.9 },
+      { from: 2.02, to: 2.9, cx: 815, cy: 668, z: 2.9 },
     ];
     let aimed = '';
     const aim = (b: number) => {
-      const shot = SHOTS.find((one) => b >= one.from && b < one.to);
+      // The bar stays in view until the delivery has finished, unless the reader has moved on to the last step
+      const busy = b >= 2.9 && b < 2.97 && performance.now() - deliveryStart < DONE + 300;
+      const shot = SHOTS.find((one) => b >= one.from && (b < one.to || (busy && one.from === 2.02)));
       const transform = shot ? `translate(${500 - shot.cx * shot.z}px, ${430 - shot.cy * shot.z}px) scale(${shot.z})` : 'translate(0px, 0px) scale(1)';
       root.classList.toggle('is-zoom', Boolean(shot));
       if (transform !== aimed) camera.style.transform = aimed = transform;
@@ -1679,10 +1785,10 @@ const systems = [
     const at = (ms: number) => ms / CYCLE;
     const OUT = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
     const IN = 'cubic-bezier(0.55, 0, 0.85, 0.4)';
-    const TRIP = 2900;
-    const FIRST = 2500;
+    const TRIP = 2400;
+    const FIRST = 1500;
     const TRIPS = 3;
-    const LAST_IN = FIRST + (TRIPS - 1) * TRIP + 1350;
+    const LAST_IN = FIRST + (TRIPS - 1) * TRIP + 1100;
     const DONE = FIRST + TRIPS * TRIP;
     const barItems = [...root.querySelectorAll<SVGElement>('[data-dl-item]')];
     const STOCK_END = LAST_IN + 300;
@@ -1695,7 +1801,7 @@ const systems = [
         part('van'),
         [
           { transform: 'translateX(260px)', offset: 0, easing: OUT },
-          { transform: 'translateX(0px)', offset: at(1500) },
+          { transform: 'translateX(0px)', offset: at(1000) },
           { transform: 'translateX(0px)', offset: at(DONE + 700), easing: IN },
           { transform: 'translateX(260px)', offset: at(DONE + 2200) },
           { transform: 'translateX(260px)', offset: 1 },
@@ -1705,8 +1811,8 @@ const systems = [
         part('door'),
         [
           { transform: 'scaleX(0)', offset: 0 },
-          { transform: 'scaleX(0)', offset: at(1800), easing: OUT },
-          { transform: 'scaleX(1)', offset: at(2300) },
+          { transform: 'scaleX(0)', offset: at(900), easing: OUT },
+          { transform: 'scaleX(1)', offset: at(1300) },
           { transform: 'scaleX(1)', offset: at(DONE + 150), easing: OUT },
           { transform: 'scaleX(0)', offset: at(DONE + 600) },
           { transform: 'scaleX(0)', offset: 1 },
@@ -1716,8 +1822,8 @@ const systems = [
         part('shutter'),
         [
           { transform: 'scaleY(1)', offset: 0 },
-          { transform: 'scaleY(1)', offset: at(1500), easing: OUT },
-          { transform: 'scaleY(0.12)', offset: at(2300) },
+          { transform: 'scaleY(1)', offset: at(700), easing: OUT },
+          { transform: 'scaleY(0.12)', offset: at(1300) },
           { transform: 'scaleY(0.12)', offset: at(DONE + 300), easing: OUT },
           { transform: 'scaleY(1)', offset: at(DONE + 1100) },
           { transform: 'scaleY(1)', offset: 1 },
@@ -1730,15 +1836,15 @@ const systems = [
       for (let k = 0; k < TRIPS; k++) {
         const t = FIRST + k * TRIP;
         walker.push({ transform: 'translate(0px, 0px)', opacity: 1, offset: at(t) });
-        walker.push({ transform: 'translate(-35px, -8px)', opacity: 1, offset: at(t + 1200) });
-        walker.push({ transform: 'translate(-37px, -10px)', opacity: 0, offset: at(t + 1350) });
-        walker.push({ transform: 'translate(-37px, -10px)', opacity: 0, offset: at(t + 1500) });
-        walker.push({ transform: 'translate(-35px, -8px)', opacity: 1, offset: at(t + 1650) });
-        carrying.push({ opacity: 1, offset: at(t + 1400) }, { opacity: 0, offset: at(t + 1401) }, { opacity: 0, offset: at(t + TRIP - 1) }, { opacity: 1, offset: at(t + TRIP) });
-        empty.push({ opacity: 0, offset: at(t + 1400) }, { opacity: 1, offset: at(t + 1401) }, { opacity: 1, offset: at(t + TRIP - 1) }, { opacity: 0, offset: at(t + TRIP) });
+        walker.push({ transform: 'translate(-35px, -8px)', opacity: 1, offset: at(t + 1000) });
+        walker.push({ transform: 'translate(-37px, -10px)', opacity: 0, offset: at(t + 1100) });
+        walker.push({ transform: 'translate(-37px, -10px)', opacity: 0, offset: at(t + 1200) });
+        walker.push({ transform: 'translate(-35px, -8px)', opacity: 1, offset: at(t + 1350) });
+        carrying.push({ opacity: 1, offset: at(t + 1150) }, { opacity: 0, offset: at(t + 1151) }, { opacity: 0, offset: at(t + TRIP - 1) }, { opacity: 1, offset: at(t + TRIP) });
+        empty.push({ opacity: 0, offset: at(t + 1150) }, { opacity: 1, offset: at(t + 1151) }, { opacity: 1, offset: at(t + TRIP - 1) }, { opacity: 0, offset: at(t + TRIP) });
         const box: Keyframe[] = [{ opacity: 0, offset: 0 }];
         if (k > 0) box.push({ opacity: 0, offset: at(t - 1) });
-        box.push({ opacity: 1, offset: at(t) }, { opacity: 1, offset: at(t + 1400) }, { opacity: 0, offset: at(t + 1401) }, { opacity: 0, offset: 1 });
+        box.push({ opacity: 1, offset: at(t) }, { opacity: 1, offset: at(t + 1150) }, { opacity: 0, offset: at(t + 1151) }, { opacity: 0, offset: 1 });
         list.push([part(`box${k}`), box]);
       }
       walker.push({ transform: 'translate(0px, 0px)', opacity: 1, offset: at(DONE) });
@@ -1804,9 +1910,12 @@ const systems = [
       return list;
     };
     let delivery: Animation[] = [];
+    let deliveryStart = 0;
     const setDelivery = (on: boolean) => {
       if (on === delivery.length > 0) return;
       root.classList.toggle('is-delivering', on);
+      if (on) deliveryStart = performance.now();
+      if (on) setTimeout(() => { lastB = NaN; onScroll(); }, DONE + 350);
       if (on) delivery = timeline().map(([el, frames]) => el.animate(frames, { duration: CYCLE, iterations: Infinity, fill: 'both' }));
       else {
         delivery.forEach((one) => one.cancel());
@@ -1820,7 +1929,7 @@ const systems = [
       if (b === lastB) return;
       lastB = b;
       setActive(b);
-      steps.forEach((step, i) => step.classList.toggle('is-fixed', i === steps.length - 1 || b >= i + 0.3));
+      steps.forEach((step, i) => step.classList.toggle('is-fixed', i === steps.length - 1 || b >= i + (i === 2 ? 0.1 : 0.3)));
       for (const p of pieces) place(p, b);
       for (const card of cards) card.el.classList.toggle('is-on', b >= card.on);
       for (const zone of zones) zone.el.classList.toggle('is-on', b >= zone.range[0] && b < zone.range[1]);
@@ -1828,7 +1937,7 @@ const systems = [
       root.classList.toggle('is-dusk', b >= 3.3);
       root.classList.toggle('is-alive', b >= 3.3);
       aim(b);
-      setDelivery(b >= 2.3);
+      setDelivery(b >= 2.04);
       notes.classList.toggle('is-on', b >= 1.05 && b < 1.62);
       root.classList.toggle('is-counting', b >= 1.3 && b < 1.7);
       // Sky, building and trees drift against each other by about 12 px across the whole story
