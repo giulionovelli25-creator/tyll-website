@@ -1,20 +1,11 @@
 ---
-// A solution page tells one operational story:
-//   1. Opening: the photograph of where it happens, the headline and the demo/booking buttons.
-//   2. Context (warm ivory, one centred column): the problem in one sentence and how Tyll helps as three steps,
-//      beside a second photograph set into the page with rounded corners. The composition is asymmetric (about
-//      58/42) and varies from page to page: the photograph's side, shape and height change.
-//   3. The product (charcoal or light stone): one real demo screen, large, explored part by part.
-//   4. The outcome and the next step, then the other five solutions as photographs.
-import { Picture } from 'astro:assets';
+// A solution page asks one question, shows the real system answering it in a film, and asks for a demo.
 import Base from '../../layouts/Base.astro';
 import DemoFilm from '../DemoFilm.astro';
 import { solutions } from '../../content/solutions';
 import { explore } from '../../content/explore';
 import { demoLink } from '../../config/demo';
-import { isComingSoon } from '../../config/products';
 import { t, href, solutionKeys, type Locale, type SolutionKey } from '../../i18n';
-import { ribbon } from '../../scripts/wave';
 
 interface Props {
   lang: Locale;
@@ -29,51 +20,16 @@ const ex = explore[solution];
 const name = s.name[lang];
 const demo = demoLink(solution, lang);
 const others = solutionKeys.filter((k) => k !== solution);
-// Products still in development keep their page, with a banner at the top saying so
-const soon = isComingSoon(solution);
-const fill = (text: string) => text.replace('{name}', name);
-// The Tyll silver wave, the same flowing ribbon as on the homepage; this frame is also the still one
-const wave = ribbon(0.32);
 ---
 
-<Base lang={lang} page={solution} title={`${name} | Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`} overHero>
-  <!-- 1. Opening -->
-  <section class="open on-dark" data-dark aria-labelledby="sol-title">
-    <Picture
-      src={s.photo}
-      alt={s.photoAlt[lang]}
-      formats={['avif', 'webp']}
-      fallbackFormat="jpg"
-      widths={[828, 1280, 1920]}
-      sizes="100vw"
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-      class="open__photo"
-      style={`object-position:${s.photoFocus}`}
-    />
-    <div class="open__shade" aria-hidden="true"></div>
-    <div class="wrap open__inner">
-      {
-        soon && (
-          <p class="soon-banner" role="note">
-            <span class="soon-banner__dot" aria-hidden="true"></span>
-            <span>{p.soonBanner}</span>
-            <a href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-soon`}>
-              {p.soonLink}
-            </a>
-          </p>
-        )
-      }
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <a href={href('solutions', lang)}>{p.breadcrumb}</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">{name}</span>
-      </nav>
-      <h1 id="sol-title">{s.headline[lang]}</h1>
-      <p class="open__intro">{s.intro[lang]}</p>
-      <div class="open__actions">
-        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-hero`}>
+<Base lang={lang} page={solution} title={`${name} | Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`}>
+  <section class="sol" aria-labelledby="sol-title">
+    <div class="wrap sol__head">
+      <p class="sol__name">{name}</p>
+      <h1 id="sol-title" class="display">{s.headline[lang]}</h1>
+      <p class="sol__intro">{s.intro[lang]}</p>
+      <div class="sol__actions">
+        <a class="btn btn--solid btn--lg sol__book" href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-hero`}>
           {d.cta.book}
         </a>
         {
@@ -86,499 +42,133 @@ const wave = ribbon(0.32);
         }
       </div>
     </div>
-  </section>
-
-  <!-- 2. The problem, and the real system solving it in a short film -->
-  <section class="product product--light" aria-labelledby="sol-problem">
-    <div class="product__wrap">
-      <header class="product__head">
-        <h2 id="sol-problem" class="display">{s.problem[lang]}</h2>
-      </header>
+    <div class="wrap sol__film">
       <DemoFilm lang={lang} solutionKey={solution} name={name} spots={ex.spots} />
-      {(s.note || p.demoEnglish) && <p class="product__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
+      {(s.note || p.demoEnglish) && <p class="sol__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
     </div>
   </section>
 
-  <!-- 3. Book a demo, and where to go next -->
-  <section class="close" aria-labelledby="sol-final">
-    <div class="wrap">
-      <div class="cta on-dark">
-        <svg class="cta__wave" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
-          <defs>
-            <linearGradient id={`cta-silver-${solution}`} x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0" stop-color="var(--silver)" stop-opacity="0" />
-              <stop offset="0.35" stop-color="var(--silver)" stop-opacity="0.3" />
-              <stop offset="0.62" stop-color="var(--silver-light)" stop-opacity="0.8" />
-              <stop offset="0.85" stop-color="var(--silver-deep)" stop-opacity="0.45" />
-              <stop offset="1" stop-color="var(--silver)" stop-opacity="0.15" />
-            </linearGradient>
-          </defs>
-          <g fill="none" stroke={`url(#cta-silver-${solution})`} stroke-width="1">
-            {wave.map((l) => <path d={l.d} opacity={l.opacity} vector-effect="non-scaling-stroke" />)}
-          </g>
-        </svg>
-        <div class="cta__copy">
-          <h2 id="sol-final" class="display">{fill(p.finalTitle)}</h2>
-          <div class="close__actions">
-        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-final`}>
-          {d.cta.book}
-        </a>
-        {
-          demo && (
-            <a class="btn btn--line btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-final`}>
-              {t(lang).hero.try}
-              <span class="visually-hidden"> {d.cta.newTab}</span>
-            </a>
-          )
-        }
-      </div>
-        </div>
-      </div>
+  <section class="close on-dark" data-dark aria-labelledby="sol-final">
+    <div class="wrap close__inner">
+      <h2 id="sol-final" class="display">{d.home.invite.title}</h2>
+      <a class="btn btn--solid btn--lg sol__book" href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-final`}>
+        {d.cta.book}
+      </a>
     </div>
-
-    <nav class="wrap others" aria-labelledby="sol-others">
-      <div class="others__head">
-        <h3 id="sol-others">{p.others}</h3>
-        <a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a>
-      </div>
-      <ul>
-        {
-          others.map((k) => (
-            <li>
-              <a href={href(k, lang)}>
-                <Picture
-                  src={solutions[k].photo}
-                  alt=""
-                  formats={['avif', 'webp']}
-                  fallbackFormat="jpg"
-                  widths={[360, 560]}
-                  sizes="(max-width: 700px) 70vw, 230px"
-                  loading="lazy"
-                  decoding="async"
-                  style={`object-position:${solutions[k].photoFocus}`}
-                />
-                <span class="others__name">
-                  {solutions[k].name[lang]}
-                  {isComingSoon(k) && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                </span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
   </section>
+
+  <nav class="wrap others" aria-label={p.others}>
+    <ul>
+      {others.map((k) => <li><a href={href(k, lang)}>{solutions[k].name[lang]}</a></li>)}
+      <li><a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a></li>
+    </ul>
+  </nav>
 </Base>
 
 <style>
-  /* 1. Opening */
-  .open {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    /* Tall enough for the photograph to set the scene, short enough that the next section shows below it */
-    min-height: clamp(520px, 72vh, 760px);
-    overflow: hidden;
-    background: var(--ink);
-    color: var(--on-dark);
-    isolation: isolate;
+  .sol {
+    padding-top: calc(var(--header-h) + clamp(1.5rem, 0.5rem + 4vh, 3.5rem));
+    padding-bottom: var(--section-y);
   }
 
-  .open :global(picture),
-  .open :global(.open__photo),
-  .open__shade {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+  .sol__head {
+    text-align: center;
   }
 
-  .open :global(picture),
-  .open :global(.open__photo) {
-    z-index: -2;
-  }
-
-  .open :global(.open__photo) {
-    object-fit: cover;
-  }
-
-  .open__shade {
-    z-index: -1;
-    background:
-      linear-gradient(180deg, rgb(var(--shade-rgb) / 0.5) 0%, transparent 26%),
-      linear-gradient(90deg, rgb(var(--shade-rgb) / 0.74) 0%, rgb(var(--shade-rgb) / 0.36) 55%, rgb(var(--shade-rgb) / 0) 100%),
-      linear-gradient(0deg, rgb(var(--shade-rgb) / 0.62) 0%, transparent 55%);
-  }
-
-  :global([dir='rtl']) .open__shade {
-    background:
-      linear-gradient(180deg, rgb(var(--shade-rgb) / 0.5) 0%, transparent 26%),
-      linear-gradient(270deg, rgb(var(--shade-rgb) / 0.74) 0%, rgb(var(--shade-rgb) / 0.36) 55%, rgb(var(--shade-rgb) / 0) 100%),
-      linear-gradient(0deg, rgb(var(--shade-rgb) / 0.62) 0%, transparent 55%);
-  }
-
-  .open__inner {
-    padding-top: calc(var(--header-h) + 3rem);
-    padding-bottom: clamp(3.5rem, 2rem + 6vh, 7rem);
-  }
-
-  .crumbs {
-    display: flex;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
-    color: var(--on-dark-muted);
+  .sol__name {
+    max-width: none;
+    margin-bottom: var(--s-2);
+    color: var(--text-3);
     font-size: var(--fs-small);
   }
 
-  .crumbs a {
-    color: var(--on-dark-muted);
-    text-underline-offset: 3px;
-  }
-
-  .crumbs a:hover {
-    color: var(--on-dark);
-  }
-
-  .open h1 {
-    max-width: 16ch;
-    font-size: var(--fs-hero);
-  }
-
-  .open__intro {
-    max-width: 34rem;
-    margin-top: clamp(1.25rem, 1rem + 1vw, 2rem);
-    color: rgb(var(--on-dark-rgb) / 0.84);
-    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
-    line-height: 1.5;
-  }
-
-  .open__actions :global(.is-first),
-  .close__actions :global(.is-first) {
-    order: -1;
-  }
-
-  .open__actions,
-  .close__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
-  }
-
-  /* Products in development: a quiet glass banner at the top of the opening, above the breadcrumb */
-  .soon-banner {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.85rem;
-    margin-bottom: 1.75rem;
-    padding: 0.55rem 1rem 0.55rem 0.6rem;
-    border: 1px solid rgb(var(--on-dark-rgb) / 0.22);
-    border-radius: var(--pill);
-    background: rgb(var(--ink-rgb) / 0.45);
-    color: var(--on-dark);
-    font-size: 0.9375rem;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-  }
-
-  .soon-banner {
-    padding-inline: 1rem;
-  }
-
-  /* The site's one warm accent, as a small dot */
-  .soon-banner__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--amber-400);
-    box-shadow: 0 0 0 4px rgb(var(--amber-glow-rgb) / 0.2);
-  }
-
-  .soon-banner a {
-    color: var(--on-dark);
-    font-weight: 400;
-    text-underline-offset: 3px;
-  }
-
-  /* 3. The product */
-  .product {
-    padding-block: clamp(4.5rem, 3rem + 5vw, 8rem);
-    overflow: hidden;
-  }
-
-  .product--light {
-    background: var(--paper);
-  }
-
-  .product__wrap {
-    max-width: calc(var(--wrap) + var(--gut) * 2);
-    margin-inline: auto;
-    padding-inline: var(--gut);
-  }
-
-  .product__head {
-    max-width: 52rem;
-    margin-bottom: var(--s-4);
-  }
-
-  .product__head h2 {
+  .sol h1 {
     max-width: 18ch;
-    font-size: var(--fs-h2);
+    margin-inline: auto;
+    font-size: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+    line-height: 1.08;
   }
 
-  .product__head p {
-    max-width: 30rem;
-    font-size: var(--fs-small);
-    line-height: 1.55;
-    opacity: 0.78;
+  .sol__intro {
+    max-width: 42ch;
+    margin: var(--s-3) auto 0;
+    color: var(--steel);
+    font-size: var(--fs-lead);
+    line-height: 1.4;
   }
 
-  .product__note {
-    max-width: 44rem;
-    margin-top: 2rem;
-    padding-inline-start: 1rem;
-    border-inline-start: 2px solid currentColor;
-    font-size: 0.9375rem;
-    line-height: 1.55;
-    opacity: 0.7;
-  }
-
-  /* 4. Outcome and next step: a charcoal panel with the Tyll silver wave, on a light band that keeps it apart from
-     the footer, then the other solutions as a navigation strip */
-  .close {
-    padding-block: clamp(3.5rem, 2.5rem + 3vw, 5.5rem) clamp(3.5rem, 2.5rem + 3vw, 5rem);
-    background: linear-gradient(180deg, var(--sand-100) 0%, var(--sand-200) 100%);
-  }
-
-  .cta {
-    position: relative;
-    display: flex;
-    align-items: center;
-    min-height: clamp(320px, 18vw + 160px, 420px);
-    padding: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
-    border-radius: 28px;
-    background:
-      radial-gradient(70% 90% at 100% 100%, rgb(var(--silver-rgb) / 0.12), transparent 70%),
-      linear-gradient(135deg, var(--char-1) 0%, var(--char-3) 60%, var(--char-4) 100%);
-    color: var(--on-dark);
-    box-shadow: 0 50px 100px -60px rgb(var(--ink-rgb) / 0.55);
-    overflow: hidden;
-    isolation: isolate;
-  }
-
-  /* The wave enters from the lower right and fades out before it reaches the text */
-  .cta__wave {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    opacity: 0.9;
-    -webkit-mask-image: linear-gradient(90deg, transparent 28%, rgb(var(--black-rgb) / 0.5) 52%, var(--black) 75%);
-    mask-image: linear-gradient(90deg, transparent 28%, rgb(var(--black-rgb) / 0.5) 52%, var(--black) 75%);
-    pointer-events: none;
-  }
-
-  :global([dir='rtl']) .cta__wave {
-    transform: scaleX(-1);
-  }
-
-  .cta__copy {
-    max-width: 36rem;
-  }
-
-  .cta h2 {
-    max-width: 16ch;
-    margin-top: 1rem;
-    font-size: clamp(2.25rem, 1.5rem + 2.8vw, 3.75rem);
-  }
-
-  .others {
-    margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
-  }
-
-  .others__head {
+  .sol__actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.5rem 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--line);
+    justify-content: center;
+    gap: var(--s-2);
+    margin-top: var(--s-4);
   }
 
-  .others h3 {
-    font-family: var(--font);
-    color: var(--steel);
+  .sol__book {
+    min-height: 60px;
+    padding-inline: 2.25rem;
+    font-size: 1.1875rem;
+  }
+
+  .sol__film {
+    margin-top: var(--s-6);
+  }
+
+  .sol__note {
+    max-width: none;
+    margin-top: var(--s-3);
+    color: var(--text-3);
     font-size: var(--fs-small);
-    font-weight: 400;
+    text-align: center;
   }
 
-  .others__all {
-    color: var(--ink);
-    font-size: 0.9375rem;
-    font-weight: 400;
-    text-underline-offset: 4px;
+  .close {
+    padding-block: var(--s-7);
+    background: var(--night-1);
+    color: var(--text-1);
+  }
+
+  .close__inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-4);
+    text-align: center;
+  }
+
+  .close h2 {
+    font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
   }
 
   .others ul {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 1.25rem;
-    margin: 1.25rem 0 0;
-    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem var(--s-4);
+    margin: 0;
+    padding-block: var(--s-5);
     list-style: none;
   }
 
   .others a {
-    display: grid;
-    gap: 0.3rem;
     color: var(--ink);
+    font-size: var(--fs-body);
     text-decoration: none;
   }
 
-  .others a :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    border-radius: 12px;
-    object-fit: cover;
-    transition:
-      transform 0.6s var(--ease),
-      filter 0.6s var(--ease);
-  }
-
-  .others a :global(picture) {
-    display: block;
-    margin-bottom: 0.6rem;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .others a:hover :global(img) {
-    transform: scale(1.03);
-  }
-
-  .others__name .badge-soon {
-    margin-inline-start: 0.35rem;
-    vertical-align: 0.1em;
-  }
-
-  .others__name {
-    font-weight: 400;
-  }
-
-  .others a:hover .others__name {
+  .others a:hover {
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
   }
 
-  @media (max-width: 1100px) {
-    .others ul {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 900px) {
-
-  }
-
-  @media (max-width: 700px) {
-    /* Every other solution is on the page; nothing runs off the edge */
-    .others ul {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.25rem 0.875rem;
-    }
-
-    .others li:last-child:nth-child(odd) {
-      grid-column: 1 / -1;
-    }
-
-    .others li:last-child:nth-child(odd) a :global(img) {
-      aspect-ratio: 2 / 1;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .open__shade,
-    :global([dir='rtl']) .open__shade {
-      background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.88) 0%, rgb(var(--shade-rgb) / 0.66) 55%, rgb(var(--shade-rgb) / 0.42) 100%);
-    }
+  .others__all {
+    color: var(--steel);
   }
 
   @media (max-width: 640px) {
-    .cta {
-      padding-bottom: 8rem;
-      border-radius: 20px;
-    }
-
-    /* On phones the wave runs along the bottom edge, below the buttons */
-    .cta__wave {
-      top: auto;
-      height: 9rem;
-      -webkit-mask-image: linear-gradient(180deg, transparent 0%, var(--black) 60%);
-      mask-image: linear-gradient(180deg, transparent 0%, var(--black) 60%);
-    }
-
-    .open__actions :global(.btn),
-    .close__actions :global(.btn) {
+    .sol__actions :global(.btn) {
       flex: 1 1 100%;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .others a :global(img) {
-      transition: none;
     }
   }
 </style>
 
-<script>
-  import { ribbon, PERIOD } from '../../scripts/wave';
-
-  // The context section's copy and photograph rise gently into place the first time they are seen
-  const group = document.querySelector<HTMLElement>('[data-rise-group]');
-  if (group && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    group.classList.add('is-rising');
-    const io = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          e.target.classList.add('is-in');
-          io.unobserve(e.target);
-        }),
-      { rootMargin: '0px 0px -12% 0px' },
-    );
-    group.querySelectorAll('[data-rise]').forEach((el) => io.observe(el));
-  }
-
-  // The wave flows like the homepage's: redrawn about 30 times a second, only while on screen, and not at all
-  // when reduced motion is asked for (the server-rendered frame stays)
-  const svg = document.querySelector<SVGSVGElement>('.cta__wave');
-  if (svg) {
-    const paths = [...svg.querySelectorAll('path')];
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    let visible = false;
-    let raf = 0;
-    let last = 0;
-    let t = 0.32 * PERIOD;
-    const draw = (now: number) => {
-      raf = requestAnimationFrame(draw);
-      if (now - last < 33) return;
-      t = (t + Math.min(now - last, 100) / 1000) % PERIOD;
-      last = now;
-      ribbon(t / PERIOD).forEach((l, i) => paths[i]?.setAttribute('d', l.d));
-    };
-    const sync = () => {
-      cancelAnimationFrame(raf);
-      if (visible && !reduce.matches) {
-        last = performance.now();
-        raf = requestAnimationFrame(draw);
-      }
-    };
-    new IntersectionObserver(([e]) => ((visible = e.isIntersecting), sync())).observe(svg);
-    reduce.addEventListener('change', sync);
-  }
-</script>

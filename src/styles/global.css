@@ -432,6 +432,7 @@ a {
 
 .btn--line {
   border-color: var(--silver);
+  background: transparent;
   color: var(--ink);
 }
 

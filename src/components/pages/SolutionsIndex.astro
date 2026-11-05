@@ -18,12 +18,11 @@ const d = t(lang);
 ---
 
 <Base lang={lang} page="solutions" title={d.meta.solutionsTitle} description={d.meta.solutionsDescription}>
-  <PageIntro title={d.solutionPage.indexTitle} intro={d.solutionPage.indexIntro} />
+  <PageIntro title={d.solutionPage.indexTitle} />
   <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
     {
       ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).filter(([keys]) => keys.length).map(([keys, soon]) => (
         <Fragment>
-          <h2 class="tiles__label">{soon ? d.cta.comingSoon : d.home.now.label}</h2>
           <ul class:list={['tiles', soon && 'tiles--soon']}>
             {keys.map((k) => {
               const s = solutions[k];
@@ -57,7 +56,6 @@ const d = t(lang);
       ))
     }
     <p class="tiles__soonline">{d.home.now.soon}</p>
-    <p class="tiles__faq"><a href={href('faq', lang)}>{d.nav.faq}</a></p>
   </section>
 </Base>
 

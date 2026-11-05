@@ -1,7 +1,7 @@
 ---
 // A short film of the real demo doing the job, recorded from the demo itself. It plays by itself while on screen, and
 // the chapter beside it says what is happening. A chapter can be chosen to jump to that moment. Phones get their own
-// recording of the demo's phone layout. The demo is in English, so the film is too; the chapters follow the visitor's language.
+// recording of the demo's phone layout, and each language its own recording.
 import film from '../content/film.json';
 import type { Spot } from '../content/explore';
 import { t, type Locale } from '../i18n';
@@ -16,32 +16,32 @@ interface Props {
 
 const { lang, solutionKey, name, spots } = Astro.props;
 const d = t(lang);
-const { desk, phone } = film[solutionKey];
+const { desk, phone } = (film as Record<Locale, typeof film.en>)[lang][solutionKey];
+const base = `/media/film/${lang}/${solutionKey}`;
 const PHONE = '(max-width: 700px)';
 ---
 
-<figure class="film" data-film data-desk={JSON.stringify(desk)} data-phone={JSON.stringify(phone)} data-phone-poster={`/media/film/${solutionKey}-phone.jpg`} data-media={PHONE}>
+<figure class="film" data-film data-desk={JSON.stringify(desk)} data-phone={JSON.stringify(phone)} data-phone-poster={`${base}-phone.jpg`} data-media={PHONE}>
   <div class="film__screen" dir="ltr">
-    <video muted loop playsinline controls preload="none" poster={`/media/film/${solutionKey}-desk.jpg`} aria-label={name}>
-      <source src={`/media/film/${solutionKey}-phone.mp4`} type="video/mp4" media={PHONE} />
-      <source src={`/media/film/${solutionKey}-desk.mp4`} type="video/mp4" />
+    <video muted loop playsinline controls preload="none" poster={`${base}-desk.jpg`} aria-label={name}>
+      <source src={`${base}-phone.mp4`} type="video/mp4" media={PHONE} />
+      <source src={`${base}-desk.mp4`} type="video/mp4" />
     </video>
   </div>
-  <div class="film__side">
-  <ol class="film__chapters">
-    {
-      spots.map((s, i) => (
-        <li class:list={['film__chapter', i === 0 && 'is-on']} data-chapter={i}>
-          <button type="button" aria-current={i === 0 ? 'step' : undefined}>
-            <span class="film__num">{i + 1}</span>
-            <span class="film__label">{s.label[lang]}</span>
-            <span class="film__bar" aria-hidden="true"><i></i></span>
-          </button>
-          <p class="film__text">{s.text[lang]}</p>
-        </li>
-      ))
-    }
-  </ol>
+  <div class="film__bar-row">
+    <ol class="film__chapters">
+      {
+        spots.map((s, i) => (
+          <li class:list={['film__chapter', i === 0 && 'is-on']} data-chapter={i}>
+            <button type="button" aria-current={i === 0 ? 'step' : undefined}>
+              <span class="film__bar" aria-hidden="true"><i></i></span>
+              <span class="film__label">{s.label[lang]}</span>
+            </button>
+            <p class="film__text">{s.text[lang]}</p>
+          </li>
+        ))
+      }
+    </ol>
     <button class="film__toggle" type="button" aria-pressed="false" data-pause={d.hero.pause} data-play={d.hero.play} hidden>
       <span class="visually-hidden">{d.hero.pause}</span>
       <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.25v10H4.5zM9.25 3h2.25v10H9.25z" fill="currentColor"></path></svg>
@@ -53,19 +53,12 @@ const PHONE = '(max-width: 700px)';
 <style>
   .film {
     display: grid;
-    gap: var(--s-3);
-    margin: 0;
-  }
-
-  @media (min-width: 1001px) {
-    .film {
-      grid-template-columns: minmax(0, 1fr) 19rem;
-      align-items: start;
-    }
+    gap: var(--s-2);
+    max-width: 68rem;
+    margin: 0 auto;
   }
 
   .film__screen {
-    position: relative;
     overflow: hidden;
     border: 1px solid var(--hair);
     border-radius: var(--radius-md);
@@ -80,57 +73,35 @@ const PHONE = '(max-width: 700px)';
     aspect-ratio: 1360 / 860;
   }
 
-  .film__toggle {
+  .film__bar-row {
     display: grid;
-    margin-top: var(--s-2);
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border: 0;
-    border-radius: 50%;
-    background: rgb(var(--ink-rgb) / 0.72);
-    color: var(--paper);
-    cursor: pointer;
-  }
-
-  .film__toggle[hidden] {
-    display: none;
-  }
-
-  .film__toggle svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .film__toggle .i-play,
-  .film__toggle[aria-pressed='true'] .i-pause {
-    display: none;
-  }
-
-  .film__toggle[aria-pressed='true'] .i-play {
-    display: block;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--s-2);
   }
 
   .film__chapters {
+    position: relative;
     display: grid;
-    gap: var(--s-2);
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 0.75rem;
     margin: 0;
-    padding: 0;
+    padding: 0 0 3.25rem;
     list-style: none;
   }
 
   .film__chapter button {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.4rem 0.6rem;
+    gap: 0.5rem;
     width: 100%;
     min-height: 44px;
-    padding: 0;
+    padding: 0.25rem 0;
     border: 0;
     background: none;
     color: var(--text-3);
     font: inherit;
-    font-size: 1.125rem;
+    font-size: var(--fs-small);
     text-align: start;
     cursor: pointer;
     transition: color 0.25s var(--ease);
@@ -145,15 +116,11 @@ const PHONE = '(max-width: 700px)';
     font-weight: 600;
   }
 
-  .film__num {
-    font-variant-numeric: tabular-nums;
-  }
-
   .film__bar {
-    grid-column: 1 / -1;
     display: block;
-    height: 2px;
+    height: 3px;
     overflow: hidden;
+    border-radius: 2px;
     background: var(--hair);
   }
 
@@ -170,24 +137,71 @@ const PHONE = '(max-width: 700px)';
     transform-origin: right;
   }
 
+  /* The current chapter's one line sits under the whole row. Without JavaScript each stays under its own label. */
   .film__text {
-    margin-top: 0.5rem;
-    font-size: 1.125rem;
-    line-height: 1.45;
+    margin-top: 0.25rem;
+    font-size: var(--fs-small);
+    line-height: 1.35;
   }
 
-  /* Once the film is running, only the current chapter's sentence shows. Without JavaScript all of them do. */
+  .film.is-ready .film__text {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    margin: 0;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    max-width: none;
+    text-align: center;
+  }
+
   .film.is-ready .film__chapter:not(.is-on) .film__text {
     display: none;
   }
 
-  /* Phones: the upright recording, small enough that its words below stay on screen */
+  .film__toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--hair);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .film__toggle[hidden] {
+    display: none;
+  }
+
+  .film__toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .film__toggle .i-play,
+  .film__toggle[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+
+  .film__toggle[aria-pressed='true'] .i-play {
+    display: block;
+  }
+
+  /* Phones: the upright recording, small enough that its words stay on screen */
   @media (max-width: 700px) {
+    .film__screen {
+      justify-self: center;
+    }
+
     .film video {
       aspect-ratio: 390 / 760;
       width: auto;
       max-height: 62svh;
-      margin-inline: auto;
+    }
+
+    .film__chapters {
+      padding-bottom: 4rem;
     }
   }
 </style>

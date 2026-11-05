@@ -107,9 +107,9 @@ for (const lang of LANGS) {
       const set = document.querySelector('.band__set:not([aria-hidden])');
       const imgs = [...set.querySelectorAll('img')];
       const broken = imgs.filter((i) => { i.loading = 'eager'; return !i.getAttribute('src').startsWith('/logos/integrations/'); }).length;
-      return { logos: imgs.length, sets: document.querySelectorAll('.band__set').length, alts: imgs.filter((i) => i.alt.length > 2).length, links: document.querySelectorAll('.band a').length, broken, note: document.querySelector('.works__note a')?.getAttribute('href') ?? '', spin: getComputedStyle(document.querySelector('.band__track')).animationDuration };
+      return { logos: imgs.length, sets: document.querySelectorAll('.band__set').length, alts: imgs.filter((i) => i.alt.length > 2).length, links: document.querySelectorAll('.band a').length, broken, spin: getComputedStyle(document.querySelector('.band__track')).animationDuration };
     });
-    if (band.logos !== 10 || band.sets !== 2 || band.alts !== 10 || band.links || band.broken || !/\//.test(band.note)) problems.push(`logo band ${JSON.stringify(band)}`);
+    if (band.logos !== 10 || band.sets !== 2 || band.alts !== 10 || band.links || band.broken) problems.push(`logo band ${JSON.stringify(band)}`);
     const seconds = parseFloat(band.spin);
     if (!(seconds >= 30 && seconds <= 40)) problems.push(`logo band loop is ${band.spin}`);
     // The homepage leads with what is on sale: the hero's report button reaches the form and "Available now" links

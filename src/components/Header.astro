@@ -1,5 +1,4 @@
 ---
-import { Picture } from 'astro:assets';
 import Logo from './Logo.astro';
 import SolutionIcon from './SolutionIcon.astro';
 import { site } from '../config/site';
@@ -40,13 +39,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         {d.nav.solutions}
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
-      {
-        (['stock', 'forecasting', 'finance'] as const).map((key) => (
-          <a class:list={['header__link', page === key && 'is-current']} href={href(key, lang)} aria-current={page === key ? 'page' : undefined}>
-            {solutions[key].name[lang]}
-          </a>
-        ))
-      }
     </nav>
 
     <div class="header__end">
@@ -111,30 +103,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
           ))
         }
       </ul>
-      <!-- A quiet preview of the solution under the pointer or keyboard focus -->
-      <div class="panel__preview" aria-hidden="true">
-        {
-          items.map(({ key, s }, i) => (
-            <figure class:list={['preview', i === 0 && 'is-active']} data-preview={key}>
-              <Picture
-                src={s.photo}
-                alt=""
-                formats={['avif', 'webp']}
-                fallbackFormat="jpg"
-                widths={[400, 640]}
-                sizes="320px"
-                loading="lazy"
-                decoding="async"
-                style={`object-position:${s.photoFocus}`}
-              />
-              <figcaption>
-                <span>{s.name[lang]}</span>
-                {s.headline[lang]}
-              </figcaption>
-            </figure>
-          ))
-        }
-      </div>
       <div class="panel__foot">
         <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
@@ -262,31 +230,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     gap: 0.25rem;
   }
 
-  .header__link {
-    padding: 0.5rem 0.7rem;
-    border-radius: var(--pill);
-    color: inherit;
-    font-size: 0.9375rem;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 0.2s var(--ease);
-  }
-
-  .header__link:hover,
-  .header__link.is-current {
-    background: rgb(var(--ink-rgb) / 0.06);
-  }
-
-  :global(.header.on-dark) .header__link:hover {
-    background: rgb(var(--on-dark-rgb) / 0.14);
-  }
-
-  /* The three direct links need the room; below this the Solutions menu still reaches them */
-  @media (max-width: 1240px) {
-    .header__link {
-      display: none;
-    }
-  }
 
   .header__trigger {
     display: inline-flex;
@@ -381,78 +324,19 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .panel__layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
     grid-template-areas:
-      'list preview'
-      'foot foot';
-    column-gap: 2rem;
+      'list'
+      'foot';
   }
 
   .panel__grid {
     grid-area: list;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.25rem 1.5rem;
     margin: 0;
     padding: 1.75rem 0 1.25rem;
     list-style: none;
-  }
-
-  .panel__preview {
-    grid-area: preview;
-    position: relative;
-    margin: 1.75rem 0 1.25rem;
-    border-radius: 16px;
-    background: var(--ink);
-    overflow: hidden;
-  }
-
-  .preview {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    transition: opacity 0.4s var(--ease);
-  }
-
-  .preview.is-active {
-    opacity: 1;
-  }
-
-  .preview :global(picture),
-  .preview :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .preview :global(img) {
-    object-fit: cover;
-    transform: scale(1.03);
-    transition: transform 1.2s var(--ease);
-  }
-
-  .preview.is-active :global(img) {
-    transform: scale(1);
-  }
-
-  .preview figcaption {
-    position: absolute;
-    inset: auto 0 0;
-    padding: 2.5rem 1.1rem 1rem;
-    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.85), transparent);
-    color: var(--on-dark);
-    font-size: 1rem;
-    line-height: 1.3;
-    letter-spacing: 0;
-  }
-
-  .preview figcaption span {
-    display: block;
-    margin-bottom: 0.2rem;
-    color: var(--on-dark-muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.02em;
   }
 
   .panel__item {
@@ -522,6 +406,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     font-size: 0.9375rem;
     line-height: 1.45;
   }
+
 
   .panel__foot {
     grid-area: foot;
@@ -802,13 +687,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
       e.preventDefault();
       setPanel(true, true);
     }
-  });
-  // The preview follows the solution under the pointer or keyboard focus
-  const previews = [...panel.querySelectorAll<HTMLElement>('[data-preview]')];
-  const showPreview = (key?: string) => previews.forEach((el) => el.classList.toggle('is-active', el.dataset.preview === key));
-  panel.querySelectorAll<HTMLElement>('[data-solution]').forEach((a) => {
-    a.addEventListener('pointerenter', () => showPreview(a.dataset.solution));
-    a.addEventListener('focus', () => showPreview(a.dataset.solution));
   });
 
   // Arrow keys move between the panel's links

@@ -110,7 +110,7 @@ const it: Dict = {
     },
   },
   solutionPage: {
-    demoEnglish: 'La demo per ora è in inglese.',
+    demoEnglish: 'La demo dal vivo per ora è in inglese.',
     breadcrumb: 'Soluzioni',
     tryHere: 'Provalo nella demo →',
     problemLabel: 'Il problema',
@@ -122,8 +122,7 @@ const it: Dict = {
     finalText: 'Apri questa parte della demo interattiva, oppure parlaci del tuo hotel.',
     finalTextNoDemo: 'Prenota una chiamata e ti mostreremo questa parte di Tyll nella demo.',
     others: 'Altre soluzioni',
-    indexTitle: 'Scegli ciò che conta per il tuo hotel.',
-    indexIntro: 'Sei aree in cui Tyll aiuta i tuoi team a vedere ciò che richiede attenzione e ad agire.',
+    indexTitle: 'Dove perde denaro il tuo hotel?',
     step: 'Passo',
     pause: 'Metti in pausa la presentazione',
     play: 'Riproduci la presentazione',

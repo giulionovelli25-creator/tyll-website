@@ -18,7 +18,6 @@ const { lang } = Astro.props;
 const v = t(lang).home.report;
 const f = v.fields;
 const check = 'M2.5 8.5 6.2 12 13.5 4';
-const steps = [v.steps.you, v.steps.venue, v.steps.pos];
 const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
 ---
 
@@ -28,13 +27,6 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
       {v.open}
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
     </button>
-    <ol class="rf__preview" aria-hidden="true">
-      {steps.map((s, i) => <li><span>{i + 1}</span>{s}</li>)}
-    </ol>
-    <p class="rf__alt">
-      {v.alt} <a href={`mailto:${site.email}`} dir="ltr" data-track="email_click">{site.email}</a>
-      <a href={href('book', lang)} data-track="book_demo_click" data-track-from="report">{t(lang).cta.book}</a>
-    </p>
   </div>
 
   <div class="rf__panel" id="report-panel" data-report-panel>
@@ -178,50 +170,11 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     transform: translateY(3px);
   }
 
-  .rf__preview {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem 1.5rem;
-    margin: 0;
-    padding: 0;
-    color: var(--on-dark-muted);
-    font-size: var(--fs-small);
-    list-style: none;
-  }
 
-  .rf__preview li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
 
-  .rf__preview span {
-    display: grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border: 1px solid rgb(var(--on-dark-rgb) / 0.28);
-    border-radius: 50%;
-    font-size: 0.75rem;
-  }
 
-  .rf__alt {
-    max-width: none;
-    color: var(--on-dark-muted);
-    font-size: var(--fs-small);
-    text-align: center;
-  }
 
-  .rf__alt a {
-    color: var(--on-dark);
-    text-underline-offset: 3px;
-  }
 
-  .rf__alt a + a {
-    display: block;
-    margin-top: 0.35rem;
-  }
 
   /* The panel drops open from the button: its height follows its content */
   .rf__panel {

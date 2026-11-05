@@ -109,7 +109,7 @@ const de: Dict = {
     },
   },
   solutionPage: {
-    demoEnglish: 'Die Demo ist vorerst auf Englisch.',
+    demoEnglish: 'Die Live-Demo ist vorerst auf Englisch.',
     breadcrumb: 'Lösungen',
     tryHere: 'In der Demo ausprobieren →',
     problemLabel: 'Das Problem',
@@ -121,8 +121,7 @@ const de: Dict = {
     finalText: 'Öffnen Sie diesen Bereich der interaktiven Demo oder sprechen Sie mit uns über Ihr Hotel.',
     finalTextNoDemo: 'Buchen Sie ein Gespräch, und wir zeigen Ihnen diesen Bereich von Tyll in der Demo.',
     others: 'Weitere Lösungen',
-    indexTitle: 'Wählen Sie, was für Ihr Hotel zählt.',
-    indexIntro: 'Sechs Bereiche, in denen Tyll Ihren Teams zeigt, was Aufmerksamkeit braucht, und hilft zu handeln.',
+    indexTitle: 'Wo verliert Ihr Hotel Geld?',
     step: 'Schritt',
     pause: 'Rundgang anhalten',
     play: 'Rundgang abspielen',
