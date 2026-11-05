@@ -65,6 +65,22 @@ const v = t(lang).home.works;
     font-size: var(--fs-h2);
   }
 
+  /* Straight after How it works, the logos read as part of it: a quiet caption, not a new section */
+  :global(.how) + .works {
+    padding-top: var(--s-4);
+  }
+
+  :global(.how) + .works h2 {
+    color: var(--steel);
+    font-family: var(--font);
+    font-size: var(--fs-body);
+    font-weight: 400;
+  }
+
+  :global(.how) + .works h2 :global(br) {
+    display: none;
+  }
+
   .works__head p {
     margin: var(--s-3) auto 0;
     color: var(--steel);
