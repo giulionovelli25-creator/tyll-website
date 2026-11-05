@@ -3,6 +3,7 @@ import { Picture } from 'astro:assets';
 import Logo from './Logo.astro';
 import SolutionIcon from './SolutionIcon.astro';
 import { site } from '../config/site';
+import { demoHref } from '../config/demo';
 import { solutions } from '../content/solutions';
 import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
 import { isComingSoon } from '../config/products';
@@ -39,6 +40,13 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         {d.nav.solutions}
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
+      {
+        (['stock', 'forecasting', 'finance'] as const).map((key) => (
+          <a class:list={['header__link', page === key && 'is-current']} href={href(key, lang)} aria-current={page === key ? 'page' : undefined}>
+            {solutions[key].name[lang]}
+          </a>
+        ))
+      }
     </nav>
 
     <div class="header__end">
@@ -63,13 +71,13 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
       </div>
       {
         site.demoUrl && (
-          <a class="btn btn--line btn--sm header__demo" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
+          <a class="btn btn--line btn--sm header__demo" href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
             {d.cta.demo}
             <span class="visually-hidden"> {d.cta.newTab}</span>
           </a>
         )
       }
-      <a class="btn btn--solid btn--sm header__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="header">
+      <a class="btn btn--solid header__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="header">
         {d.cta.book}
       </a>
       <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -141,7 +149,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <a class="btn btn--solid" href={href('book', lang)} data-track="book_demo_click" data-track-from="menu">{d.cta.book}</a>
         {
           site.demoUrl && (
-            <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
+            <a class="btn btn--line" href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
               {d.cta.demoLong}
               <span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
@@ -248,23 +256,52 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   }
 
   .header__nav {
+    display: flex;
     flex: 1;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .header__link {
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--pill);
+    color: inherit;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .header__link:hover,
+  .header__link.is-current {
+    background: rgb(var(--ink-rgb) / 0.06);
+  }
+
+  :global(.header.on-dark) .header__link:hover {
+    background: rgb(var(--on-dark-rgb) / 0.14);
+  }
+
+  /* The three direct links need the room; below this the Solutions menu still reaches them */
+  @media (max-width: 1240px) {
+    .header__link {
+      display: none;
+    }
   }
 
   .header__trigger {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    min-height: 40px;
-    padding: 0 0.85rem;
-    margin-inline-start: -0.85rem;
-    border: 0;
+    min-height: 42px;
+    padding: 0 1rem;
+    /* A visible button, so nobody misses the menu */
+    border: 1.5px solid currentColor;
     border-radius: var(--pill);
     background: transparent;
     color: inherit;
     font: inherit;
-    font-size: 0.9375rem;
-    font-weight: 400;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s var(--ease);
   }

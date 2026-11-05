@@ -10,8 +10,7 @@
 // everything. Only the guests, the waiter and the data pulses run on time, from the last step and only on screen.
 //
 // The page's HTML is the finished hotel, so without JavaScript or with reduced motion that is what shows. The scene
-// always reads left to right, also in Arabic. No bottles in the restaurant or bar (Gulf market). The screens are close
-// framings of real demo captures (public/media/story): cropped only, never edited or stretched.
+// always reads left to right, also in Arabic. No bottles in the restaurant or bar (Gulf market).
 import Logo from '../Logo.astro';
 import HotelPerson from './HotelPerson.astro';
 import { t, href, type Locale } from '../../i18n';
@@ -24,11 +23,7 @@ const { lang } = Astro.props;
 const v = t(lang).home.tour;
 
 // The real screen and solution page behind each step
-const shots = [
-  { src: '/media/story/reconciliation.webp', w: 1424, h: 426, page: href('finance', lang) },
-  { src: '/media/story/stock.webp', w: 1056, h: 414, page: href('stock', lang) },
-  { src: '/media/story/purchasing.webp', w: 1129, h: 409, page: href('forecasting', lang) },
-];
+const pagesOf = [href('finance', lang), href('stock', lang), href('forecasting', lang)];
 
 // ── Geometry, in the units of a 1000 × 860 drawing ──
 const G = 730; // ground level
@@ -231,7 +226,6 @@ const systems = [
     <div class="hs__text">
       <header class="hs__head" data-hs-head>
         <h2 id="hs-title" class="display">{v.title}</h2>
-        <p>{v.text}</p>
         <ol class="hs__progress" aria-hidden="true">
           {v.steps.map((step, i) => <li data-hs-dot={i}><span>{i + 1}</span> {step.label}</li>)}
         </ol>
@@ -255,27 +249,16 @@ const systems = [
                     <ul>
                       {step.bullets.map((bullet) => <li>{bullet}</li>)}
                     </ul>
-                    {shots[i] && (
-                      <a class="hs__shot" href={shots[i].page}>
-                        <span class="hs__frame">
-                          <img src={shots[i].src} width={shots[i].w} height={shots[i].h} alt={step.shot} loading="lazy" decoding="async" />
-                        </span>
-                        <span class="hs__more">{v.more}</span>
+                    {i < v.steps.length - 1 && (
+                      <a class="hs__more" href={pagesOf[i]}>
+                        {v.more} <span class="flip-rtl" aria-hidden="true">→</span>
                       </a>
                     )}
                     {i === v.steps.length - 1 && (
                       <div class="hs__next">
-                        <a class="btn btn--solid btn--lg hs__cta" href="#report" data-track="report_cta_click" data-track-from="hotel">
-                          {v.button}
+                        <a class="btn btn--solid btn--lg hs__cta" href={href('book', lang)} data-track="book_demo_click" data-track-from="hotel">
+                          {t(lang).cta.book}
                         </a>
-                        <p class="hs__links">
-                          <a href="#report">
-                            {v.links.report} <span class="flip-rtl" aria-hidden="true">→</span>
-                          </a>
-                          <a href="#integrations">
-                            {v.links.integrations} <span class="flip-rtl" aria-hidden="true">→</span>
-                          </a>
-                        </p>
                       </div>
                     )}
                   </div>
@@ -753,7 +736,7 @@ const systems = [
 
   .hs__grid {
     display: grid;
-    grid-template-columns: minmax(0, 36fr) minmax(0, 64fr);
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
     gap: var(--s-4);
     /* The text starts where the rest of the page starts, the hotel runs to the edge */
     padding-inline: max(var(--gut), calc((100vw - var(--wrap)) / 2)) var(--gut);
@@ -837,7 +820,7 @@ const systems = [
     margin: var(--s-2) 0 0;
     padding: 0;
     list-style: none;
-    font-size: var(--fs-caption);
+    font-size: var(--fs-small);
     line-height: 1.3;
   }
 
@@ -873,7 +856,7 @@ const systems = [
   }
 
   .hs__step h3 {
-    font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+    font-size: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
     font-weight: 300;
   }
 
@@ -890,9 +873,9 @@ const systems = [
   }
 
   .hs__tag {
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.3rem;
     color: var(--text-3);
-    font-size: var(--fs-caption);
+    font-size: var(--fs-small);
   }
 
   .hs__tag--on {
@@ -904,8 +887,8 @@ const systems = [
     padding: 0.75rem var(--s-2);
     border-bottom: 1px solid var(--hair);
     background: var(--mist);
-    color: var(--steel);
-    font-size: var(--fs-small);
+    color: var(--graphite);
+    font-size: 1.1875rem;
     line-height: 1.4;
   }
 
@@ -921,10 +904,11 @@ const systems = [
 
   .hs__step ul {
     display: grid;
-    gap: 0.2rem;
+    gap: 0.625rem;
     margin: 0;
-    padding: 0 var(--s-2) 0.875rem;
-    font-size: var(--fs-small);
+    padding: 0.25rem var(--s-2) var(--s-2);
+    font-size: 1.1875rem;
+    font-weight: 500;
     line-height: 1.4;
     list-style: none;
   }
@@ -964,46 +948,17 @@ const systems = [
     transform: none;
   }
 
-  /* A close framing of the real screen, on the product's own ground */
-  .hs__shot {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem var(--s-2);
-    border-top: 1px solid var(--hair);
-    background: var(--mist);
+  .hs__more {
+    align-self: flex-start;
+    margin: auto var(--s-2) var(--s-2);
+    border-bottom: 1px solid currentColor;
+    font-size: 1.0625rem;
     color: inherit;
+    line-height: 1.3;
     text-decoration: none;
   }
 
-  .hs__frame {
-    display: block;
-    overflow: hidden;
-    border: 1px solid var(--hair);
-    border-radius: var(--radius-sm);
-    background: var(--paper);
-  }
-
-  :global([dir='rtl']) .hs__frame {
-    direction: ltr;
-  }
-
-  .hs__frame img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .hs__more {
-    align-self: flex-start;
-    border-bottom: 1px solid currentColor;
-    font-size: var(--fs-small);
-    line-height: 1.3;
-  }
-
-  /* The last step ends where the others show a screen: on the same ground, with the next move */
+  /* The last step ends with the next move */
   .hs__next {
     display: flex;
     flex: 1;
@@ -1014,29 +969,6 @@ const systems = [
     padding: var(--s-2);
     border-top: 1px solid var(--hair);
     background: var(--mist);
-  }
-
-  .hs__links {
-    display: grid;
-    gap: 0.3rem;
-    justify-items: start;
-    max-width: none;
-  }
-
-  .hs__links a {
-    color: inherit;
-    font-size: var(--fs-body);
-    line-height: 1.4;
-    text-decoration: none;
-  }
-
-  .hs__links span {
-    display: inline-block;
-  }
-
-  .hs__links a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
   /* ── Scene: held still while the text moves past it ── */
@@ -1535,17 +1467,10 @@ const systems = [
       font-size: 1.75rem;
     }
 
-    .hs__head > p {
-      display: none;
-    }
-
     .hs__progress {
       margin-top: var(--s-1);
     }
 
-    .hs__step h3 {
-      font-size: 1.5rem;
-    }
   }
 
   /* ── Tablets and phones: hotel on top, held while the text passes beneath it ── */
@@ -1632,17 +1557,12 @@ const systems = [
       display: none;
     }
 
-    .hs__problem,
-    .hs__shot {
+    .hs__problem {
       padding: 0.5rem 0.75rem;
     }
 
     .hs__fix > ul {
       padding: 0.5rem 0.75rem;
-    }
-
-    .hs__frame {
-      max-width: 26rem;
     }
 
     .hs__next {

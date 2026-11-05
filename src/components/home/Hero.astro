@@ -2,7 +2,8 @@
 import { getImage } from 'astro:assets';
 import poster from '../../assets/hero-film.jpg';
 import posterPhone from '../../assets/hero-film-phone.jpg';
-import { site } from '../../config/site';
+import { demoHref } from '../../config/demo';
+import { href } from '../../i18n/routes';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -11,8 +12,8 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
-// "Try the demo" opens the public demo; without one configured, the report button stands alone
-const demo = site.demoUrl;
+// Booking a demo comes first. "Try the demo" opens the public demo in this language, when one is configured.
+const demo = demoHref(lang);
 
 // Upright screens get their own cut of the film, each scene framed on its subject, and the poster to match
 const UPRIGHT = '(max-width: 820px) and (orientation: portrait)';
@@ -59,18 +60,17 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
     </h1>
     <p class="hero__sub">{d.hero.sub}</p>
     <div class="hero__actions">
+      <a class="btn btn--solid btn--lg hero__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="hero">
+        {d.cta.book}
+      </a>
       {
         demo && (
-          <a class="btn btn--solid btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="hero">
+          <a class="btn btn--line btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="hero">
             {d.hero.try}
             <span class="visually-hidden"> {d.cta.newTab}</span>
           </a>
         )
       }
-      <!-- One clear call to action; the report is the quiet second path -->
-      <a class:list={demo ? 'hero__quiet' : 'btn btn--solid btn--lg'} href="#report" data-track="report_cta_click" data-track-from="hero">
-        {d.hero.report}
-      </a>
     </div>
   </div>
 
@@ -165,7 +165,7 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
 
     .hero__shade {
       background:
-        linear-gradient(0deg, rgb(var(--night-rgb) / 0.88) 0%, rgb(var(--night-rgb) / 0.5) 26%, rgb(var(--night-rgb) / 0) 56%),
+        linear-gradient(0deg, rgb(var(--night-rgb) / 0.92) 0%, rgb(var(--night-rgb) / 0.78) 55%, rgb(var(--night-rgb) / 0.2) 82%),
         linear-gradient(180deg, rgb(var(--night-rgb) / 0.42) 0%, rgb(var(--night-rgb) / 0) 20%);
     }
   }
@@ -234,17 +234,11 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
     margin-top: var(--s-4);
   }
 
-  .hero__quiet {
-    color: var(--text-2);
-    font-size: var(--fs-body);
-    text-decoration: none;
-    text-underline-offset: 4px;
-    transition: color 0.25s var(--ease);
-  }
-
-  .hero__quiet:hover {
-    color: var(--text-1);
-    text-decoration: underline;
+  /* The main thing to do on this page */
+  .hero__book {
+    min-height: 64px;
+    padding-inline: 2.5rem;
+    font-size: 1.25rem;
   }
 
   .hero__toggle {

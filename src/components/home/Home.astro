@@ -34,11 +34,11 @@ const schema = {
 
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
-  <!-- What Tyll sells today first, and the free report request at the end (the hero links to it) -->
+  <!-- The hook, the problem in numbers, how Tyll solves it, what is on sale, and booking a demo at the end -->
   <Hero lang={lang} />
-  <AvailableNow lang={lang} />
-  <HotelStory lang={lang} />
   <WhyItMatters lang={lang} />
+  <HotelStory lang={lang} />
+  <AvailableNow lang={lang} />
   <Integrations lang={lang} />
   <Invitation lang={lang} />
 </Base>

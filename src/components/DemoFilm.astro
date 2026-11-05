@@ -1,0 +1,274 @@
+---
+// A short film of the real demo doing the job, recorded from the demo itself. It plays by itself while on screen, and
+// the chapter beside it says what is happening. A chapter can be chosen to jump to that moment. Phones get their own
+// recording of the demo's phone layout. The demo is in English, so the film is too; the chapters follow the visitor's language.
+import film from '../content/film.json';
+import type { Spot } from '../content/explore';
+import { t, type Locale } from '../i18n';
+import type { SolutionKey } from '../i18n/routes';
+
+interface Props {
+  lang: Locale;
+  solutionKey: SolutionKey;
+  name: string;
+  spots: Spot[];
+}
+
+const { lang, solutionKey, name, spots } = Astro.props;
+const d = t(lang);
+const { desk, phone } = film[solutionKey];
+const PHONE = '(max-width: 700px)';
+---
+
+<figure class="film" data-film data-desk={JSON.stringify(desk)} data-phone={JSON.stringify(phone)} data-phone-poster={`/media/film/${solutionKey}-phone.jpg`} data-media={PHONE}>
+  <div class="film__screen" dir="ltr">
+    <video muted loop playsinline controls preload="none" poster={`/media/film/${solutionKey}-desk.jpg`} aria-label={name}>
+      <source src={`/media/film/${solutionKey}-phone.mp4`} type="video/mp4" media={PHONE} />
+      <source src={`/media/film/${solutionKey}-desk.mp4`} type="video/mp4" />
+    </video>
+  </div>
+  <div class="film__side">
+  <ol class="film__chapters">
+    {
+      spots.map((s, i) => (
+        <li class:list={['film__chapter', i === 0 && 'is-on']} data-chapter={i}>
+          <button type="button" aria-current={i === 0 ? 'step' : undefined}>
+            <span class="film__num">{i + 1}</span>
+            <span class="film__label">{s.label[lang]}</span>
+            <span class="film__bar" aria-hidden="true"><i></i></span>
+          </button>
+          <p class="film__text">{s.text[lang]}</p>
+        </li>
+      ))
+    }
+  </ol>
+    <button class="film__toggle" type="button" aria-pressed="false" data-pause={d.hero.pause} data-play={d.hero.play} hidden>
+      <span class="visually-hidden">{d.hero.pause}</span>
+      <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.25v10H4.5zM9.25 3h2.25v10H9.25z" fill="currentColor"></path></svg>
+      <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6L12.6 8z" fill="currentColor"></path></svg>
+    </button>
+  </div>
+</figure>
+
+<style>
+  .film {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  @media (min-width: 1001px) {
+    .film {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      align-items: start;
+    }
+  }
+
+  .film__screen {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-md);
+    background: var(--mist);
+    box-shadow: var(--shadow-2);
+  }
+
+  .film video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1360 / 860;
+  }
+
+  .film__toggle {
+    display: grid;
+    margin-top: var(--s-2);
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--ink-rgb) / 0.72);
+    color: var(--paper);
+    cursor: pointer;
+  }
+
+  .film__toggle[hidden] {
+    display: none;
+  }
+
+  .film__toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .film__toggle .i-play,
+  .film__toggle[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+
+  .film__toggle[aria-pressed='true'] .i-play {
+    display: block;
+  }
+
+  .film__chapters {
+    display: grid;
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .film__chapter button {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 0.6rem;
+    width: 100%;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--text-3);
+    font: inherit;
+    font-size: 1.125rem;
+    text-align: start;
+    cursor: pointer;
+    transition: color 0.25s var(--ease);
+  }
+
+  .film__chapter.is-on button,
+  .film__chapter button:hover {
+    color: var(--ink);
+  }
+
+  .film__chapter.is-on .film__label {
+    font-weight: 600;
+  }
+
+  .film__num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .film__bar {
+    grid-column: 1 / -1;
+    display: block;
+    height: 2px;
+    overflow: hidden;
+    background: var(--hair);
+  }
+
+  .film__bar i {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--ink);
+    transform: scaleX(var(--p, 0));
+    transform-origin: left;
+  }
+
+  :global([dir='rtl']) .film__bar i {
+    transform-origin: right;
+  }
+
+  .film__text {
+    margin-top: 0.5rem;
+    font-size: 1.125rem;
+    line-height: 1.45;
+  }
+
+  /* Once the film is running, only the current chapter's sentence shows. Without JavaScript all of them do. */
+  .film.is-ready .film__chapter:not(.is-on) .film__text {
+    display: none;
+  }
+
+  /* Phones: the upright recording, small enough that its words below stay on screen */
+  @media (max-width: 700px) {
+    .film video {
+      aspect-ratio: 390 / 760;
+      width: auto;
+      max-height: 62svh;
+      margin-inline: auto;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-film]').forEach((film) => {
+    const video = film.querySelector('video')!;
+    const toggle = film.querySelector<HTMLButtonElement>('.film__toggle')!;
+    const label = toggle.querySelector('.visually-hidden')!;
+    const chapters = [...film.querySelectorAll<HTMLElement>('[data-chapter]')];
+    const small = matchMedia(film.dataset.media!);
+    const timing = () => JSON.parse(small.matches ? film.dataset.phone! : film.dataset.desk!) as { marks: number[]; dur: number };
+    // With reduced motion the film waits to be played
+    let userPaused = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let onScreen = false;
+
+    video.controls = false;
+    if (small.matches) video.poster = film.dataset.phonePoster!;
+    film.classList.add('is-ready');
+    toggle.hidden = false;
+
+    const sync = () => {
+      toggle.setAttribute('aria-pressed', String(video.paused));
+      label.textContent = video.paused ? toggle.dataset.play! : toggle.dataset.pause!;
+    };
+    const play = () => {
+      if (video.preload === 'none') video.preload = 'auto';
+      video.play().catch(sync);
+    };
+    const paint = () => {
+      const { marks, dur } = timing();
+      const now = video.currentTime;
+      let active = 0;
+      marks.forEach((m, i) => {
+        if (now >= m) active = i;
+      });
+      chapters.forEach((c, i) => {
+        const on = i === active;
+        c.classList.toggle('is-on', on);
+        const end = marks[i + 1] ?? dur;
+        const part = now >= end ? 1 : now <= marks[i] ? 0 : (now - marks[i]) / (end - marks[i]);
+        c.querySelector<HTMLElement>('.film__bar i')!.style.setProperty('--p', String(i < active ? 1 : part));
+        const button = c.querySelector('button')!;
+        if (on) button.setAttribute('aria-current', 'step');
+        else button.removeAttribute('aria-current');
+      });
+    };
+    const tick = () => {
+      paint();
+      if (!video.paused) requestAnimationFrame(tick);
+    };
+
+    video.addEventListener('play', () => {
+      sync();
+      requestAnimationFrame(tick);
+    });
+    video.addEventListener('pause', sync);
+    video.addEventListener('seeked', paint);
+    toggle.addEventListener('click', () => {
+      userPaused = !video.paused;
+      if (userPaused) video.pause();
+      else play();
+    });
+    chapters.forEach((c, i) =>
+      c.querySelector('button')!.addEventListener('click', () => {
+        if (video.preload === 'none') video.preload = 'auto';
+        video.currentTime = timing().marks[i] + 0.05;
+        userPaused = false;
+        play();
+        paint();
+      }),
+    );
+
+    new IntersectionObserver(
+      ([e]) => {
+        onScreen = e.isIntersecting;
+        if (onScreen && !userPaused) play();
+        else if (!onScreen && !video.paused) video.pause();
+      },
+      { threshold: 0.35 },
+    ).observe(video);
+    sync();
+  });
+</script>

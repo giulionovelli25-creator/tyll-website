@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../config/site';
+import { demoHref } from '../config/demo';
 import { solutions } from '../content/solutions';
 import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
 
@@ -15,8 +16,6 @@ const home = href('home', lang);
 const year = new Date().getFullYear();
 // "Book a Demo →": the arrow is set apart so it can move on hover
 const [, bookText = d.cta.book, bookArrow = ''] = d.cta.book.match(/^(.*?)\s*([→←])$/) ?? [];
-// The tagline breaks only between its sentences
-const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
 ---
 
 <footer class="footer">
@@ -25,7 +24,6 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
       <a href={home} class="footer__logo" aria-label="Tyll home">
         <Logo anim="loop" label="Tyll" />
       </a>
-      <p>{taglineParts.map((part, i) => <><span class="footer__phrase">{part}</span>{i < taglineParts.length - 1 && ' '}</>)}</p>
       {
         site.social.linkedin && (
           <a class="footer__social" href={site.social.linkedin} target="_blank" rel="noopener" data-track="linkedin_click">
@@ -55,7 +53,7 @@ const taglineParts = d.footer.tagline.split(/(?<=\.)\s+/);
           {
             site.demoUrl && (
               <li>
-                <a href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="footer">
+                <a href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="footer">
                   {d.cta.demo}<span class="visually-hidden"> {d.cta.newTab}</span>
                 </a>
               </li>

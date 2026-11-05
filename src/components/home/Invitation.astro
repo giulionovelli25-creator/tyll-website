@@ -4,6 +4,7 @@
 import Logo from '../Logo.astro';
 import ReportForm from './ReportForm.astro';
 import { t, type Locale } from '../../i18n';
+import { href } from '../../i18n/routes';
 
 interface Props {
   lang: Locale;
@@ -42,7 +43,11 @@ const frame = ribbon(0);
   <div class="wrap invite__inner">
     <div class="invite__main">
       <Logo mark anim="draw" label="" class="invite__mark" />
-      <h2 id="invite-title" class="display">{v.title}</h2>
+      <h2 id="invite-title" class="display">{d.home.invite.title}</h2>
+      <a class="btn btn--solid btn--lg invite__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="closing">
+        {d.cta.book}
+      </a>
+      <h3 class="invite__report">{v.title}</h3>
       <p>{v.text}</p>
       <div class="invite__form">
         <ReportForm lang={lang} />
@@ -52,6 +57,19 @@ const frame = ribbon(0);
 </section>
 
 <style>
+  .invite__book {
+    min-height: 64px;
+    margin-top: var(--s-3);
+    padding-inline: 2.5rem;
+    font-size: 1.25rem;
+  }
+
+  .invite__report {
+    margin-top: var(--s-6);
+    font-size: var(--fs-lead);
+    font-weight: 500;
+  }
+
   .invite {
     position: relative;
     display: flex;

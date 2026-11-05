@@ -80,7 +80,7 @@ for (const lang of LANGS) {
   try {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
-    if (!/Know exactly what to buy|Wissen, was Sie einkaufen|اعرف بالضبط|Sai esattamente/.test(h1)) problems.push(`hero headline is "${h1}"`);
+    if (!/Your hotel is losing money|Ihr Hotel verliert Geld|فندقك يخسر المال|Il tuo hotel perde denaro/.test(h1)) problems.push(`hero headline is "${h1}"`);
     // The scroll story: the hotel starts as a drawing in a mess, the text follows the scroll, and it ends finished
     const hotel = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -95,7 +95,7 @@ for (const lang of LANGS) {
       to(1.7); await wait(250); const back = read();
       return { start, end, back, steps: steps.length, total: root.querySelectorAll('[data-b]:not([data-ob])').length, pinned: getComputedStyle(root.querySelector('.hs__scene')).position, cta: root.querySelector('.hs__cta')?.getAttribute('href'), sign: root.querySelectorAll('.c-sign').length };
     });
-    if (hotel.steps !== 4 || hotel.pinned !== 'sticky' || hotel.cta !== '#report' || hotel.sign !== 5) problems.push(`hotel story ${JSON.stringify(hotel)}`);
+    if (hotel.steps !== 4 || hotel.pinned !== 'sticky' || !hotel.cta || hotel.sign !== 5) problems.push(`hotel story ${JSON.stringify(hotel)}`);
     if (!(hotel.start.active === 0 && hotel.start.count === 1 && hotel.start.on === 0 && !hotel.start.alive && hotel.start.shown < hotel.total * 0.25)) problems.push(`hotel start ${JSON.stringify(hotel.start)}`);
     if (!(hotel.end.active === 3 && hotel.end.on === 4 && hotel.end.alive && hotel.end.shown === hotel.total)) problems.push(`hotel end ${JSON.stringify({ end: hotel.end, total: hotel.total })}`);
     if (!(hotel.back.active === 1 && !hotel.back.alive && hotel.back.shown < hotel.end.shown && hotel.back.on === 3)) problems.push(`hotel scrolled back ${JSON.stringify(hotel.back)}`);
@@ -116,7 +116,7 @@ for (const lang of LANGS) {
     // the six products, none of them marked Coming soon
     await go(page, `/${lang}/`);
     const product = await page.evaluate(() => ({
-      report: document.querySelector('.hero__actions a[href="#report"]') && !!document.querySelector('#report form[data-report]'),
+      report: !!document.querySelector('.hero__actions a[data-track="book_demo_click"]') && !!document.querySelector('#report form[data-report]'),
       now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
       menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
     }));
@@ -127,7 +127,7 @@ for (const lang of LANGS) {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       const wrap = document.querySelector('[data-report-wrap]');
       const closed = !wrap.classList.contains('is-open') && document.querySelector('[data-report-panel]').getBoundingClientRect().height < 1;
-      document.querySelector('.hero__actions a[href="#report"]').click();
+      document.querySelector('[data-report-wrap] button').click();
       await wait(900);
       const panel = document.querySelector('[data-report-panel]').getBoundingClientRect().height;
       const openSteps = document.querySelectorAll('[data-step].is-open').length;
@@ -154,16 +154,17 @@ for (const lang of LANGS) {
       const sol = await page.evaluate(() => ({
         path: location.pathname,
         h1: document.querySelectorAll('h1').length,
-        steps: document.querySelectorAll('[data-ex] [role=tab]').length,
+        steps: document.querySelectorAll('[data-film] [data-chapter]').length,
         demo: [...document.querySelectorAll('main a[data-track="explore_demo_click"]')].map((a) => a.getAttribute('href')),
         book: !!document.querySelector('main a[data-track="book_demo_click"]'),
       }));
       if (sol.path !== url || sol.h1 !== 1 || sol.steps < 3 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
       if (sol.demo.length && sol.demo.some((h) => !new URL(h).search && !new URL(h).pathname.match(/\/\w/))) problems.push(`${url}: demo link without a solution route`);
-      // The parts of the screen can be chosen, and the explanation follows
-      await page.evaluate(() => document.querySelectorAll('[data-ex] [role=tab]')[2].click());
-      const part = await page.evaluate(() => ({ tab: document.querySelectorAll('[data-ex] [role=tab]')[2].getAttribute('aria-selected'), note: document.querySelector('[data-ex] .ex__note.is-on')?.dataset.note }));
-      if (part.tab !== 'true' || part.note !== '2') problems.push(`${url}: explorer part did not change ${JSON.stringify(part)}`);
+      // A chapter can be chosen, and the explanation follows
+      await page.evaluate(() => document.querySelectorAll('[data-film] [data-chapter] button')[2].click());
+      await sleep(1500);
+      const part = await page.$eval('[data-film] .film__chapter.is-on', (c) => c.dataset.chapter);
+      if (part !== '2') problems.push(`${url}: chapter did not change (${part})`);
     }
     await go(page, `/${lang}/`);
     // Book a Call from the header lands on the booking page
@@ -227,14 +228,8 @@ for (const lang of LANGS) {
         // Visually hidden headings (1px boxes for screen readers) are not on screen
         return r.width > 1 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
       }).map((e) => e.textContent.trim().slice(0, 30)),
-      // Demo screens keep their proportions (never stretched)
-      stretched: [...document.querySelectorAll('.ex__canvas')].filter((c) => {
-        const r = c.getBoundingClientRect();
-        return r.width > 0 && Math.abs(r.width / r.height - 1440 / 1240) > 0.02;
-      }).length,
     }));
     if (w.sw > w.iw) problems.push(`${p} scrolls sideways (${w.sw}px)`);
-    if (w.stretched) problems.push(`${p} ${w.stretched} demo screens stretched`);
     if (w.clipped.length) problems.push(`${p} clipped: ${w.clipped.join(' | ')}`);
   }
   await go(page, '/de/');
@@ -286,16 +281,6 @@ for (const lang of LANGS) {
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
-  // Product explorer: the viewer's arrow keys follow the reading direction
-  await go(page, '/ar/solutions/stock-waste/');
-  await page.evaluate(() => document.querySelector('[data-ex] [data-enlarge]').click());
-  await sleep(500);
-  const t0 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
-  await page.keyboard.press('ArrowLeft');
-  await sleep(300);
-  const t1 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
-  if (!t0.includes('1 /') || !t1.includes('2 /')) p.push(`ArrowLeft in Arabic should go to the next screen: ${t0} → ${t1}`);
-  await page.keyboard.press('Escape');
   // Booking page: text and email in place
   await go(page, '/ar/book-a-call/');
   const book = await page.evaluate(() => ({ mail: !!document.querySelector('a[href^="mailto:info@tyll.ai"]'), h1: document.querySelector('h1').textContent.trim() }));
@@ -316,7 +301,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
       shots: document.querySelectorAll('.hs__step').length,
       oldShelf: document.querySelectorAll('[data-story], [data-tour], .shot, .sample, .ticker').length,
       oldDiagram: document.querySelectorAll('[data-flow], [data-cine], .frag').length,
-      quiet: !!document.querySelector('.hero__actions a.hero__quiet[href="#report"]'),
+      book: !!document.querySelector('.hero__actions a.hero__book'),
       sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
       ctas: document.querySelectorAll('.hero__actions .btn').length,
@@ -346,8 +331,8 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     const all = await page.$eval('.others__all', (a) => a.getAttribute('href')).catch(() => null);
     if (all !== PAGES[lang][5]) p.push(`${lang}: All Solutions link ${all}`);
     if (!home.sources.some((s) => /hero-film/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
-    if (lang === 'en' && home.h1 !== 'Know exactly what to buy. Every week.') p.push(`hero headline changed: "${home.h1}"`);
-    if (home.ctas !== 1 || !home.quiet) p.push(`${lang}: hero has ${home.ctas} buttons, quiet link ${home.quiet}`);
+    if (lang === 'en' && home.h1 !== 'Your hotel is losing money. Tyll shows you where.') p.push(`hero headline changed: "${home.h1}"`);
+    if (home.ctas < 1 || home.ctas > 2 || !home.book) p.push(`${lang}: hero has ${home.ctas} buttons, book ${home.book}`);
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
@@ -380,159 +365,68 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   });
   if (!video.playing || !video.pausedAfter) p.push(`hero video ${JSON.stringify(video)}`);
   if (mobile ? video.w !== 720 : video.w !== 1920) p.push(`hero video on ${where} is ${video.w}px wide (${video.src})`);
-  // The product explorer on every solution page: click or tap, keyboard, one explanation at a time, a detail panel
-  // for parts on another screen, the whole screen on request, and every screen in the viewer
+  // The film on every solution page: real recording, plays by itself on screen, chapters follow it, and chapters can be chosen
   for (const lang of ['en', 'ar']) {
     for (const url of SOL[lang]) {
       await go(page, url);
-      await page.evaluate(() => document.querySelector('[data-ex]').scrollIntoView({ block: 'center', behavior: 'instant' }));
-      const tabs = await page.$$('[data-ex] [role=tab]');
-      if (tabs.length < 3) { p.push(`${url}: ${tabs.length} parts`); continue; }
-      const state = () => page.evaluate(() => {
-        const ex = document.querySelector('[data-ex]');
-        const tabs = [...ex.querySelectorAll('[role=tab]')];
-        const sel = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-        return {
-          selected: sel,
-          notes: [...ex.querySelectorAll('.ex__note')].filter((x) => getComputedStyle(x).visibility === 'visible').length,
-          panel: ex.querySelector('.ex__layer.is-on')?.dataset.layer !== tabs[0].dataset.frame,
-          needsPanel: tabs[sel].dataset.frame !== tabs[0].dataset.frame,
-          ring: !!ex.querySelector(`.ex__mark.is-on[data-mark="${sel}"]`),
-        };
+      await page.evaluate(() => document.querySelector('[data-film]').scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await sleep(2500);
+      const film = await page.evaluate(async () => {
+        const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+        const v = document.querySelector('[data-film] video');
+        const a = { playing: !v.paused && v.currentTime > 0, src: v.currentSrc.split('/').pop(), texts: [...document.querySelectorAll('.film__text')].filter((t) => t.getBoundingClientRect().height > 0).length };
+        const buttons = document.querySelectorAll('.film__chapter button');
+        buttons[buttons.length - 1].click();
+        await wait(1500);
+        const on = document.querySelector('.film__chapter.is-on').dataset.chapter;
+        document.querySelector('.film__toggle').click();
+        await wait(200);
+        return { ...a, on, last: String(buttons.length - 1), paused: v.paused };
       });
-      if (mobile) await tabs[1].tap(); else await tabs[1].click();
-      await sleep(900);
-      const a = await state();
-      await page.focus('[data-ex] [role=tab][aria-selected="true"]');
-      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
-      await sleep(900);
-      const b = await state();
-      await page.keyboard.press('End');
-      await sleep(900);
-      const c = await state();
-      await page.keyboard.press('Home');
-      await sleep(900);
-      const d = await state();
-      if (a.selected !== 1 || b.selected !== 2 || c.selected !== tabs.length - 1 || d.selected !== 0) p.push(`${url}: parts selected ${a.selected}/${b.selected}/${c.selected}/${d.selected}`);
-      for (const [k, x] of Object.entries({ a, b, c, d })) {
-        if (x.notes !== 1 || x.panel !== x.needsPanel || !x.ring) p.push(`${url} ${k}: ${JSON.stringify(x)}`);
-      }
-      // Whole screen: the complete capture fits inside the view, in proportion
-      const whole = await page.evaluate(async () => {
-        const ex = document.querySelector('[data-ex]');
-        ex.querySelector('[data-whole]').click();
-        await new Promise((r) => setTimeout(r, 1100));
-        const v = ex.querySelector('.ex__view').getBoundingClientRect();
-        const cam = ex.querySelector('.ex__layer.is-on .ex__cam');
-        const r = cam.getBoundingClientRect();
-        const img = cam.querySelector('img');
-        return { fits: r.left >= v.left - 1 && r.right <= v.right + 1 && r.top >= v.top - 1 && r.bottom <= v.bottom + 1, ratio: Math.abs(r.width / r.height - 1440 / 1240) < 0.02, pressed: ex.querySelector('[data-whole]').getAttribute('aria-pressed'), loaded: img.complete && img.naturalWidth > 0 };
-      });
-      if (!whole.fits || !whole.ratio || whole.pressed !== 'true' || !whole.loaded) p.push(`${url}: whole screen ${JSON.stringify(whole)}`);
-      // Enlarge opens the viewer with every screen of this solution
-      const view = await page.evaluate(async () => {
-        const ex = document.querySelector('[data-ex]');
-        ex.querySelector('[data-enlarge]').click();
-        await new Promise((r) => setTimeout(r, 400));
-        const dlg = ex.querySelector('.viewer');
-        const out = { open: dlg.open, title: dlg.querySelector('.viewer__title').textContent, src: dlg.querySelector('.viewer__img').getAttribute('src') };
-        dlg.close();
-        return out;
-      });
-      if (!view.open || !/\d+ \/ \d+/.test(view.title) || !view.src) p.push(`${url}: viewer ${JSON.stringify(view)}`);
+      if (!film.playing || film.texts !== 1 || film.on !== film.last || !film.paused) p.push(`${url}: film ${JSON.stringify(film)}`);
+      if (mobile ? !/-phone\.mp4$/.test(film.src) : !/-desk\.mp4$/.test(film.src)) p.push(`${url}: wrong film ${film.src}`);
     }
   }
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
-  record('N', `Refinements on ${where}: wave, product sequence, hero, product explorer, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('N', `Refinements on ${where}: wave, product sequence, hero, solution films, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
-// ── P: product media fit — every part of every solution screen, desktop to phone ──────────────────
+// ── P: the film fits at every width, in every language, with no sideways scrolling ──────────────────
 {
   const p = [];
   let checked = 0;
   for (const [w, h, mobile] of [[1440, 900, false], [1280, 800, false], [1024, 768, false], [768, 1024, false], [390, 844, true]]) {
     const page = await freshPage({ width: w, height: h, mobile });
-    for (const lang of ['en', 'de', 'ar', 'it']) {
+    for (const lang of LANGS) {
       for (const url of SOL[lang]) {
         await go(page, url);
-        const r = await page.evaluate(async () => {
-          const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-          const ex = document.querySelector('[data-ex]');
-          ex.scrollIntoView({ block: 'start', behavior: 'instant' });
-          const tabs = [...ex.querySelectorAll('[role=tab]')];
-          const view = ex.querySelector('.ex__view');
-          const phone = innerWidth <= 900;
-          const out = [];
-          for (const [i, tab] of tabs.entries()) {
-            tab.click();
-            await wait(phone ? 120 : 1000);
-            const cam = ex.querySelector('.ex__layer.is-on .ex__cam');
-            const v = view.getBoundingClientRect();
-            const c = cam.getBoundingClientRect();
-            const [x, y, rw, rh] = tab.dataset.rect.split(',').map(Number);
-            if (phone) {
-              // The part is a real phone-layout capture that fits the width, with no sideways scrolling
-              const shot = ex.querySelector('.ex__phone.is-on');
-              const r = shot?.getBoundingClientRect();
-              if (!shot || !r.width) out.push(`${i}: no phone screen`);
-              else {
-                if (shot.dataset.phoneShot !== String(i)) out.push(`${i}: wrong screen`);
-                if (r.left < v.left - 1 || r.right > v.right + 1) out.push(`${i}: wider than the view`);
-                if (view.scrollWidth > view.clientWidth + 1) out.push(`${i}: scrolls sideways`);
-                if (Math.abs(r.height / r.width - shot.height / shot.width) > 0.02) out.push(`${i}: stretched`);
-              }
-            } else {
-              // The whole part is inside the view and in proportion
-              const card = { l: c.left + x * c.width, t: c.top + y * c.height, r: c.left + (x + rw) * c.width, b: c.top + (y + rh) * c.height };
-              if (card.l < v.left - 1 || card.r > v.right + 1 || card.t < v.top - 1 || card.b > v.bottom + 1) out.push(`${i}: outside the view ${JSON.stringify({ l: Math.round(card.l - v.left), t: Math.round(card.t - v.top), r: Math.round(v.right - card.r), b: Math.round(v.bottom - card.b) })}`);
-              if (Math.abs(c.width / c.height - 1440 / 1240) > 0.01) out.push(`${i}: stretched`);
-              const textScale = (c.width / 1440);
-              if (textScale < 0.7) out.push(`${i}: small (${textScale.toFixed(2)})`);
-            }
-          }
-          return { n: tabs.length, out, over: document.documentElement.scrollWidth > innerWidth };
+        const r = await page.evaluate(() => {
+          const v = document.querySelector('[data-film] video').getBoundingClientRect();
+          const chapters = [...document.querySelectorAll('.film__chapter')].map((c) => c.getBoundingClientRect());
+          return { over: document.documentElement.scrollWidth > innerWidth, inside: v.left >= -1 && v.right <= innerWidth + 1 && v.width > 100, chapters: chapters.every((c) => c.left >= -1 && c.right <= innerWidth + 1), tall: v.height <= innerHeight };
         });
-        checked += r.n;
-        if (r.out.length) p.push(`${w}px ${url}: ${r.out.join(', ')}`);
-        if (r.over) p.push(`${w}px ${url}: page scrolls sideways`);
+        checked++;
+        if (r.over || !r.inside || !r.chapters || !r.tall) p.push(`${w}px ${url}: ${JSON.stringify(r)}`);
       }
     }
     if (page.errors.length) p.push(`console at ${w}px: ${page.errors.join(' | ')}`);
     await page.ctx.close();
   }
-  record('P', `Product screens fit and stay readable: ${checked} parts across 6 pages, 4 languages, 5 widths`, p.length ? 'FAIL' : 'PASS', p.slice(0, 12).join('; '));
+  record('P', `Solution films fit: ${checked} pages, 4 languages, 5 widths`, p.length ? 'FAIL' : 'PASS', p.slice(0, 12).join('; '));
 }
 
-// ── Q: on a 1440 × 900 screen the tabs, the whole product screen and its explanation are seen together ────────
+// ── Q: demo links carry the visitor's language ────────────────────────────────────────
 {
   const p = [];
-  const page = await freshPage({ width: 1440, height: 900 });
-  for (const url of SOL.en) {
-    await go(page, url);
-    const r = await page.evaluate(async () => {
-      const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-      const ex = document.querySelector('[data-ex]');
-      const tabs = ex.querySelector('.ex__parts');
-      const header = document.querySelector('header').getBoundingClientRect().height;
-      scrollTo({ top: tabs.getBoundingClientRect().top + scrollY - header - 16, behavior: 'instant' });
-      await wait(200);
-      const out = [];
-      for (const [i, tab] of [...ex.querySelectorAll('[role=tab]')].entries()) {
-        tab.click();
-        await wait(700);
-        const note = ex.querySelector('.ex__note.is-on').getBoundingClientRect();
-        const win = ex.querySelector('.ex__window').getBoundingClientRect();
-        if (tabs.getBoundingClientRect().top < header || note.bottom > innerHeight) out.push(`${i}: note ends at ${Math.round(note.bottom)}`);
-        if (Math.abs(win.width / (win.height - 44) - 1.66) > 0.02) out.push(`${i}: screen proportions`);
-      }
-      return { out, scrolled: Math.round(scrollY) };
-    });
-    if (r.out.length) p.push(`${url}: ${r.out.join(', ')}`);
+  const page = await freshPage();
+  for (const lang of LANGS) {
+    await go(page, SOL[lang][1]);
+    const links = await page.$$eval('a[data-track="explore_demo_click"]', (a) => a.map((x) => x.href));
+    if (links.some((h) => new URL(h).searchParams.get('lang') !== lang)) p.push(`${lang}: ${links.join(' ')}`);
   }
-  if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
   await page.ctx.close();
-  record('Q', 'Product explorer fits one 1440 × 900 screen: tabs, screen and explanation', p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('Q', 'Demo links carry the language', p.length ? 'FAIL' : 'PASS', p.join('; '));
 }
 
 // ── D + E: consent ────────────────────────────────────────────────────────────────────────────────
