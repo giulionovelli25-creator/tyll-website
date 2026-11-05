@@ -47,8 +47,8 @@ const de: Dict = {
       button: 'Kostenlosen Einkaufsbericht anfordern',
       cards: { pos: 'Kasse', pms: 'PMS', stock: 'Lager', payments: 'Zahlungen' },
       steps: [
-        { label: 'Abgleich', headline: 'Stimmen unsere Rechnungen mit dem Erhaltenen überein?', problem: 'Rechnungen, Bestellungen und Lieferungen liegen getrennt, und niemand kann alle prüfen.', bullets: ['Jede Rechnung gegen Bestellung und Lieferung geprüft', 'Nur die Abweichungen warten auf Prüfung', 'Jede Artikel für Artikel gezeigt'], shot: 'Tyll zeigt eine Lieferantenrechnung: AED 6.262 bestellt, AED 5.898 erhalten, AED 6.262 berechnet.' },
-        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Zwischen den Lieferungen verschwindet Ware, und niemand kann sagen, wo.', bullets: ['Eine Zählung, die dem Lager der Reihe nach folgt', 'Zwei Tipps, wenn etwas bricht oder verdirbt', 'Oben steht, was zuerst ausgeht'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
+        { label: 'Abgleich', headline: 'Stimmen Gästerechnungen, Belege und Rechnungen überein?', problem: 'Gästerechnungen, Belege, Lieferantenrechnungen und Lieferungen liegen getrennt, und niemand kann alle prüfen.', bullets: ['Die Gästerechnungen jedes Abends gegen die Belege geprüft', 'Jede Lieferantenrechnung gegen Bestellung und Lieferung geprüft', 'Nur die Abweichungen warten auf Prüfung'], shot: 'Tyll zeigt eine Lieferantenrechnung: AED 6.262 bestellt, AED 5.898 erhalten, AED 6.262 berechnet.' },
+        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Zwischen den Lieferungen verschwindet Ware, und niemand kann sagen, wo.', bullets: ['Gästerechnungen und Belege jedes Abends zeigen, welcher Bestand hinausging', 'Eine Zählung, die dem Lager der Reihe nach folgt', 'Zwei Tipps, wenn etwas bricht oder verdirbt'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
         { label: 'Prognosen', headline: 'Was sollten wir diese Woche bestellen?', problem: 'Vom einen zu viel, das verdirbt, vom anderen zu wenig.', bullets: ['Was und wie viel zu bestellen ist', 'Alles bis zum Monatsende', 'Ein Bestellentwurf, nach Lieferanten gruppiert'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
         { label: 'Das Ergebnis', headline: 'Ein Hotel. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Die richtige Person weiß, was zu tun ist', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
       ],
@@ -76,7 +76,7 @@ const de: Dict = {
       cards: [
         { title: 'Bestand und Abfall', text: 'Sehen, was noch da ist, auf dem Handy zählen und Abfall mit zwei Tipps erfassen.' },
         { title: 'Einkauf', text: 'Wissen, was und wie viel zu bestellen ist, bis zum Monatsende.' },
-        { title: 'Umsatz und Abgleich', text: 'Sehen, was Sie eingenommen haben, Lieferantenrechnungen prüfen und nicht berechneten Wein finden.' },
+        { title: 'Umsatz und Abgleich', text: 'Die Gästerechnungen und Belege jedes Abends und Ihre Lieferantenrechnungen prüfen und sehen, was Sie eingenommen haben.' },
       ],
       more: 'So funktioniert es',
       soon: 'In Entwicklung: Events und Personal, Zimmer und Gästeerlebnis, Vertrieb und Performance.',
@@ -129,7 +129,6 @@ const de: Dict = {
     wholeScreen: 'Ganzer Bildschirm',
     closeUp: 'Nahansicht',
     exploreHint: 'Wählen Sie einen Bereich, um zu sehen, was er zeigt.',
-    swipeHint: 'Seitlich wischen, um die ganze Breite zu sehen.',
     viewer: 'Ansicht vergrößert',
     close: 'Schließen',
     zoomIn: 'Vergrößern',

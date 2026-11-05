@@ -123,8 +123,8 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
     }
   }
 
-  /* In Arabic the words sit on the right, so the picture is mirrored and its subject stays clear of them. Upright phones
-     keep the film as a window above the words, so nothing is mirrored there. */
+  /* In Arabic the words sit on the right, so the picture is mirrored and its subject stays clear of them. Upright
+     screens have the words below the subject, so nothing is mirrored there. */
   @media (orientation: landscape) {
     :global([dir='rtl']) .hero__media :global(img),
     :global([dir='rtl']) .hero__media video {
@@ -284,8 +284,9 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
   }
 
   @media (max-width: 640px) {
+    /* The film fills the whole phone screen, with the words over its darker foot */
     .hero {
-      min-height: max(560px, 100svh);
+      min-height: max(520px, 100svh);
     }
 
     .hero__inner {
@@ -298,50 +299,6 @@ const fallback = await getImage({ src: poster, widths: [1280, 1920], format: 'jp
 
     .hero__toggle {
       bottom: 1.5rem;
-    }
-  }
-
-  /* Upright phones: the film is a window at the top, framed on each subject; the words sit on the light page below */
-  @media (max-width: 640px) and (orientation: portrait) {
-    .hero {
-      --window: min(133.33vw, 64svh);
-      display: block;
-      min-height: 0;
-      max-height: none;
-      background: var(--page);
-      color: var(--ink);
-    }
-
-    .hero__media,
-    .hero__shade {
-      bottom: auto;
-      height: var(--window);
-    }
-
-    .hero__shade {
-      background:
-        linear-gradient(180deg, rgb(var(--night-rgb) / 0.42) 0%, rgb(var(--night-rgb) / 0) 22%);
-    }
-
-    .hero__inner {
-      --text-1: var(--ink);
-      --text-2: var(--steel);
-      padding-top: calc(var(--window) + var(--s-4));
-      padding-bottom: var(--s-5);
-    }
-
-    .hero__inner :global(.btn--solid) {
-      background: var(--ink);
-      color: var(--paper);
-    }
-
-    .hero__inner :global(.btn--solid:hover) {
-      background: var(--graphite);
-    }
-
-    .hero__toggle {
-      top: calc(var(--window) - 44px - var(--s-2));
-      bottom: auto;
     }
   }
 </style>

@@ -687,10 +687,16 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     }
   }
 
-  @media (max-width: 380px) {
+  /* Small phones: the longest labels (Arabic, German) still fit beside the logo and the menu */
+  @media (max-width: 430px) {
+    .header__bar {
+      gap: 0.5rem;
+    }
+
     .header__book {
       padding-inline: 0.8rem;
       font-size: 0.875rem;
+      white-space: nowrap;
     }
   }
 

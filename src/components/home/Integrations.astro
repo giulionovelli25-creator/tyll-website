@@ -187,6 +187,42 @@ const v = t(lang).home.works;
     .works__note {
       margin-top: var(--s-5);
     }
+
+    @media (max-width: 430px) {
+      .works {
+        --logo-scale: 0.6;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .works {
+        --logo-scale: 0.5;
+      }
+    }
+
+    /* Phones show every logo at once, still, rather than a moving band cut by the screen's edges */
+    .band {
+      overflow: visible;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .band__track {
+      width: auto;
+      animation: none;
+    }
+
+    .band__set {
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--s-3) var(--logo-gap);
+      padding: 0 var(--gut);
+    }
+
+    .band__set[aria-hidden='true'] {
+      display: none;
+    }
   }
 
   /* Reduced motion: a still, centred grid of one set */

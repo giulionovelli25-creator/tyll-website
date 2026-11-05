@@ -48,8 +48,8 @@ const it: Dict = {
       button: 'Ricevi il report acquisti gratuito',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Magazzino', payments: 'Pagamenti' },
       steps: [
-        { label: 'Riconciliazione', headline: 'Le fatture coincidono con quanto ricevuto?', problem: 'Fatture, ordini e consegne stanno in posti separati, e nessuno può controllarli tutti.', bullets: ['Ogni fattura confrontata con ordine e consegna', 'Solo le differenze attendono la revisione', 'Ognuna mostrata articolo per articolo'], shot: 'Tyll mostra una fattura fornitore: AED 6.262 ordinati, AED 5.898 ricevuti, AED 6.262 fatturati.' },
-        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce tra una consegna e l’altra, e nessuno sa dire dove.', bullets: ['Un conteggio che percorre il magazzino in ordine', 'Due tocchi quando qualcosa si rompe o va sprecato', 'In cima ciò che finisce per primo'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
+        { label: 'Riconciliazione', headline: 'Conti, scontrini e fatture coincidono?', problem: 'Conti, scontrini, fatture e consegne stanno in posti separati, e nessuno può controllarli tutti.', bullets: ['I conti di ogni sera confrontati con gli scontrini', 'Ogni fattura confrontata con ordine e consegna', 'Solo le differenze attendono la revisione'], shot: 'Tyll mostra una fattura fornitore: AED 6.262 ordinati, AED 5.898 ricevuti, AED 6.262 fatturati.' },
+        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce tra una consegna e l’altra, e nessuno sa dire dove.', bullets: ['I conti e gli scontrini di ogni sera mostrano quale merce è uscita', 'Un conteggio che percorre il magazzino in ordine', 'Due tocchi quando qualcosa si rompe o va sprecato'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
         { label: 'Previsioni', headline: 'Cosa dobbiamo ordinare questa settimana?', problem: 'Troppo di una cosa va sprecato, mentre un’altra finisce.', bullets: ['Cosa ordinare e quanto', 'Tutto fino a fine mese', 'Una bozza d’ordine, raggruppata per fornitore'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
         { label: 'Il risultato', headline: 'Un hotel. Una risposta chiara.', problem: '', bullets: ['Tutti i sistemi collegati', 'La persona giusta sa cosa fare', 'Denaro perso ritrovato prima che sparisca'], shot: '' },
       ],
@@ -77,7 +77,7 @@ const it: Dict = {
       cards: [
         { title: 'Magazzino e sprechi', text: 'Vedi cosa resta, conta dal telefono e registra gli sprechi in due tocchi.' },
         { title: 'Acquisti', text: 'Sai cosa ordinare e quanto, fino a fine mese.' },
-        { title: 'Ricavi e riconciliazione', text: 'Vedi quanto hai incassato, controlla le fatture dei fornitori e trova il vino non fatturato.' },
+        { title: 'Ricavi e riconciliazione', text: 'Controlla i conti e gli scontrini di ogni sera e le fatture dei fornitori, e vedi quanto hai incassato.' },
       ],
       more: 'Scopri come funziona',
       soon: 'In sviluppo: eventi e personale, camere ed esperienza ospiti, vendite e performance.',
@@ -130,7 +130,6 @@ const it: Dict = {
     wholeScreen: 'Schermo intero',
     closeUp: 'Primo piano',
     exploreHint: 'Scegli una parte dello schermo per vedere cosa mostra.',
-    swipeHint: 'Scorri di lato per vedere tutta la larghezza.',
     viewer: 'Visualizzatore schermate',
     close: 'Chiudi',
     zoomIn: 'Ingrandisci',

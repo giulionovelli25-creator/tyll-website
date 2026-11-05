@@ -472,10 +472,16 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
             const c = cam.getBoundingClientRect();
             const [x, y, rw, rh] = tab.dataset.rect.split(',').map(Number);
             if (phone) {
-              // The part keeps the capture's proportions and a readable scale; wider parts scroll sideways
-              const scale = c.width / (rw * 1440);
-              if (scale < 0.79 && c.width < view.clientWidth - 24) out.push(`${i}: scale ${scale.toFixed(2)}`);
-              if (Math.abs(c.height / c.width - (rh * 1240) / (rw * 1440)) > 0.02) out.push(`${i}: proportions`);
+              // The part is a real phone-layout capture that fits the width, with no sideways scrolling
+              const shot = ex.querySelector('.ex__phone.is-on');
+              const r = shot?.getBoundingClientRect();
+              if (!shot || !r.width) out.push(`${i}: no phone screen`);
+              else {
+                if (shot.dataset.phoneShot !== String(i)) out.push(`${i}: wrong screen`);
+                if (r.left < v.left - 1 || r.right > v.right + 1) out.push(`${i}: wider than the view`);
+                if (view.scrollWidth > view.clientWidth + 1) out.push(`${i}: scrolls sideways`);
+                if (Math.abs(r.height / r.width - shot.height / shot.width) > 0.02) out.push(`${i}: stretched`);
+              }
             } else {
               // The whole part is inside the view and in proportion
               const card = { l: c.left + x * c.width, t: c.top + y * c.height, r: c.left + (x + rw) * c.width, b: c.top + (y + rh) * c.height };

@@ -47,8 +47,8 @@ const en = {
       button: 'Get your free purchasing report',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Stock', payments: 'Payments' },
       steps: [
-        { label: 'Reconciliation', headline: 'Do our invoices match what we received?', problem: 'Invoices, orders and deliveries sit in separate places, and nobody can check them all.', bullets: ['Each invoice checked against the order and the delivery', 'Only the differences wait for review', 'Each one shown item by item'], shot: 'Tyll showing one supplier invoice: AED 6,262 ordered, AED 5,898 received, AED 6,262 invoiced.' },
-        { label: 'Stock and Log waste', headline: 'Where is our stock going?', problem: 'Stock goes missing between deliveries, and nobody can say where.', bullets: ['A count that walks the storeroom in order', 'Two taps when something breaks or is wasted', 'What runs out first, on top'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
+        { label: 'Reconciliation', headline: 'Do our tabs, receipts and invoices match?', problem: 'Tabs, receipts, invoices and deliveries sit in separate places, and nobody can check them all.', bullets: ['Each night’s tabs checked against the receipts', 'Each invoice checked against the order and the delivery', 'Only the differences wait for review'], shot: 'Tyll showing one supplier invoice: AED 6,262 ordered, AED 5,898 received, AED 6,262 invoiced.' },
+        { label: 'Stock and Log waste', headline: 'Where is our stock going?', problem: 'Stock goes missing between deliveries, and nobody can say where.', bullets: ['Each night’s tabs and receipts show what stock went out', 'A count that walks the storeroom in order', 'Two taps when something breaks or is wasted'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
         { label: 'Predictions', headline: 'What should we order this week?', problem: 'Too much of one thing goes to waste while another runs out.', bullets: ['What to order and how much', 'Everything through to month end', 'One draft order, grouped by supplier'], shot: 'A draft order grouped by supplier: Emirates Dairy & Dry Goods, with cheddar, parmesan, mozzarella, cream cheese and labneh.' },
         { label: 'The result', headline: 'One hotel. One clear answer.', problem: '', bullets: ['Every system connected', 'The right person told what to do', 'Lost money found before it is gone'], shot: '' },
       ],
@@ -76,7 +76,7 @@ const en = {
       cards: [
         { title: 'Stock and Waste', text: 'See what is left, count it on a phone and log waste in two taps.' },
         { title: 'Purchasing', text: 'Know what to order and how much, through to month end.' },
-        { title: 'Revenue and Reconciliation', text: 'See what you made, check supplier invoices and find wine not billed.' },
+        { title: 'Revenue and Reconciliation', text: 'Check each night’s tabs and receipts and your supplier invoices, and see what you made.' },
       ],
       more: 'See how it works',
       soon: 'In development: Events and Staffing, Rooms and Guest Experience, Sales and Performance.',
@@ -129,7 +129,6 @@ const en = {
     wholeScreen: 'Whole screen',
     closeUp: 'Close-up',
     exploreHint: 'Choose a part of the screen to see what it shows.',
-    swipeHint: 'Swipe sideways to see the full width.',
     viewer: 'Screen viewer',
     close: 'Close',
     zoomIn: 'Zoom in',

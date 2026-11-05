@@ -156,7 +156,7 @@ const wave = ribbon(0.32);
       <header class="product__head">
         <h2 id="sol-product" class="display">{s.walkTitle[lang]}</h2>
       </header>
-      <ProductExplorer lang={lang} solution={s} explore={ex} id={`ex-${solution}`} />
+      <ProductExplorer lang={lang} solution={s} explore={ex} solutionKey={solution} id={`ex-${solution}`} />
       {s.note && <p class="product__note">{s.note[lang]}</p>}
     </div>
   </section>
@@ -820,19 +820,18 @@ const wave = ribbon(0.32);
   }
 
   @media (max-width: 700px) {
+    /* Every other solution is on the page; nothing runs off the edge */
     .others ul {
-      display: flex;
-      gap: 1rem;
-      margin-inline: calc(var(--gut) * -1);
-      padding-inline: var(--gut);
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem 0.875rem;
     }
 
-    .others li {
-      flex: 0 0 64%;
-      scroll-snap-align: start;
+    .others li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
+    .others li:last-child:nth-child(odd) a :global(img) {
+      aspect-ratio: 2 / 1;
     }
 
     .context__photo,

@@ -1552,7 +1552,7 @@ const systems = [
   @media (max-width: 1000px) {
     .hs {
       --hs-step: 86svh;
-      --hs-scene: min(42svh, 86vw);
+      --hs-scene: min(46svh, 86vw);
       --hs-pin: calc(var(--header-h) + var(--hs-scene) + var(--s-1));
     }
 
@@ -1602,13 +1602,26 @@ const systems = [
       order: 3;
     }
 
+    /* The hotel stays pinned and the text scrolls normally beneath it, so no step is ever cut off by a short screen.
+       `top` is still read by the script as the line where a step begins. */
+    .hs__step,
+    .hs__step:nth-child(3) {
+      min-height: 0;
+    }
+
+    .hs__step:last-child {
+      min-height: var(--hs-step);
+    }
+
     .hs__step > div {
+      position: static;
       min-height: 0;
       padding-block: var(--s-2);
     }
 
-    .hs__step:last-child > div {
-      min-height: calc(100svh - var(--hs-pin));
+    .hs.is-live .hs__fix {
+      opacity: 1;
+      transform: none;
     }
 
     .hs__progress {
@@ -1668,7 +1681,7 @@ const systems = [
 
   @media (max-width: 1000px) and (max-height: 700px) {
     .hs {
-      --hs-scene: min(34svh, 86vw);
+      --hs-scene: min(42svh, 86vw);
       --hs-step: 100svh;
     }
   }
