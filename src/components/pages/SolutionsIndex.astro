@@ -6,6 +6,7 @@ import Base from '../../layouts/Base.astro';
 import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
+import SilverWave from '../SilverWave.astro';
 import { t, href, type Locale, type SolutionKey } from '../../i18n';
 import { available, comingSoon } from '../../config/products';
 
@@ -18,7 +19,10 @@ const d = t(lang);
 ---
 
 <Base lang={lang} page="solutions" title={d.meta.solutionsTitle} description={d.meta.solutionsDescription}>
-  <PageIntro title={d.solutionPage.indexTitle} />
+  <div class="index-top">
+    <SilverWave phase={0.7} />
+    <PageIntro title={d.solutionPage.indexTitle} />
+  </div>
   <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
     {
       ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).filter(([keys]) => keys.length).map(([keys, soon]) => (
@@ -60,6 +64,16 @@ const d = t(lang);
 </Base>
 
 <style>
+  .index-top {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .index-top > :global(*:not(.wave)) {
+    position: relative;
+    z-index: 1;
+  }
+
   /* Products in development carry the badge in the photo's top corner */
   .tile__soon {
     position: absolute;

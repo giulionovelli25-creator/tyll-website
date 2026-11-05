@@ -37,7 +37,7 @@ const en = {
       title: 'The questions Tyll answers.',
       text: 'Tyll reads the systems you already use and gives your team a clear answer.',
       scene: 'A grand hotel, at first only a drawing surrounded by loose invoices, a storeroom in disorder and too much stock outside. Tyll deals with each problem in turn, each part of the building is completed, and the finished hotel opens in the evening with guests coming and going.',
-      more: 'See how it works',
+      more: 'Watch it work',
       before: 'The problem',
       after: 'With Tyll',
       stepOf: 'Step {n} of {t}',
@@ -107,6 +107,14 @@ const en = {
       sending: 'Sending…',
       sendError: 'That did not send. Please try again, or email us at',
     },
+  },
+  how: {
+    title: 'How it works.',
+    steps: <[string, string][]>[
+      ['Connect', 'Read-only links to your POS, PMS and payment systems. Nothing changes in them.'],
+      ['Tyll checks', 'Every night, tabs, receipts, stock and invoices are compared.'],
+      ['Your team acts', 'Each person sees what to fix, with the money involved.'],
+    ],
   },
   solutionPage: {
     demoEnglish: '',

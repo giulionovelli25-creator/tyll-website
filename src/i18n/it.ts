@@ -38,7 +38,7 @@ const it: Dict = {
       title: 'Le domande a cui Tyll risponde.',
       text: 'Tyll legge i sistemi che usi già e dà al tuo team una risposta chiara.',
       scene: 'Un grand hotel, all’inizio solo un disegno circondato da fatture sparse, un magazzino in disordine e troppa merce fuori. Tyll risolve un problema dopo l’altro, ogni parte dell’edificio viene completata e l’hotel finito apre la sera con ospiti che arrivano e partono.',
-      more: 'Scopri come funziona',
+      more: 'Guardalo all’opera',
       before: 'Il problema',
       after: 'Con Tyll',
       stepOf: 'Passo {n} di {t}',
@@ -108,6 +108,14 @@ const it: Dict = {
       sending: 'Invio in corso…',
       sendError: 'Invio non riuscito. Riprova o scrivici a',
     },
+  },
+  how: {
+    title: 'Come funziona.',
+    steps: <[string, string][]>[
+      ['Collega', 'Accesso in sola lettura a POS, PMS e pagamenti. Lì non cambia nulla.'],
+      ['Tyll controlla', 'Ogni sera confronta conti, scontrini, merce e fatture.'],
+      ['Il tuo team agisce', 'Ognuno vede cosa sistemare, con l’importo in gioco.'],
+    ],
   },
   solutionPage: {
     demoEnglish: 'La demo dal vivo per ora è in inglese.',
