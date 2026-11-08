@@ -1,18 +1,25 @@
 ---
-// "The questions Tyll answers": a scroll story. A grand hotel starts as an architect's drawing in the middle of a mess:
-// transactions everywhere, a storeroom in disorder, a bar with empty shelves and too much stock outside. Each step
-// looks at one problem, fixes it, and completes that part of the building, until the hotel is finished, lit and
-// receiving guests.
-//
-// The position of the text decides everything: `b` runs from 0 to 4 across the four steps. Every moving piece carries
-// the window of `b` in which it arrives (data-b, data-d), optionally where it comes from (data-x, data-y, data-r),
-// when it first shows (data-s) and when it leaves (data-ob, data-od, data-ox, data-oy). Scrolling back therefore undoes
-// everything. Only the guests, the waiter and the data pulses run on time, from the last step and only on screen.
-//
-// The page's HTML is the finished hotel, so without JavaScript or with reduced motion that is what shows. The scene
-// always reads left to right, also in Arabic. No bottles in the restaurant or bar (Gulf market).
+// "Three places your hotel loses money": a photograph-quality render of a hotel fills the right of the screen and stays
+// there while the four steps scroll past on the left. The scroll drives the camera, and every move lands with the text
+// it belongs to:
+//   Revenue and Reconciliation  the hotel at dusk, its three callouts, the first one lit
+//   → the camera pushes in to the entrance doors and, as they fill the frame, the kitchen fades in
+//   Stock and Waste             the pass at dinner service, one marker on the plates
+//   → back out through the doors to the whole hotel, across to the service entrance, in to the storeroom
+//   Purchasing                  the dry store, markers on the count and the shelves
+//   → back out to the whole hotel, now a little later (a dusk tint over the same photograph)
+//   The result                  every callout lit and joined by fine lines to the Tyll mark above the roof
+// `b` runs from 0 to 4 across the four steps and comes from the text's position, so scrolling back undoes everything.
+// Only transforms and opacity change, over eased ranges of `b`, and nothing moves on its own. Under reduced motion the
+// camera does not move: the photographs still change and the text still follows. Without JavaScript the finished hotel
+// stands with every callout, and the four steps follow one another. The scene reads left to right, also in Arabic.
+import { Picture } from 'astro:assets';
 import Logo from '../Logo.astro';
-import HotelPerson from './HotelPerson.astro';
+import SolutionIcon from '../SolutionIcon.astro';
+import hotel from '../../assets/story/hotel-dusk.jpg';
+import sceneKitchen from '../../assets/story/scene-kitchen.jpg';
+import sceneStore from '../../assets/story/scene-stock.jpg';
+import { solutions } from '../../content/solutions';
 import { t, href, type Locale } from '../../i18n';
 
 interface Props {
@@ -20,248 +27,88 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const v = t(lang).home.tour;
-
-// The real screen and solution page behind each step
+const d = t(lang);
+const v = d.home.tour;
 const pagesOf = [href('finance', lang), href('stock', lang), href('forecasting', lang)];
 
-// ── Geometry, in the units of a 1000 × 860 drawing ──
-const G = 730; // ground level
-const BAY = 380 / 9;
-const CENTRE = { l: 310, r: 690, top: 6 };
-const WING_L = { l: 140, r: 310, top: 5 };
-const WING_R = { l: 690, r: 860, top: 5 };
-const GROUND_H = 96;
-const FLOOR_H = 56;
-const floorY = (f: number) => (f === 0 ? G - GROUND_H : G - GROUND_H - FLOOR_H * f);
-const floorH = (f: number) => (f === 0 ? GROUND_H : FLOOR_H);
-const n = (v: number) => +v.toFixed(2);
-
-type Move = { x?: number; y?: number; r?: number; s?: number; ob?: number; od?: number; ox?: number; oy?: number; draw?: boolean };
-/** Data attributes for a piece that arrives at `b` over `d`, read by the script below */
-const A = (b: number, d: number, m: Move = {}) => ({
-  'data-b': n(b),
-  'data-d': n(d),
-  'data-x': m.x,
-  'data-y': m.y,
-  'data-r': m.r,
-  'data-s': m.s === undefined ? undefined : n(m.s),
-  'data-ob': m.ob === undefined ? undefined : n(m.ob),
-  'data-od': m.od,
-  'data-ox': m.ox,
-  'data-oy': m.oy,
-  'data-draw': m.draw ? '' : undefined,
-});
-
-/** A repeatable sequence of numbers between 0 and 1, so the mess is the same on every build */
-let seed = 7;
-const rand = () => {
-  seed = (seed * 16807) % 2147483647;
-  return seed / 2147483647;
+// Every hotspot in one place, in percentages of its photograph. The exterior: where the first three steps point on the
+// façade (the entrance, the kitchen windows at the left of the ground floor, the service entrance at the right), the two
+// points the camera pushes in to, and where the Tyll mark sits above the roof. Each scene: what its markers point at.
+const exterior = {
+  spots: [
+    { x: 53.5, y: 64, side: 'start', icon: solutions.finance.icon },
+    { x: 42, y: 80, side: 'end', icon: solutions.stock.icon },
+    { x: 78, y: 77, side: 'up', icon: solutions.forecasting.icon },
+  ],
+  doors: { x: 53.5, y: 80 },
+  service: { x: 78, y: 78 },
+  hub: { x: 58, y: 7 },
 };
-
-// ── When each part of the building is completed ──
-const ZONE = {
-  centre: { stone: 0.36, span: 0.34, windows: 0.56, wspan: 0.24, roof: 0.7 },
-  left: { stone: 1.6, span: 0.18, windows: 1.68, wspan: 0.2, roof: 1.82 },
-  right: { stone: 2.6, span: 0.18, windows: 2.68, wspan: 0.2, roof: 2.82 },
-};
-type Zone = keyof typeof ZONE;
-
-// ── Stone laid in courses, each course offset by half a block ──
-type Block = { x: number; w: number; y: number; h: number; f: number; zone: Zone; b: number; from: 'left' | 'right' | 'below' };
-const course = (l: number, r: number, f: number, zone: Zone): Block[] => {
-  const out: Block[] = [];
-  let x = l - (f % 2 ? BAY / 2 : 0);
-  while (x < r - 0.5) {
-    const a = Math.max(x, l);
-    const e = Math.min(x + BAY, r);
-    out.push({ x: n(a), w: n(e - a), y: floorY(f), h: floorH(f), f, zone, b: 0, from: 'below' });
-    x += BAY;
-  }
-  out[0].from = 'left';
-  out[out.length - 1].from = 'right';
-  return out;
-};
-const blocks: Block[] = [
-  ...Array.from({ length: WING_L.top + 1 }, (_, f) => course(WING_L.l, WING_L.r, f, 'left')).flat(),
-  ...Array.from({ length: WING_R.top + 1 }, (_, f) => course(WING_R.l, WING_R.r, f, 'right')).flat(),
-  ...Array.from({ length: CENTRE.top + 1 }, (_, f) => course(CENTRE.l, CENTRE.r, f, 'centre')).flat(),
-];
-(Object.keys(ZONE) as Zone[]).forEach((zone) => {
-  const list = blocks.filter((p) => p.zone === zone).sort((p, q) => p.f - q.f || p.x - q.x);
-  list.forEach((p, i) => (p.b = ZONE[zone].stone + (i / list.length) * ZONE[zone].span));
-});
-const rustication = (l: number, r: number) => [650, 666, 682, 698, 714].map((y) => `M${l} ${y}H${r}`).join('');
-
-// ── Windows, set one by one from the bottom up ──
-type Win = { x: number; y: number; w: number; h: number; f: number; id: 'tall' | 'plain' | 'small'; zone: Zone; b: number; lit: boolean; warm: boolean };
-const SIZES = { tall: [28, 52, 2], plain: [26, 40, 9], small: [24, 32, 14] } as const;
-const windowsFor = (l: number, bays: number, top: number, zone: Zone) =>
-  Array.from({ length: top }, (_, k) => k + 1).flatMap((f) =>
-    Array.from({ length: bays }, (_, i) => {
-      const id = f === 1 ? 'tall' : f === top ? 'small' : 'plain';
-      const [w, h, dy] = SIZES[id];
-      return { x: n(l + BAY * (i + 0.5) - w / 2), y: floorY(f) + dy, w, h, f, id, zone, b: 0, lit: false, warm: false } as Win;
-    }),
-  );
-const windows = [...windowsFor(WING_L.l + 0.5, 4, 5, 'left'), ...windowsFor(WING_R.l + 0.5, 4, 5, 'right'), ...windowsFor(CENTRE.l, 9, 6, 'centre')];
-(Object.keys(ZONE) as Zone[]).forEach((zone) => {
-  const list = windows.filter((w) => w.zone === zone).sort((p, q) => p.f - q.f || p.x - q.x);
-  list.forEach((w, i) => (w.b = ZONE[zone].windows + (i / list.length) * ZONE[zone].wspan));
-});
-windows.forEach((w, i) => {
-  // Most rooms are lit in the evening, a few are not, and the lamps differ a little
-  w.lit = (i * 7 + w.f * 3) % 11 > 1;
-  w.warm = (i * 5) % 3 === 0;
-});
-const balconies = (zone: Zone) =>
-  windows
-    .filter((w) => w.f === 1 && w.zone === zone)
-    .map((w) => {
-      const x = w.x + 1;
-      const y = w.y + 37;
-      return `M${n(x)} ${y}h26M${n(x)} ${y + 11}h26M${n(x + 6)} ${y}v11M${n(x + 13)} ${y}v11M${n(x + 20)} ${y}v11`;
-    })
-    .join('');
-
-// ── The ground floor: the kitchen and storeroom on the left, the bar on the right, the restaurant in the centre ──
-const restaurant = [0, 1, 2, 6, 7, 8].map((i) => n(CENTRE.l + BAY * (i + 0.5) - 15));
-const arch = (x: number) => `M${x} 724V665a15 15 0 0 1 30 0V724Z`;
-// Set by the measured width of each letter in the serif, so the gaps look even: a little tighter around the O and the T
-const sign = [
-  { l: 'H', x: 408.08 },
-  { l: 'O', x: 449.68 },
-  { l: 'T', x: 490.13 },
-  { l: 'E', x: 527.88 },
-  { l: 'L', x: 564.38 },
-];
-
-// ── The drawing the hotel starts as: one path of fine lines ──
-const SILHOUETTE = 'M140 730V357H134V350H146L162 326H310V301H300V292H318L342 248H658L682 292H700V301H690V326H838L854 350H866V357H860V730';
-const ghost = [
-  `${SILHOUETTE}Z`,
-  'M310 730V301M690 730V301M318 298H682',
-  ...[1, 2, 3, 4, 5].map((f) => `M140 ${floorY(f) + FLOOR_H}H860`),
-  `M310 ${floorY(5)}H690`,
-  ...windows.map((w) => `M${w.x} ${w.y}h${w.w}v${w.h}h${-w.w}z`),
-  ...[-2, -1, 0, 1, 2].map((k) => `M${488 + k * 62} 290V266L${500 + k * 62} 254L${512 + k * 62} 266V290Z`),
-  ...restaurant.map(arch),
-  'M146 644H304V730H146ZM696 644H800V730H696ZM806 662H848V730H806ZM474 730V646H526V730',
-  'M404 628H596V612L590 602H410L404 612ZM419 628V750M581 628V750',
-].join('');
-
-// ── Step 1: transactions everywhere, streaming in through the door once they are checked ──
-const slips = Array.from({ length: 58 }, (_, i) => ({
-  x: n(30 + rand() * 910 - 486),
-  y: n(100 + rand() * 640 - 672),
-  r: n(-55 + rand() * 110),
-  b: 0.3 + i * 0.0068,
-}));
-
-// ── Step 2: the storeroom, on two bays of walk-in shelving. Some stock has fallen, and amber outlines mark what cannot be
-// accounted for. Each item is real kitchen stock with its own silhouette. Arabic pages show no alcohol.
-const wineOrWater = lang === 'ar' ? 'water' : 'wine';
-type Stock = { k: string; x: number; y: number; w: number; h: number; fall?: boolean; missing?: boolean; tick?: boolean };
-const SHELVES = [662, 684, 706, 726];
-const stockList: Stock[] = [
-  { k: 'sack', x: 231, y: SHELVES[0] - 15, w: 12, h: 15, tick: true },
-  { k: 'sack', x: 245, y: SHELVES[0] - 15, w: 12, h: 15, missing: true },
-  { k: 'eggs', x: 267, y: SHELVES[0] - 6, w: 15, h: 6, tick: true },
-  { k: 'eggs', x: 267, y: SHELVES[0] - 12, w: 15, h: 6 },
-  { k: 'eggs', x: 284, y: SHELVES[0] - 6, w: 15, h: 6 },
-  { k: 'romaine', x: 231, y: SHELVES[1] - 13, w: 16, h: 13, tick: true },
-  { k: 'tomato', x: 248, y: SHELVES[1] - 12, w: 14, h: 12, fall: true },
-  { k: 'cheese', x: 267, y: SHELVES[1] - 8, w: 12, h: 8 },
-  { k: 'cheese', x: 267, y: SHELVES[1] - 16, w: 12, h: 8, fall: true },
-  { k: 'meat', x: 281, y: SHELVES[1] - 9, w: 18, h: 9, tick: true },
-  { k: 'oil', x: 231, y: SHELVES[2] - 15, w: 4.5, h: 15 },
-  { k: 'oil', x: 236, y: SHELVES[2] - 15, w: 4.5, h: 15, fall: true },
-  { k: 'oil', x: 241, y: SHELVES[2] - 15, w: 4.5, h: 15, missing: true },
-  { k: 'soda', x: 247, y: SHELVES[2] - 12, w: 16, h: 12, fall: true },
-  { k: wineOrWater, x: 267, y: SHELVES[2] - 12, w: 16, h: 12 },
-  { k: wineOrWater, x: 284, y: SHELVES[2] - 12, w: 15, h: 12, missing: true },
-  { k: 'keg', x: 231, y: SHELVES[3] - 17, w: 12, h: 17 },
-  { k: 'sack', x: 245, y: SHELVES[3] - 15, w: 13, h: 15, tick: true },
-  { k: 'tomato', x: 267, y: SHELVES[3] - 12, w: 14, h: 12 },
-  { k: 'keg', x: 285, y: SHELVES[3] - 17, w: 12, h: 17 },
-];
-const stock = stockList.map((p, i) => ({ ...p, i, fx: n(-22 + rand() * 44), fy: n(729 - p.y - p.h), fr: n(-75 + rand() * 150) }));
-const ticks = stock.filter((p) => p.tick);
-
-// ── Step 3: the back bar, filled left to right while the delivery comes in. Arabic pages show no alcohol.
-const dry = lang === 'ar';
-const barStock = [
-  { k: dry ? 'tumbler' : 'wineglass', w: 8, h: 12 },
-  { k: dry ? 'tumbler' : 'wineglass', w: 8, h: 12 },
-  { k: dry ? 'tumbler' : 'wineglass', w: 8, h: 12 },
-  { k: dry ? 'teacup' : 'coupe', w: 10, h: 10 },
-  { k: dry ? 'teacup' : 'coupe', w: 10, h: 10 },
-  { k: dry ? 'tumbler' : 'cocktail', w: 9, h: 11 },
-  { k: dry ? 'tumbler' : 'cocktail', w: 9, h: 11 },
-  { k: dry ? 'water-bottle' : 'wine-bottle', w: 5, h: 15 },
-  { k: dry ? 'water-bottle' : 'wine-bottle', w: 5, h: 15 },
-  { k: dry ? 'water-bottle' : 'spirit-bottle', w: 6, h: 15 },
-  { k: dry ? 'teacup' : 'wineglass', w: 8, h: 12 },
-  { k: dry ? 'teacup' : 'wineglass', w: 8, h: 12 },
-  { k: dry ? 'water-bottle' : 'spirit-bottle', w: 6, h: 15 },
-  { k: dry ? 'water-bottle' : 'wine-bottle', w: 5, h: 15 },
-].map((item, i) => {
-  const row = i < 7 ? 0 : 1;
-  const col = row ? i - 7 : i;
-  return { ...item, x: 704 + col * 12.8, y: (row ? 697 : 680) - item.h };
-});
-
-// ── The four systems: scattered at first, then one connected row with Tyll in the middle ──
-const systems = [
-  { label: v.cards.pos, left: 12, dx: 5, dy: 17, r: -7, on: 0.78, line: 'M120 60H500' },
-  { label: v.cards.pms, left: 32, dx: 48, dy: 7, r: 5, on: 2.72, line: 'M320 60H500' },
-  { label: v.cards.stock, left: 68, dx: -58, dy: 28, r: 6, on: 1.72, line: 'M680 60H500' },
-  { label: v.cards.payments, left: 88, dx: -3, dy: 14, r: -5, on: 0.82, line: 'M880 60H500' },
+const scenes = [
+  { step: 1, photo: sceneKitchen, markers: [{ x: 71, y: 72, side: 'up', label: v.steps[1].label, icon: solutions.stock.icon }] },
+  {
+    step: 2,
+    photo: sceneStore,
+    markers: [
+      { x: 38, y: 55, side: 'end', label: v.steps[2].label, icon: solutions.forecasting.icon },
+      { x: 76, y: 30, side: 'up', label: v.zones.store, icon: solutions.stock.icon },
+    ],
+  },
 ];
 ---
 
-<section class="hs is-dusk" aria-labelledby="hs-title" data-hs>
+<section
+  class="hs"
+  aria-labelledby="hs-title"
+  data-hs
+  style={`--hs-ratio:${hotel.width / hotel.height};--hub-x:${exterior.hub.x}%;--hub-y:${exterior.hub.y}%`}
+  data-doors={`${exterior.doors.x} ${exterior.doors.y}`}
+  data-service={`${exterior.service.x} ${exterior.service.y}`}
+>
   <div class="hs__grid">
     <div class="hs__text">
       <header class="hs__head" data-hs-head>
-        <h2 id="hs-title" class="display">{v.title}</h2>
-        <ol class="hs__progress" aria-hidden="true">
-          {v.steps.map((step, i) => <li data-hs-dot={i}><span>{i + 1}</span> {step.label}</li>)}
+        <ol class="hs__progress" aria-label={v.title}>
+          {
+            v.steps.map((step, i) => (
+              <li>
+                <button class="hs__go" type="button" data-hs-go={i} aria-current={i === 0 ? 'step' : undefined}>
+                  <span>{i + 1}</span> {step.label}
+                </button>
+              </li>
+            ))
+          }
         </ol>
+        <h2 id="hs-title" class="display">{v.title}</h2>
       </header>
       <ol class="hs__steps" data-hs-steps>
         {
           v.steps.map((step, i) => (
-            <li class="hs__step is-active is-fixed" data-hs-step={i}>
+            <li class:list={['hs__step', i === 0 && 'is-active']} data-hs-step={i} data-label={step.label}>
               <div>
-                <p class="hs__label"><span>{v.stepOf.replace('{n}', String(i + 1)).replace('{t}', String(v.steps.length))}</span> {step.label}</p>
+                <p class="visually-hidden">{v.stepOf.replace('{n}', String(i + 1)).replace('{t}', String(v.steps.length))}</p>
                 <h3 class="display">{step.headline}</h3>
-                <div class="hs__flip">
-                  {step.problem && (
-                    <div class="hs__problem">
-                      <p class="hs__tag">{v.before}</p>
-                      <p>{step.problem}</p>
-                    </div>
-                  )}
-                  <div class="hs__fix">
-                    <p class="hs__tag hs__tag--on">{v.after}</p>
-                    <ul>
-                      {step.bullets.map((bullet) => <li>{bullet}</li>)}
-                    </ul>
-                    {i < v.steps.length - 1 && (
-                      <a class="hs__more" href={pagesOf[i]}>
-                        {v.more} <span class="flip-rtl" aria-hidden="true">→</span>
-                      </a>
-                    )}
-                    {i === v.steps.length - 1 && (
-                      <div class="hs__next">
-                        <a class="btn btn--solid btn--lg hs__cta" href={href('book', lang)} data-track="book_demo_click" data-track-from="hotel">
-                          {t(lang).cta.book}
-                        </a>
-                      </div>
-                    )}
+                {step.problem && (
+                  <div class="hs__problem">
+                    <p class="hs__tag">{v.before}</p>
+                    <p>{step.problem}</p>
                   </div>
+                )}
+                <div class="hs__fix">
+                  <p class="hs__tag hs__tag--on">{v.after}</p>
+                  <ul>
+                    {step.bullets.map((bullet) => <li>{bullet}</li>)}
+                  </ul>
+                  {i < v.steps.length - 1 && (
+                    <a class="hs__more" href={pagesOf[i]}>
+                      {v.more} <span class="flip-rtl" aria-hidden="true">→</span>
+                    </a>
+                  )}
+                  {i === v.steps.length - 1 && (
+                    <a class="btn btn--solid btn--lg hs__cta" href={href('book', lang)} data-track="book_demo_click" data-track-from="hotel">
+                      {d.cta.book}
+                    </a>
+                  )}
                 </div>
               </div>
             </li>
@@ -272,448 +119,68 @@ const systems = [
 
     <div class="hs__scene">
       <div class="hs__stage" dir="ltr" data-hs-stage>
-        <svg viewBox="0 0 1000 860" role="img" aria-label={v.scene}>
-          <defs>
-            <linearGradient id="hs-sky" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stop-color="var(--sky-1)"></stop>
-              <stop offset="0.85" stop-color="var(--sky-2)"></stop>
-            </linearGradient>
-            <linearGradient id="hs-dusk" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stop-color="var(--dusk-1)"></stop>
-              <stop offset="0.5" stop-color="var(--dusk-2)"></stop>
-              <stop offset="0.8" stop-color="var(--dusk-3)"></stop>
-            </linearGradient>
-            <radialGradient id="hs-shadow">
-              <stop offset="0" stop-color="var(--ink)" stop-opacity="0.22"></stop>
-              <stop offset="0.75" stop-color="var(--ink)" stop-opacity="0.1"></stop>
-              <stop offset="1" stop-color="var(--ink)" stop-opacity="0"></stop>
-            </radialGradient>
-            <symbol id="hs-tall" viewBox="0 0 28 52">
-              <path class="c-trim" d="M0 8L14 0L28 8ZM1 47h26v3H1Z"></path>
-              <rect class="c-glass" x="3" y="9" width="22" height="38"></rect>
-              <path class="c-bar" d="M14 9V47M3 21H25"></path>
-            </symbol>
-            <symbol id="hs-plain" viewBox="0 0 26 40">
-              <path class="c-trim" d="M1 0h24v3H1ZM1 36h24v3H1Z"></path>
-              <rect class="c-glass" x="2" y="3" width="22" height="33"></rect>
-              <path class="c-bar" d="M13 3V36M2 15H24"></path>
-            </symbol>
-            <symbol id="hs-small" viewBox="0 0 24 32">
-              <path class="c-trim" d="M1 28h22v3H1Z"></path>
-              <rect class="c-glass" x="2" y="0" width="20" height="28"></rect>
-              <path class="c-bar" d="M12 0V28M2 10H22"></path>
-            </symbol>
-            <symbol id="hs-lit-tall" viewBox="0 0 28 52"><path fill="currentColor" d="M3 9h22v38H3Z"></path><path class="c-lit-bar" d="M14 9V47M3 21H25"></path></symbol>
-            <symbol id="hs-lit-plain" viewBox="0 0 26 40"><path fill="currentColor" d="M2 3h22v33H2Z"></path><path class="c-lit-bar" d="M13 3V36M2 15H24"></path></symbol>
-            <symbol id="hs-lit-small" viewBox="0 0 24 32"><path fill="currentColor" d="M2 0h20v28H2Z"></path><path class="c-lit-bar" d="M12 0V28M2 10H22"></path></symbol>
-            <symbol id="hs-slip" viewBox="0 0 28 36">
-              <rect class="c-slip-paper" x="0.5" y="0.5" width="27" height="35"></rect>
-              <path class="c-slip-line" d="M5 8H23M5 14H23M5 20H16M15 28H23"></path>
-            </symbol>
-            <symbol id="hs-slip-flag" viewBox="0 0 28 36">
-              <rect class="c-slip-flag" x="0.5" y="0.5" width="27" height="35"></rect>
-              <path class="c-slip-line-flag" d="M5 8H23M5 14H23M5 20H16M15 28H23"></path>
-            </symbol>
-            <pattern id="hs-tile" width="6" height="6" patternUnits="userSpaceOnUse"><path class="c-tile" d="M6 0H0V6"></path></pattern>
-            <pattern id="hs-floor" width="6" height="3" patternUnits="userSpaceOnUse"><rect width="6" height="3" class="c-floor"></rect><path class="c-tile" d="M6 0H0V3"></path></pattern>
-            <symbol id="hs-sack" viewBox="0 0 12 15"><path class="c-sack" d="M3.6 2.6L2.4.6h7.2L8.4 2.6q3.6 3 3.2 8q-.2 4.2 -5.6 4.2t-5.6 -4.2q-.4 -5 3.6 -8Z"></path><path class="c-sack-line" d="M3.8 2.8h4.4M2.6 8h6.8M2.6 11h6.8"></path></symbol>
-            <symbol id="hs-eggs" viewBox="0 0 15 6"><rect class="c-tray" width="15" height="6" rx="0.6"></rect><g class="c-egg"><ellipse cx="2.4" cy="2.6" rx="1.5" ry="2"></ellipse><ellipse cx="6" cy="2.6" rx="1.5" ry="2"></ellipse><ellipse cx="9.6" cy="2.6" rx="1.5" ry="2"></ellipse><ellipse cx="13" cy="2.6" rx="1.5" ry="2"></ellipse></g></symbol>
-            <symbol id="hs-romaine" viewBox="0 0 16 13"><g class="c-leaf"><path d="M2 8q-1.6 -7 2.6 -8q3 2.4 1.4 8ZM6 8q-.8 -8 2.4 -8q3.4 2 1.6 8ZM10 8q0 -7 3.4 -7q2.6 3 .6 7Z"></path></g><path class="c-leaf-line" d="M3.6 8V2M8 8V2M12.4 8V3"></path><rect class="c-wood" y="6.5" width="16" height="6.5" rx="0.4"></rect><path class="c-wood-line" d="M0 9h16M0 11h16M.8 6.5v6.5M15.2 6.5v6.5"></path></symbol>
-            <symbol id="hs-tomato" viewBox="0 0 14 12"><g class="c-tomato"><circle cx="3" cy="4.4" r="2.6"></circle><circle cx="7" cy="3.6" r="2.8"></circle><circle cx="11" cy="4.4" r="2.6"></circle></g><rect class="c-wood" y="5.4" width="14" height="6.6" rx="0.4"></rect><path class="c-wood-line" d="M0 8h14M0 10h14M.8 5.4V12M13.2 5.4V12"></path></symbol>
-            <symbol id="hs-cheese" viewBox="0 0 12 8"><ellipse class="c-rind" cx="6" cy="4" rx="6" ry="4"></ellipse><path class="c-cheese" d="M6 4L12 2.6V5.6Z"></path><ellipse class="c-rind-top" cx="6" cy="2.8" rx="4.8" ry="1.6"></ellipse></symbol>
-            <symbol id="hs-meat" viewBox="0 0 18 9"><rect class="c-meat" width="18" height="9" rx="3"></rect><path class="c-meat-fat" d="M3 2q4 2 7 .4t5 1.6M3 6q5 1.4 12 -.6"></path><path class="c-wrap" d="M2 0L5 9M8 0L11 9M14 0L17 9"></path></symbol>
-            <symbol id="hs-oil" viewBox="0 0 4.5 15"><path class="c-oil" d="M1.5 0H3V3.4Q4.5 4.6 4.5 6.4V14Q4.5 15 3.5 15H1Q0 15 0 14V6.4Q0 4.6 1.5 3.4Z"></path><rect class="c-oil-label" x="0" y="8" width="4.5" height="4"></rect><rect class="c-oil-cap" x="1.4" width="1.7" height="1.4"></rect></symbol>
-            <symbol id="hs-soda" viewBox="0 0 16 12"><g class="c-bottle-dark"><rect x="1.6" y="0" width="2.4" height="5"></rect><rect x="5.2" y="0" width="2.4" height="5"></rect><rect x="8.8" y="0" width="2.4" height="5"></rect><rect x="12.4" y="0" width="2.4" height="5"></rect></g><rect class="c-soda" y="3.6" width="16" height="8.4" rx="0.6"></rect><path class="c-soda-line" d="M0 6.4h16M4.6 3.6V12M8 3.6V12M11.6 3.6V12"></path></symbol>
-            <symbol id="hs-wine" viewBox="0 0 16 12"><g class="c-bottle-wine"><path d="M2 0h1.6v2.4l.8 1.6H1.2L2 2.4ZM6.4 0h1.6v2.4l.8 1.6H5.6l.8 -1.6ZM10.8 0h1.6v2.4l.8 1.6H10l.8 -1.6Z"></path></g><rect class="c-wood" y="3.6" width="16" height="8.4" rx="0.4"></rect><rect class="c-case-label" x="4" y="6" width="8" height="3.6"></rect></symbol>
-            <symbol id="hs-water" viewBox="0 0 16 12"><g class="c-bottle-water"><rect x="1.6" y="0" width="2.4" height="5" rx="0.6"></rect><rect x="5.2" y="0" width="2.4" height="5" rx="0.6"></rect><rect x="8.8" y="0" width="2.4" height="5" rx="0.6"></rect><rect x="12.4" y="0" width="2.4" height="5" rx="0.6"></rect></g><rect class="c-wood" y="3.6" width="16" height="8.4" rx="0.4"></rect><rect class="c-case-label" x="4" y="6" width="8" height="3.6"></rect></symbol>
-            <symbol id="hs-keg" viewBox="0 0 12 17"><rect class="c-keg" y="1" width="12" height="15" rx="2"></rect><path class="c-keg-line" d="M0 4.4h12M0 12.6h12M3 1V0h6v1M3 7.6h6"></path></symbol>
-            <clipPath id="hs-room">{restaurant.map((x) => <path d={arch(x)}></path>)}</clipPath>
-            <clipPath id="hs-bar"><rect x="696" y="644" width="104" height="86"></rect></clipPath>
-            <symbol id="hs-wineglass" viewBox="0 0 8 12"><path class="c-glassware" d="M1 .4H7Q7.6 5 4.5 6.4V10.8H6.4V11.6H1.6V10.8H3.5V6.4Q.4 5 1 .4Z"></path></symbol>
-            <symbol id="hs-coupe" viewBox="0 0 10 10"><path class="c-glassware" d="M.5 .5H9.5Q9.4 4 5.5 4.6V8.8H7.6V9.6H2.4V8.8H4.5V4.6Q.6 4 .5 .5Z"></path></symbol>
-            <symbol id="hs-cocktail" viewBox="0 0 9 11"><path class="c-glassware" d="M.4 .4H8.6L5 5V9.8H7V10.6H2V9.8H4V5Z"></path></symbol>
-            <symbol id="hs-tumbler" viewBox="0 0 8 12"><path class="c-glassware" d="M1 3H7L6.4 11.6H1.6Z"></path></symbol>
-            <symbol id="hs-teacup" viewBox="0 0 10 10"><path class="c-glassware" d="M1 3H8V7Q8 9.4 4.5 9.4T1 7ZM8 4H9.4V6.4H8"></path></symbol>
-            <symbol id="hs-wine-bottle" viewBox="0 0 5 15"><path class="c-bottle-wine" d="M1.8 0H3.2V4Q5 5 5 7V14Q5 15 4 15H1Q0 15 0 14V7Q0 5 1.8 4Z"></path><rect class="c-case-label" y="8.6" width="5" height="3.4"></rect></symbol>
-            <symbol id="hs-spirit-bottle" viewBox="0 0 6 15"><path class="c-bottle-amber" d="M2 0H4V3.6L5.4 5V14Q5.4 15 4.4 15H1.6Q.6 15 .6 14V5L2 3.6Z"></path><rect class="c-case-label" x=".6" y="8" width="4.8" height="3.6"></rect></symbol>
-            <symbol id="hs-water-bottle" viewBox="0 0 5 15"><path class="c-bottle-water" d="M1.8 0H3.2V3Q5 4.4 5 6.4V14Q5 15 4 15H1Q0 15 0 14V6.4Q0 4.4 1.8 3Z"></path></symbol>
-          </defs>
+        <!-- The hotel; for the result the same photograph a little later in the evening, by two tints that move with it -->
+        <div class="hs__layer hs__layer--hotel" data-hs-hotel>
+          <Picture class="hs__img" src={hotel} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1152, 1536]} sizes="(max-width: 1000px) 100vw, 60vw" loading="eager" decoding="async" />
+          <span class="hs__late hs__late--sky" aria-hidden="true" />
+          <span class="hs__late hs__late--windows" aria-hidden="true" />
+        </div>
 
-          <!-- Sky, which turns to evening at the last step -->
-          <rect width="1000" height="860" fill="url(#hs-sky)"></rect>
-          <rect width="1000" height="860" fill="url(#hs-dusk)" {...A(3.2, 0.42)}></rect>
-
-          <g data-hs-camera>
-            <!-- Far mountains as a single ridge, moving a little with the scroll -->
-            <g data-hs-far>
-              <path class="c-far" d="M-20 610L70 530 140 575 250 450 340 535 430 480 520 548 620 440 720 535 800 490 880 565 960 505 1020 545V760H-20Z"></path>
-              <path class="c-far-dusk" d="M-20 610L70 530 140 575 250 450 340 535 430 480 520 548 620 440 720 535 800 490 880 565 960 505 1020 545V760H-20Z" {...A(3.2, 0.42)}></path>
-            </g>
-
-            <!-- The forecourt, and the hotel as a drawing -->
-            <rect class="c-paving" y={G} width="1000" height="66"></rect>
-            <rect class="c-road" y="796" width="1000" height="64"></rect>
-            <path class="c-kerb" d="M0 730H1000M0 796H1000"></path>
-            <path class="c-base" d={`${SILHOUETTE}Z`}></path>
-            <path class="c-ghost" d={ghost}></path>
-            <text class="c-ghost-sign" y="234" x={sign.map((one) => one.x).join(' ')} {...A(-0.7, 0.2, { ob: 3, od: 0.1 })}>HOTEL</text>
-
-            <!-- Stone, wings a shade darker and set back -->
-            {
-              blocks.map((p) => (
-                <rect
-                  class={p.zone === 'centre' ? 'c-stone' : 'c-stone-wing'}
-                  x={p.x}
-                  y={p.y}
-                  width={p.w}
-                  height={p.h}
-                  {...A(p.b, 0.1, p.from === 'left' ? { x: -24 } : p.from === 'right' ? { x: 24 } : { y: 22 })}></rect>
-              ))
-            }
-            <rect class="c-setback" x="302" y="354" width="8" height="376" {...A(1.78, 0.1)}></rect>
-            <rect class="c-setback" x="690" y="354" width="8" height="376" {...A(2.78, 0.1)}></rect>
-
-            <!-- Courses and cornices, part by part -->
-            <g {...A(0.66, 0.1)}>
-              <path class="c-string" d={`${rustication(310, 690)}M310 ${floorY(5)}H690`}></path>
-              <rect class="c-course" x="302" y={floorY(0) - 7} width="396" height="9"></rect>
-              <rect class="c-pilaster" x="434" y={floorY(6)} width="6" height={floorY(0) - floorY(6) - 7}></rect>
-              <rect class="c-pilaster" x="560" y={floorY(6)} width="6" height={floorY(0) - floorY(6) - 7}></rect>
-            </g>
-            <g {...A(ZONE.left.roof - 0.06, 0.1)}>
-              <path class="c-string" d={`${rustication(140, 310)}M140 ${floorY(4)}H310`}></path>
-              <rect class="c-course" x="134" y={floorY(0) - 6} width="168" height="7"></rect>
-            </g>
-            <g {...A(ZONE.right.roof - 0.06, 0.1)}>
-              <path class="c-string" d={`${rustication(690, 860)}M690 ${floorY(4)}H860`}></path>
-              <rect class="c-course" x="698" y={floorY(0) - 6} width="168" height="7"></rect>
-            </g>
-            <polygon class="c-roof" points="314,298 339,246 661,246 686,298" {...A(ZONE.centre.roof, 0.12, { y: 24 })}></polygon>
-            <rect class="c-cornice" x="300" y="292" width="400" height="9" {...A(ZONE.centre.roof + 0.04, 0.08)}></rect>
-            <rect class="c-cornice" x="336" y="244" width="328" height="5" {...A(ZONE.centre.roof + 0.06, 0.08)}></rect>
-            {
-              [-2, -1, 0, 1, 2].map((k) => (
-                <g {...A(ZONE.centre.roof + 0.06 + (k + 2) * 0.02, 0.08, { y: 10 })}>
-                  <path class="c-stone" d={`M${488 + k * 62} 290V266L${500 + k * 62} 254L${512 + k * 62} 266V290Z`}></path>
-                  <rect class="c-glass" x={493 + k * 62} y="268" width="14" height="20"></rect>
-                </g>
-              ))
-            }
-            <polygon class="c-roof-wing" points="146,354 162,326 310,326 310,354" {...A(ZONE.left.roof, 0.1, { y: 20 })}></polygon>
-            <rect class="c-cornice" x="134" y="350" width="176" height="7" {...A(ZONE.left.roof + 0.04, 0.06)}></rect>
-            <polygon class="c-roof-wing" points="690,354 690,326 838,326 854,354" {...A(ZONE.right.roof, 0.1, { y: 20 })}></polygon>
-            <rect class="c-cornice" x="690" y="350" width="176" height="7" {...A(ZONE.right.roof + 0.04, 0.06)}></rect>
-
-            <!-- The windows -->
-            {windows.map((w) => <use href={`#hs-${w.id}`} x={w.x} y={w.y} width={w.w} height={w.h} {...A(w.b, 0.07, { y: 6 })}></use>)}
-            <path class="c-rail-line" d={balconies('centre')} {...A(0.8, 0.06)}></path>
-            <path class="c-rail-line" d={balconies('left')} {...A(1.86, 0.06)}></path>
-            <path class="c-rail-line" d={balconies('right')} {...A(2.86, 0.06)}></path>
-
-            <!-- Entrance steps and a soft shadow on the forecourt -->
-            <ellipse cx="500" cy="736" rx="470" ry="30" fill="url(#hs-shadow)" {...A(2.8, 0.2)}></ellipse>
-            <g {...A(0.62, 0.1, { y: 8 })}>
-              <rect class="c-step" x="432" y="730" width="136" height="8"></rect>
-              <rect class="c-step" x="422" y="738" width="156" height="8"></rect>
-              <rect class="c-step" x="412" y="746" width="176" height="8"></rect>
-              <rect class="c-carpet" x="486" y="730" width="28" height="24"></rect>
-            </g>
-
-            <!-- Evening over the stone and the forecourt. What is lit is drawn after this, so it stays bright -->
-            <g opacity="0.24"><path class="c-dim" d={`${SILHOUETTE}ZM0 730H1000V860H0Z`} {...A(3.2, 0.42)}></path></g>
-            {
-              windows
-                .filter((w) => w.lit)
-                .map((w) => (
-                  <use class={w.warm ? 'c-lit-a' : 'c-lit-b'} href={`#hs-lit-${w.id}`} x={w.x} y={w.y} width={w.w} height={w.h} {...A(3.24 + (w.f - 1) * 0.055 + ((w.x * 7) % 5) * 0.006, 0.07)}></use>
-                ))
-            }
-
-            <!-- The restaurant, warm behind tall arched windows, from the moment the takings are in order -->
-            <g clip-path="url(#hs-room)" {...A(0.58, 0.14)}>
-              <rect class="c-interior" x="300" y="640" width="400" height="90"></rect>
-              {restaurant.map((x) => <path class="c-furniture" d={`M${x + 15} 650v12M${x + 5} 706h20M${x + 15} 706v18M${x + 9} 724h12M${x + 2} 698v26M${x + 28} 698v26M${x + 2} 712h5M${x + 28} 712h-5`}></path>)}
-              {restaurant.map((x) => <circle class="c-lamp" cx={x + 15} cy="666" r="3"></circle>)}
-              {
-                [restaurant[1], restaurant[3], restaurant[5]].map((x, i) => {
-                  const d = i % 2 ? -1 : 1;
-                  const px = x + (i % 2 ? 25 : 5);
-                  return (
-                    <g>
-                      <rect class="c-skin" x={px - 1.1} y="689" width="2.2" height="3"></rect>
-                      <circle class="c-skin" cx={px} cy="686.6" r="3"></circle>
-                      <path class="c-hair" d={`M${px - 3} 686.4a3 3.2 0 0 1 6 -.4q-3 -1 -4 .4Z`}></path>
-                      <path class={i === 1 ? 'c-coat' : 'c-dress'} d={`M${px - 3.6} 712V694.5q0 -3 3.6 -3t3.6 3V712Z`}></path>
-                      <path class={i === 1 ? 'c-coat' : 'c-dress'} d={`M${px} 694L${px + d * 5} 701L${px + d * 9} 704.5`} fill="none" stroke-width="2.2" stroke-linecap="round"></path>
-                    </g>
-                  );
-                })
-              }
-              <g class="loop loop--waiter">
-                <HotelPerson x={332} foot={726} h={42} role="waiter" walk />
-              </g>
-            </g>
-            {restaurant.map((x, i) => <path class="c-frame-win" d={`${arch(x)}M${x + 15} 650V724`} {...A(0.6 + i * 0.012, 0.06)}></path>)}
-
-            <!-- Step 2: the kitchen and its storeroom -->
-            <g>
-              <rect class="c-room-off" x="146" y="644" width="158" height="86"></rect>
-              <rect class="c-room" x="146" y="644" width="158" height="86" {...A(1.42, 0.2)}></rect>
-              <!-- Kitchen: tiled wall and floor with a drain, a cold store door, hood, hanging pans, steel counter and pass -->
-              <rect x="146" y="644" width="78" height="52" fill="url(#hs-tile)"></rect>
-              <rect x="146" y="724" width="158" height="6" fill="url(#hs-floor)"></rect>
-              <rect class="c-drain" x="196" y="726" width="10" height="2"></rect>
-              <rect class="c-steel-door" x="148" y="652" width="22" height="72" rx="1"></rect>
-              <path class="c-steel-line" d="M150 658H168M150 716H168M165 684v10"></path>
-              <rect class="c-glass" x="153" y="661" width="12" height="5" rx="0.6"></rect>
-              <path class="c-steel-door" d="M173 644H199L196 655H176Z"></path>
-              <path class="c-steel-line" d="M174 660H200M180 660v3M188 660v3M196 660v3"></path>
-              <circle class="c-pan" cx="180" cy="668" r="4"></circle>
-              <circle class="c-pan" cx="188" cy="669" r="5"></circle>
-              <circle class="c-pan" cx="196" cy="667" r="3.4"></circle>
-              <path class="c-steel-line" d="M211 644v6M218 644v6"></path>
-              <path class="c-pan" d="M207 650h8l1.5 4h-11ZM214.5 650h7l1 4h-9Z"></path>
-            </g>
-            <g {...A(1.44, 0.1, { x: -12 })}>
-              <HotelPerson x={190} foot={724} h={44} role="chef" pose="stand" />
-            </g>
-            <g>
-              <rect class="c-steel-top" x="172" y="696" width="50" height="3"></rect>
-              <rect class="c-steel-door" x="173" y="699" width="48" height="25"></rect>
-              <path class="c-steel-line" d="M173 711H221M197 699V724"></path>
-              <circle class="c-plate" cx="208" cy="694.5" r="0"></circle>
-              <path class="c-plate" d="M202 695.5h12v.7h-12ZM214 695.5h7v.7h-7Z"></path>
-              <!-- Storeroom: walk-in shelving, two bays -->
-              <path class="c-roomline" d="M224 644V730"></path>
-              <rect class="c-store-back" x="226" y="644" width="78" height="80"></rect>
-              <path class="c-rack" d={`M229 646V726M265 646V726M301 646V726${SHELVES.map((y) => `M227 ${y}H303`).join('')}`}></path>
-            </g>
-            {stock.filter((p) => p.missing).map((p) => <rect class="c-missing" x={p.x} y={p.y} width={p.w} height={p.h} {...A(-1, 0.01, { s: 0.88, ob: 1.48 + p.i * 0.006, od: 0.05 })}></rect>)}
-            {
-              stock.map((p) => (
-                <g transform={`translate(${p.x} ${p.y})`}>
-                  <use
-                    class="tilt"
-                    href={`#hs-${p.k}`}
-                    width={p.w}
-                    height={p.h}
-                    {...(p.missing
-                      ? A(1.48 + p.i * 0.006, 0.08, { x: 30, y: -4 })
-                      : p.fall
-                        ? A(1.3 + p.i * 0.007, 0.09, { x: p.fx, y: p.fy, r: p.fr, s: -0.7 })
-                        : A(-1, 0.01))}></use>
-                </g>
-              ))
-            }
-            <!-- The count: a tap on the phone, and items tick off on the shelf one by one -->
-            <g class="hs__counter" {...A(1.02, 0.1, { x: -14 })}>
-              <HotelPerson x={224} foot={728} h={46} role="staff" pose="phone" />
-            </g>
-            {
-              ticks.map((p, i) => (
-                <g class="hs__tick" style={`--i:${i}`} transform={`translate(${p.x + p.w - 1} ${p.y + 1})`}>
-                  <circle r="3.4" class="c-tick"></circle>
-                  <path class="c-tick-mark" d="M-1.6 0L-.4 1.3L1.7 -1.2"></path>
-                </g>
-              ))
-            }
-            <path class="c-frame-win" d="M146 644H304V730H146ZM224 644V730" {...A(1.74, 0.08)}></path>
-
-            <!-- Step 3: the bar, with an empty back bar until the delivery comes in -->
-            <g>
-              <rect class="c-room-off" x="696" y="644" width="104" height="86"></rect>
-              <rect class="c-room" x="696" y="644" width="104" height="86" {...A(2.04, 0.1)}></rect>
-              <path class="c-rack" d="M700 680H796M700 697H796"></path>
-              {[716, 748, 780].map((x) => <path class="c-furniture" d={`M${x} 644v8`}></path>)}
-            </g>
-            {[716, 748, 780].map((x) => <circle class="c-lamp" cx={x} cy="655" r="3" {...A(2.04, 0.08)}></circle>)}
-            {barStock.map((item) => <rect class="c-missing" x={item.x} y={item.y} width={item.w} height={item.h} {...A(-1, 0.01, { s: 1.88, ob: 2.2, od: 0.06 })}></rect>)}
-            {
-              barStock.map((item, i) => (
-                <g transform={`translate(${item.x} ${item.y})`}>
-                  <use class="hs__baritem" data-dl-item={i} href={`#hs-${item.k}`} width={item.w} height={item.h}></use>
-                </g>
-              ))
-            }
-            <g data-dl="barman" {...A(2.02, 0.04)}>
-              <HotelPerson x={716} foot={728} h={46} role="bartender">
-                <g class="hs__polish" data-dl="polish">
-                  <use href={`#hs-${dry ? 'tumbler' : 'wineglass'}`} x="16" y="-66" width="14" height="21"></use>
-                  <path class="c-cloth" d="M14 -48q8 3 18 -1v5q-9 4 -18 1Z"></path>
-                </g>
-              </HotelPerson>
-            </g>
-            <g>
-              <rect class="c-counter" x="702" y="704" width="92" height="26"></rect>
-              <rect class="c-brass" x="702" y="701" width="92" height="3"></rect>
-              {[720, 748, 776].map((x) => <path class="c-stool" d={`M${x - 6} 714h12M${x} 714v16`}></path>)}
-            </g>
-            <path class="c-frame-win" d="M696 644H800V730H696Z" {...A(2.74, 0.08)}></path>
-
-            <!-- Step 3: the loading door. Dark inside, with a shutter that rolls up while the van is here -->
-            <rect class="c-dock" x="806" y="662" width="42" height="68"></rect>
-            <g class="hs__shutter" data-dl="shutter">
-              <rect class="c-shutter" x="806" y="662" width="42" height="68"></rect>
-              <path class="c-shutter-line" d="M806 670H848M806 678H848M806 686H848M806 694H848M806 702H848M806 710H848M806 718H848M806 726H848"></path>
-            </g>
-            <path class="c-frame-win" d="M804 660H850V730H804Z" {...A(2.3, 0.06)}></path>
-
-            <!-- The van backs in, rear first, and leaves only when it is empty -->
-            <g class="hs__van" data-dl="van">
-              <rect class="c-truck" x="880" y="714" width="72" height="64" rx="2"></rect>
-              <path class="c-truck-cab" d="M952 730H968L985 752V778H952Z"></path>
-              <path class="c-car-glass" d="M956 735H966L978 752H956Z"></path>
-              <path class="c-truck-line" d="M880 760H952"></path>
-              <rect class="c-truck-cab" x="882" y="770" width="70" height="4"></rect>
-              <rect class="c-lit-door" x="881" y="752" width="3" height="8"></rect>
-              <rect class="c-lit-door" x="980" y="760" width="5" height="4"></rect>
-              <circle class="c-wheel" cx="902" cy="782" r="10"></circle>
-              <circle class="c-hub" cx="902" cy="782" r="4"></circle>
-              <circle class="c-wheel" cx="964" cy="782" r="10"></circle>
-              <circle class="c-hub" cx="964" cy="782" r="4"></circle>
-              <rect class="c-truck hs__reardoor" data-dl="door" x="872" y="716" width="8" height="60"></rect>
-            </g>
-
-            <!-- The driver: carries one piece of stock at a time through the loading door, and goes back empty handed -->
-            <g class="hs__driver" data-dl="driver">
-              <g data-dl="carrying">
-                <HotelPerson x={862} foot={740} h={44} role="driver" pose="carry" flip walk>
-                  <use data-dl="box0" href="#hs-romaine" x="12" y="-90" width="34" height="28"></use>
-                  <use data-dl="box1" href="#hs-eggs" x="12" y="-76" width="34" height="14"></use>
-                  <use data-dl="box2" href="#hs-sack" x="14" y="-94" width="26" height="32"></use>
-                </HotelPerson>
-              </g>
-              <g data-dl="empty">
-                <HotelPerson x={862} foot={740} h={44} role="driver" walk />
-              </g>
-            </g>
-
-            <!-- The entrance: doors, canopy, balcony, lanterns -->
-            <g {...A(0.68, 0.1)}>
-              <rect class="c-glass" x="474" y="646" width="52" height="84"></rect>
-              <path class="c-frame-win" d="M474 646h52v84h-52zM500 664V730M474 664H526"></path>
-              <path class="c-brass-line" d="M495 692v14M505 692v14"></path>
-            </g>
-            <rect class="c-lit-door" x="476" y="648" width="48" height="15" {...A(3.3, 0.2)}></rect>
-            <g {...A(0.74, 0.12, { y: -14 })}>
-              <polygon class="c-roof" points="396,612 604,612 590,602 410,602"></polygon>
-              <rect class="c-roof" x="404" y="612" width="192" height="16"></rect>
-              <rect class="c-brass" x="404" y="626" width="192" height="2"></rect>
-              <rect class="c-brass" x="417" y="628" width="4" height="122"></rect>
-              <rect class="c-brass" x="579" y="628" width="4" height="122"></rect>
-            </g>
-            <path class="c-rail-line" d={`M440 586H560M440 602H560${[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => `M${440 + i * 15} 586V602`).join('')}`} {...A(0.82, 0.06)}></path>
-            <g {...A(0.84, 0.06)}>
-              <rect class="c-lantern" x="460" y="664" width="8" height="16" rx="2"></rect>
-              <rect class="c-lantern" x="532" y="664" width="8" height="16" rx="2"></rect>
-            </g>
-            <g {...A(3.3, 0.2)}>
-              <rect class="c-lantern-on" x="460" y="664" width="8" height="16" rx="2"></rect>
-              <rect class="c-lantern-on" x="532" y="664" width="8" height="16" rx="2"></rect>
-            </g>
-
-            <!-- The last step: planters, flags, the rooftop sign, the doorman -->
-            {
-              [392, 608, 122, 878].map((x, i) => (
-                <g {...A(3.02 + i * 0.025, 0.1, { y: 10 })}>
-                  <rect class="c-planter" x={x - 9} y="744" width="18" height="12"></rect>
-                  <path class="c-green" d={`M${x - 10} 744Q${x} 692 ${x + 10} 744Z`}></path>
-                </g>
-              ))
-            }
-            <path class="c-sign-rail" d="M402 240H598M416 240V246M584 240V246" {...A(3.02, 0.06)}></path>
-            {
-              sign.map((one, i) => (
-                <text class="c-sign" x={one.x} y="234" {...A(3.04 + i * 0.03, 0.08, { y: -14 })}>
-                  {one.l}
-                </text>
-              ))
-            }
-            {
-              [352, 648].map((x, i) => (
-                <g {...A(3.16 + i * 0.02, 0.08, { y: 10 })}>
-                  <path class="c-pole" d={`M${x} 248V176`}></path>
-                  <path class="c-flag" d={`M${x} 178L${x + 30} 186L${x} 194Z`}></path>
-                </g>
-              ))
-            }
-            <g {...A(3.2, 0.08, { x: -10 })}>
-              <HotelPerson x={548} foot={738} h={46} role="doorman" pose="stand" />
-            </g>
-
-            <!-- Guests. These run on time, and only while the last step shows -->
-            <g {...A(3.24, 0.06)}>
-              <g class="loop loop--bellhop">
-                <HotelPerson x={262} foot={782} h={46} role="bellhop" pose="push" flip walk />
-                <path class="c-trolley" d="M214 744V778H248V744M214 744Q231 730 248 744M214 778h34M248 762h3"></path>
-                <rect class="c-case" x="219" y="752" width="24" height="12" rx="1"></rect>
-                <rect class="c-case-b" x="221" y="764" width="20" height="13" rx="1"></rect>
-                <circle class="c-wheel" cx="218" cy="781" r="3"></circle>
-                <circle class="c-wheel" cx="244" cy="781" r="3"></circle>
-              </g>
-              <g class="loop loop--couple">
-                <HotelPerson x={636} foot={786} h={48} role="woman" walk />
-                <HotelPerson x={620} foot={786} h={51} role="man" walk />
-              </g>
-              <g class="loop loop--guest">
-                <rect class="c-case" x="462" y="760" width="11" height="17" rx="1.5"></rect>
-                <path class="c-rail-line" d="M470 760L475 752"></path>
-                <circle class="c-wheel" cx="465" cy="778.5" r="1.8"></circle>
-                <circle class="c-wheel" cx="470" cy="778.5" r="1.8"></circle>
-                <HotelPerson x={480} foot={780} h={50} role="guest" walk />
-              </g>
-              <g class="loop loop--taxi c-figure">
-                <path d="M300 816V792Q300 786 308 785L332 783L348 766Q352 762 360 762H404Q412 762 416 766L432 783L448 786Q456 788 456 796V816Z"></path>
-                <path class="c-car-glass" d="M338 783L351 769H378V783ZM383 769H404L418 783H383Z"></path>
-                <circle cx="332" cy="818" r="11"></circle>
-                <circle cx="424" cy="818" r="11"></circle>
-              </g>
-            </g>
-
-            <!-- Foreground cypresses, moving a little against the building -->
-            <g data-hs-near>
-              {
-                [58, 942].map((x, i) => (
-                  <g {...A(3.1 + i * 0.03, 0.12, { y: 14 })}>
-                    <path class="c-green-deep" d={`M${x} 590Q${x + 30} 690 ${x + 9} 770H${x - 9}Q${x - 30} 690 ${x} 590Z`}></path>
-                    <path class="c-green" d={`M${x + 34} 650Q${x + 52} 716 ${x + 40} 770H${x + 28}Q${x + 16} 716 ${x + 34} 650Z`} transform={i ? 'translate(-68 0)' : undefined}></path>
-                  </g>
-                ))
-              }
-            </g>
-
-            <!-- Step 1: the transactions, everywhere until they are checked and go in through the door -->
-            {slips.map((p, i) => <g transform="translate(486 672)"><use class="tilt c-slip" href="#hs-slip" width="28" height="36" {...A(p.b, 0.14, { x: p.x, y: p.y, r: p.r, s: -0.72 + (i % 9) * 0.02, ob: p.b + 0.12, od: 0.04 })}></use></g>)}
-            <g transform="translate(452 548)"><use class="tilt" href="#hs-slip-flag" width="28" height="36" {...A(0.56, 0.16, { x: -310, y: -200, r: 30, s: -0.7, ob: 0.92, od: 0.08 })}></use></g>
-            <g transform="translate(520 548)"><use class="tilt" href="#hs-slip-flag" width="28" height="36" {...A(0.6, 0.16, { x: 280, y: -60, r: -24, s: -0.7, ob: 0.92, od: 0.08 })}></use></g>
-          </g>
-
-          <!-- One connected row: each system joins as its problem is solved -->
-          {systems.map((s) => <path class="c-link" d={s.line} pathLength="1" {...A(s.on - 0.04, 0.2, { draw: true })}></path>)}
-          <path class="c-link c-link--drop" d="M500 60V176" pathLength="1" {...A(3.06, 0.14, { draw: true })}></path>
-          <path class="c-pulse loop loop--pulse" d="M120 60H500" pathLength="1"></path>
-          <path class="c-pulse loop loop--pulse" d="M880 60H500" pathLength="1"></path>
-        </svg>
-
-        <!-- The four systems and the Tyll mark are HTML, so their labels stay readable at every size -->
+        <!-- The two rooms, each with its own markers on the things the text talks about -->
         {
-          systems.map((s) => (
-            <span class="hs__card is-on" style={`left:${s.left}%;--dx:${s.dx};--dy:${s.dy};--r:${s.r}deg`} data-hs-card={s.on}>
-              <i aria-hidden="true"></i>
-              {s.label}
-            </span>
+          scenes.map(({ step, photo, markers }) => (
+            <div class="hs__layer hs__layer--view" data-hs-view={step} style={`--ratio:${photo.width / photo.height}`}>
+              <Picture class="hs__img" src={photo} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1152, 1536]} sizes="(max-width: 1000px) 100vw, 60vw" loading="lazy" decoding="async" />
+              <div class="hs__marks" data-hs-marks>
+                {markers.map(({ x, y, side, label, icon }) => (
+                  <div class="hs__spot is-on" data-side={side} style={`--x:${x}%;--y:${y}%`}>
+                    <span class="hs__dot" aria-hidden="true" />
+                    <span class="hs__line" aria-hidden="true" />
+                    <span class="hs__card">
+                      <SolutionIcon name={icon} />
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           ))
         }
-        <span class="hs__hub is-on" data-hs-hub aria-hidden="true">
-          <Logo mark label="" class="hs__mark" />
-        </span>
-        <span class="hs__zone" data-hs-zone="1.08,1.62">{v.zones.store}</span>
-        <ul class="hs__notes" data-hs-notes aria-hidden="true">
-          <li class="hs__note"><i class="hs__note-ok"></i>{v.labels.counted}</li>
-          <li class="hs__note"><i></i>{v.labels.romaine}</li>
-          <li class="hs__note"><i></i>{v.labels.eggs}</li>
+
+        <!-- The callouts on the façade, the glow on the entrance and, for the result, the lines up to the Tyll mark -->
+        <div class="hs__spots" data-hs-spots>
+          <span class="hs__glow" aria-hidden="true" data-hs-glow />
+          <svg class="hs__links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            {exterior.spots.map(({ x, y }) => <line x1={x} y1={y} x2={exterior.hub.x} y2={exterior.hub.y} pathLength="1" />)}
+          </svg>
+          <span class="hs__hub" aria-hidden="true">
+            <Logo mark label="" />
+          </span>
+          {
+            exterior.spots.map(({ x, y, side, icon }, i) => (
+              <div class="hs__spot" data-hs-spot={i} data-side={side} style={`--x:${x}%;--y:${y}%`}>
+                <span class="hs__dot" aria-hidden="true" />
+                <span class="hs__line" aria-hidden="true" />
+                <span class="hs__card">
+                  <SolutionIcon name={icon} />
+                  {v.steps[i].label}
+                </span>
+              </div>
+            ))
+          }
+        </div>
+
+        <!-- On phones the callouts become pills along the bottom of the frame -->
+        <ul class="hs__pills" aria-hidden="true" data-hs-pills>
+          {
+            exterior.spots.map(({ icon }, i) => (
+              <li class="hs__pill" data-hs-pill={i}>
+                <SolutionIcon name={icon} />
+                {v.steps[i].label}
+              </li>
+            ))
+          }
         </ul>
-        <span class="hs__zone" data-hs-zone="2.04,2.9">{v.zones.bar}</span>
       </div>
     </div>
   </div>
@@ -721,14 +188,10 @@ const systems = [
 
 <style>
   .hs {
-    /* One screen of scrolling for each step. Text pins just below the heading; --hs-head is measured. */
+    /* One screen of scrolling for each step. The text pins just below the heading; --hs-head is measured. */
     --hs-step: 100svh;
     --hs-pin: calc(var(--header-h) + var(--hs-head, 12rem));
-    /* The heading and the hotel start on the same line, and the text panel ends where the hotel ends */
-    --hs-top: var(--s-4);
-    --hs-foot: var(--s-3);
-    --hs-below: calc(100svh - var(--header-h) - var(--hs-top) - var(--hs-stage, calc(100svh - var(--header-h) - var(--hs-top) - var(--hs-foot))));
-    /* Keeps the fade under the heading inside the section. Clip, unlike hidden, leaves sticky positioning working. */
+    --hs-ease: 0.3s var(--ease);
     overflow: clip;
     background: var(--paper);
     color: var(--ink);
@@ -736,10 +199,10 @@ const systems = [
 
   .hs__grid {
     display: grid;
-    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
-    gap: var(--s-4);
-    /* The text starts where the rest of the page starts, the hotel runs to the edge */
-    padding-inline: max(var(--gut), calc((100vw - var(--wrap)) / 2)) var(--gut);
+    grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
+    gap: var(--s-5);
+    /* The text starts where the rest of the page starts; the hotel runs to the edge */
+    padding-inline: max(var(--gut), calc((100vw - var(--wrap)) / 2)) 0;
   }
 
   /* ── Text ── */
@@ -747,7 +210,7 @@ const systems = [
     position: sticky;
     top: var(--header-h);
     z-index: 2;
-    padding-block: var(--hs-top) var(--s-2);
+    padding-block: var(--s-4) var(--s-2);
     background: var(--paper);
   }
 
@@ -756,23 +219,67 @@ const systems = [
     position: absolute;
     inset-inline: 0;
     top: 100%;
-    height: var(--s-2);
+    height: var(--s-3);
     background: linear-gradient(180deg, var(--paper), rgb(var(--paper-rgb) / 0));
     content: '';
     pointer-events: none;
   }
 
-  .hs__head h2 {
-    /* The tops of the capitals, not the line box, meet the top of the hotel */
-    margin-top: -0.06em;
-    font-size: clamp(1.875rem, 1.6rem + 0.9vw, 2.5rem);
+  /* Where the reader is: the four steps in a row, the current one underlined; each is a button that takes you there */
+  .hs__progress {
+    display: flex;
+    gap: var(--s-3);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    list-style: none;
+    scrollbar-width: none;
   }
 
-  .hs__head p {
-    margin-top: 0.5rem;
-    color: var(--steel);
-    font-size: var(--fs-body);
-    line-height: 1.4;
+  .hs__progress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hs__go {
+    padding: 0 0 0.55rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--text-3);
+    font: inherit;
+    font-size: var(--fs-small);
+    line-height: 1.3;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color var(--hs-ease),
+      border-color var(--hs-ease);
+  }
+
+  .hs__go span {
+    margin-inline-end: 0.15rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hs__go:hover {
+    color: var(--ink);
+  }
+
+  .hs__go[aria-current] {
+    border-color: var(--ink);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hs__go:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  .hs__head h2 {
+    margin-top: var(--s-3);
+    font-size: clamp(2rem, 1.6rem + 1.4vw, 3rem);
   }
 
   .hs__steps {
@@ -783,92 +290,28 @@ const systems = [
 
   .hs__step {
     min-height: var(--hs-step);
-    color: var(--text-faded);
-    transition: color 0.35s var(--ease);
+    color: var(--ink);
   }
 
-  .hs__step > div {
-    position: sticky;
-    top: var(--hs-pin);
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    min-height: calc(100svh - var(--hs-pin));
-    padding-block: var(--s-1) var(--hs-below);
-  }
-
-  /* The last step is pinned for a full step, and leaves together with the hotel */
-  /* The bar scene needs time on screen, so this step gets more scrolling while the camera is in */
-  .hs__step:nth-child(3) {
-    min-height: calc(var(--hs-step) * 2.2);
-  }
-
+  /* The last step stays pinned for a whole screen, so the result is read before the hotel lets go */
   .hs__step:last-child {
     min-height: calc(var(--hs-step) + 100svh - var(--hs-pin));
   }
 
-  .hs__step.is-active {
-    color: var(--ink);
+  /* The text of a step arrives with the camera (--arrive is set by the script); other steps wait, faded */
+  .hs__step > div {
+    position: sticky;
+    top: var(--hs-pin);
+    padding-block: var(--s-2) var(--s-4);
   }
 
-  /* Where the reader is in the story: one line across the column, filled up to the current step */
-  .hs__progress {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: auto;
-    gap: 0.375rem;
-    margin: var(--s-2) 0 0;
-    padding: 0;
-    list-style: none;
-    font-size: var(--fs-small);
-    line-height: 1.3;
-  }
-
-  .hs__progress li {
-    padding-top: 0.4rem;
-    border-top: 2px solid var(--hair);
-    color: var(--text-3);
-    transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
-  }
-
-  .hs__progress li span {
-    margin-inline-end: 0.15rem;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .hs__progress li.is-done {
-    border-color: var(--ink);
-  }
-
-  .hs__progress li.is-on {
-    border-color: var(--ink);
-    color: var(--ink);
-    font-weight: 500;
-  }
-
-  .hs__label {
-    display: none;
-    font-size: var(--fs-small);
-  }
-
-  .hs__label span {
-    color: var(--text-3);
+  .hs.is-live .hs__step > div {
+    opacity: var(--arrive, 1);
   }
 
   .hs__step h3 {
-    font-size: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
+    font-size: clamp(1.5rem, 1.25rem + 0.8vw, 2rem);
     font-weight: 300;
-  }
-
-  /* Each step is one panel: the problem, what Tyll does about it, and the real screen */
-  .hs__flip {
-    display: flex;
-    flex-direction: column;
-    margin-top: 0.75rem;
-    overflow: hidden;
-    border: 1px solid var(--hair);
-    border-radius: var(--radius-sm);
-    background: var(--paper);
   }
 
   .hs__tag {
@@ -883,606 +326,398 @@ const systems = [
   }
 
   .hs__problem {
-    padding: 0.75rem var(--s-2);
-    border-bottom: 1px solid var(--hair);
-    background: var(--mist);
-    color: var(--graphite);
-    font-size: 1.1875rem;
-    line-height: 1.4;
+    margin-top: var(--s-3);
+    font-size: 1.125rem;
+    line-height: 1.45;
   }
 
+  /* What Tyll does about it, as one quiet card */
   .hs__fix {
     display: flex;
-    flex: 1;
     flex-direction: column;
+    align-items: flex-start;
+    margin-top: var(--s-3);
+    padding: var(--s-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--sand-50);
+    box-shadow: var(--shadow-1);
   }
 
-  .hs__fix > .hs__tag {
-    padding: 0.75rem var(--s-2) 0;
-  }
-
-  .hs__step ul {
+  .hs__fix ul {
     display: grid;
-    gap: 0.625rem;
-    margin: 0;
-    padding: 0.25rem var(--s-2) var(--s-2);
-    font-size: 1.1875rem;
+    gap: 0.6rem;
+    width: 100%;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    font-size: 1.125rem;
     font-weight: 500;
     line-height: 1.4;
     list-style: none;
   }
 
-  .hs__step ul li {
+  .hs__fix li {
     position: relative;
-    padding-inline-start: 1.3rem;
+    padding-inline-start: 1.4rem;
   }
 
-  .hs__step ul li::before {
+  .hs__fix li::before {
     position: absolute;
-    inset-inline-start: 0;
-    top: 0.35em;
-    width: 0.7em;
-    height: 0.38em;
+    inset-inline-start: 0.1rem;
+    top: 0.4em;
+    width: 0.65em;
+    height: 0.35em;
     border-bottom: 1.5px solid currentColor;
     border-inline-start: 1.5px solid currentColor;
     content: '';
     transform: rotate(-45deg);
   }
 
-  :global([dir='rtl']) .hs__step ul li::before {
+  :global([dir='rtl']) .hs__fix li::before {
     transform: rotate(45deg);
   }
 
-  /* With the scroll running, what Tyll does appears once the problem has been read. Its place is kept, so nothing jumps. */
-  .hs.is-live .hs__fix {
-    opacity: 0.28;
-    transform: translateY(4px);
-    transition:
-      opacity 0.45s var(--ease),
-      transform 0.45s var(--ease);
-  }
-
-  .hs.is-live .is-fixed .hs__fix {
-    opacity: 1;
-    transform: none;
-  }
-
   .hs__more {
-    align-self: flex-start;
-    margin: 0 var(--s-2) var(--s-2);
+    margin-top: var(--s-3);
     border-bottom: 1px solid currentColor;
-    font-size: 1.0625rem;
     color: inherit;
+    font-size: 1.0625rem;
     line-height: 1.3;
     text-decoration: none;
   }
 
-  /* The last step ends with the next move */
-  .hs__next {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: var(--s-3);
-    padding: var(--s-2);
-    border-top: 1px solid var(--hair);
-    background: var(--mist);
+  .hs__cta {
+    margin-top: var(--s-3);
   }
 
-  /* ── Scene: held still while the text moves past it ── */
+  /* ── Scene: a fixed frame the camera moves inside ── */
   .hs__scene {
     position: sticky;
     top: var(--header-h);
-    display: grid;
-    place-items: start center;
     align-self: start;
-    box-sizing: border-box;
     height: calc(100svh - var(--header-h));
-    padding-top: var(--hs-top);
+    min-width: 0;
   }
 
   .hs__stage {
-    position: relative;
-    container-type: inline-size;
-    width: min(100%, calc((100svh - var(--header-h) - var(--hs-top) - var(--hs-foot)) * 1000 / 860));
-    aspect-ratio: 1000 / 860;
+    position: absolute;
+    inset: 0;
     overflow: hidden;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 0 0 1px var(--hair);
   }
 
-  .hs__stage svg {
+  .hs__layer {
+    position: absolute;
+    inset: 0;
+    will-change: transform, opacity;
+  }
+
+  /* The page fades into the photographs along their left edge and their top; the callouts stay crisp */
+  .hs__layer {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, var(--black) 24%), linear-gradient(180deg, transparent 0, var(--black) 12%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, transparent 0, var(--black) 24%), linear-gradient(180deg, transparent 0, var(--black) 12%);
+    mask-composite: intersect;
+  }
+
+  /* In Arabic the photograph sits on the left, so it fades on its right, towards the text */
+  :global([dir='rtl']) .hs__layer {
+    -webkit-mask-image: linear-gradient(270deg, transparent 0, var(--black) 24%), linear-gradient(180deg, transparent 0, var(--black) 12%);
+    mask-image: linear-gradient(270deg, transparent 0, var(--black) 24%), linear-gradient(180deg, transparent 0, var(--black) 12%);
+  }
+
+  .hs__stage :global(picture) {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
+  .hs__stage :global(.hs__img) {
     display: block;
     width: 100%;
     height: 100%;
+    /* The script places the callouts on the same crop: keep this position in step with `measure()` */
+    object-fit: cover;
+    object-position: 70% 100%;
   }
 
-  /* The camera eases in over a second, whatever the speed of the scroll */
-  .hs__stage [data-hs-camera] {
-    transition: transform 1s cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
-
-  .hs__stage [data-hs-camera],
-  .hs__stage [data-hs-far],
-  .hs__stage [data-hs-near],
-  .hs__stage .loop--taxi {
-    will-change: transform;
-  }
-
-  /* Pieces that are gone by the finished hotel */
-  .hs__stage [data-ob] {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .tilt {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  /* ── The four systems: scattered until connected, then one row across the top ── */
-  .hs__card {
+  /* Later in the evening: the sky deepens and the lit floors warm up, over the same photograph */
+  .hs__late {
     position: absolute;
-    top: 7%;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.25rem 0.6rem;
-    border: 1px solid var(--stone-3);
-    border-radius: 3px;
-    background: var(--paper);
-    color: var(--steel);
-    font-size: 0.8125rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    transform: translate(calc(-50% + var(--dx) * 1cqw), calc(-50% + var(--dy) * 1cqw)) rotate(var(--r));
-    transition:
-      transform 0.7s var(--ease),
-      color 0.35s var(--ease),
-      border-color 0.35s var(--ease);
+    inset: 0;
+    opacity: var(--late, 0);
   }
 
-  .hs__card i {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--fog);
-    transition: background-color 0.35s var(--ease);
+  .hs__late--sky {
+    background: linear-gradient(180deg, rgb(58 48 104 / 0.55) 0%, rgb(58 48 104 / 0.18) 34%, rgb(58 48 104 / 0) 52%);
+    mix-blend-mode: multiply;
   }
 
-  .hs__card.is-on {
-    border-color: var(--ink);
-    color: var(--ink);
+  .hs__late--windows {
+    background: radial-gradient(62% 42% at 56% 70%, rgb(var(--amber-glow-rgb) / 0.42), rgb(var(--amber-glow-rgb) / 0) 72%);
+    mix-blend-mode: screen;
+  }
+
+  .hs__layer--view :global(.hs__img) {
+    object-position: 50% 50%;
+  }
+
+  /* The camera: the hotel scales about the point the script chooses (--px, --py in the stage), so that point holds still */
+  .hs__layer--hotel {
+    transform: translate(calc((1 - var(--s, 1)) * var(--px, 0px)), calc((1 - var(--s, 1)) * var(--py, 0px))) scale(var(--s, 1));
+    transform-origin: 0 0;
+  }
+
+  /* A room: it fades in as the camera arrives and drifts a little while it is read */
+  .hs__layer--view {
+    opacity: 0;
+    transform-origin: 50% 50%;
+  }
+
+  .hs__layer--view[data-hs-view='1'] {
+    opacity: var(--o1, 0);
+    transform: scale(var(--push1, 1));
+  }
+
+  .hs__layer--view[data-hs-view='2'] {
+    opacity: var(--o2, 0);
+    transform: scale(var(--push2, 1));
+  }
+
+  /* Each photograph's own frame inside the stage (the script measures the crop), carrying its markers */
+  .hs__marks,
+  .hs__spots {
+    position: absolute;
+    left: var(--img-x, 0);
+    top: var(--img-y, 0);
+    width: var(--img-w, 100%);
+    height: var(--img-h, 100%);
+    pointer-events: none;
+  }
+
+  .hs__marks {
+    opacity: var(--marks, 0);
+  }
+
+  .hs__spots {
+    opacity: var(--spots, 1);
+  }
+
+  /* The result: a warm light on the entrance, and the systems joined to Tyll */
+  .hs__glow {
+    position: absolute;
+    left: 53.5%;
+    top: 80%;
+    width: 34%;
+    aspect-ratio: 1;
+    background: radial-gradient(closest-side, rgb(var(--amber-glow-rgb) / 0.55), rgb(var(--amber-glow-rgb) / 0) 72%);
+    opacity: var(--glow, 0);
     transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
   }
 
-  .hs__card.is-on i {
-    background: var(--ink);
+  .hs__links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
 
-  /* In the smallest scene the chips drop their dot, so the row of four still fits */
-  @container (max-width: 300px) {
-    .hs__card i {
-      display: none;
-    }
-
-    .hs__card {
-      padding: 0.1rem 0.3rem;
-    }
+  /* Each line is one unit long (pathLength) and draws itself as --links rises; hidden entirely before that */
+  .hs__links line {
+    stroke: rgb(var(--paper-rgb) / 0.9);
+    stroke-width: 1;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc((1 - var(--links, 0)) * 1px);
+    opacity: min(1, calc(var(--links, 0) * 4));
+    vector-effect: non-scaling-stroke;
+    filter: drop-shadow(0 0 1px rgb(var(--ink-rgb) / 0.5));
   }
 
   .hs__hub {
     position: absolute;
-    top: 7%;
-    left: 50%;
-    z-index: 1;
+    left: var(--hub-x);
+    top: var(--hub-y);
     display: grid;
     place-items: center;
-    width: clamp(28px, 5%, 42px);
-    aspect-ratio: 1;
-    border: 1px solid var(--ink);
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
     border-radius: 50%;
     background: var(--paper);
     color: var(--ink);
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8);
-    transition:
-      opacity 0.35s var(--ease),
-      transform 0.35s var(--ease);
+    box-shadow: var(--shadow-2);
+    opacity: var(--links, 0);
+    transform: translate(-50%, -50%) scale(calc(0.85 + 0.15 * var(--links, 0)));
   }
 
-  .hs__hub.is-on {
+  .hs__hub :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .hs:not(.is-live) .hs__glow,
+  .hs:not(.is-live) .hs__hub {
     opacity: 1;
+  }
+
+  .hs:not(.is-live) .hs__links line {
+    stroke-dashoffset: 0;
+  }
+
+  /* Callouts pinned to a point in a photograph */
+  .hs__spot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 0;
+    height: 0;
+  }
+
+  .hs__dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--paper);
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 0 0 1px rgb(var(--ink-rgb) / 0.2);
     transform: translate(-50%, -50%);
   }
 
-  .hs__hub :global(.hs__mark) {
-    width: 56%;
-    height: auto;
-  }
-
-  /* Notes that appear once the camera has settled on the storeroom, one after the other */
-  .hs__notes {
+  .hs__line {
     position: absolute;
-    top: 15%;
-    right: 4%;
-    z-index: 1;
-    display: grid;
-    gap: 0.35rem;
-    justify-items: end;
-    max-width: 62%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .hs__note {
-    display: flex;
-    gap: 0.45rem;
-    align-items: baseline;
-    padding: 0.3rem 0.65rem;
-    border-radius: 3px;
-    background: var(--paper);
-    box-shadow: 0 0 0 1px var(--hair), var(--shadow-1);
-    color: var(--ink);
-    font-size: 0.875rem;
-    line-height: 1.25;
-    opacity: 0;
-    transform: translateY(6px);
-    transition:
-      opacity 0.25s var(--ease),
-      transform 0.25s var(--ease);
-  }
-
-  .hs__note i {
-    flex: none;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--amber-500);
-  }
-
-  .hs__note i.hs__note-ok {
-    background: var(--ink);
-  }
-
-  .hs__notes.is-on .hs__note {
-    opacity: 1;
-    transform: none;
-    transition-duration: 0.45s;
-  }
-
-  .hs__notes.is-on .hs__note:nth-child(1) {
-    transition-delay: 1.05s;
-  }
-
-  .hs__notes.is-on .hs__note:nth-child(2) {
-    transition-delay: 1.3s;
-  }
-
-  .hs__notes.is-on .hs__note:nth-child(3) {
-    transition-delay: 1.55s;
-  }
-
-  /* While the camera is in, the systems still scattered step aside */
-  .hs.is-zoom .hs__card:not(.is-on) {
-    opacity: 0;
+    background: rgb(var(--paper-rgb) / 0.85);
+    box-shadow: 0 0 0 0.5px rgb(var(--ink-rgb) / 0.35);
   }
 
   .hs__card {
-    transition-property: transform, color, border-color, opacity;
-  }
-
-  /* The delivery: nothing of it shows until it runs. With reduced motion the bar is simply stocked and the van absent. */
-  .hs__van {
-    transform: translateX(260px);
-  }
-
-  .hs__driver {
-    opacity: 0;
-  }
-
-  .hs__reardoor {
-    transform: scaleX(0);
-    transform-origin: 880px 0;
-  }
-
-  .hs__shutter {
-    transform-origin: 0 662px;
-  }
-
-  .hs__polish {
-    opacity: 0;
-  }
-
-  .hs.is-live .hs__baritem {
-    opacity: 0;
-  }
-
-  /* The count: each tick appears after a tap of the phone */
-  .hs__tick {
-    opacity: 0;
-  }
-
-  .hs.is-counting .hs__tick {
-    animation: hs-tick 0.3s var(--ease) both;
-    animation-delay: calc(0.5s + var(--i) * 0.42s);
-  }
-
-  @keyframes hs-tick {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .hs.is-counting .hs__counter :global(.p-arm--b) {
-    animation: hs-tap 0.42s ease-in-out 0.4s 5;
-  }
-
-  @keyframes hs-tap {
-    0%, 100% { transform: rotate(-70deg); }
-    50% { transform: rotate(-58deg); }
-  }
-
-  .hs__zone {
     position: absolute;
-    bottom: 3.5%;
-    left: 50%;
-    padding: 0.2rem 0.6rem;
-    border-radius: 3px;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.8125rem;
-    opacity: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: var(--shadow-1);
+    opacity: 0.78;
+    transition:
+      opacity var(--hs-ease),
+      color var(--hs-ease),
+      box-shadow var(--hs-ease);
+  }
+
+  .hs__card :global(svg) {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .hs__spot[data-side='start'] .hs__line {
+    right: 6px;
+    top: -0.5px;
+    width: 56px;
+    height: 1px;
+  }
+
+  .hs__spot[data-side='start'] .hs__card {
+    right: 62px;
+    top: 0;
+    transform: translateY(-50%);
+  }
+
+  .hs__spot[data-side='end'] .hs__line {
+    left: 6px;
+    top: -0.5px;
+    width: 56px;
+    height: 1px;
+  }
+
+  .hs__spot[data-side='end'] .hs__card {
+    left: 62px;
+    top: 0;
+    transform: translateY(-50%);
+  }
+
+  .hs__spot[data-side='up'] .hs__line {
+    left: -0.5px;
+    bottom: 6px;
+    width: 1px;
+    height: 48px;
+  }
+
+  .hs__spot[data-side='up'] .hs__card {
+    left: 0;
+    bottom: 54px;
     transform: translateX(-50%);
-    transition: opacity 0.35s var(--ease);
   }
 
-  .hs__zone.is-on {
+  .hs__spot.is-on .hs__card,
+  .hs:not(.is-live) .hs__card {
+    color: var(--ink);
+    opacity: 1;
+    box-shadow: var(--shadow-2);
+  }
+
+  .hs__spot.is-on .hs__dot {
+    box-shadow: 0 0 0 4px rgb(var(--ink-rgb) / 0.14);
+  }
+
+  /* Phones: pills along the bottom of the frame instead of the pinned callouts */
+  .hs__pills {
+    position: absolute;
+    inset: auto var(--s-2) var(--s-2);
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    opacity: var(--spots, 1);
+  }
+
+  .hs__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--steel);
+    font-size: var(--fs-caption);
+    font-weight: 500;
+    line-height: 1.2;
+    box-shadow: var(--shadow-1);
+    opacity: 0.8;
+  }
+
+  .hs__pill :global(svg) {
+    width: 14px;
+    height: 14px;
+  }
+
+  .hs__pill.is-on,
+  .hs:not(.is-live) .hs__pill {
+    color: var(--ink);
     opacity: 1;
   }
 
-  /* ── Colours of the drawing, all from the tokens ── */
-  .c-far { fill: var(--mount); }
-  .c-far-dusk { fill: var(--mount-dusk); }
-  .c-tile { fill: none; stroke: rgb(var(--ink-rgb) / 0.08); stroke-width: 0.3; }
-  .c-floor { fill: var(--silver-light); }
-  .c-drain { fill: var(--steel); }
-  .c-steel-door { fill: var(--silver); stroke: var(--steel); stroke-width: 0.4; }
-  .c-steel-top { fill: var(--silver-light); stroke: var(--steel); stroke-width: 0.4; }
-  .c-pan { fill: var(--graphite); }
-  .c-plate { fill: var(--paper); }
-  .c-store-back { fill: rgb(var(--ink-rgb) / 0.03); }
-  .c-rack { fill: none; stroke: var(--steel); stroke-width: 0.9; }
-  .c-sack { fill: var(--stock-sack); stroke: var(--stock-sack-line); stroke-width: 0.5; }
-  .c-sack-line { fill: none; stroke: var(--stock-sack-line); stroke-width: 0.5; }
-  .c-tray { fill: var(--silver); }
-  .c-egg { fill: var(--stone-1); }
-  .c-leaf { fill: var(--stock-leaf); }
-  .c-leaf-line { fill: none; stroke: var(--stock-leaf-line); stroke-width: 0.4; }
-  .c-wood { fill: var(--stock-wood); }
-  .c-wood-line { fill: none; stroke: var(--stock-wood-line); stroke-width: 0.5; }
-  .c-tomato { fill: var(--stock-tomato); }
-  .c-rind { fill: var(--stock-rind); }
-  .c-rind-top { fill: var(--stock-cheese); }
-  .c-cheese { fill: var(--stock-cheese); }
-  .c-meat { fill: var(--stock-meat); }
-  .c-meat-fat { fill: none; stroke: var(--stone-1); stroke-width: 0.7; }
-  .c-wrap { fill: none; stroke: rgb(var(--paper-rgb) / 0.55); stroke-width: 0.6; }
-  .c-oil { fill: var(--stock-oil); }
-  .c-oil-label { fill: var(--stone-1); }
-  .c-oil-cap { fill: var(--ink); }
-  .c-bottle-dark { fill: var(--ink); }
-  .c-soda { fill: var(--stock-soda); }
-  .c-soda-line { fill: none; stroke: rgb(var(--ink-rgb) / 0.25); stroke-width: 0.4; }
-  .c-bottle-wine { fill: var(--stock-wine); }
-  .c-bottle-water { fill: var(--silver); }
-  .c-case-label { fill: var(--stone-1); }
-  .c-keg { fill: var(--silver-deep); }
-  .c-keg-line { fill: none; stroke: var(--steel); stroke-width: 0.7; }
-  .c-tick { fill: var(--ink); }
-  .c-tick-mark { fill: none; stroke: var(--paper); stroke-width: 0.9; stroke-linecap: round; stroke-linejoin: round; }
-  .c-paving { fill: var(--sand-200); }
-  .c-road { fill: var(--sand-400); }
-  .c-kerb { fill: none; stroke: var(--silver); stroke-width: 1; }
-  .c-base { fill: var(--paper); }
-  .c-ghost { fill: none; stroke: var(--silver-deep); stroke-width: 0.8; vector-effect: non-scaling-stroke; }
-  .c-ghost-sign { fill: none; stroke: var(--silver-deep); stroke-width: 0.7; font-family: var(--font-display); font-size: 44px; }
-  .c-stone { fill: var(--stone-1); stroke: var(--stone-line); stroke-width: 0.5; vector-effect: non-scaling-stroke; }
-  .c-stone-wing { fill: var(--stone-2); stroke: var(--stone-line); stroke-width: 0.5; vector-effect: non-scaling-stroke; }
-  .c-setback { fill: rgb(var(--ink-rgb) / 0.1); }
-  .c-course { fill: var(--stone-3); }
-  .c-string { fill: none; stroke: var(--stone-line); stroke-width: 1; }
-  .c-pilaster { fill: var(--stone-2); }
-  .c-trim { fill: var(--stone-3); }
-  .c-roof { fill: var(--graphite); }
-  .c-roof-wing { fill: var(--steel); }
-  .c-cornice { fill: var(--stone-3); }
-  .c-glass { fill: var(--glass); }
-  .c-bar { fill: none; stroke: var(--stone-1); stroke-width: 0.8; }
-  .c-rail-line { fill: none; stroke: var(--graphite); stroke-width: 1; }
-  .c-hub { fill: var(--silver); }
-  .c-truck { fill: var(--paper); stroke: var(--steel); stroke-width: 0.8; }
-  .c-truck-cab { fill: var(--graphite); }
-  .c-wheel { fill: var(--ink); }
-  .c-room-off { fill: var(--sand-200); }
-  .c-room { fill: var(--amber-100); }
-  .c-roomline { stroke: var(--stone-3); stroke-width: 2; }
-  .c-shelf { fill: none; stroke: var(--graphite); stroke-width: 1.2; }
-  .c-steel { fill: var(--silver-deep); }
-  .c-steel-line { fill: none; stroke: var(--steel); stroke-width: 1.5; }
-  .c-chef { fill: var(--paper); stroke: var(--graphite); stroke-width: 0.8; }
-  .c-missing { fill: none; stroke: var(--amber-500); stroke-width: 1; stroke-dasharray: 2 1.5; }
-  .c-item--0 { fill: var(--steel); }
-  .c-item--1 { fill: var(--graphite); }
-  .c-item--2 { fill: var(--silver-deep); }
-  .c-interior { fill: var(--amber-100); }
-  .c-furniture { fill: none; stroke: var(--graphite); stroke-width: 1; }
-  .c-counter { fill: var(--graphite); }
-  .c-glassware { fill: rgb(var(--paper-rgb) / 0.75); stroke: var(--steel); stroke-width: 0.5; }
-  .c-bottle-amber { fill: var(--amber-700); }
-  .c-cloth { fill: var(--paper); stroke: var(--steel); stroke-width: 0.8; }
-  .c-dock { fill: var(--ink); }
-  .c-shutter { fill: var(--silver-deep); }
-  .c-shutter-line { fill: none; stroke: var(--steel); stroke-width: 0.6; }
-  .c-truck-line { fill: none; stroke: var(--silver-deep); stroke-width: 1; }
-  .c-cup { fill: var(--paper); stroke: var(--steel); stroke-width: 0.7; }
-  .c-stool { fill: none; stroke: var(--ink); stroke-width: 1.5; }
-  .c-lamp { fill: var(--amber-400); }
-  .c-frame-win { fill: none; stroke: var(--graphite); stroke-width: 1; vector-effect: non-scaling-stroke; }
-  .c-step { fill: var(--stone-1); stroke: var(--stone-line); stroke-width: 0.6; }
-  .c-carpet { fill: var(--graphite); }
-  .c-brass { fill: var(--amber-500); }
-  .c-brass-line { fill: none; stroke: var(--amber-300); stroke-width: 1.5; }
-  .c-lantern { fill: var(--stone-1); stroke: var(--graphite); stroke-width: 0.8; }
-  .c-lantern-on { fill: var(--amber-400); }
-  .c-lit-door { fill: var(--amber-300); }
-  .c-planter { fill: var(--graphite); }
-  .c-green { fill: var(--leaf-1); transition: fill 0.8s var(--ease); }
-  .c-green-deep { fill: var(--leaf-2); transition: fill 0.8s var(--ease); }
-  .c-sign { fill: var(--ink); font-family: var(--font-display); font-size: 44px; font-weight: 400; transition: fill 0.8s var(--ease); }
-  .c-sign-rail { fill: none; stroke: var(--amber-500); stroke-width: 1; }
-  .c-pole { fill: none; stroke: var(--steel); stroke-width: 1.5; }
-  .c-flag { fill: var(--graphite); }
-  .c-figure { fill: var(--ink); }
-  .c-skin { fill: var(--skin); }
-  .c-hair { fill: var(--graphite); }
-  .c-coat { fill: var(--graphite); stroke: var(--graphite); }
-  .c-dress { fill: var(--amber-700); stroke: var(--amber-700); }
-  .c-case-b { fill: var(--graphite); }
-  .c-trolley { fill: none; stroke: var(--amber-300); stroke-width: 1.5; }
-  .c-case { fill: var(--steel); }
-  .c-car-glass { fill: var(--silver); }
-  .c-dim { fill: var(--dusk-veil); }
-  .c-lit-a { color: var(--window-a); }
-  .c-lit-b { color: var(--window-b); }
-  .c-lit-bar { fill: none; stroke: var(--amber-700); stroke-width: 0.6; }
-  .c-slip-paper { fill: var(--paper); stroke: var(--steel); stroke-width: 0.8; }
-  .c-slip-line { fill: none; stroke: var(--silver-deep); stroke-width: 1; }
-  .c-slip-flag { fill: var(--amber-100); stroke: var(--amber-500); stroke-width: 1; }
-  .c-slip-line-flag { fill: none; stroke: var(--amber-500); stroke-width: 1; }
-  .c-link { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 1; transition: stroke 0.8s var(--ease); }
-  .c-pulse { fill: none; stroke: var(--paper); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 0.02 0.98; opacity: 0; }
-
-  .hs.is-dusk .c-link {
-    stroke: var(--paper);
-  }
-
-  .hs.is-dusk .c-sign {
-    fill: var(--window-a);
-  }
-
-  .hs.is-dusk .c-green {
-    fill: var(--leaf-1-dusk);
-  }
-
-  .hs.is-dusk .c-green-deep {
-    fill: var(--leaf-2-dusk);
-  }
-
-  /* ── The last step: time-based, calm, on a long loop. Paused off screen. ── */
-  .hs.is-alive .loop--taxi {
-    animation: hs-taxi 26s infinite;
-  }
-
-  .hs.is-alive .loop--guest {
-    animation: hs-guest 26s linear infinite;
-  }
-
-  .hs.is-alive .loop--couple {
-    animation: hs-couple 26s linear infinite;
-  }
-
-  .hs.is-alive .loop--bellhop {
-    animation: hs-bellhop 26s linear infinite;
-  }
-
-  .hs.is-alive .loop--waiter {
-    transform-origin: 332px 0;
-    animation: hs-waiter 22s linear infinite;
-  }
-
-  .hs.is-alive .loop--pulse {
-    opacity: 1;
-    animation: hs-pulse 3.2s linear infinite;
-  }
-
-  .hs.is-paused .loop {
-    animation-play-state: paused;
-  }
-
-  @keyframes hs-taxi {
-    0% { transform: translateX(-560px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
-    14%, 42% { transform: translateX(0); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4); }
-    58%, 100% { transform: translateX(900px); }
-  }
-
-  /* People move at the speed of their stride, about 0.72 of their height each second, so nobody slides */
-  @keyframes hs-guest {
-    0%, 16% { opacity: 0; transform: translate(-56px, 24px); }
-    17% { opacity: 1; transform: translate(-56px, 24px); }
-    23.6% { opacity: 1; transform: translate(0, 0); }
-    27.4% { opacity: 1; transform: translate(20px, -28px); }
-    29%, 100% { opacity: 0; transform: translate(20px, -28px); }
-  }
-
-  @keyframes hs-couple {
-    0%, 52% { opacity: 0; transform: translate(-128px, -36px); }
-    53% { opacity: 1; transform: translate(-128px, -36px); }
-    67.2% { opacity: 1; transform: translate(0, 0); }
-    85.4% { opacity: 1; transform: translate(170px, 8px); }
-    87%, 100% { opacity: 0; transform: translate(170px, 8px); }
-  }
-
-  @keyframes hs-bellhop {
-    0% { opacity: 0; transform: translateX(150px); }
-    2% { opacity: 1; transform: translateX(134px); }
-    55% { opacity: 1; transform: translateX(-330px); }
-    56%, 100% { opacity: 0; transform: translateX(-330px); }
-  }
-
-  @keyframes hs-waiter {
-    0% { transform: translateX(0) scaleX(1); }
-    49.99% { transform: translateX(330px) scaleX(1); }
-    50% { transform: translateX(330px) scaleX(-1); }
-    99.99% { transform: translateX(0) scaleX(-1); }
-    100% { transform: translateX(0) scaleX(1); }
-  }
-
-  @keyframes hs-pulse {
-    from { stroke-dashoffset: 1; }
-    to { stroke-dashoffset: 0; }
-  }
-
-  /* Short laptop screens: the heading gives up its second line, so a whole step fits beside the hotel */
-  @media (min-width: 1001px) and (max-height: 820px) {
-    .hs {
-      --hs-top: var(--s-2);
-      --hs-foot: var(--s-2);
-    }
-
-    .hs__head h2 {
-      font-size: 1.75rem;
-    }
-
-    .hs__progress {
-      margin-top: var(--s-1);
-    }
-
-  }
-
-  /* ── Tablets and phones: hotel on top, held while the text passes beneath it ── */
+  /* ── Tablets and phones: the heading and the steps, the frame pinned at the top (4:3), the text beneath ── */
   @media (max-width: 1000px) {
     .hs {
-      --hs-step: 86svh;
-      --hs-scene: min(46svh, 86vw);
-      --hs-pin: calc(var(--header-h) + var(--hs-scene) + var(--s-1));
+      --hs-step: 75svh;
+      --hs-pin: calc(var(--header-h) + var(--hs-frame, 60vw) + 1rem);
     }
 
     .hs__grid {
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: minmax(0, 1fr);
       gap: 0;
       padding-inline: var(--gut);
     }
@@ -1491,492 +726,234 @@ const systems = [
       display: contents;
     }
 
-    .hs__head h2 {
-      margin-top: 0;
-    }
-
     .hs__head {
       position: static;
+      display: flex;
+      flex-direction: column-reverse;
       order: 1;
-      padding-block: var(--s-6) var(--s-3);
+      padding-block: var(--s-5) var(--s-3);
     }
 
     .hs__head::after {
       display: none;
     }
 
+    .hs__head h2 {
+      margin: 0 0 var(--s-3);
+    }
+
     .hs__scene {
       order: 2;
-      z-index: 2;
-      align-self: stretch;
-      place-items: center;
-      height: var(--hs-scene);
-      padding-top: 0;
-      margin-inline: calc(var(--gut) * -1);
-      background: var(--paper);
+      z-index: 1;
+      height: auto;
+      aspect-ratio: 4 / 3;
+      max-height: calc(100svh - var(--header-h) - 8rem);
     }
 
     .hs__stage {
-      width: min(100%, calc(var(--hs-scene) * 1000 / 860));
-      border-radius: 0;
-      box-shadow: none;
+      border-radius: var(--radius-md);
+    }
+
+    .hs__layer,
+    :global([dir='rtl']) .hs__layer {
+      -webkit-mask-image: none;
+      mask-image: none;
     }
 
     .hs__steps {
       order: 3;
     }
 
-    /* The hotel stays pinned and the text scrolls normally beneath it, so no step is ever cut off by a short screen.
-       `top` is still read by the script as the line where a step begins. */
-    .hs__step,
-    .hs__step:nth-child(3) {
-      min-height: 0;
-    }
-
     .hs__step:last-child {
-      min-height: var(--hs-step);
+      min-height: 0;
+      padding-bottom: var(--s-5);
     }
 
     .hs__step > div {
       position: static;
-      min-height: 0;
-      padding-block: var(--s-2);
-    }
-
-    .hs.is-live .hs__fix {
-      opacity: 1;
-      transform: none;
-    }
-
-    .hs__progress {
-      display: none;
-    }
-
-    .hs__tag {
-      display: none;
-    }
-
-    .hs__problem {
-      padding: 0.5rem 0.75rem;
-    }
-
-    .hs__fix > ul {
-      padding: 0.5rem 0.75rem;
-    }
-
-    .hs__next {
-      gap: var(--s-2);
-      padding: 0.75rem;
-    }
-
-    .hs__label {
-      display: block;
-      margin-bottom: 0.2rem;
-    }
-
-    .hs__card,
-    .hs__zone {
-      padding: 0.15rem 0.4rem;
-      font-size: 0.6875rem;
-    }
-
-    .hs__note {
-      padding: 0.15rem 0.4rem;
-      font-size: 0.6875rem;
-    }
-
-    .hs__notes {
-      top: 14%;
-      right: 2%;
-      gap: 0.2rem;
-      max-width: 72%;
-    }
-
-    .hs__card i {
-      width: 4px;
-      height: 4px;
+      padding-block: var(--s-3) var(--s-2);
     }
   }
 
-  @media (max-width: 1000px) and (max-height: 700px) {
-    .hs {
-      --hs-scene: min(42svh, 86vw);
-      --hs-step: 100svh;
+  @media (max-width: 700px) {
+    .hs__spots .hs__spot {
+      display: none;
+    }
+
+    .hs__pills {
+      display: flex;
+    }
+
+    .hs__card {
+      padding: 0.45rem 0.7rem;
+      font-size: var(--fs-caption);
+    }
+
+    .hs__hub {
+      width: 36px;
+      height: 36px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hs__step,
-    .hs__card,
-    .hs__card i,
-    .hs__hub,
-    .hs__zone,
-    .c-sign,
-    .c-link,
-    .c-green,
-    .c-green-deep {
+    .hs__go,
+    .hs__card {
       transition: none;
     }
   }
 </style>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-hs]').forEach((root) => {
+  // The position of the text decides everything: `b` runs from 0 to 4 across the four steps. From it come the step
+  // being read, the camera (scale and the point it holds still), which photograph shows, the callouts and the lines.
+  const root = document.querySelector<HTMLElement>('[data-hs]');
+  if (root) {
     const head = root.querySelector<HTMLElement>('[data-hs-head]')!;
+    const scene = root.querySelector<HTMLElement>('.hs__scene')!;
     const stage = root.querySelector<HTMLElement>('[data-hs-stage]')!;
     const stepsBox = root.querySelector<HTMLElement>('[data-hs-steps]')!;
     const steps = [...root.querySelectorAll<HTMLElement>('[data-hs-step]')];
     const firstText = steps[0].firstElementChild as HTMLElement;
-    const dots = [...root.querySelectorAll<HTMLElement>('[data-hs-dot]')];
+    const goes = [...root.querySelectorAll<HTMLButtonElement>('[data-hs-go]')];
+    const spots = [...root.querySelectorAll<HTMLElement>('[data-hs-spot]')];
+    const pills = [...root.querySelectorAll<HTMLElement>('[data-hs-pill]')];
+    const views = [...root.querySelectorAll<HTMLElement>('[data-hs-view]')];
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const narrow = matchMedia('(max-width: 1000px)');
+    const ratio = parseFloat(getComputedStyle(root).getPropertyValue('--hs-ratio')) || 1.5;
+    const last = steps.length - 1;
+    const point = (name: string) => (root.dataset[name] ?? '50 50').split(' ').map(Number) as [number, number];
+    const doors = point('doors');
+    const service = point('service');
 
-    // A step's text pins at `pin`. The step counts as the current one once the next text is on its way up.
+    const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
+    const smooth = (n: number) => n * n * (3 - 2 * n);
+    const seg = (b: number, from: number, to: number) => smooth(clamp01((b - from) / (to - from)));
+    const lerp = (a: number, c: number, k: number) => a + (c - a) * k;
+
+    // A step's text pins at `pin`; on phones it passes beneath the pinned frame instead. The step counts as the current
+    // one once its text is on its way up.
     let pin = 0;
     let stepH = 1;
     let tops: number[] = [];
     let heights: number[] = [];
     let lead = 0.12;
+    let img = { x: 0, y: 0, w: 1, h: 1 };
+    const cover = (r: number, px: number, py: number) => {
+      const sw = stage.clientWidth || 1;
+      const sh = stage.clientHeight || 1;
+      const w = sw / sh > r ? sw : sh * r;
+      const h = sw / sh > r ? sw / r : sh;
+      return { x: (sw - w) * px, y: (sh - h) * py, w, h };
+    };
+    const frame = (el: HTMLElement, f: { x: number; y: number; w: number; h: number }) => {
+      el.style.setProperty('--img-x', `${f.x}px`);
+      el.style.setProperty('--img-y', `${f.y}px`);
+      el.style.setProperty('--img-w', `${f.w}px`);
+      el.style.setProperty('--img-h', `${f.h}px`);
+    };
     const measure = () => {
       root.style.setProperty('--hs-head', `${head.offsetHeight}px`);
-      root.style.setProperty('--hs-stage', `${stage.offsetHeight}px`);
-      pin = parseFloat(getComputedStyle(firstText).top) || 0;
+      root.style.setProperty('--hs-frame', `${scene.offsetHeight}px`);
+      const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
+      pin = narrow.matches ? headerH + scene.offsetHeight + 16 : parseFloat(getComputedStyle(firstText).top) || headerH;
       stepH = steps[0].offsetHeight || 1;
       const start = stepsBox.getBoundingClientRect().top;
       tops = steps.map((step) => step.getBoundingClientRect().top - start);
       heights = steps.map((step) => step.offsetHeight);
       lead = Math.max(0.08, Math.min(0.2, (firstText.offsetHeight * 0.35) / stepH));
+      root.dataset.hsPin = String(pin);
+      root.dataset.hsLead = lead.toFixed(3);
+      // Each photograph's frame inside the stage, as object-fit: cover crops it (the hotel at 70% 100%, rooms centred)
+      img = cover(ratio, 0.7, 1);
+      frame(stage, img);
+      views.forEach((view) => frame(view, cover(parseFloat(view.style.getPropertyValue('--ratio')) || 1.5, 0.5, 0.5)));
     };
     const position = () => {
       // Steps can differ in length, so each one counts as 1 however long it is. The last runs on at the normal rate.
       const y = pin - stepsBox.getBoundingClientRect().top;
       if (y <= 0) return y / stepH + lead;
-      let i = steps.length - 1;
+      let i = last;
       while (i > 0 && y < tops[i]) i--;
-      return i + (y - tops[i]) / (i === steps.length - 1 ? stepH : heights[i]) + lead;
+      return i + (y - tops[i]) / (i === last ? stepH : heights[i]) + lead;
     };
 
-    const setActive = (b: number) => {
-      const active = Math.max(0, Math.min(steps.length - 1, Math.floor(b)));
-      steps.forEach((step, i) => step.classList.toggle('is-active', i === active));
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('is-on', i === active);
-        dot.classList.toggle('is-done', i < active);
+    // The choreography, in units of `b`. Each move is eased over its range.
+    const ZOOM = () => (narrow.matches ? 1.9 : 2.4);
+    const render = (b: number) => {
+      const active = Math.max(0, Math.min(last, Math.floor(b)));
+      steps.forEach((step, i) => {
+        step.classList.toggle('is-active', i === active);
+        // The words of a step arrive with its camera move; the others wait, faded
+        const arrive = i !== active ? 0.45 : i === 0 ? 1 : 0.45 + 0.55 * seg(b, i - 0.1, i + 0.15);
+        step.style.setProperty('--arrive', arrive.toFixed(3));
+      });
+      goes.forEach((go, i) => (i === active ? go.setAttribute('aria-current', 'step') : go.removeAttribute('aria-current')));
+      const lit = (i: number) => i === active || active === last;
+      spots.forEach((spot, i) => spot.classList.toggle('is-on', lit(i)));
+      pills.forEach((pill, i) => pill.classList.toggle('is-on', lit(i)));
+      root.dataset.hsB = b.toFixed(2);
+
+      // Camera: in to the doors (0.72–1.0), out again (1.68–1.86), across to the service entrance while at rest
+      // (1.86–1.9), in (1.9–2.1), out for good (2.72–3.1)
+      const k1 = clamp01(seg(b, 0.72, 1.0) - seg(b, 1.68, 1.86));
+      const k2 = clamp01(seg(b, 1.9, 2.1) - seg(b, 2.72, 3.1));
+      const k = reduce.matches ? 0 : clamp01(k1 + k2);
+      const w = seg(b, 1.86, 1.9);
+      const fx = lerp(doors[0], service[0], w);
+      const fy = lerp(doors[1], service[1], w);
+      const set = (name: string, value: string) => stage.style.setProperty(name, value);
+      set('--s', (1 + (ZOOM() - 1) * k).toFixed(4));
+      set('--px', `${(img.x + (img.w * fx) / 100).toFixed(1)}px`);
+      set('--py', `${(img.y + (img.h * fy) / 100).toFixed(1)}px`);
+
+      // The rooms: the kitchen as the doors fill the frame, the storeroom as the service entrance does
+      const o1 = clamp01(seg(b, 0.9, 1.05) - seg(b, 1.65, 1.78));
+      const o2 = clamp01(seg(b, 2.02, 2.14) - seg(b, 2.7, 2.85));
+      set('--o1', o1.toFixed(3));
+      set('--o2', o2.toFixed(3));
+      const drift = (from: number) => (reduce.matches ? 1 : 1 + 0.06 * clamp01((b - from) / 0.85));
+      set('--push1', drift(0.95).toFixed(4));
+      set('--push2', drift(2.0).toFixed(4));
+      views[0]?.style.setProperty('--marks', (seg(b, 1.08, 1.2) * (1 - seg(b, 1.6, 1.68))).toFixed(3));
+      views[1]?.style.setProperty('--marks', (seg(b, 2.14, 2.26) * (1 - seg(b, 2.65, 2.72))).toFixed(3));
+
+      // The façade's callouts hide while the camera is inside; the result lights everything and joins it to Tyll
+      set('--spots', clamp01(1 - seg(b, 0.6, 0.85) + seg(b, 3.05, 3.3)).toFixed(3));
+      set('--late', seg(b, 3.0, 3.35).toFixed(3));
+      set('--links', seg(b, 3.25, 3.65).toFixed(3));
+      set('--glow', seg(b, 3.3, 3.7).toFixed(3));
+    };
+
+    let ticking = false;
+    const follow = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        render(position());
       });
     };
 
-    measure();
-
-    // Reduced motion: the finished hotel stays as it is. The text still follows the scroll.
-    if (reduce.matches) {
-      const follow = () => setActive(position());
-      addEventListener('scroll', follow, { passive: true });
-      addEventListener('resize', () => {
-        measure();
-        follow();
+    // The progress buttons take the reader to a step
+    goes.forEach((go, i) => {
+      go.addEventListener('click', () => {
+        const top = stepsBox.getBoundingClientRect().top + scrollY + tops[i] - pin + 2;
+        scrollTo({ top, behavior: reduce.matches ? 'instant' : 'smooth' });
       });
-      follow();
-      return;
-    }
-
-    type Piece = {
-      el: SVGElement;
-      b: number;
-      d: number;
-      x: number;
-      y: number;
-      r: number;
-      s: number | null;
-      ob: number | null;
-      od: number;
-      ox: number;
-      oy: number;
-      draw: boolean;
-      drift: number;
-      t: number;
-      o: number;
-      v: number;
-    };
-    const pieces: Piece[] = [...root.querySelectorAll<SVGElement>('[data-b]')].map((el, i) => {
-      const num = (name: string, fallback = 0) => {
-        const value = el.getAttribute(`data-${name}`);
-        return value === null ? fallback : Number(value);
-      };
-      return {
-        el,
-        b: num('b'),
-        d: num('d', 0.1),
-        x: num('x'),
-        y: num('y'),
-        r: num('r'),
-        s: el.hasAttribute('data-s') ? num('s') : null,
-        ob: el.hasAttribute('data-ob') ? num('ob') : null,
-        od: num('od', 0.1),
-        ox: num('ox'),
-        oy: num('oy'),
-        draw: el.hasAttribute('data-draw'),
-        // The transactions stay restless until they are dealt with
-        drift: el.classList.contains('c-slip') ? (i * 13) % 9 : -1,
-        t: -1,
-        o: -1,
-        v: NaN,
-      };
     });
-    const cards = [...root.querySelectorAll<HTMLElement>('[data-hs-card]')].map((el) => ({ el, on: Number(el.dataset.hsCard) }));
-    const zones = [...root.querySelectorAll<HTMLElement>('[data-hs-zone]')].map((el) => ({ el, range: el.dataset.hsZone!.split(',').map(Number) }));
-    const hub = root.querySelector<HTMLElement>('[data-hs-hub]')!;
-    const notes = root.querySelector<HTMLElement>('[data-hs-notes]')!;
-    const camera = root.querySelector<SVGElement>('[data-hs-camera]')!;
-    const far = root.querySelector<SVGElement>('[data-hs-far]')!;
-    const near = root.querySelector<SVGElement>('[data-hs-near]')!;
-
-    const clamp = (v: number) => Math.max(0, Math.min(1, v));
-    const easeOut = (v: number) => 1 - (1 - v) ** 3;
-    const SETTLE = 3;
-
-    const place = (p: Piece, b: number) => {
-      const t = clamp((b - p.b) / p.d);
-      const o = p.ob === null ? 1 : 1 - clamp((b - p.ob) / p.od);
-      const shown = p.s === null ? 1 : clamp((b - p.s) / 0.15);
-      // A restless piece changes with every scroll until it arrives; anything else only inside its windows
-      if (t === p.t && o === p.o && shown === p.v && !(p.drift >= 0 && t === 0)) return;
-      p.t = t;
-      p.o = o;
-      p.v = shown;
-      const { style } = p.el;
-      if (p.draw) {
-        style.strokeDashoffset = String(1 - easeOut(t));
-        style.visibility = t === 0 ? 'hidden' : 'visible';
-        return;
-      }
-      const moves = p.x !== 0 || p.y !== 0;
-      // Moves in, passes its place by a few pixels, and settles back: no bounce
-      const arrive = easeOut(Math.min(1, t / 0.8));
-      const settle = moves ? (t < 0.8 ? arrive * SETTLE : SETTLE * (1 - (t - 0.8) / 0.2)) : 0;
-      const rest = 1 - arrive;
-      const wander = p.drift >= 0 ? (b + 0.8) * rest : 0;
-      const x = p.x * rest - Math.sign(p.x) * settle + p.ox * (1 - o) + (p.drift >= 0 ? (p.drift - 4) * 9 * wander : 0);
-      const y = p.y * rest - Math.sign(p.y) * settle + p.oy * (1 - o) + (p.drift >= 0 ? (((p.drift * 7) % 9) - 4) * 7 * wander : 0);
-      const r = p.r * rest + (p.drift >= 0 ? (p.drift - 4) * 8 * wander : 0);
-      const opacity = (p.s !== null ? shown : moves ? Math.min(1, t * 3) : easeOut(t)) * o;
-      style.visibility = opacity === 0 ? 'hidden' : 'visible';
-      style.opacity = String(opacity);
-      style.transform = x === 0 && y === 0 && r === 0 ? '' : `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)${r ? ` rotate(${r.toFixed(1)}deg)` : ''}`;
-    };
-
-    // The camera goes in to the storeroom and to the bar and comes back out; the stylesheet eases each move over a second
-    const SHOTS = [
-      { from: 1.02, to: 1.62, cx: 225, cy: 662, z: 4 },
-      { from: 2.02, to: 2.9, cx: 815, cy: 668, z: 2.9 },
-    ];
-    let aimed = '';
-    const aim = (b: number) => {
-      // The bar stays in view until the delivery has finished, unless the reader has moved on to the last step
-      const busy = b >= 2.9 && b < 2.97 && performance.now() - deliveryStart < DONE + 300;
-      const shot = SHOTS.find((one) => b >= one.from && (b < one.to || (busy && one.from === 2.02)));
-      const transform = shot ? `translate(${500 - shot.cx * shot.z}px, ${430 - shot.cy * shot.z}px) scale(${shot.z})` : 'translate(0px, 0px) scale(1)';
-      root.classList.toggle('is-zoom', Boolean(shot));
-      if (transform !== aimed) camera.style.transform = aimed = transform;
-    };
-
-    // The delivery and the bar run together on one clock. All times in milliseconds of a 16 second cycle.
-    const CYCLE = 16000;
-    const part = (name: string) => root.querySelector<SVGElement>(`[data-dl="${name}"]`)!;
-    const at = (ms: number) => ms / CYCLE;
-    const OUT = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
-    const IN = 'cubic-bezier(0.55, 0, 0.85, 0.4)';
-    const TRIP = 2400;
-    const FIRST = 1500;
-    const TRIPS = 3;
-    const LAST_IN = FIRST + (TRIPS - 1) * TRIP + 1100;
-    const DONE = FIRST + TRIPS * TRIP;
-    const barItems = [...root.querySelectorAll<SVGElement>('[data-dl-item]')];
-    const STOCK_END = LAST_IN + 300;
-    const placedAt = (i: number) => FIRST + (i * (STOCK_END - FIRST)) / (barItems.length - 1 || 1);
-    const RESET = DONE + 2400;
-    type Frames = Keyframe[];
-    const timeline = (): [Element, Frames][] => {
-      const list: [Element, Frames][] = [];
-      list.push([
-        part('van'),
-        [
-          { transform: 'translateX(260px)', offset: 0, easing: OUT },
-          { transform: 'translateX(0px)', offset: at(1000) },
-          { transform: 'translateX(0px)', offset: at(DONE + 700), easing: IN },
-          { transform: 'translateX(260px)', offset: at(DONE + 2200) },
-          { transform: 'translateX(260px)', offset: 1 },
-        ],
-      ]);
-      list.push([
-        part('door'),
-        [
-          { transform: 'scaleX(0)', offset: 0 },
-          { transform: 'scaleX(0)', offset: at(900), easing: OUT },
-          { transform: 'scaleX(1)', offset: at(1300) },
-          { transform: 'scaleX(1)', offset: at(DONE + 150), easing: OUT },
-          { transform: 'scaleX(0)', offset: at(DONE + 600) },
-          { transform: 'scaleX(0)', offset: 1 },
-        ],
-      ]);
-      list.push([
-        part('shutter'),
-        [
-          { transform: 'scaleY(1)', offset: 0 },
-          { transform: 'scaleY(1)', offset: at(700), easing: OUT },
-          { transform: 'scaleY(0.12)', offset: at(1300) },
-          { transform: 'scaleY(0.12)', offset: at(DONE + 300), easing: OUT },
-          { transform: 'scaleY(1)', offset: at(DONE + 1100) },
-          { transform: 'scaleY(1)', offset: 1 },
-        ],
-      ]);
-      // The driver, the carrying and empty handed figures, and each box in turn
-      const walker: Keyframe[] = [{ transform: 'translate(12px, 0px)', opacity: 0, offset: 0 }, { transform: 'translate(12px, 0px)', opacity: 0, offset: at(FIRST - 200) }];
-      const carrying: Keyframe[] = [{ opacity: 1, offset: 0 }];
-      const empty: Keyframe[] = [{ opacity: 0, offset: 0 }];
-      for (let k = 0; k < TRIPS; k++) {
-        const t = FIRST + k * TRIP;
-        walker.push({ transform: 'translate(0px, 0px)', opacity: 1, offset: at(t) });
-        walker.push({ transform: 'translate(-35px, -8px)', opacity: 1, offset: at(t + 1000) });
-        walker.push({ transform: 'translate(-37px, -10px)', opacity: 0, offset: at(t + 1100) });
-        walker.push({ transform: 'translate(-37px, -10px)', opacity: 0, offset: at(t + 1200) });
-        walker.push({ transform: 'translate(-35px, -8px)', opacity: 1, offset: at(t + 1350) });
-        carrying.push({ opacity: 1, offset: at(t + 1150) }, { opacity: 0, offset: at(t + 1151) }, { opacity: 0, offset: at(t + TRIP - 1) }, { opacity: 1, offset: at(t + TRIP) });
-        empty.push({ opacity: 0, offset: at(t + 1150) }, { opacity: 1, offset: at(t + 1151) }, { opacity: 1, offset: at(t + TRIP - 1) }, { opacity: 0, offset: at(t + TRIP) });
-        const box: Keyframe[] = [{ opacity: 0, offset: 0 }];
-        if (k > 0) box.push({ opacity: 0, offset: at(t - 1) });
-        box.push({ opacity: 1, offset: at(t) }, { opacity: 1, offset: at(t + 1150) }, { opacity: 0, offset: at(t + 1151) }, { opacity: 0, offset: 1 });
-        list.push([part(`box${k}`), box]);
-      }
-      walker.push({ transform: 'translate(0px, 0px)', opacity: 1, offset: at(DONE) });
-      walker.push({ transform: 'translate(12px, 0px)', opacity: 0, offset: at(DONE + 250) });
-      walker.push({ transform: 'translate(12px, 0px)', opacity: 0, offset: 1 });
-      carrying.push({ opacity: 0, offset: 1 });
-      empty.push({ opacity: 0, offset: 1 });
-      list.push([part('driver'), walker], [part('carrying'), carrying], [part('empty'), empty]);
-      // The back bar fills left to right, each piece with a small settle, and quietly empties while no van is here
-      barItems.forEach((el, i) => {
-        const t = placedAt(i);
-        list.push([
-          el,
-          [
-            { opacity: 0, transform: 'translateY(-4px)', offset: 0 },
-            { opacity: 0, transform: 'translateY(-4px)', offset: at(t - 1) },
-            { opacity: 1, transform: 'translateY(-4px)', offset: at(t), easing: OUT },
-            { opacity: 1, transform: 'translateY(0px)', offset: at(t + 260) },
-            { opacity: 1, transform: 'translateY(0px)', offset: at(RESET) },
-            { opacity: 0, transform: 'translateY(0px)', offset: at(RESET + 500) },
-            { opacity: 0, transform: 'translateY(-4px)', offset: 1 },
-          ],
-        ]);
-      });
-      // The bartender works along the shelves, an arm going up for each piece, then polishes a glass
-      const firstRowEnd = placedAt(6);
-      const barman = part('barman');
-      list.push([
-        barman.querySelector('.p')!.firstElementChild!,
-        [
-          { transform: 'translateX(0px)', offset: 0 },
-          { transform: 'translateX(0px)', offset: at(FIRST - 300) },
-          { transform: 'translateX(72px)', offset: at(firstRowEnd) },
-          { transform: 'translateX(0px)', offset: at(firstRowEnd + 500) },
-          { transform: 'translateX(72px)', offset: at(STOCK_END) },
-          { transform: 'translateX(30px)', offset: at(STOCK_END + 700) },
-          { transform: 'translateX(30px)', offset: at(RESET + 300) },
-          { transform: 'translateX(0px)', offset: at(RESET + 1000) },
-          { transform: 'translateX(0px)', offset: 1 },
-        ],
-      ]);
-      const arm: Keyframe[] = [{ transform: 'rotate(0deg)', offset: 0 }];
-      barItems.forEach((_, i) => {
-        const t = placedAt(i);
-        arm.push({ transform: 'rotate(0deg)', offset: at(t - 230) }, { transform: i < 7 ? 'rotate(-150deg)' : 'rotate(-115deg)', offset: at(t) }, { transform: 'rotate(0deg)', offset: at(t + 220) });
-      });
-      const POLISH = STOCK_END + 800;
-      arm.push({ transform: 'rotate(-58deg)', offset: at(POLISH) });
-      for (let m = POLISH + 300; m < RESET; m += 300) arm.push({ transform: `rotate(${(m - POLISH) % 600 < 300 ? -46 : -58}deg)`, offset: at(m) });
-      arm.push({ transform: 'rotate(0deg)', offset: at(RESET + 200) }, { transform: 'rotate(0deg)', offset: 1 });
-      list.push([barman.querySelector('.p-arm--f')!, arm]);
-      list.push([
-        part('polish'),
-        [
-          { opacity: 0, offset: 0 },
-          { opacity: 0, offset: at(POLISH - 100) },
-          { opacity: 1, offset: at(POLISH) },
-          { opacity: 1, offset: at(RESET) },
-          { opacity: 0, offset: at(RESET + 150) },
-          { opacity: 0, offset: 1 },
-        ],
-      ]);
-      return list;
-    };
-    let delivery: Animation[] = [];
-    let deliveryStart = 0;
-    const setDelivery = (on: boolean) => {
-      if (on === delivery.length > 0) return;
-      root.classList.toggle('is-delivering', on);
-      if (on) deliveryStart = performance.now();
-      if (on) setTimeout(() => { lastB = NaN; onScroll(); }, DONE + 350);
-      if (on) delivery = timeline().map(([el, frames]) => el.animate(frames, { duration: CYCLE, iterations: Infinity, fill: 'both' }));
-      else {
-        delivery.forEach((one) => one.cancel());
-        delivery = [];
-      }
-    };
-
-    let lastB = NaN;
-    const render = () => {
-      const b = position();
-      if (b === lastB) return;
-      lastB = b;
-      setActive(b);
-      steps.forEach((step, i) => step.classList.toggle('is-fixed', i === steps.length - 1 || b >= i + (i === 2 ? 0.1 : 0.3)));
-      for (const p of pieces) place(p, b);
-      for (const card of cards) card.el.classList.toggle('is-on', b >= card.on);
-      for (const zone of zones) zone.el.classList.toggle('is-on', b >= zone.range[0] && b < zone.range[1]);
-      hub.classList.toggle('is-on', b >= 0.76);
-      root.classList.toggle('is-dusk', b >= 3.3);
-      root.classList.toggle('is-alive', b >= 3.3);
-      aim(b);
-      setDelivery(b >= 2.04);
-      notes.classList.toggle('is-on', b >= 1.05 && b < 1.62);
-      root.classList.toggle('is-counting', b >= 1.3 && b < 1.7);
-      // Sky, building and trees drift against each other by about 12 px across the whole story
-      const drift = Math.max(0, Math.min(4, b)) - 2;
-      far.style.transform = `translateY(${(drift * 2.5).toFixed(1)}px)`;
-      near.style.transform = `translateY(${(drift * -3.2).toFixed(1)}px)`;
-    };
 
     root.classList.add('is-live');
-    let onScreen = true;
-    let queued = false;
-    const onScroll = () => {
-      if (queued || !onScreen) return;
-      queued = true;
-      requestAnimationFrame(() => {
-        queued = false;
-        render();
-      });
-    };
-    const remeasure = () => {
+    measure();
+    render(position());
+    addEventListener('scroll', follow, { passive: true });
+    addEventListener('resize', () => {
       measure();
-      lastB = NaN;
-      onScroll();
-    };
-    addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', remeasure);
-    new ResizeObserver(remeasure).observe(head);
-    new IntersectionObserver(
-      ([entry]) => {
-        onScreen = entry.isIntersecting;
-        root.classList.toggle('is-paused', !onScreen);
-        delivery.forEach((one) => (onScreen ? one.play() : one.pause()));
-        if (onScreen) render();
-      },
-      { rootMargin: '10% 0px' },
-    ).observe(root);
-    render();
-
-    reduce.addEventListener('change', () => {
-      if (reduce.matches) location.reload();
+      render(position());
     });
-  });
+    document.fonts?.ready.then(() => {
+      measure();
+      render(position());
+    });
+  }
 </script>

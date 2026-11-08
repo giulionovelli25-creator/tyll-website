@@ -45,7 +45,7 @@ const others = solutionKeys.filter((k) => k !== solution);
         }
       </div>
     </div>
-    <div class="wrap sol__film">
+    <div class="wrap sol__film" id="film">
       <DemoFilm lang={lang} solutionKey={solution} name={name} spots={ex.spots} />
       {(s.note || p.demoEnglish) && <p class="sol__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
     </div>

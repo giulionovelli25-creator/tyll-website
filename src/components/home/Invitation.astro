@@ -47,10 +47,16 @@ const frame = ribbon(0);
       <a class="btn btn--solid btn--lg invite__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="closing">
         {d.cta.book}
       </a>
-      <h3 class="invite__report">{v.title}</h3>
-      <p>{v.text}</p>
-      <div class="invite__form">
-        <ReportForm lang={lang} />
+      <!-- The second offer, for visitors not ready to talk: what they send, what they get, how soon -->
+      <div class="offer">
+        <p class="offer__ask">{v.ask}</p>
+        <h3 class="offer__title">{v.title}</h3>
+        <ul class="offer__points">
+          {v.points.map((point) => <li>{point}</li>)}
+        </ul>
+        <div class="invite__form">
+          <ReportForm lang={lang} />
+        </div>
       </div>
     </div>
   </div>
@@ -64,10 +70,57 @@ const frame = ribbon(0);
     font-size: 1.25rem;
   }
 
-  .invite__report {
+  .offer {
+    display: grid;
+    justify-items: center;
+    width: 100%;
     margin-top: var(--s-6);
-    font-size: var(--fs-lead);
-    font-weight: 500;
+    padding: clamp(1.75rem, 1.25rem + 2vw, 2.75rem) clamp(1.25rem, 0.75rem + 2.5vw, 2.75rem);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    background: rgb(var(--on-dark-rgb) / 0.03);
+  }
+
+  .offer__ask {
+    margin: 0;
+    color: var(--text-2);
+  }
+
+  .offer__title {
+    margin-top: 0.4rem;
+    font-size: var(--fs-h3);
+  }
+
+  /* What they send, what they get, how soon: three short lines with the Tyll check */
+  .offer__points {
+    display: grid;
+    gap: 0.6rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+  }
+
+  .offer__points li {
+    position: relative;
+    padding-inline-start: 1.75rem;
+    color: var(--text-1);
+  }
+
+  .offer__points li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0.15rem;
+    top: 0.45em;
+    width: 0.8rem;
+    height: 0.45rem;
+    border-bottom: 1.5px solid var(--silver);
+    border-left: 1.5px solid var(--silver);
+    transform: rotate(-45deg);
+  }
+
+  .offer .invite__form {
+    margin-top: 1.5rem;
   }
 
   .invite {

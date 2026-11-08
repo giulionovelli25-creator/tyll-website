@@ -28,6 +28,7 @@ const it: Dict = {
     title: 'Il tuo hotel perde denaro. Tyll ti mostra dove.',
     sub: 'Ogni sera Tyll controlla conti, scontrini, merce e fatture, poi dice al tuo team cosa sistemare e cosa comprare.',
     try: 'Prova la demo →',
+    watch: 'Guardalo all’opera →',
     report: 'Ricevi il report gratuito →',
     pause: 'Metti in pausa il video di sfondo',
     play: 'Riproduci il video di sfondo',
@@ -35,7 +36,7 @@ const it: Dict = {
   },
   home: {
     tour: {
-      title: 'Le domande a cui Tyll risponde.',
+      title: 'Tre punti in cui il tuo hotel perde denaro.',
       text: 'Tyll legge i sistemi che usi già e dà al tuo team una risposta chiara.',
       scene: 'Un grand hotel, all’inizio solo un disegno circondato da fatture sparse, un magazzino in disordine e troppa merce fuori. Tyll risolve un problema dopo l’altro, ogni parte dell’edificio viene completata e l’hotel finito apre la sera con ospiti che arrivano e partono.',
       more: 'Guardalo all’opera',
@@ -48,14 +49,14 @@ const it: Dict = {
       button: 'Prenota una demo',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Magazzino', payments: 'Pagamenti' },
       steps: [
-        { label: 'Riconciliazione', headline: 'Conti, scontrini e fatture coincidono?', problem: 'Conti, scontrini e fatture stanno in posti separati. Nessuno può controllarli tutti.', bullets: ['I conti di ogni sera confrontati con gli scontrini', 'Ogni fattura confrontata con ordine e consegna'], shot: 'Tyll mostra una fattura fornitore: AED 6.262 ordinati, AED 5.898 ricevuti, AED 6.262 fatturati.' },
+        { label: 'Ricavi e riconciliazione', headline: 'Conti, scontrini e fatture coincidono?', problem: 'Conti, scontrini e fatture stanno in posti separati. Nessuno può controllarli tutti.', bullets: ['I conti di ogni sera confrontati con gli scontrini', 'Ogni fattura confrontata con ordine e consegna'], shot: 'Tyll mostra una fattura fornitore: AED 6.262 ordinati, AED 5.898 ricevuti, AED 6.262 fatturati.' },
         { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Conti e scontrini mostrano quale merce è uscita', 'Conta col telefono, registra gli sprechi con due tocchi'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
-        { label: 'Previsioni', headline: 'Cosa dobbiamo ordinare questa settimana?', problem: 'Una cosa si spreca mentre un’altra finisce.', bullets: ['Cosa ordinare e quanto', 'Una bozza d’ordine, raggruppata per fornitore'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
+        { label: 'Acquisti', headline: 'Cosa dobbiamo ordinare questa settimana?', problem: 'Una cosa si spreca mentre un’altra finisce.', bullets: ['Cosa ordinare e quanto', 'Una bozza d’ordine, raggruppata per fornitore'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
         { label: 'Il risultato', headline: 'Un hotel. Una risposta chiara.', problem: '', bullets: ['Ogni sistema collegato', 'Denaro perso trovato prima che sparisca'], shot: '' },
       ],
     },
     why: {
-      heading: 'Il problema, in due numeri.',
+      heading: 'Perché conta, in due numeri.',
       systems: ['PMS', 'POS', 'Pagamenti', 'Contabilità', 'Acquisti', 'Magazzino', 'Housekeeping', 'Eventi', 'Personale', 'Recensioni'],
       title: 'sistemi software fanno funzionare un hotel tipico.',
       figure: '10+',
@@ -66,20 +67,17 @@ const it: Dict = {
       second: {
         figure: '$7',
         title: 'risparmiati per ogni dollaro investito nel ridurre gli sprechi alimentari in cucina.',
-        text: 'Su 42 hotel. Ricerca indipendente, non un risultato di Tyll.',
+        text: 'Ricerca indipendente su 42 hotel, non un risultato di Tyll. È proprio a questo che servono Registra sprechi e Previsioni.',
         sourceName: 'WRI e WRAP per Champions 12.3, 2018',
         sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
       },
     },
-    now: {
-      label: 'Disponibile ora',
-      title: 'Tutto ciò che fa Tyll, in tre parti.',
+    parts: {
       cards: [
         { title: 'Magazzino e sprechi', text: 'Vedi cosa resta, conta col telefono, registra gli sprechi con due tocchi.' },
         { title: 'Acquisti', text: 'Sai cosa ordinare e quanto.' },
         { title: 'Ricavi e riconciliazione', text: 'Controlla ogni sera conti, scontrini e fatture dei fornitori.' },
       ],
-      more: 'Scopri come funziona',
       soon: 'In sviluppo: eventi e personale, camere ed esperienza ospiti, vendite e performance.',
     },
     works: {
@@ -89,8 +87,9 @@ const it: Dict = {
     },
     invite: { title: 'Guardalo sul tuo hotel.' },
     report: {
-      title: 'Oppure inizia con un report acquisti gratuito',
-      text: 'Inviaci un mese di vendite POS. Entro 48 ore sai cosa ordinare e dove sparisce la merce.',
+      ask: 'Non sei pronto per una chiamata?',
+      title: 'Ricevi un report acquisti gratuito.',
+      points: ['Inviaci un mese di vendite POS', 'Scopri cosa ordinare e dove sparisce la merce', 'Entro 48 ore, gratis'],
       subject: 'Report acquisti gratuito',
       fields: { name: 'Nome', venue: 'Hotel o ristorante', role: 'Ruolo', country: 'Paese', pos: 'Sistema di cassa', other: 'Altro', email: 'Email', phone: 'Telefono' },
       open: 'Inizia il mio report gratuito',
@@ -230,9 +229,9 @@ const it: Dict = {
     legalDescription: 'Note legali del sito di Tyll.',
     privacyTitle: 'Informativa sulla privacy | Tyll',
     privacyDescription: 'Come il sito di Tyll tratta i dati personali, i cookie e le richieste di prenotazione.',
-    homeTitle: 'Tyll | Il tuo hotel perde denaro. Tyll ti mostra dove.',
+    homeTitle: 'Tyll | Scopri dove il tuo hotel perde soldi su magazzino e sprechi',
     homeDescription:
-      'Tyll legge lo storico delle vendite di cassa e dice al team acquisti cosa comprare ogni settimana, tenendo sotto controllo magazzino e sprechi. Nessun nuovo sistema necessario.',
+      'Scopri dove il tuo hotel perde denaro ogni notte. Tyll controlla conti, scontrini, magazzino, sprechi e fatture, poi dice al team cosa sistemare e cosa ordinare.',
   },
 };
 

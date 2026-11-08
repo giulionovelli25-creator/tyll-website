@@ -7,7 +7,7 @@ import type { Locale, SolutionKey } from '../i18n/routes';
 import whyChef from '../assets/photos/why-chef.jpg';
 import stockChef from '../assets/photos/stock-chef.jpg';
 import forecastProduce from '../assets/photos/forecast-produce.jpg';
-import statsTerminal from '../assets/photos/tyll-stats-3.jpg';
+import revenuePayment from '../assets/photos/revenue-payment.jpg';
 import reconciliation from '../assets/photos/reconciliation-reception.jpg';
 import banquet from '../assets/photos/events-banquet.jpg';
 
@@ -70,9 +70,9 @@ export const solutions: Record<SolutionKey, Solution> = {
   revenue: {
     key: 'revenue',
     icon: 'revenue',
-    photo: statsTerminal,
-    photoAlt: t('A card terminal and a printed receipt on a dark counter.', 'Ein Kartenterminal und ein gedruckter Beleg auf einer dunklen Theke.', 'جهاز بطاقات وإيصال مطبوع على منضدة داكنة.', 'Un terminale di pagamento e uno scontrino su un banco scuro.'),
-    photoFocus: '60% 50%',
+    photo: revenuePayment,
+    photoAlt: t('A waiter in white gloves holds a card terminal while a guest checks the bill.', 'Ein Kellner mit weißen Handschuhen hält ein Kartenterminal, während ein Gast die Rechnung prüft.', 'نادل بقفازين أبيضين يحمل جهاز الدفع بينما يراجع ضيف الفاتورة.', 'Un cameriere con guanti bianchi tiene il terminale mentre un ospite controlla il conto.'),
+    photoFocus: '55% 12%',
     name: t('Revenue', 'Umsatz', 'الإيرادات', 'Ricavi'),
     menu: t('See which outlet earns most.', 'Sehen, welches Outlet am meisten bringt.', 'اعرف أي منفذ يكسب أكثر.', 'Vedi quale punto vendita rende di più.'),
     headline: t('Which outlet really makes you money?', 'Welches Outlet bringt wirklich Geld?', 'أي منفذ يحقق لك المال فعلًا؟', 'Quale punto vendita ti fa guadagnare davvero?'),

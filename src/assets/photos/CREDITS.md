@@ -22,13 +22,18 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | sales-buffet.jpg | https://unsplash.com/photos/man-pick-some-food-at-buffet-table-ZjEEJ-TjJgs (Sales & Performance opening, added 17 Oct 2026) | Unsplash License |
 | problem/problem-sales-frontdesk.jpg | https://unsplash.com/photos/a-woman-is-standing-at-the-front-desk-of-a-restaurant-wOkEwfChQqM (Sales & Performance, added 17 Oct 2026) | Unsplash License |
 | problem/problem-rooms-housekeeping.jpg | https://unsplash.com/photos/person-holding-white-pillow-5-S_JpT7NGQ (Rooms & Guest Experience, added 17 Oct 2026) | Unsplash License |
+| revenue-payment.jpg | https://www.pexels.com/photo/man-holding-a-credit-card-terminal-6816413/ (Revenue card and overview, added 6 Nov 2026; replaces tyll-stats-3.jpg at the owner's request) | Pexels License (free commercial use, no attribution required) |
+| ../story/hotel-dusk.jpg | Generated with ChatGPT's image model on 7 Nov 2026 from the prompt in docs/story-assets-brief.md (the homepage hotel; 1536 × 1024) | Tyll's own generated asset |
+| ../story/scene-kitchen.jpg | Generated with ChatGPT's image model on 8 Nov 2026: the hotel kitchen's pass at dinner service, two chefs plating, a dusk façade through the window (the Stock and Waste stage; 1536 × 1024) | Tyll's own generated asset |
+| ../story/scene-stock.jpg | Generated with ChatGPT's image model on 7 Nov 2026, same brief: the dry store with a chef counting on a tablet (the Purchasing stage; 1448 × 1086) | Tyll's own generated asset |
+| why-waste.jpg | Generated with ChatGPT's image model on 7 Nov 2026: a chef weighing a steel container on a kitchen scale and logging it on a tablet, for the $7 card (1402 × 1122); replaced a plated dish the owner found unrelated to the statistic | Tyll's own generated asset |
 | tyll-problem-1.jpg | Tyll's own asset from the current website (tyll.ai/bilder/problem-1.jpg) | Tyll |
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
 
 Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg, why-kitchen.jpg (replaced by the brighter why-chef.jpg).
 
-tyll-stats-3.jpg is kept in the folder but not used on the site (a dark bar counter).
+tyll-stats-3.jpg is kept in the folder but not used on the site (a dark bar counter; the owner rejected it for Revenue on 6 Nov 2026, and the reception photo before it).
 
 No longer used since 17 Oct 2026 (kept in the folder): tyll-stats-2.jpg (a laptop at a dark desk, replaced by sales-buffet.jpg), problem/problem-rooms.jpg (a corridor, replaced by housekeeping) and problem/problem-sales.jpg (an office meeting, replaced by a restaurant front desk).
 
@@ -53,3 +58,5 @@ Removed on 2 Nov 2026: room service at a suite door, the kitchen pass and the co
 `public/fonts/noto-sans-arabic-var.woff2` and its nine-glyph subset `noto-sans-arabic-label.woff2` (the word العربية, for the language switch): Noto Sans Arabic (variable, Arabic subset) by Google, SIL Open Font License 1.1, from the Fontsource package @fontsource-variable/noto-sans-arabic 5.2.5.
 Removed on 18 Oct 2026 (no longer used): why-reception.jpg (receptionist at a front-desk computer; replaced by why-lobby.jpg at the owner's request).
 Removed on 1 Nov 2026 (no longer used): why-lobby.jpg (the homepage statistic no longer has a photo, at the owner's request).
+
+Removed on 8 Nov 2026 (no longer used): story/scene-purchasing.jpg (a morning delivery; the Purchasing stage now shows the dry store). A later-dusk variant of the hotel was generated but came back at another crop and aspect, so the result stage tints the original photograph with CSS instead.

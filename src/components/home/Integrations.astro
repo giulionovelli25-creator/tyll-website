@@ -107,9 +107,8 @@ const v = t(lang).home.works;
     animation: band 36s linear infinite;
   }
 
-  .band:hover .band__track,
-  .band:focus .band__track,
-  .band.is-held .band__track {
+  /* Keeps moving under the pointer; keyboard focus still holds it still */
+  .band:focus .band__track {
     animation-play-state: paused;
   }
 
@@ -252,11 +251,3 @@ const v = t(lang).home.works;
     }
   }
 </style>
-
-<script>
-  // A finger on the band holds it still, as the pointer does on a desktop
-  document.querySelectorAll<HTMLElement>('[data-band]').forEach((band) => {
-    band.addEventListener('touchstart', () => band.classList.add('is-held'), { passive: true });
-    for (const end of ['touchend', 'touchcancel']) band.addEventListener(end, () => band.classList.remove('is-held'), { passive: true });
-  });
-</script>

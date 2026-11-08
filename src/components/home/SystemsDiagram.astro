@@ -1,0 +1,438 @@
+---
+// The systems a hotel already runs, joined to Tyll: five cards a side and the Tyll logo in the middle, each card
+// connected to the hub by one curve. The lines run from silver at the edges to gold at the hub. Every 5 s a gold pulse
+// (a bright core inside a soft glow) leaves each card and travels its line into Tyll, one card after another, down the
+// left column and then down the right: the card it leaves lights amber for a moment, and the hub breathes a gold aura
+// as the pulses arrive. On phones each short segment of the spine lights in turn instead. All of it stops under
+// reduced motion. Pointing at a card lifts its line. Phones get the same cards stacked in one column on a spine. Both
+// drawings are SVG, so they scale.
+import { SHORT, LONG, WORDMARK } from '../../config/mark';
+
+interface Props {
+  systems: readonly string[];
+  label: string;
+}
+
+const { systems, label } = Astro.props;
+const left = systems.slice(0, 5);
+const right = systems.slice(5, 10);
+
+// Wide: a 1160 × 420 drawing, the logo on a white tablet in the middle
+const W = 1160;
+const CARD = { w: 208, h: 54, r: 12 };
+const PITCH = 82; // 54 high, 28 between
+const HUB = { x: W / 2, y: 2 + PITCH * 2 + CARD.h / 2, w: 176, h: 64, r: 20 };
+const LOGO = { w: 224, h: 81 };
+const SCALE = 118 / LOGO.w;
+const row = (i: number) => 2 + PITCH * i;
+const curve = (fromX: number, y: number, toX: number) => {
+  const bend = (toX - fromX) * 0.55;
+  return `M${fromX} ${y + CARD.h / 2}C${fromX + bend} ${y + CARD.h / 2} ${toX - bend} ${HUB.y} ${toX} ${HUB.y}`;
+};
+const wide = [
+  ...left.map((name, i) => ({ name, x: 0, y: row(i), d: curve(CARD.w, row(i), HUB.x - HUB.w / 2 - 6) })),
+  ...right.map((name, i) => ({ name, x: W - CARD.w, y: row(i), d: curve(W - CARD.w, row(i), HUB.x + HUB.w / 2 + 6) })),
+];
+const H = row(4) + CARD.h + 2;
+
+// Narrow: one column of 360 wide, the logo between the two halves
+const NW = 360;
+const NCARD = { w: 240, h: 44, r: 12 };
+const NPITCH = 58;
+const NHUB = { x: NW / 2, w: 140, h: 52, r: 16 };
+const NSCALE = 92 / LOGO.w;
+const nRow = (i: number) => (i < 5 ? 2 + NPITCH * i : 2 + NPITCH * 5 + 36 + NHUB.h + NPITCH * (i - 5));
+const nHubY = 2 + NPITCH * 5 + 18 + NHUB.h / 2 - 7;
+const narrow = systems.slice(0, 10).map((name, i) => ({ name, y: nRow(i) }));
+const NH = nRow(9) + NCARD.h + 2;
+---
+
+<div class="sys" role="img" aria-label={label} data-sys>
+  <svg class="sys__wide" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <defs>
+      <linearGradient id="sys-flow" gradientUnits="userSpaceOnUse" x1="0" x2={W} y1="0" y2="0">
+        <stop offset="0" stop-color="var(--silver-deep)" />
+        <stop offset="0.3" stop-color="var(--steel)" />
+        <stop offset="0.5" stop-color="var(--gold)" />
+        <stop offset="0.7" stop-color="var(--steel)" />
+        <stop offset="1" stop-color="var(--silver-deep)" />
+      </linearGradient>
+      <filter id="sys-shadow" x="-30%" y="-60%" width="160%" height="220%">
+        <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="var(--ink)" flood-opacity="0.16" />
+      </filter>
+      <filter id="sys-glow" x="-5%" y="-20%" width="110%" height="140%">
+        <feGaussianBlur stdDeviation="4" />
+      </filter>
+      <filter id="sys-aura" x="-40%" y="-80%" width="180%" height="260%">
+        <feGaussianBlur stdDeviation="14" />
+      </filter>
+    </defs>
+    <g class="sys__paths">
+      {wide.map((c, i) => <path class="sys__path" d={c.d} data-i={i} />)}
+    </g>
+    <g class="sys__halos" filter="url(#sys-glow)">
+      {wide.map((c, i) => <path class="sys__halo" d={c.d} pathLength="100" style={`--i:${i}`} />)}
+    </g>
+    <g class="sys__paths">
+      {wide.map((c, i) => <path class="sys__pulse" d={c.d} data-i={i} pathLength="100" style={`--i:${i}`} />)}
+    </g>
+    <g class="sys__hub" data-sys-hub>
+      <rect class="sys__aura" x={HUB.x - HUB.w / 2 - 10} y={HUB.y - HUB.h / 2 - 10} width={HUB.w + 20} height={HUB.h + 20} rx={HUB.r + 10} filter="url(#sys-aura)" />
+      <rect class="sys__ring" x={HUB.x - HUB.w / 2 - 7} y={HUB.y - HUB.h / 2 - 7} width={HUB.w + 14} height={HUB.h + 14} rx={HUB.r + 7} />
+      <rect class="sys__tablet" x={HUB.x - HUB.w / 2} y={HUB.y - HUB.h / 2} width={HUB.w} height={HUB.h} rx={HUB.r} filter="url(#sys-shadow)" />
+      <g class="sys__logo" transform={`translate(${HUB.x - (LOGO.w * SCALE) / 2} ${HUB.y - (LOGO.h * SCALE) / 2 + 1}) scale(${SCALE})`}>
+        <path d={SHORT} />
+        <path d={LONG} />
+        {WORDMARK.map((d) => <path d={d} />)}
+      </g>
+    </g>
+    {
+      wide.map((c, i) => (
+        <g class="sys__card" data-i={i} data-sys-card style={`--i:${i}`}>
+          <rect x={c.x + 0.5} y={c.y + 0.5} width={CARD.w - 1} height={CARD.h - 1} rx={CARD.r} />
+          <text x={c.x + 28} y={c.y + CARD.h / 2} dominant-baseline="central">
+            {c.name}
+          </text>
+          <circle class="sys__beat" cx={i < 5 ? c.x + CARD.w : c.x} cy={c.y + CARD.h / 2} r="5" />
+        </g>
+      ))
+    }
+  </svg>
+
+  <svg class="sys__narrow" viewBox={`0 0 ${NW} ${NH}`} aria-hidden="true">
+    <defs>
+      <linearGradient id="sys-flow-n" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="0" y2={NH}>
+        <stop offset="0" stop-color="var(--silver)" />
+        <stop offset="0.5" stop-color="var(--ink)" />
+        <stop offset="1" stop-color="var(--silver)" />
+      </linearGradient>
+    </defs>
+    <g class="sys__paths">
+      {narrow.map((c, i) => i < 9 && i !== 4 && <path class="sys__path" d={`M${NHUB.x} ${c.y + NCARD.h}V${nRow(i + 1)}`} />)}
+      <path class="sys__path" d={`M${NHUB.x} ${nRow(4) + NCARD.h}V${nHubY - NHUB.h / 2}`} />
+      <path class="sys__path" d={`M${NHUB.x} ${nHubY + NHUB.h / 2}V${nRow(5)}`} />
+      {narrow.map((c, i) => i < 9 && i !== 4 && <path class="sys__pulse" d={`M${NHUB.x} ${c.y + NCARD.h}V${nRow(i + 1)}`} pathLength="100" style={`--i:${i}`} />)}
+      <path class="sys__pulse" d={`M${NHUB.x} ${nRow(4) + NCARD.h}V${nHubY - NHUB.h / 2}`} pathLength="100" style="--i:4" />
+      <path class="sys__pulse" d={`M${NHUB.x} ${nHubY + NHUB.h / 2}V${nRow(5)}`} pathLength="100" style="--i:5" />
+    </g>
+    <g class="sys__hub">
+      <rect class="sys__tablet" x={NHUB.x - NHUB.w / 2} y={nHubY - NHUB.h / 2} width={NHUB.w} height={NHUB.h} rx={NHUB.r} />
+      <g class="sys__logo" transform={`translate(${NHUB.x - (LOGO.w * NSCALE) / 2} ${nHubY - (LOGO.h * NSCALE) / 2 + 1}) scale(${NSCALE})`}>
+        <path d={SHORT} />
+        <path d={LONG} />
+        {WORDMARK.map((d) => <path d={d} />)}
+      </g>
+    </g>
+    {
+      narrow.map((c) => (
+        <g class="sys__card">
+          <rect x={NHUB.x - NCARD.w / 2 + 0.5} y={c.y + 0.5} width={NCARD.w - 1} height={NCARD.h - 1} rx={NCARD.r} />
+          <text x={NHUB.x} y={c.y + NCARD.h / 2} text-anchor="middle" dominant-baseline="central">
+            {c.name}
+          </text>
+        </g>
+      ))
+    }
+  </svg>
+</div>
+
+<style>
+  .sys {
+    width: 100%;
+  }
+
+  .sys svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sys .sys__narrow {
+    display: none;
+    max-width: 22.5rem;
+    margin-inline: auto;
+  }
+
+  .sys__path {
+    fill: none;
+    stroke: url(#sys-flow);
+    stroke-width: 1.25;
+    transition:
+      opacity 0.25s var(--ease),
+      stroke-width 0.25s var(--ease);
+  }
+
+  .sys__narrow .sys__path {
+    stroke: url(#sys-flow-n);
+  }
+
+  /* A gold pulse (a bright core in a soft glow) leaves each card and travels its line into Tyll, one card after another */
+  .sys__pulse,
+  .sys__halo {
+    fill: none;
+    stroke: var(--gold);
+    stroke-dasharray: 22 78;
+    stroke-linecap: round;
+    animation: sys-flow 5s linear infinite;
+    animation-delay: calc((9 - var(--i)) * -0.5s);
+  }
+
+  .sys__pulse {
+    stroke-width: 3;
+    opacity: 0.95;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  .sys__halo {
+    stroke: var(--amber-400);
+    stroke-width: 11;
+    opacity: 0.55;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  /* On the spine each short segment lights in turn, top to bottom, through Tyll */
+  .sys__narrow .sys__pulse {
+    stroke-dasharray: none;
+    stroke-width: 2;
+    animation-name: sys-tick;
+  }
+
+  @keyframes sys-tick {
+    0%,
+    8% {
+      opacity: 1;
+    }
+
+    30%,
+    100% {
+      opacity: 0.12;
+    }
+  }
+
+  /* The dot at the end of a card lights as the pulse leaves it (left) or reaches it (right) */
+  .sys__beat {
+    fill: var(--gold);
+    opacity: 0.22;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sys-beat 5s linear infinite;
+    animation-delay: calc((9 - var(--i)) * -0.5s);
+  }
+
+  @keyframes sys-beat {
+    0%,
+    7% {
+      opacity: 1;
+      transform: scale(1.5);
+    }
+
+    22%,
+    100% {
+      opacity: 0.22;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes sys-flow {
+    from {
+      stroke-dashoffset: 100;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .sys__card rect {
+    fill: var(--sand-50);
+    stroke: var(--sand-400);
+    stroke-width: 1;
+    transition:
+      fill 0.25s var(--ease),
+      stroke 0.25s var(--ease);
+  }
+
+  /* The card lights amber as its pulse leaves */
+  .sys__wide .sys__card rect {
+    animation: sys-card 5s linear infinite;
+    animation-delay: calc((9 - var(--i)) * -0.5s);
+  }
+
+  @keyframes sys-card {
+    0%,
+    6% {
+      fill: var(--amber-100);
+      stroke: var(--gold);
+    }
+
+    24%,
+    100% {
+      fill: var(--sand-50);
+      stroke: var(--sand-400);
+    }
+  }
+
+  .sys__card text {
+    fill: var(--ink);
+    font-family: var(--font);
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  .sys__narrow .sys__card text {
+    font-size: 15px;
+  }
+
+  /* The hub: the official logo on a white tablet */
+  .sys__tablet {
+    fill: var(--paper);
+    stroke: rgb(var(--amber-rgb) / 0.6);
+    stroke-width: 1;
+  }
+
+  .sys__logo path {
+    fill: var(--ink);
+  }
+
+  /* A gold aura and a ring breathe around the hub as the pulses arrive */
+  .sys__aura {
+    fill: var(--amber-400);
+    opacity: 0.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sys-aura 2.5s ease-in-out infinite;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  @keyframes sys-aura {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+  }
+
+  .sys__ring {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    opacity: 0.2;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sys-breathe 2.5s ease-in-out infinite;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  @keyframes sys-breathe {
+    0%,
+    100% {
+      opacity: 0.2;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+
+  /* Pointing at a card: its line and the hub answer, the rest steps back */
+  .sys.is-hot .sys__path,
+  .sys.is-hot .sys__pulse {
+    opacity: 0.3;
+  }
+
+  .sys.is-hot .sys__halo {
+    opacity: 0.15;
+  }
+
+  .sys.is-hot .sys__card rect {
+    animation-play-state: paused;
+  }
+
+  .sys.is-hot .sys__aura {
+    animation: none;
+    opacity: 0.45;
+  }
+
+  .sys.is-hot .sys__path.is-on {
+    opacity: 1;
+    stroke-width: 2;
+  }
+
+  .sys.is-hot .sys__pulse.is-on {
+    opacity: 0.7;
+  }
+
+  .sys.is-hot .sys__ring {
+    animation: none;
+    opacity: 0.75;
+  }
+
+  .sys.is-hot .sys__beat {
+    animation-play-state: paused;
+  }
+
+  .sys__wide .sys__card.is-on rect {
+    animation: none;
+    fill: var(--paper);
+    stroke: var(--ink);
+  }
+
+  @media (max-width: 700px) {
+    .sys .sys__wide {
+      display: none;
+    }
+
+    .sys .sys__narrow {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sys__pulse,
+    .sys__halo {
+      display: none;
+    }
+
+    .sys__beat,
+    .sys__ring,
+    .sys__aura,
+    .sys__wide .sys__card rect {
+      animation: none;
+    }
+
+    .sys__ring {
+      opacity: 0.3;
+    }
+
+    .sys__path,
+    .sys__card rect,
+    .sys__ring {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-sys]');
+  if (root) {
+    const lines = [...root.querySelectorAll<SVGElement>('.sys__wide [data-i]')];
+    root.querySelectorAll<SVGGElement>('[data-sys-card]').forEach((card) => {
+      const i = card.dataset.i;
+      const set = (on: boolean) => {
+        root.classList.toggle('is-hot', on);
+        card.classList.toggle('is-on', on);
+        lines.forEach((p) => p.classList.toggle('is-on', on && p.dataset.i === i));
+      };
+      card.addEventListener('mouseenter', () => set(true));
+      card.addEventListener('mouseleave', () => set(false));
+    });
+  }
+</script>

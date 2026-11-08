@@ -27,6 +27,7 @@ const de: Dict = {
     title: 'Ihr Hotel verliert Geld. Tyll zeigt Ihnen, wo.',
     sub: 'Tyll prüft jeden Abend Gästerechnungen, Belege, Bestand und Lieferantenrechnungen und sagt Ihrem Team, was zu klären und was zu kaufen ist.',
     try: 'Demo ausprobieren →',
+    watch: 'So sieht es aus →',
     report: 'Kostenlosen Bericht anfordern →',
     pause: 'Hintergrundvideo anhalten',
     play: 'Hintergrundvideo abspielen',
@@ -34,7 +35,7 @@ const de: Dict = {
   },
   home: {
     tour: {
-      title: 'Die Fragen, die Tyll beantwortet.',
+      title: 'Drei Stellen, an denen Ihr Hotel Geld verliert.',
       text: 'Tyll liest die Systeme, die Sie bereits nutzen, und gibt Ihrem Team eine klare Antwort.',
       scene: 'Ein Grandhotel, zunächst nur eine Zeichnung, umgeben von losen Rechnungen, einem unordentlichen Lager und zu viel Ware vor der Tür. Tyll löst ein Problem nach dem anderen, jeder Teil des Gebäudes wird fertig, und das vollendete Hotel öffnet am Abend mit ankommenden und abreisenden Gästen.',
       more: 'So sieht es aus',
@@ -47,14 +48,14 @@ const de: Dict = {
       button: 'Demo buchen',
       cards: { pos: 'Kasse', pms: 'PMS', stock: 'Lager', payments: 'Zahlungen' },
       steps: [
-        { label: 'Abgleich', headline: 'Stimmen Gästerechnungen, Belege und Rechnungen überein?', problem: 'Gästerechnungen, Belege und Rechnungen liegen getrennt. Niemand kann alle prüfen.', bullets: ['Die Gästerechnungen jedes Abends gegen die Belege geprüft', 'Jede Rechnung gegen Bestellung und Lieferung geprüft'], shot: 'Tyll zeigt eine Lieferantenrechnung: AED 6.262 bestellt, AED 5.898 erhalten, AED 6.262 berechnet.' },
+        { label: 'Umsatz und Abgleich', headline: 'Stimmen Gästerechnungen, Belege und Rechnungen überein?', problem: 'Gästerechnungen, Belege und Rechnungen liegen getrennt. Niemand kann alle prüfen.', bullets: ['Die Gästerechnungen jedes Abends gegen die Belege geprüft', 'Jede Rechnung gegen Bestellung und Lieferung geprüft'], shot: 'Tyll zeigt eine Lieferantenrechnung: AED 6.262 bestellt, AED 5.898 erhalten, AED 6.262 berechnet.' },
         { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Gästerechnungen und Belege zeigen, welcher Bestand hinausging', 'Per Telefon zählen, Abfall mit zwei Tipps erfassen'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
-        { label: 'Prognosen', headline: 'Was sollten wir diese Woche bestellen?', problem: 'Von einem wird zu viel weggeworfen, während anderes ausgeht.', bullets: ['Was und wie viel zu bestellen ist', 'Ein Bestellentwurf, nach Lieferant geordnet'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
+        { label: 'Einkauf', headline: 'Was sollten wir diese Woche bestellen?', problem: 'Von einem wird zu viel weggeworfen, während anderes ausgeht.', bullets: ['Was und wie viel zu bestellen ist', 'Ein Bestellentwurf, nach Lieferant geordnet'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
         { label: 'Das Ergebnis', headline: 'Ein Hotel. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
       ],
     },
     why: {
-      heading: 'Das Problem in zwei Zahlen.',
+      heading: 'Warum es zählt, in zwei Zahlen.',
       systems: ['PMS', 'Kasse', 'Zahlungen', 'Buchhaltung', 'Einkauf', 'Lager', 'Housekeeping', 'Events', 'Personal', 'Bewertungen'],
       title: 'Softwaresysteme laufen in einem typischen Hotel.',
       figure: '10+',
@@ -65,20 +66,17 @@ const de: Dict = {
       second: {
         figure: '$7',
         title: 'gespart für jeden US-Dollar, der in weniger Küchenabfälle investiert wurde.',
-        text: 'Über 42 Hotels. Unabhängige Studie, kein Tyll-Ergebnis.',
+        text: 'Unabhängige Studie über 42 Hotels, kein Tyll-Ergebnis. Genau dafür gibt es Abfall erfassen und Prognosen.',
         sourceName: 'WRI und WRAP für Champions 12.3, 2018',
         sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
       },
     },
-    now: {
-      label: 'Jetzt verfügbar',
-      title: 'Alles, was Tyll tut, in drei Teilen.',
+    parts: {
       cards: [
         { title: 'Bestand und Abfall', text: 'Sehen, was noch da ist, per Telefon zählen, Abfall mit zwei Tipps erfassen.' },
         { title: 'Einkauf', text: 'Wissen, was und wie viel zu bestellen ist.' },
         { title: 'Umsatz und Abgleich', text: 'Gästerechnungen, Belege und Lieferantenrechnungen jedes Abends prüfen.' },
       ],
-      more: 'So funktioniert es',
       soon: 'In Entwicklung: Events und Personal, Zimmer und Gästeerlebnis, Vertrieb und Performance.',
     },
     works: {
@@ -88,8 +86,9 @@ const de: Dict = {
     },
     invite: { title: 'Sehen Sie es für Ihr Hotel.' },
     report: {
-      title: 'Oder starten Sie mit einem kostenlosen Einkaufsbericht',
-      text: 'Senden Sie uns einen Monat Kassenumsätze. Innerhalb von 48 Stunden wissen Sie, was zu bestellen ist und wo Bestand verschwindet.',
+      ask: 'Noch nicht bereit für ein Gespräch?',
+      title: 'Holen Sie sich einen kostenlosen Einkaufsbericht.',
+      points: ['Senden Sie uns einen Monat Kassenumsätze', 'Sehen Sie, was zu bestellen ist und wo Bestand verschwindet', 'Innerhalb von 48 Stunden, kostenlos'],
       subject: 'Kostenloser Einkaufsbericht',
       fields: { name: 'Name', venue: 'Hotel oder Restaurant', role: 'Funktion', country: 'Land', pos: 'Kassensystem', other: 'Anderes', email: 'E-Mail', phone: 'Telefon' },
       open: 'Kostenlosen Bericht starten',
@@ -229,9 +228,9 @@ const de: Dict = {
     legalDescription: 'Impressum der Tyll-Website.',
     privacyTitle: 'Datenschutzerklärung | Tyll',
     privacyDescription: 'Wie die Tyll-Website mit personenbezogenen Daten, Cookies und Terminanfragen umgeht.',
-    homeTitle: 'Tyll | Ihr Hotel verliert Geld. Tyll zeigt Ihnen, wo.',
+    homeTitle: 'Tyll | Finden Sie, wo Ihr Hotel bei Bestand und Abfall Geld verliert',
     homeDescription:
-      'Tyll liest Ihre Kassenumsätze und sagt Ihrem Einkauf, was jede Woche zu kaufen ist, und behält dabei Bestand und Abfall im Blick. Keine neuen Systeme nötig.',
+      'Erfahren Sie, wo Ihr Hotel jede Nacht Geld verliert. Tyll prüft Gästerechnungen, Belege, Bestand, Abfall und Lieferantenrechnungen und sagt Ihrem Team, was zu beheben und zu bestellen ist.',
   },
 };
 

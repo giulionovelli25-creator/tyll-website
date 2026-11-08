@@ -4,7 +4,8 @@ import SolutionIcon from './SolutionIcon.astro';
 import { site } from '../config/site';
 import { demoHref } from '../config/demo';
 import { solutions } from '../content/solutions';
-import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
+import { t, href, pages, locales, solutionKeys, type Locale, type PageKey, type SolutionKey } from '../i18n';
+import { parts } from '../config/parts';
 import { isComingSoon } from '../config/products';
 
 interface Props {
@@ -17,7 +18,9 @@ interface Props {
 const { lang, page, overHero = false } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
-const items = solutionKeys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k, soon: isComingSoon(k) }));
+const item = (k: SolutionKey) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k, soon: isComingSoon(k) });
+// The menu follows the three parts, so it explains Tyll the same way as the homepage
+const groups = parts.map((keys, i) => ({ name: d.home.parts.cards[i].title, items: keys.map(item) }));
 const fwd = lang === 'ar' ? '←' : '→';
 const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).includes(page);
 ---
@@ -82,27 +85,34 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   <!-- Desktop: the Solutions panel -->
   <div class="panel" id="solutions-panel" role="region" aria-labelledby="solutions-trigger" hidden>
     <div class="wrap panel__layout">
-      <ul class="panel__grid">
+      <div class="panel__grid">
         {
-          items.map(({ key, s, url, current, soon }) => (
-            <li>
-              <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
-                <span class="panel__icon">
-                  <SolutionIcon name={s.icon} />
-                </span>
-                <span class="panel__text">
-                  <span class="panel__name">
-                    {s.name[lang]}
-                    {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                    {!soon && <span class="panel__arrow" aria-hidden="true">{fwd}</span>}
-                  </span>
-                  <span class="panel__desc">{s.menu[lang]}</span>
-                </span>
-              </a>
-            </li>
+          groups.map(({ name, items }) => (
+            <section class="panel__part">
+              <h2 class="panel__head">{name}</h2>
+              <ul>
+                {items.map(({ key, s, url, current, soon }) => (
+                  <li>
+                    <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
+                      <span class="panel__icon">
+                        <SolutionIcon name={s.icon} />
+                      </span>
+                      <span class="panel__text">
+                        <span class="panel__name">
+                          {s.name[lang]}
+                          {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
+                          {!soon && <span class="panel__arrow" aria-hidden="true">{fwd}</span>}
+                        </span>
+                        <span class="panel__desc">{s.menu[lang]}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))
         }
-      </ul>
+      </div>
       <div class="panel__foot">
         <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
@@ -128,14 +138,19 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <summary>{d.nav.solutions}</summary>
         <ul>
           {
-            items.map(({ s, url, current, soon }) => (
-              <li>
-                <a href={url} aria-current={current ? 'page' : undefined}>
-                  <SolutionIcon name={s.icon} />
-                  <span>{s.name[lang]}</span>
-                  {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                </a>
-              </li>
+            groups.map(({ name, items }) => (
+              <Fragment>
+                <li class="mobile-menu__head">{name}</li>
+                {items.map(({ s, url, current, soon }) => (
+                  <li>
+                    <a href={url} aria-current={current ? 'page' : undefined}>
+                      <SolutionIcon name={s.icon} />
+                      <span>{s.name[lang]}</span>
+                      {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
+                    </a>
+                  </li>
+                ))}
+              </Fragment>
             ))
           }
           <li class="mobile-menu__faq">
@@ -336,7 +351,26 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     gap: 0.25rem 1.5rem;
     margin: 0;
     padding: 1.75rem 0 1.25rem;
+  }
+
+  .panel__part ul {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
     list-style: none;
+  }
+
+  /* Each column is one of the three parts */
+  .panel__head {
+    margin: 0 1.1rem 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--steel);
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
   }
 
   .panel__item {
@@ -542,6 +576,13 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     margin: 0;
     padding: 0.5rem 0 0;
     list-style: none;
+  }
+
+  .mobile-menu__head {
+    padding: 1rem 0 0.15rem;
+    color: var(--steel);
+    font-size: 0.875rem;
+    font-weight: 600;
   }
 
   .mobile-menu__group li a {

@@ -30,7 +30,6 @@ export const logos: IntegrationLogo[] = [
   { name: 'Shiji Infrasys', file: 'infrasys-pos.svg', category: 'pos', height: 34, aspect: 485 / 102, whiteFile: true },
   { name: 'Lightspeed', file: 'lightspeed.svg', category: 'pos', height: 32, aspect: 130 / 31, clear: [0, 0.0154, 0.0333, 0.0154] },
   { name: 'SumUp', file: 'sumup.svg', category: 'payments', height: 32, aspect: 1188 / 500, clear: [0.25, 0.06, 0.25, 0.105] },
-  { name: 'Shopify POS', file: 'shopify.svg', category: 'pos', height: 36, aspect: 304.17 / 86.71, text: 'POS' },
 ];
 
 /** The file's size and the negative margins that take its empty space out of the layout, in px on desktop. */

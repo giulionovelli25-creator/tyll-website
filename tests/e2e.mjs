@@ -35,6 +35,8 @@ const record = (id, name, status, detail = '') => {
   results.push({ id, name, status, detail });
   // Progress as each check finishes, so a stalled run shows where it stopped
   console.error(`… ${id} ${status}`);
+  // A failure says why, as soon as it happens, so a run that stops early still shows the reason
+  if (status === 'FAIL' && detail) console.error(`    ${detail.slice(0, 1500)}`);
 };
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
@@ -81,24 +83,47 @@ for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
     if (!/Your hotel is losing money|Ihr Hotel verliert Geld|فندقك يخسر المال|Il tuo hotel perde denaro/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // The scroll story: the hotel starts as a drawing in a mess, the text follows the scroll, and it ends finished
+    // The hotel section: a photograph of the hotel pinned beside four scroll steps; the scroll takes the camera in through
+    // the doors to the kitchen, out and in again to the storeroom, and out to the lit hotel joined to the Tyll mark; the
+    // progress buttons jump to a step
     const hotel = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       const root = document.querySelector('[data-hs]');
-      const box = root.querySelector('[data-hs-steps]');
       const steps = [...root.querySelectorAll('[data-hs-step]')];
-      const to = (b) => { const pin = parseFloat(getComputedStyle(steps[0].firstElementChild).top); const i = Math.floor(b); scrollTo({ top: scrollY + steps[i].getBoundingClientRect().top - pin + (b - i) * steps[0].offsetHeight, behavior: 'instant' }); };
-      const shown = () => [...root.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity > 0.5 && getComputedStyle(e).visibility !== 'hidden').length;
-      const read = () => ({ active: steps.findIndex((s) => s.classList.contains('is-active')), count: root.querySelectorAll('.hs__step.is-active').length, shown: shown(), on: root.querySelectorAll('.hs__card.is-on').length, alive: root.classList.contains('is-alive') });
-      to(0.02); await wait(250); const start = read();
-      to(3.7); await wait(350); const end = read();
-      to(1.7); await wait(250); const back = read();
-      return { start, end, back, steps: steps.length, total: root.querySelectorAll('[data-b]:not([data-ob])').length, pinned: getComputedStyle(root.querySelector('.hs__scene')).position, cta: root.querySelector('.hs__cta')?.getAttribute('href'), sign: root.querySelectorAll('.c-sign').length };
+      const box = root.querySelector('[data-hs-steps]');
+      const stage = root.querySelector('[data-hs-stage]');
+      const photo = root.querySelector('.hs__layer--hotel img');
+      if (photo && !photo.complete) await new Promise((r) => { photo.onload = r; photo.onerror = r; setTimeout(r, 5000); });
+      const num = (name) => +getComputedStyle(stage).getPropertyValue(name);
+      const read = () => ({ b: +root.dataset.hsB, active: steps.findIndex((s) => s.classList.contains('is-active')), s: num('--s'), o1: num('--o1'), o2: num('--o2'), spots: num('--spots'), links: num('--links'), glow: num('--glow'), lit: [...root.querySelectorAll('[data-hs-spot]')].filter((e) => e.classList.contains('is-on')).map((e) => +e.dataset.hsSpot).join(), current: [...root.querySelectorAll('[data-hs-go]')].findIndex((g) => g.getAttribute('aria-current') === 'step') });
+      // Scroll so that the text's position gives the step position `b`, as the component computes it
+      const go = async (b) => {
+        const pin = +root.dataset.hsPin; const lead = +root.dataset.hsLead; const i = Math.min(3, Math.floor(b));
+        const tops = steps.map((s) => s.getBoundingClientRect().top - box.getBoundingClientRect().top);
+        const y = tops[i] + (b - lead - i) * (i === 3 ? steps[0].offsetHeight : steps[i].offsetHeight);
+        scrollTo({ top: scrollY + box.getBoundingClientRect().top - (pin - y), behavior: 'instant' });
+        await wait(300);
+      };
+      await go(0.3); const start = read();
+      await go(0.97); const doors = read();
+      await go(1.4); const kitchen = read();
+      await go(1.88); const outside = read();
+      await go(2.4); const store = read();
+      await go(3.8); const end = read();
+      root.querySelectorAll('[data-hs-go]')[2].click(); await wait(1500); const jumped = read();
+      scrollTo({ top: 0, behavior: 'instant' }); await wait(200);
+      return { start, doors, kitchen, outside, store, end, jumped, steps: steps.length, goes: root.querySelectorAll('[data-hs-go]').length, live: root.classList.contains('is-live'), pinned: getComputedStyle(root.querySelector('.hs__scene')).position, photo: photo ? { w: +(photo.currentSrc.match(/[?&]w=(\d+)/)?.[1] || 0), hotel: /hotel-dusk/.test(decodeURIComponent(photo.currentSrc)), src: photo.currentSrc.slice(-60) } : null, rooms: [...root.querySelectorAll('.hs__layer--view img')].map((i) => decodeURIComponent(i.currentSrc).replace(/.*\/story\//, '').replace(/\?.*/, '')).join(), vectors: root.querySelectorAll('.hs__stage svg:not(.hs__card svg):not(.hs__links):not(.hs__hub svg):not(.hs__pill svg)').length, old: root.querySelectorAll('[data-b], .c-sign, .hs__tabs').length, cta: root.querySelector('.hs__cta')?.getAttribute('href'), dir: stage.getAttribute('dir') };
     });
-    if (hotel.steps !== 4 || hotel.pinned !== 'sticky' || !hotel.cta || hotel.sign !== 5) problems.push(`hotel story ${JSON.stringify(hotel)}`);
-    if (!(hotel.start.active === 0 && hotel.start.count === 1 && hotel.start.on === 0 && !hotel.start.alive && hotel.start.shown < hotel.total * 0.25)) problems.push(`hotel start ${JSON.stringify(hotel.start)}`);
-    if (!(hotel.end.active === 3 && hotel.end.on === 4 && hotel.end.alive && hotel.end.shown === hotel.total)) problems.push(`hotel end ${JSON.stringify({ end: hotel.end, total: hotel.total })}`);
-    if (!(hotel.back.active === 1 && !hotel.back.alive && hotel.back.shown < hotel.end.shown && hotel.back.on === 3)) problems.push(`hotel scrolled back ${JSON.stringify(hotel.back)}`);
+    if (hotel.steps !== 4 || hotel.goes !== 4 || !hotel.live || hotel.pinned !== 'sticky' || !hotel.cta || hotel.old || hotel.vectors || hotel.dir !== 'ltr') problems.push(`hotel section ${JSON.stringify(hotel)}`);
+    if (!hotel.photo || hotel.photo.w < 768 || !hotel.photo.hotel) problems.push(`hotel photograph ${JSON.stringify(hotel.photo)}`);
+    if (!/scene-kitchen/.test(hotel.rooms) || !/scene-stock/.test(hotel.rooms)) problems.push(`hotel rooms ${hotel.rooms}`);
+    if (!(hotel.start.active === 0 && hotel.start.current === 0 && hotel.start.lit === '0' && hotel.start.s < 1.05 && hotel.start.o1 < 0.1 && hotel.start.glow < 0.1 && hotel.start.spots > 0.9)) problems.push(`hotel start ${JSON.stringify(hotel.start)}`);
+    if (!(hotel.doors.s > 2.0 && hotel.doors.spots < 0.1)) problems.push(`hotel push to the doors ${JSON.stringify(hotel.doors)}`);
+    if (!(hotel.kitchen.active === 1 && hotel.kitchen.o1 > 0.9 && hotel.kitchen.o2 < 0.1 && hotel.kitchen.spots < 0.1)) problems.push(`hotel kitchen ${JSON.stringify(hotel.kitchen)}`);
+    if (!(hotel.outside.active === 1 && hotel.outside.s < 1.05 && hotel.outside.o1 < 0.1 && hotel.outside.o2 < 0.1)) problems.push(`hotel back outside ${JSON.stringify(hotel.outside)}`);
+    if (!(hotel.store.active === 2 && hotel.store.o2 > 0.9 && hotel.store.o1 < 0.1)) problems.push(`hotel storeroom ${JSON.stringify(hotel.store)}`);
+    if (!(hotel.end.active === 3 && hotel.end.current === 3 && hotel.end.lit === '0,1,2' && hotel.end.s < 1.05 && hotel.end.glow > 0.9 && hotel.end.links > 0.9 && hotel.end.spots > 0.9 && hotel.end.o2 < 0.1)) problems.push(`hotel result ${JSON.stringify(hotel.end)}`);
+    if (hotel.jumped.active !== 2) problems.push(`hotel progress button ${JSON.stringify(hotel.jumped)}`);
     // Two sourced statistics, each with its source
     const stats = await page.evaluate(() => ({ figures: [...document.querySelectorAll('.stat__number')].map((n) => n.textContent.trim()), sources: document.querySelectorAll('.stat__source a[href^="https://"]').length }));
     if (stats.figures.length !== 2 || !stats.figures[1].startsWith('$') || stats.sources !== 2) problems.push(`statistics ${JSON.stringify(stats)}`);
@@ -109,19 +134,19 @@ for (const lang of LANGS) {
       const broken = imgs.filter((i) => { i.loading = 'eager'; return !i.getAttribute('src').startsWith('/logos/integrations/'); }).length;
       return { logos: imgs.length, sets: document.querySelectorAll('.band__set').length, alts: imgs.filter((i) => i.alt.length > 2).length, links: document.querySelectorAll('.band a').length, broken, spin: getComputedStyle(document.querySelector('.band__track')).animationDuration };
     });
-    if (band.logos !== 10 || band.sets !== 2 || band.alts !== 10 || band.links || band.broken) problems.push(`logo band ${JSON.stringify(band)}`);
+    if (band.logos !== 9 || band.sets !== 2 || band.alts !== 9 || band.links || band.broken) problems.push(`logo band ${JSON.stringify(band)}`);
     const seconds = parseFloat(band.spin);
     if (!(seconds >= 30 && seconds <= 40)) problems.push(`logo band loop is ${band.spin}`);
-    // The homepage leads with what is on sale: the hero's report button reaches the form and "Available now" links
-    // the six products, none of them marked Coming soon
+    // Tyll is explained one way: the menu groups the six products into the three parts, and the homepage has no
+    // second summary of them; none is marked Coming soon
     await go(page, `/${lang}/`);
     const product = await page.evaluate(() => ({
       report: !!document.querySelector('.hero__actions a[data-track="book_demo_click"]') && !!document.querySelector('#report form[data-report]'),
-      now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
+      parts: document.querySelectorAll('#solutions-panel .panel__head').length,
+      repeats: document.querySelectorAll('.now').length,
       menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
     }));
-    const nowPages = SOL[lang].slice(1, 4);
-    if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 0) problems.push(`homepage products ${JSON.stringify(product)}`);
+    if (!product.report || product.parts !== 3 || product.repeats || product.menuBadges !== 0) problems.push(`homepage products ${JSON.stringify(product)}`);
     // The report form stays folded until asked for; the hero's button opens it, and it asks for one step at a time
     const form = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -277,7 +302,8 @@ for (const lang of LANGS) {
   const story = await page.evaluate(() => {
     const out = [];
     if (document.querySelector('[data-hs-stage]').getAttribute('dir') !== 'ltr') out.push('scene direction');
-    document.querySelectorAll('.hs__head, .hs__scene, .hs__stage, .hs__step').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    document.querySelectorAll('.hs__head, .hs__scene, .hs__step').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    if (document.documentElement.scrollWidth > innerWidth) out.push('page scrolls sideways');
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
@@ -544,7 +570,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   const still = await page.evaluate(() => {
     const band = document.querySelector('.band__set[aria-hidden]');
     const hs = document.querySelector('[data-hs]');
-    return { hotelHidden: [...hs.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity < 1).length, hotelAlive: hs.classList.contains('is-alive'), bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
+    return { hotelHidden: [...hs.querySelectorAll('.hs__layer--hotel, .hs__spots')].filter((e) => +getComputedStyle(e).opacity < 0.9).length, hotelAlive: +getComputedStyle(hs.querySelector('[data-hs-stage]')).getPropertyValue('--s') > 1.01, bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
   });
   if (still.hotelHidden || still.hotelAlive) p.push(`hotel not shown finished and still under reduced motion: ${JSON.stringify(still)}`);
   if (still.bandAnimation !== 'none' || still.secondSet !== 'none' || still.wrap !== 'wrap') p.push(`logo band not a still grid under reduced motion: ${JSON.stringify(still)}`);

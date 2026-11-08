@@ -1,7 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Hero from './Hero.astro';
-import AvailableNow from './AvailableNow.astro';
 import HotelStory from './HotelStory.astro';
 import Integrations from './Integrations.astro';
 import HowItWorks from '../HowItWorks.astro';
@@ -35,11 +34,10 @@ const schema = {
 
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
-  <!-- The hook, the problem in numbers, how Tyll solves it, what is on sale, and booking a demo at the end -->
+  <!-- The hook, Tyll in its three parts (the story), why it matters, how it works, and booking a demo at the end -->
   <Hero lang={lang} />
-  <WhyItMatters lang={lang} />
   <HotelStory lang={lang} />
-  <AvailableNow lang={lang} />
+  <WhyItMatters lang={lang} />
   <HowItWorks lang={lang} />
   <Integrations lang={lang} />
   <Invitation lang={lang} />

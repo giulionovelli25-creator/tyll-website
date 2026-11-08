@@ -27,6 +27,7 @@ const en = {
     title: 'Your hotel is losing money. Tyll shows you where.',
     sub: 'Tyll checks every night’s tabs, receipts, stock and invoices, then tells your team what to fix and what to buy.',
     try: 'Try the demo →',
+    watch: 'Watch it work →',
     report: 'Get your free report →',
     pause: 'Pause background video',
     play: 'Play background video',
@@ -34,7 +35,7 @@ const en = {
   },
   home: {
     tour: {
-      title: 'The questions Tyll answers.',
+      title: 'Three places your hotel loses money.',
       text: 'Tyll reads the systems you already use and gives your team a clear answer.',
       scene: 'A grand hotel, at first only a drawing surrounded by loose invoices, a storeroom in disorder and too much stock outside. Tyll deals with each problem in turn, each part of the building is completed, and the finished hotel opens in the evening with guests coming and going.',
       more: 'Watch it work',
@@ -47,14 +48,14 @@ const en = {
       button: 'Book a demo',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Stock', payments: 'Payments' },
       steps: [
-        { label: 'Reconciliation', headline: 'Do our tabs, receipts and invoices match?', problem: 'Tabs, receipts and invoices sit in separate places. Nobody can check them all.', bullets: ['Each night’s tabs checked against the receipts', 'Each invoice checked against the order and delivery'], shot: 'Tyll showing one supplier invoice: AED 6,262 ordered, AED 5,898 received, AED 6,262 invoiced.' },
-        { label: 'Stock and Log waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['Tabs and receipts show what stock went out', 'Count on a phone, log waste in two taps'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
-        { label: 'Predictions', headline: 'What should we order this week?', problem: 'Too much of one thing is wasted while another runs out.', bullets: ['What to order and how much', 'One draft order, grouped by supplier'], shot: 'A draft order grouped by supplier: Emirates Dairy & Dry Goods, with cheddar, parmesan, mozzarella, cream cheese and labneh.' },
+        { label: 'Revenue and Reconciliation', headline: 'Do our tabs, receipts and invoices match?', problem: 'Tabs, receipts and invoices sit in separate places. Nobody can check them all.', bullets: ['Each night’s tabs checked against the receipts', 'Each invoice checked against the order and delivery'], shot: 'Tyll showing one supplier invoice: AED 6,262 ordered, AED 5,898 received, AED 6,262 invoiced.' },
+        { label: 'Stock and Waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['Tabs and receipts show what stock went out', 'Count on a phone, log waste in two taps'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
+        { label: 'Purchasing', headline: 'What should we order this week?', problem: 'Too much of one thing is wasted while another runs out.', bullets: ['What to order and how much', 'One draft order, grouped by supplier'], shot: 'A draft order grouped by supplier: Emirates Dairy & Dry Goods, with cheddar, parmesan, mozzarella, cream cheese and labneh.' },
         { label: 'The result', headline: 'One hotel. One clear answer.', problem: '', bullets: ['Every system connected', 'Lost money found before it is gone'], shot: '' },
       ],
     },
     why: {
-      heading: 'The problem, in two numbers.',
+      heading: 'Why it matters, in two numbers.',
       systems: ['PMS', 'POS', 'Payments', 'Accounting', 'Purchasing', 'Stock', 'Housekeeping', 'Events', 'Payroll', 'Reviews'],
       title: 'software systems run a typical hotel.',
       figure: '10+',
@@ -65,20 +66,17 @@ const en = {
       second: {
         figure: '$7',
         title: 'saved for every $1 invested in reducing kitchen food waste.',
-        text: 'Across 42 hotels. Independent research, not a Tyll result.',
+        text: 'Independent research across 42 hotels, not a Tyll result. It is what Log waste and Predictions are for.',
         sourceName: 'WRI and WRAP for Champions 12.3, 2018',
         sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
       },
     },
-    now: {
-      label: 'Available now',
-      title: 'Everything Tyll does, in three parts.',
+    parts: {
       cards: [
         { title: 'Stock and Waste', text: 'See what is left, count it on a phone, log waste in two taps.' },
         { title: 'Purchasing', text: 'Know what to order and how much.' },
         { title: 'Revenue and Reconciliation', text: 'Check each night’s tabs, receipts and supplier invoices.' },
       ],
-      more: 'See how it works',
       soon: 'In development: Events and Staffing, Rooms and Guest Experience, Sales and Performance.',
     },
     works: {
@@ -88,8 +86,9 @@ const en = {
     },
     invite: { title: 'See it on your hotel.' },
     report: {
-      title: 'Or start with a free purchasing report',
-      text: 'Send us a month of POS sales. Within 48 hours you get what to order and where stock is going missing.',
+      ask: 'Not ready for a call?',
+      title: 'Get a free purchasing report.',
+      points: ['Send us one month of POS sales', 'See what to order and where stock goes missing', 'In your inbox within 48 hours, free'],
       subject: 'Free purchasing report',
       fields: { name: 'Name', venue: 'Hotel or restaurant', role: 'Role', country: 'Country', pos: 'POS system', other: 'Other', email: 'Email', phone: 'Phone' },
       open: 'Start my free report',
@@ -229,9 +228,9 @@ const en = {
     legalDescription: 'Legal notice for the Tyll website.',
     privacyTitle: 'Privacy policy | Tyll',
     privacyDescription: 'How the Tyll website handles personal data, cookies and booking requests.',
-    homeTitle: 'Tyll | Your hotel is losing money. Tyll shows you where.',
+    homeTitle: 'Tyll | Find where your hotel loses money on stock and waste',
     homeDescription:
-      'Tyll reads your POS sales history and tells your purchasing team what to buy each week, while tracking stock and waste. No new systems needed.',
+      'Find out where your hotel loses money every night. Tyll checks tabs, receipts, stock, waste and invoices, then tells your team what to fix and what to order.',
   },
 };
 
