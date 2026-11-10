@@ -1,0 +1,141 @@
+---
+// How it works, in one row (9 Nov 2026, in place of Getting set up): the 30-day promise, the four steps joined by a line,
+// and a link to the How it works page. Copy: `teaser` and `howPage.title`.
+import { href } from '../../i18n/routes';
+import { t, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<section class="teaser" aria-labelledby="teaser-title">
+  <div class="wrap">
+    <div class="teaser__head">
+      <h2 id="teaser-title" class="display">{d.howPage.title}</h2>
+      <a class="teaser__link" href={href('how', lang)}>
+        {d.teaser.link.replace(/\s*[→←]\s*$/, '')} <span class="flip-rtl" aria-hidden="true">→</span>
+      </a>
+    </div>
+    <ol class="teaser__steps">
+      {
+        d.teaser.steps.map((step, i) => (
+          <li>
+            <span class="teaser__num" aria-hidden="true">{i + 1}</span>
+            <span class="teaser__name">{step}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .teaser {
+    padding-block: clamp(4rem, 3rem + 3vw, 6rem);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .teaser__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3) var(--s-4);
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .teaser h2 {
+    max-width: 22ch;
+    margin: 0;
+    color: var(--ink);
+    font-size: var(--fs-h2);
+  }
+
+  .teaser__link {
+    display: inline-flex;
+    flex: none;
+    gap: 0.4rem;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+  }
+
+  .teaser__link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  /* The four steps on one line, joined through their numbers */
+  .teaser__steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-3);
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .teaser__steps::before {
+    position: absolute;
+    top: 1.25rem;
+    inset-inline: 1.25rem calc(25% - 1.25rem);
+    border-top: 1px solid rgb(var(--ink-rgb) / 0.22);
+    content: '';
+  }
+
+  .teaser__steps li {
+    position: relative;
+    display: grid;
+    gap: 0.85rem;
+    justify-items: start;
+  }
+
+  .teaser__num {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid rgb(var(--ink-rgb) / 0.22);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .teaser__name {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  /* Phones: the steps stack, joined by a line down the side */
+  @media (max-width: 760px) {
+    .teaser__steps {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
+    }
+
+    .teaser__steps::before {
+      top: 1.25rem;
+      bottom: 1.25rem;
+      inset-inline: 1.25rem auto;
+      border-top: 0;
+      border-inline-start: 1px solid rgb(var(--ink-rgb) / 0.22);
+    }
+
+    .teaser__steps li {
+      grid-template-columns: 2.5rem minmax(0, 1fr);
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+</style>

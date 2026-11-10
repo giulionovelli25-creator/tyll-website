@@ -6,6 +6,7 @@ const en = {
   nav: {
     label: 'Main',
     solutions: 'Solutions',
+    how: 'How it works',
     solutionsMenu: 'Solutions menu',
     allSolutions: 'All solutions',
     faq: 'Frequently Asked Questions →',
@@ -24,20 +25,24 @@ const en = {
     comingSoon: 'Coming soon',
   },
   hero: {
-    title: 'Your hotel is losing money. Tyll shows you where.',
-    sub: 'Tyll checks every night’s tabs, receipts, stock and invoices, then tells your team what to fix and what to buy.',
+    title: 'Know what your hotel lost last night. And what to buy next week.',
+    sub: 'Tyll reconciles every tab, receipt and invoice overnight, then turns the numbers into a stock count and an order list your team can act on.',
     try: 'Try the demo →',
     watch: 'Watch it work →',
     report: 'Get your free report →',
     pause: 'Pause background video',
     play: 'Play background video',
-    videoLabel: 'A hotel at work: a gloved hand checks stock on a shelf, a pen writes down the count, a guest rings the reception bell, and a chef finishes a plate.',
+    // The flagged receipt lines' labels and the example morning card (fictional data, as the footer says)
+    flags: ['Removed, no reason', 'Unbilled pour', 'Not on room folio', 'Billed twice', 'No delivery note'],
+    card: { title: 'This morning · Bar & restaurant', count: '3 lines to check', total: '€264', rows: <[string, string, string, string][]>[['Negroni', 'Sent, then removed. No reason given.', '€68', 'TAB 2094'], ['House white glass', 'Poured, never billed.', '€52', 'TAB 2099'], ['2 × Club sandwich', 'Room service, missing from room 517.', '€144', 'CHK 3384']], cta: 'Open the full list →' },
   },
   home: {
     tour: {
       title: 'Three places your hotel loses money.',
       text: 'Tyll reads the systems you already use and gives your team a clear answer.',
       scene: 'A grand hotel, at first only a drawing surrounded by loose invoices, a storeroom in disorder and too much stock outside. Tyll deals with each problem in turn, each part of the building is completed, and the finished hotel opens in the evening with guests coming and going.',
+      play: 'Play',
+      pause: 'Pause',
       more: 'Watch it work',
       before: 'The problem',
       after: 'With Tyll',
@@ -49,27 +54,42 @@ const en = {
       cards: { pos: 'POS', pms: 'PMS', stock: 'Stock', payments: 'Payments' },
       steps: [
         { label: 'Revenue and Reconciliation', headline: 'Do our tabs, receipts and invoices match?', problem: 'Tabs, receipts and invoices sit in separate places. Nobody can check them all.', bullets: ['Each night’s tabs checked against the receipts', 'Each invoice checked against the order and delivery'], shot: 'Tyll showing one supplier invoice: AED 6,262 ordered, AED 5,898 received, AED 6,262 invoiced.' },
-        { label: 'Stock and Waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['Tabs and receipts show what stock went out', 'Count on a phone, log waste in two taps'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
-        { label: 'Purchasing', headline: 'What should we order this week?', problem: 'Too much of one thing is wasted while another runs out.', bullets: ['What to order and how much', 'One draft order, grouped by supplier'], shot: 'A draft order grouped by supplier: Emirates Dairy & Dry Goods, with cheddar, parmesan, mozzarella, cream cheese and labneh.' },
+        { label: 'Stock and Waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['One ten minute count on a phone, then minus one each time something is used or broken', 'Tabs and receipts show what stock went out, so the gap is explained'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
+        { label: 'Inventory and Purchasing', headline: 'Do we know what we have before we order?', problem: 'Counts happen on paper, if at all, so orders are guesses.', bullets: ['Weekly inventory count checked against what sold', 'An order list grouped by supplier, built from the count and the forecast'], shot: 'A draft order grouped by supplier: Emirates Dairy & Dry Goods, with cheddar, parmesan, mozzarella, cream cheese and labneh.' },
         { label: 'The result', headline: 'One hotel. One clear answer.', problem: '', bullets: ['Every system connected', 'Lost money found before it is gone'], shot: '' },
       ],
     },
+    // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
     why: {
-      heading: 'Why it matters, in two numbers.',
-      systems: ['PMS', 'POS', 'Payments', 'Accounting', 'Purchasing', 'Stock', 'Housekeeping', 'Events', 'Payroll', 'Reviews'],
-      title: 'software systems run a typical hotel.',
-      figure: '10+',
-      text: 'Tyll doesn’t add another. It works with what you have.',
+      heading: 'Why it matters, in three numbers.',
       source: 'Source',
-      sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
-      sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      second: {
-        figure: '$7',
-        title: 'saved for every $1 invested in reducing kitchen food waste.',
-        text: 'Independent research across 42 hotels, not a Tyll result. It is what Log waste and Predictions are for.',
-        sourceName: 'WRI and WRAP for Champions 12.3, 2018',
-        sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
-      },
+      step: 'Number {n} of 3',
+      cards: [
+        {
+          figure: '18%',
+          title: 'of everything a kitchen buys is thrown away.',
+          text: 'Across food service, not a Tyll result. Tyll shows where yours goes.',
+          sourceName: 'WRAP, UK Food Waste and Food Surplus Key Facts, July 2025',
+          sourceUrl: 'https://www.wrap.ngo/sites/default/files/2025-06/WRAP-UK-Food-Waste-and-Food-Surplus-Key-Facts-July-2025-v5.pdf',
+          label: '',
+        },
+        {
+          figure: '7×',
+          title: 'return for every euro hotels invested in cutting kitchen waste.',
+          text: 'Independent research across 42 hotels, not a Tyll result. Tyll helps you capture it.',
+          sourceName: 'WRI and WRAP for Champions 12.3, 2018',
+          sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
+          label: '',
+        },
+        {
+          figure: '€1,150',
+          title: 'lost on one item, in one bar, in one month.',
+          text: '190 Cokes sent, then taken off the bill with no reason. Nobody noticed until Tyll did.',
+          sourceName: 'Measured in a Tyll pilot, one hotel bar, one month.',
+          sourceUrl: '',
+          label: 'Tyll pilot',
+        },
+      ],
     },
     parts: {
       cards: [
@@ -80,7 +100,7 @@ const en = {
       soon: 'In development: Events and Staffing, Rooms and Guest Experience, Sales and Performance.',
     },
     works: {
-      title: 'Works with the systems you already use',
+      title: 'Works with the systems you already run',
       text: 'Read-only connections to your POS, PMS and payment systems.',
       note: 'Don’t see yours? We also work with data exports.',
     },
@@ -107,13 +127,20 @@ const en = {
       sendError: 'That did not send. Please try again, or email us at',
     },
   },
-  how: {
-    title: 'How it works.',
-    steps: <[string, string][]>[
-      ['Connect', 'Read-only links to your POS, PMS and payment systems. Nothing changes in them.'],
-      ['Tyll checks', 'Every night, tabs, receipts, stock and invoices are compared.'],
-      ['Your team acts', 'Each person sees what to fix, with the money involved.'],
-    ],
+  // The dark band under the hero (9 Nov 2026): one list every morning, in three steps
+  // The homepage's short version of How it works (9 Nov 2026), in place of Getting set up
+  teaser: { steps: ['Book a call', 'Free stock count', 'We read your POS', 'Your morning list'], link: 'See how it works →' },
+  // The How it works page (9 Nov 2026)
+  howPage: {
+    eyebrow: 'How it works',
+    title: 'From first call to your first morning list in 30 days.',
+    sub: 'Read only. Nothing to install. Nothing to replace.',
+    steps: <[string, string][]>[['Book a 15 minute call', 'We look at your outlets together and check that Tyll fits.'], ['Free stock count', 'We count your bar with your team. About 10 minutes per person.'], ['We read your POS', 'Tyll reads last night’s sales from the system you already use.'], ['Your first morning list', 'Every morning, the lines that don’t match, in euros. 30 days free.']],
+    call: { title: 'Tyll intro · 15 min', day: 'Tuesday', slots: ['09:30', '11:00', '14:30'] },
+    readOnly: 'Read only',
+    strip: ['Read only', 'Nothing to replace', 'No fee unless the pilot finds real money'],
+    final: 'See it on your own numbers.',
+    count: { title: 'Bar · Shelf 2', items: <[string, string][]>[['Gin 70cl', '6'], ['Rioja 75cl', '14'], ['Tonic 200ml', '48']], less: 'Count one less', more: 'Count one more' },
   },
   solutionPage: {
     demoEnglish: '',
@@ -206,7 +233,7 @@ const en = {
   },
   footer: {
     solutions: 'Solutions',
-    linkedin: 'Follow Tyll on LinkedIn →',
+    follow: 'Follow Tyll',
     tagline: 'Less complexity. More clarity. Better hospitality.',
     explore: 'Explore',
     company: 'Company',
@@ -218,6 +245,8 @@ const en = {
     rights: 'Tyll',
   },
   meta: {
+    howTitle: 'How it works | Tyll',
+    howDescription: 'From the first call to your first morning list in 30 days: a free stock count, read-only access to your POS, and every morning the lines that don’t match, in euros.',
     solutionsTitle: 'Solutions | Tyll',
     solutionsDescription: 'Six areas where Tyll helps hotel teams: stock and waste, finance, forecasting and purchasing, events and staffing, rooms and guests, and sales.',
     bookTitle: 'Book a demo | Tyll',

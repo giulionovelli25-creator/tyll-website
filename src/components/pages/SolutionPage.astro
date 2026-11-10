@@ -2,7 +2,6 @@
 // A solution page asks one question, shows the real system answering it in a film, and asks for a demo.
 import Base from '../../layouts/Base.astro';
 import DemoFilm from '../DemoFilm.astro';
-import HowItWorks from '../HowItWorks.astro';
 import SilverWave from '../SilverWave.astro';
 import { solutions } from '../../content/solutions';
 import { explore } from '../../content/explore';
@@ -50,8 +49,6 @@ const others = solutionKeys.filter((k) => k !== solution);
       {(s.note || p.demoEnglish) && <p class="sol__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
     </div>
   </section>
-
-  <HowItWorks lang={lang} />
 
   <section class="close on-dark" data-dark aria-labelledby="sol-final">
     <SilverWave phase={0.4} move tone="dark" />

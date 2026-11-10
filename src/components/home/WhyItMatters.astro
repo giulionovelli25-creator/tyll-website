@@ -1,13 +1,17 @@
 ---
-// "Why it matters, in two numbers": two sourced findings on one panel, read as a pair. 10+ counts up as the systems
-// a hotel runs appear as a row of plain tags; then $7 counts up beside a photograph of a chef weighing and logging
-// kitchen waste, the second only after
-// the first, so the eye is led across both. Industry research, never a Tyll result. Under the panel, the same systems
-// are drawn joined to Tyll. The page's HTML is the final frame, so without JavaScript or with reduced motion both
-// numbers are simply there. The system names only illustrate.
-import { Picture } from 'astro:assets';
-import SystemsDiagram from './SystemsDiagram.astro';
-import waste from '../../assets/photos/why-waste.jpg';
+// "Why it matters, in three numbers" (9 Nov 2026, the owner's brief): three cards that move sideways.
+// - 18%: of what food service buys, the share thrown away (WRAP, UK Food Waste and Food Surplus Key Facts, July 2025).
+// - 7×: the return hotels saw on money put into cutting kitchen waste (WRI and WRAP for Champions 12.3, 2018, 42 hotels).
+// - €1,150: lost on one item in one hotel bar in one month, measured in a Tyll pilot (the owner's figure), with Book a demo.
+// Each card: the number top left, its drawing top right, the statement in the serif, one muted sentence and the source.
+// The drawings are one static set: inline SVG on one 240 x 160 canvas, 1.5 px near-black lines, white, light grey and
+// mid grey fills (black, white and greys only, never beige: the owner, 10 Nov 2026); the receipt's lines are grey so the
+// one struck through in black stands out.
+// How it moves: on a laptop or larger (at least 900 x 640) the section pins and each step of vertical scroll brings the
+// next card in from the side; on phones the cards are a native swipe with snap points. A "1 / 3" count and three dots
+// show where you are and jump to a card. Keyboard: Tab into a card's link brings that card in. Reduced motion or no
+// JavaScript on a large screen: the cards are simply stacked.
+import { href } from '../../i18n/routes';
 import { t, type Locale } from '../../i18n';
 
 interface Props {
@@ -15,365 +19,552 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const w = t(lang).home.why;
-const parts = (figure: string) => {
-  const [, before = '', count = figure, after = ''] = figure.match(/^(\D*)(\d+)(.*)$/) ?? [];
-  return { before, count, after };
-};
-const one = parts(w.figure);
-const two = parts(w.second.figure);
+const d = t(lang);
+const w = d.home.why;
+
+// The receipt's torn bottom edge
+const teeth = 12;
+const zig = Array.from({ length: teeth }, (_, i) => `L${(126 - ((i + 0.5) * 82) / teeth).toFixed(1)} 142 L${(126 - ((i + 1) * 82) / teeth).toFixed(1)} 136`).join(' ');
+// Seven coins in a stack, bottom first
+const stack = Array.from({ length: 7 }, (_, i) => 94 - i * 3.2);
 ---
 
 <section class="why" aria-labelledby="why-title" data-why>
-  <div class="wrap">
-    <h2 id="why-title" class="display why__title">{w.heading}</h2>
-    <div class="why__panel">
-      <article class="stat" data-stat>
-        <div class="stat__top">
-          <p class="stat__number" aria-hidden="true"><bdi dir="ltr"><span data-count={one.count}>{one.count}</span>{one.after}</bdi></p>
-          <ul class="tags" aria-hidden="true">
-            {w.systems.map((name, i) => <li style={`--i:${i}`}>{name}</li>)}
-            <li class="tags__more" style="--i:10">+</li>
-          </ul>
+  <div class="why__stage">
+    <div class="wrap why__head">
+      <h2 id="why-title" class="display">{w.heading}</h2>
+      <div class="why__progress">
+        <span class="why__count" dir="ltr" aria-hidden="true"><b data-why-now>1</b> / {w.cards.length}</span>
+        <div class="why__dots">
+          {
+            w.cards.map((_, i) => (
+              <button type="button" class="why__dot" data-why-go={i} aria-label={w.step.replace('{n}', String(i + 1))} aria-current={i === 0 ? 'true' : 'false'}>
+                <span />
+              </button>
+            ))
+          }
         </div>
-        <h3 class="display stat__title"><span class="visually-hidden">{w.figure} </span>{w.title}</h3>
-        <p class="stat__text">{w.text}</p>
-        <p class="stat__source">
-          {w.source}:{' '}
-          <a href={w.sourceUrl} target="_blank" rel="noopener">{w.sourceName}</a>
-        </p>
-      </article>
-
-      <article class="stat stat--money" data-stat>
-        <div class="stat__photo" aria-hidden="true">
-          <Picture src={waste} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 720, 1080, 1402]} sizes="(max-width: 960px) 100vw, 28vw" loading="lazy" decoding="async" />
-        </div>
-        <div class="stat__body">
-          <p class="stat__number" aria-hidden="true"><bdi dir="ltr">{two.before}<span data-count={two.count}>{two.count}</span>{two.after}</bdi></p>
-          <h3 class="display stat__title"><span class="visually-hidden">{w.second.figure} </span>{w.second.title}</h3>
-          <p class="stat__text">{w.second.text}</p>
-          <p class="stat__source">
-            {w.source}:{' '}
-            <a href={w.second.sourceUrl} target="_blank" rel="noopener">{w.second.sourceName}</a>
-          </p>
-        </div>
-      </article>
+      </div>
     </div>
 
-    <div class="why__systems">
-      <SystemsDiagram systems={w.systems} label={`${w.figure} ${w.title}`} />
+    <div class="why__viewport" data-why-viewport>
+      <ol class="why__track" data-why-track>
+        {
+          w.cards.map((c, i) => (
+            <li class:list={['why__card', i === 0 && 'is-on']} data-why-card>
+              <div class="why__fig">
+                <p class="why__figure" aria-hidden="true">
+                  <span dir="ltr">{c.figure}</span>
+                </p>
+                {c.label && <p class="why__label">{c.label}</p>}
+              </div>
+
+              {i === 0 && (
+                <svg class="why__art" viewBox="0 0 240 160" aria-hidden="true">
+                  <line x1="12" y1="144" x2="228" y2="144" />
+                  {/* the crate's open top, then what is in it, then its front and side */}
+                  <path class="f-white" d="M22 90 L36 80 H146 L132 90 Z" />
+                  <circle class="f-white" cx="44" cy="80" r="12" />
+                  <path d="M44 68 q2 -5 7 -6" />
+                  <ellipse class="f-mid" cx="70" cy="80" rx="12" ry="9" />
+                  <rect class="f-light" x="82" y="58" width="14" height="34" rx="7" transform="rotate(16 89 75)" />
+                  <path class="f-white" d="M106 72 H126 L116 98 Z" />
+                  <path d="M110 72 l-4 -10 M116 72 v-12 M122 72 l4 -10" />
+                  <rect class="f-light" x="22" y="90" width="110" height="54" />
+                  <path d="M22 108 H132 M22 126 H132" />
+                  <rect class="f-white" x="66" y="96" width="22" height="6" rx="3" />
+                  <path class="f-light" d="M132 90 L146 80 V134 L132 144 Z" />
+                  <path d="M132 108 L146 98 M132 126 L146 116" />
+                  {/* the bin, its lid up, one item on its way in and one already in */}
+                  <path class="dash" d="M126 62 Q160 34 186 60" />
+                  <ellipse class="f-light" cx="199" cy="99" rx="8" ry="5" />
+                  <path class="f-white" d="M172 100 H214 L209 144 H177 Z" />
+                  <path d="M184 108 L185 138 M193 108 V138 M202 108 L201 138" />
+                  <rect class="f-white" x="168" y="94" width="48" height="6" rx="2" transform="rotate(-24 216 100)" />
+                  <circle class="f-white" cx="190" cy="72" r="7" />
+                  <path d="M187 70 q2 2 4 0 M189 75 h3" />
+                </svg>
+              )}
+
+              {i === 1 && (
+                <svg class="why__art" viewBox="0 0 240 160" aria-hidden="true">
+                  <line x1="12" y1="144" x2="228" y2="144" />
+                  <path class="f-light" d="M98 144 H142 L136 134 H104 Z" />
+                  <rect class="f-light" x="117" y="44" width="6" height="90" rx="2" />
+                  {/* the beam, tipped toward the seven coins, and the pans on their chains */}
+                  <path d="M58 34 L36 80 M58 34 L80 80 M182 50 L160 96 M182 50 L204 96" />
+                  <path class="f-light" d="M57 31.5 L183 47.5 L182 52.5 L56 36.5 Z" />
+                  <circle class="f-mid" cx="120" cy="42" r="5" />
+                  <path class="f-white" d="M33 80 Q58 98 83 80 Z" />
+                  <path class="f-white" d="M157 96 Q182 114 207 96 Z" />
+                  <ellipse class="f-mid" cx="58" cy="77" rx="9" ry="3" />
+                  {stack.map((y) => (
+                    <ellipse class="f-mid" cx="182" cy={y} rx="9" ry="3" />
+                  ))}
+                </svg>
+              )}
+
+              {i === 2 && (
+                <svg class="why__art" viewBox="0 0 240 160" aria-hidden="true">
+                  <line x1="12" y1="144" x2="228" y2="144" />
+                  {/* a bar receipt, one line struck out */}
+                  <path class="f-white" d={`M44 14 H126 V136 ${zig} V14 Z`} />
+                  <path class="soft" d="M66 28 H104 M74 36 H96" />
+                  <path class="soft" d="M52 52 H84 M104 52 H118 M52 64 H90 M104 64 H118 M52 76 H80 M104 76 H118 M52 88 H88 M104 88 H118 M52 100 H78 M104 100 H118" />
+                  <path class="strike" d="M48 79 L122 73" />
+                  <path class="dash" d="M50 112 H120" />
+                  <path class="soft" d="M52 124 H76 M100 124 H118" />
+                  {/* and the glass it was for: a soft drink with ice and a straw */}
+                  <path d="M188 98 L214 40" />
+                  <path class="f-white" d="M156 66 H204 L198 144 H162 Z" />
+                  <path class="f-light" d="M157.4 84 H202.6 L198 144 H162 Z" />
+                  <rect class="f-white" x="166" y="88" width="12" height="10" rx="2" transform="rotate(-10 172 93)" />
+                  <rect class="f-white" x="182" y="92" width="11" height="10" rx="2" transform="rotate(12 187 97)" />
+                  <circle class="f-white" cx="172" cy="122" r="1.6" />
+                  <circle class="f-white" cx="186" cy="130" r="1.6" />
+                  <circle class="f-white" cx="180" cy="112" r="1.6" />
+                </svg>
+              )}
+
+              <h3 class="why__title">
+                <span class="visually-hidden">{c.figure} </span>
+                {c.title}
+              </h3>
+              <p class="why__text">{c.text}</p>
+              <p class="why__source">
+                {c.sourceUrl ? (
+                  <>
+                    {w.source}:{' '}
+                    <a href={c.sourceUrl} target="_blank" rel="noopener">
+                      {c.sourceName}
+                      <span class="visually-hidden"> {d.cta.newTab}</span>
+                    </a>
+                  </>
+                ) : (
+                  c.sourceName
+                )}
+              </p>
+              {i === w.cards.length - 1 && (
+                <a class="btn btn--solid why__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="why">
+                  {d.cta.book}
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </div>
 </section>
 
+<script>
+  const root = document.querySelector<HTMLElement>('[data-why]');
+  if (root) {
+    const track = root.querySelector<HTMLElement>('[data-why-track]')!;
+    const viewport = root.querySelector<HTMLElement>('[data-why-viewport]')!;
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-why-card]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-why-go]')];
+    const now = root.querySelector<HTMLElement>('[data-why-now]')!;
+    const pinQ = matchMedia('(min-width: 900px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)');
+    const swipeQ = matchMedia('(max-width: 899.98px) and (prefers-reduced-motion: no-preference)');
+    const n = cards.length;
+    let index = 0;
+
+    // The distance from one card to the next (negative in Arabic, where the track runs right to left)
+    const step = () => cards[1].offsetLeft - cards[0].offsetLeft;
+    // How far the track moves for card i: one card at a time, but never past the point where the last card meets the
+    // end of the page's column, so the last step leaves no empty space
+    const shift = (i: number) => {
+      const s = step();
+      const dir = Math.sign(s) || 1;
+      const cs = getComputedStyle(track);
+      const last = cards[n - 1];
+      const end = dir > 0 ? last.offsetLeft + last.offsetWidth - (track.clientWidth - parseFloat(cs.paddingRight)) : parseFloat(cs.paddingLeft) - last.offsetLeft;
+      return dir * Math.min(i * Math.abs(s), Math.max(0, end));
+    };
+
+    const show = (i: number) => {
+      index = i;
+      dots.forEach((dot, k) => dot.setAttribute('aria-current', String(k === i)));
+      now.textContent = String(i + 1);
+      cards.forEach((c, k) => c.classList.toggle('is-on', k === i));
+      track.style.transform = pinQ.matches ? `translateX(${-shift(i)}px)` : '';
+    };
+
+    // Pinned: the section is taller than the screen; its share of the way through picks the card
+    const range = () => Math.max(1, root.offsetHeight - innerHeight);
+    const top = () => root.getBoundingClientRect().top + scrollY;
+    const fromScroll = () => {
+      const p = Math.min(1, Math.max(0, (scrollY - top()) / range()));
+      const i = Math.min(n - 1, Math.floor(p * n));
+      if (i !== index || !track.style.transform) show(i);
+    };
+    const scrollToCard = (i: number, smooth: boolean) => scrollTo({ top: top() + ((i + 0.5) / n) * range(), behavior: smooth ? 'smooth' : 'instant' });
+
+    // Swipe: the card nearest the start of the strip
+    const fromSwipe = () => {
+      const i = Math.min(n - 1, Math.max(0, Math.round(Math.abs(viewport.scrollLeft) / Math.abs(step()))));
+      if (i !== index) show(i);
+    };
+
+    let raf = 0;
+    addEventListener(
+      'scroll',
+      () => {
+        if (!pinQ.matches || raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          fromScroll();
+        });
+      },
+      { passive: true },
+    );
+    viewport.addEventListener('scroll', () => swipeQ.matches && fromSwipe(), { passive: true });
+    addEventListener('resize', () => (pinQ.matches ? show(index) : (track.style.transform = '')));
+
+    dots.forEach((dot, i) =>
+      dot.addEventListener('click', () => {
+        if (pinQ.matches) scrollToCard(i, true);
+        else if (swipeQ.matches) viewport.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior: 'smooth' });
+      }),
+    );
+
+    // A link reached with Tab brings its card in
+    root.addEventListener('focusin', (e) => {
+      const k = cards.findIndex((c) => c.contains(e.target as Node));
+      if (k >= 0 && k !== index && pinQ.matches) scrollToCard(k, false);
+    });
+
+    const mode = () => {
+      root.classList.toggle('is-pin', pinQ.matches);
+      if (pinQ.matches) fromScroll();
+      else show(swipeQ.matches ? index : 0);
+    };
+    pinQ.addEventListener('change', mode);
+    swipeQ.addEventListener('change', mode);
+    mode();
+  }
+</script>
+
 <style>
   .why {
     padding-block: var(--section-y);
-    background: var(--page);
-    color: var(--text-1);
+    background: var(--page-deep);
+    color: var(--ink);
   }
 
-  .why__title {
-    font-size: var(--fs-h2);
-    text-align: center;
-  }
-
-  /* One panel, so the two read as one thought: two equal columns and a fine line between them */
-  .why__panel {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: var(--s-5);
-    border: 1px solid var(--sand-300);
-    border-radius: var(--radius-lg);
-    background: var(--sand-50);
-    box-shadow: var(--shadow-2);
-    overflow: hidden;
-  }
-
-  .stat {
+  .why__head {
     display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding: var(--s-5);
-  }
-
-  .stat + .stat {
-    border-inline-start: 1px solid var(--sand-300);
-  }
-
-  .stat__top {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    min-height: 9.5rem;
-  }
-
-  .stat__number {
-    flex: none;
-    max-width: none;
-    margin: 0;
-    color: var(--text-1);
-    font-family: var(--font-display);
-    font-size: clamp(5rem, 3rem + 4.4vw, 7.5rem);
-    letter-spacing: 0;
-    line-height: 0.95;
-  }
-
-  /* Two lines kept for each title, so the sentences under the two numbers start level */
-  .stat__title {
-    min-height: 2.28em;
-    margin-top: var(--s-3);
-    font-size: clamp(1.625rem, 1.4rem + 0.7vw, 2.125rem);
-    letter-spacing: 0;
-    line-height: 1.14;
-  }
-
-  .stat__text {
-    margin-top: var(--s-2);
-    color: var(--text-2);
-  }
-
-  .stat__source {
-    margin-top: auto;
-    padding-top: var(--s-3);
-    color: var(--text-3);
-    font-size: var(--fs-caption);
-  }
-
-  .stat__source a {
-    text-underline-offset: 3px;
-  }
-
-  .stat__source a:hover {
-    color: var(--text-1);
-  }
-
-  /* The systems as plain tags of one height, in neat rows */
-  .tags {
-    display: flex;
-    flex: 1;
     flex-wrap: wrap;
-    align-content: center;
-    gap: 0.5rem;
-    min-width: 0;
+    gap: var(--s-3) var(--s-4);
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .why h2 {
     margin: 0;
+    color: var(--ink);
+    font-size: var(--fs-h2);
+  }
+
+  /* The count and the dots: only where the cards move */
+  .why__progress {
+    display: none;
+    gap: 1rem;
+    align-items: center;
+    color: var(--steel);
+    font: 500 0.875rem/1 var(--mono);
+  }
+
+  .why__count b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .why__dots {
+    display: flex;
+  }
+
+  .why__dot {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
     padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .why__dot span {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid var(--steel);
+    border-radius: 50%;
+    transition: background-color 0.3s ease, width 0.3s ease;
+  }
+
+  .why__dot[aria-current='true'] span {
+    width: 1.25rem;
+    border-color: var(--ink);
+    border-radius: 999px;
+    background: var(--ink);
+  }
+
+  /* Stacked: no JavaScript on a large screen, or reduced motion anywhere */
+  .why__track {
+    position: relative;
+    display: grid;
+    gap: var(--s-4);
+    width: 100%;
+    max-width: calc(48rem + var(--gut) * 2);
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) auto 0;
+    padding: 0 var(--gut);
     list-style: none;
   }
 
-  .tags li {
-    display: inline-flex;
-    align-items: center;
-    height: 2.125rem;
-    padding: 0 0.9rem;
-    border: 1px solid var(--sand-400);
-    border-radius: 999px;
+  /* positioned, so the hidden screen-reader text inside stays inside the strip's overflow */
+  .why__card {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'fig art'
+      'title title'
+      'text text'
+      'source source'
+      'book book';
+    align-content: start;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    border: 1px solid rgb(var(--ink-rgb) / 0.07);
+    border-radius: 22px;
     background: var(--paper);
-    color: var(--graphite);
-    font-size: var(--fs-small);
-    line-height: 1;
+    box-shadow:
+      0 1px 3px rgb(var(--ink-rgb) / 0.05),
+      0 30px 60px -38px rgb(var(--ink-rgb) / 0.35);
+  }
+
+  .why__fig {
+    grid-area: fig;
+  }
+
+  .why__figure {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 2.2rem + 4vw, 6rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
     white-space: nowrap;
-    transition:
-      opacity 0.3s var(--ease),
-      transform 0.45s var(--ease);
-    transition-delay: calc(var(--i) * 60ms);
   }
 
-  .tags .tags__more {
-    justify-content: center;
-    width: 2.125rem;
-    padding: 0;
+  .why__label {
+    margin: 0.75rem 0 0;
     color: var(--steel);
+    font-size: 1rem;
+    font-weight: 600;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
   }
 
-  .stat.is-waiting .tags li {
-    opacity: 0;
-    transform: translateY(6px);
-    transition: none;
+  .why__art {
+    grid-area: art;
+    width: clamp(8.5rem, 5rem + 12vw, 15rem);
+    height: auto;
+    overflow: visible;
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
-  /* The photograph on the right of the card, running to its edge, the card's own colour fading into it */
-  .stat--money {
-    position: relative;
+  .why__art :global(*) {
+    vector-effect: non-scaling-stroke;
   }
 
-  .stat__photo {
-    position: absolute;
-    inset: 0 0 0 auto;
-    width: 46%;
-    pointer-events: none;
+  .why__art .f-white {
+    fill: var(--paper);
   }
 
-  .stat__photo :global(picture),
-  .stat__photo :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
+  .why__art .f-light {
+    fill: var(--sand-500);
   }
 
-  .stat__photo :global(img) {
-    object-fit: cover;
-    object-position: 72% 50%;
+  .why__art .f-mid {
+    fill: var(--silver-deep);
   }
 
-  .stat__photo::after {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, var(--sand-50) 0%, rgb(251 251 250 / 0) 46%);
-    content: '';
+  .why__art .dash {
+    stroke-dasharray: 2 5;
   }
 
-  .stat__body {
-    position: relative;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    max-width: 58%;
+  .why__art .strike {
+    stroke: var(--ink);
+    stroke-width: 2.5;
   }
 
-  .stat__body .stat__number {
-    display: flex;
-    align-items: center;
-    min-height: 9.5rem;
+  .why__art .soft {
+    stroke: var(--silver-deep);
   }
 
-  @media (max-width: 960px) {
-    .why__panel {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .stat {
-      padding: var(--s-4) var(--s-3);
-    }
-
-    .stat + .stat {
-      border-inline-start: 0;
-      border-top: 1px solid var(--sand-300);
-    }
-
-    .stat__top {
-      min-height: 0;
-    }
-
-    .stat__title {
-      min-height: 0;
-    }
-
-    /* On one column the photograph sits above the number, full width */
-    .stat__photo {
-      position: relative;
-      inset: auto;
-      width: calc(100% + 2 * var(--s-3));
-      height: 15rem;
-      margin: calc(-1 * var(--s-4)) calc(-1 * var(--s-3)) var(--s-3);
-    }
-
-    .stat__photo::after {
-      background: linear-gradient(180deg, rgb(251 251 250 / 0) 55%, var(--sand-50) 100%);
-    }
-
-    .stat__body {
-      max-width: none;
-    }
-
-    .stat__body .stat__number {
-      min-height: 0;
-    }
+  .why__title {
+    grid-area: title;
+    max-width: 24ch;
+    margin: clamp(1.25rem, 1rem + 1vw, 2rem) 0 0;
+    color: var(--ink);
+    font-size: clamp(1.5rem, 1.15rem + 1.1vw, 2.125rem);
+    font-weight: 300;
+    line-height: 1.2;
   }
 
-  /* On a phone each number gets the full width, with its tags beneath it */
+  .why__text {
+    grid-area: text;
+    max-width: 44ch;
+    margin: 0.85rem 0 0;
+    color: var(--graphite);
+    line-height: 1.55;
+  }
+
+  .why__source {
+    grid-area: source;
+    margin: 1.25rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(var(--ink-rgb) / 0.1);
+    color: var(--steel);
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .why__source a {
+    color: var(--graphite);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .why__source a:hover {
+    color: var(--ink);
+  }
+
+  .why__book,
+  .why__book:hover {
+    grid-area: book;
+    justify-self: start;
+    margin-top: 1.25rem;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .why__book {
+    box-shadow: 0 14px 28px -16px rgb(var(--ink-rgb) / 0.6);
+  }
+
+  /* Narrow cards: a smaller number and drawing, so the two share the top row */
   @media (max-width: 560px) {
-    .stat__top {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--s-2);
+    .why__card {
+      column-gap: 0.75rem;
     }
 
-    .tags {
+    .why__figure {
+      font-size: 2.75rem;
+    }
+
+    .why__art {
+      width: 7.5rem;
+    }
+  }
+
+  /* Phones and tablets: a native swipe with snap points */
+  @media (max-width: 899.98px) and (prefers-reduced-motion: no-preference) {
+    .why__progress {
+      display: flex;
+    }
+
+    .why__viewport {
+      container-type: inline-size;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gut);
+      scrollbar-width: none;
+    }
+
+    .why__viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .why__track {
+      display: flex;
+      gap: 0.75rem;
+      width: max-content;
+      max-width: none;
+      margin-inline: 0;
+      padding-block: 0.5rem 2.5rem;
+    }
+
+    .why__card {
       flex: none;
-      width: 100%;
+      width: min(calc(100cqw - var(--gut) * 2 - 1.5rem), 30rem);
+      scroll-snap-align: start;
     }
   }
 
-  /* The systems joined to Tyll, a little narrower than the panel and with room to breathe above it */
-  .why__systems {
-    max-width: 1080px;
-    margin: var(--s-7) auto 0;
+  /* Laptops and larger: pinned; vertical scroll steps the cards sideways */
+  .why.is-pin {
+    height: calc(100svh + 140svh);
+    padding: 0;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .tags li {
-      transition: none;
+  .is-pin .why__stage {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+    padding-top: var(--header-h);
+    overflow: hidden;
+  }
+
+  .is-pin .why__progress {
+    display: flex;
+  }
+
+  .is-pin .why__track {
+    display: flex;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    max-width: calc(var(--wrap) + var(--gut) * 2);
+    padding-block: 1rem 2.5rem;
+    transition: transform 0.75s cubic-bezier(0.22, 0.7, 0.2, 1);
+  }
+
+  /* The cards beside the current one step back a little (smaller, no lift), but stay fully legible */
+  .is-pin .why__card {
+    flex: none;
+    width: min(46rem, 64vw);
+    box-shadow: none;
+    transform: scale(0.94);
+    transition:
+      transform 0.6s cubic-bezier(0.22, 0.7, 0.2, 1),
+      box-shadow 0.6s ease;
+  }
+
+  .is-pin .why__card.is-on {
+    box-shadow:
+      0 1px 3px rgb(var(--ink-rgb) / 0.05),
+      0 30px 60px -38px rgb(var(--ink-rgb) / 0.35);
+    transform: none;
+  }
+
+  /* Short laptop screens: a slightly smaller card so it fits */
+  @media (max-height: 780px) {
+    .is-pin .why__figure {
+      font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+    }
+
+    .is-pin .why__art {
+      width: clamp(8rem, 4rem + 9vw, 12rem);
     }
   }
 </style>
-
-<script>
-  // Both numbers play once: the first when it comes into view, the second after it and when it is in view too. While
-  // counting, a number keeps the width of its final value, so nothing beside it moves.
-  const root = document.querySelector<HTMLElement>('[data-why]');
-  if (root && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const [first, second] = [...root.querySelectorAll<HTMLElement>('[data-stat]')];
-
-    const prepare = (stat: HTMLElement) => {
-      stat.classList.add('is-waiting');
-      const el = stat.querySelector<HTMLElement>('[data-count]')!;
-      el.textContent = '1';
-    };
-
-    const play = (stat: HTMLElement, ms: number) => {
-      const el = stat.querySelector<HTMLElement>('[data-count]')!;
-      const target = Number(el.dataset.count);
-      el.textContent = String(target);
-      Object.assign(el.style, { display: 'inline-block', width: `${el.getBoundingClientRect().width}px`, textAlign: 'right' });
-      el.textContent = '1';
-      stat.classList.remove('is-waiting');
-      const start = performance.now();
-      const step = (now: number) => {
-        const p = Math.min(1, (now - start) / ms);
-        el.textContent = String(Math.max(1, Math.round(1 + (1 - (1 - p) ** 2) * (target - 1))));
-        if (p < 1) requestAnimationFrame(step);
-        else el.removeAttribute('style');
-      };
-      requestAnimationFrame(step);
-    };
-
-    prepare(first);
-    prepare(second);
-
-    let firstDone = false;
-    let secondSeen = false;
-    const playSecond = () => {
-      if (firstDone && secondSeen) {
-        play(second, 1200);
-        secondSeen = false;
-        firstDone = false;
-      }
-    };
-
-    const seeFirst = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        seeFirst.disconnect();
-        play(first, 1000);
-        setTimeout(() => {
-          firstDone = true;
-          playSecond();
-        }, 1300);
-      },
-      { threshold: 0.35 },
-    );
-    seeFirst.observe(first);
-
-    const seeSecond = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        seeSecond.disconnect();
-        secondSeen = true;
-        playSecond();
-      },
-      { threshold: 0.35 },
-    );
-    seeSecond.observe(second);
-  }
-</script>

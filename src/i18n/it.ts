@@ -7,6 +7,7 @@ const it: Dict = {
   nav: {
     label: 'Navigazione principale',
     solutions: 'Soluzioni',
+    how: 'Come funziona',
     solutionsMenu: 'Menu soluzioni',
     allSolutions: 'Tutte le soluzioni',
     faq: 'Domande frequenti →',
@@ -25,20 +26,24 @@ const it: Dict = {
     comingSoon: 'In arrivo',
   },
   hero: {
-    title: 'Il tuo hotel perde denaro. Tyll ti mostra dove.',
-    sub: 'Ogni sera Tyll controlla conti, scontrini, merce e fatture, poi dice al tuo team cosa sistemare e cosa comprare.',
+    title: 'Scopri cosa ha perso il tuo hotel ieri sera. E cosa comprare la settimana prossima.',
+    sub: 'Tyll riconcilia di notte ogni conto, scontrino e fattura, poi trasforma i numeri in un conteggio del magazzino e in una lista d’ordine su cui il tuo team può agire.',
     try: 'Prova la demo →',
     watch: 'Guardalo all’opera →',
     report: 'Ricevi il report gratuito →',
     pause: 'Metti in pausa il video di sfondo',
     play: 'Riproduci il video di sfondo',
-    videoLabel: 'Un hotel al lavoro: una mano con il guanto controlla la merce sullo scaffale, una penna annota il conteggio, un ospite suona il campanello e uno chef completa un piatto.',
+    // The flagged receipt lines' labels and the example morning card (fictional data, as the footer says)
+    flags: ['Rimosso, senza motivo', 'Versato, non fatturato', 'Non sul conto camera', 'Fatturato due volte', 'Nessuna bolla'],
+    card: { title: 'Stamattina · Bar e ristorante', count: '3 righe da controllare', total: '€264', rows: <[string, string, string, string][]>[['Negroni', 'Battuto, poi annullato. Nessun motivo.', '€68', 'TAB 2094'], ['Vino bianco della casa, calice', 'Versato, mai fatturato.', '€52', 'TAB 2099'], ['2 × Club sandwich', 'Servizio in camera, manca sul conto della 517.', '€144', 'CHK 3384']], cta: 'Apri la lista completa →' },
   },
   home: {
     tour: {
       title: 'Tre punti in cui il tuo hotel perde denaro.',
       text: 'Tyll legge i sistemi che usi già e dà al tuo team una risposta chiara.',
       scene: 'Un grand hotel, all’inizio solo un disegno circondato da fatture sparse, un magazzino in disordine e troppa merce fuori. Tyll risolve un problema dopo l’altro, ogni parte dell’edificio viene completata e l’hotel finito apre la sera con ospiti che arrivano e partono.',
+      play: 'Riproduci',
+      pause: 'Pausa',
       more: 'Guardalo all’opera',
       before: 'Il problema',
       after: 'Con Tyll',
@@ -50,27 +55,42 @@ const it: Dict = {
       cards: { pos: 'POS', pms: 'PMS', stock: 'Magazzino', payments: 'Pagamenti' },
       steps: [
         { label: 'Ricavi e riconciliazione', headline: 'Conti, scontrini e fatture coincidono?', problem: 'Conti, scontrini e fatture stanno in posti separati. Nessuno può controllarli tutti.', bullets: ['I conti di ogni sera confrontati con gli scontrini', 'Ogni fattura confrontata con ordine e consegna'], shot: 'Tyll mostra una fattura fornitore: AED 6.262 ordinati, AED 5.898 ricevuti, AED 6.262 fatturati.' },
-        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Conti e scontrini mostrano quale merce è uscita', 'Conta col telefono, registra gli sprechi con due tocchi'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
-        { label: 'Acquisti', headline: 'Cosa dobbiamo ordinare questa settimana?', problem: 'Una cosa si spreca mentre un’altra finisce.', bullets: ['Cosa ordinare e quanto', 'Una bozza d’ordine, raggruppata per fornitore'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
+        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Un conteggio di dieci minuti dal telefono, poi meno uno ogni volta che qualcosa si usa o si rompe', 'Conti e scontrini mostrano quale merce è uscita, così il buco ha una spiegazione'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
+        { label: 'Inventario e acquisti', headline: 'Sappiamo cosa abbiamo prima di ordinare?', problem: 'Si conta su carta, se si conta, quindi gli ordini sono tentativi.', bullets: ['Inventario settimanale confrontato con ciò che si è venduto', 'Una lista d’ordine per fornitore, costruita da conteggio e previsione'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
         { label: 'Il risultato', headline: 'Un hotel. Una risposta chiara.', problem: '', bullets: ['Ogni sistema collegato', 'Denaro perso trovato prima che sparisca'], shot: '' },
       ],
     },
+    // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
     why: {
-      heading: 'Perché conta, in due numeri.',
-      systems: ['PMS', 'POS', 'Pagamenti', 'Contabilità', 'Acquisti', 'Magazzino', 'Housekeeping', 'Eventi', 'Personale', 'Recensioni'],
-      title: 'sistemi software fanno funzionare un hotel tipico.',
-      figure: '10+',
-      text: 'Tyll non ne aggiunge un altro. Lavora con ciò che hai.',
+      heading: 'Perché conta, in tre numeri.',
       source: 'Fonte',
-      sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
-      sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      second: {
-        figure: '$7',
-        title: 'risparmiati per ogni dollaro investito nel ridurre gli sprechi alimentari in cucina.',
-        text: 'Ricerca indipendente su 42 hotel, non un risultato di Tyll. È proprio a questo che servono Registra sprechi e Previsioni.',
-        sourceName: 'WRI e WRAP per Champions 12.3, 2018',
-        sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
-      },
+      step: 'Numero {n} di 3',
+      cards: [
+        {
+          figure: '18%',
+          title: 'di tutto ciò che una cucina acquista finisce nella spazzatura.',
+          text: 'Nella ristorazione, non un risultato di Tyll. Tyll ti mostra dove finisce il tuo.',
+          sourceName: 'WRAP, UK Food Waste and Food Surplus Key Facts, luglio 2025',
+          sourceUrl: 'https://www.wrap.ngo/sites/default/files/2025-06/WRAP-UK-Food-Waste-and-Food-Surplus-Key-Facts-July-2025-v5.pdf',
+          label: '',
+        },
+        {
+          figure: '7×',
+          title: 'il ritorno per ogni euro che gli hotel hanno investito per ridurre lo spreco in cucina.',
+          text: 'Ricerca indipendente su 42 hotel, non un risultato di Tyll. Tyll ti aiuta a ottenerlo.',
+          sourceName: 'WRI e WRAP per Champions 12.3, 2018',
+          sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
+          label: '',
+        },
+        {
+          figure: '1.150 €',
+          title: 'persi su un solo articolo, in un solo bar, in un mese.',
+          text: '190 Coca-Cola battute, poi tolte dal conto senza motivo. Nessuno se n’è accorto finché non l’ha trovato Tyll.',
+          sourceName: 'Misurato in un pilota Tyll, il bar di un hotel, un mese.',
+          sourceUrl: '',
+          label: 'Pilota Tyll',
+        },
+      ],
     },
     parts: {
       cards: [
@@ -108,13 +128,20 @@ const it: Dict = {
       sendError: 'Invio non riuscito. Riprova o scrivici a',
     },
   },
-  how: {
-    title: 'Come funziona.',
-    steps: <[string, string][]>[
-      ['Collega', 'Accesso in sola lettura a POS, PMS e pagamenti. Lì non cambia nulla.'],
-      ['Tyll controlla', 'Ogni sera confronta conti, scontrini, merce e fatture.'],
-      ['Il tuo team agisce', 'Ognuno vede cosa sistemare, con l’importo in gioco.'],
-    ],
+  // The dark band under the hero (9 Nov 2026): one list every morning, in three steps
+  // The homepage's short version of How it works (9 Nov 2026), in place of Getting set up
+  teaser: { steps: ['Prenota una chiamata', 'Conteggio gratuito', 'Leggiamo il tuo POS', 'La tua lista del mattino'], link: 'Scopri come funziona →' },
+  // The How it works page (9 Nov 2026)
+  howPage: {
+    eyebrow: 'Come funziona',
+    title: 'Dalla prima chiamata alla tua prima lista del mattino in 30 giorni.',
+    sub: 'Sola lettura. Niente da installare. Niente da sostituire.',
+    steps: <[string, string][]>[['Prenota una chiamata di 15 minuti', 'Guardiamo insieme i tuoi punti vendita e verifichiamo che Tyll faccia per te.'], ['Conteggio di magazzino gratuito', 'Contiamo il tuo bar con il tuo team. Circa 10 minuti a persona.'], ['Leggiamo il tuo POS', 'Tyll legge le vendite di ieri sera dal sistema che usi già.'], ['La tua prima lista del mattino', 'Ogni mattina, le righe che non tornano, in euro. 30 giorni gratis.']],
+    call: { title: 'Introduzione a Tyll · 15 min', day: 'Martedì', slots: ['09:30', '11:00', '14:30'] },
+    readOnly: 'Sola lettura',
+    strip: ['Sola lettura', 'Niente da sostituire', 'Nessun costo se il pilota non trova soldi veri'],
+    final: 'Guardalo sui tuoi numeri.',
+    count: { title: 'Bar · Scaffale 2', items: <[string, string][]>[['Gin 70cl', '6'], ['Rioja 75cl', '14'], ['Tonic 200ml', '48']], less: 'Uno in meno', more: 'Uno in più' },
   },
   solutionPage: {
     demoEnglish: 'La demo dal vivo per ora è in inglese.',
@@ -207,7 +234,7 @@ const it: Dict = {
   },
   footer: {
     solutions: 'Soluzioni',
-    linkedin: 'Segui Tyll su LinkedIn →',
+    follow: 'Segui Tyll',
     tagline: 'Meno complessità. Più chiarezza. Ospitalità migliore.',
     explore: 'Esplora',
     company: 'Azienda',
@@ -219,6 +246,8 @@ const it: Dict = {
     rights: 'Tyll',
   },
   meta: {
+    howTitle: 'Come funziona | Tyll',
+    howDescription: 'Dalla prima chiamata alla tua prima lista del mattino in 30 giorni: un conteggio di magazzino gratuito, accesso in sola lettura al tuo POS e ogni mattina le righe che non tornano, in euro.',
     solutionsTitle: 'Soluzioni | Tyll',
     solutionsDescription: 'Sei aree in cui Tyll aiuta i team alberghieri: magazzino e sprechi, finanza, previsioni e acquisti, eventi e personale, camere e ospiti, vendite.',
     bookTitle: 'Prenota una demo | Tyll',

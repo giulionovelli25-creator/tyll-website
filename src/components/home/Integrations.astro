@@ -1,10 +1,11 @@
 ---
-// "Works with the systems you already use": the real logos from src/config/integrations.ts in an endless band.
+// Straight under the hero (9 Nov 2026), as on the live tyll.ai: "Works with the systems you already run", one line on
+// how Tyll connects, then the real logos from src/config/integrations.ts in an endless band.
 // The set is drawn twice and the band moves by exactly one set, so the loop has no visible jump. It uses a CSS
-// transform only, pauses under the pointer, under a finger and when focused, and always reads left to right, also in
-// Arabic. With reduced motion it stands still as a centred, wrapping grid. Logos are never links.
+// transform only, keeps moving under the pointer and a finger, pauses when focused, and always reads left to right,
+// also in Arabic, on phones too. With reduced motion it stands still as a centred, wrapping grid. Logos are never links.
 import { logos, logoBox } from '../../config/integrations';
-import { t, href, type Locale } from '../../i18n';
+import { t, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -15,8 +16,11 @@ const v = t(lang).home.works;
 ---
 
 <section class="works" id="integrations" aria-labelledby="works-title">
-  <div class="wrap works__head">
-    <h2 id="works-title" class="display">{v.title}</h2>
+  <div class="wrap">
+    <div class="works__head">
+      <h2 id="works-title" class="display">{v.title}</h2>
+      <p>{v.text}</p>
+    </div>
   </div>
 
   <div class="band" dir="ltr" tabindex="0" role="group" aria-labelledby="works-title" data-band>
@@ -49,15 +53,17 @@ const v = t(lang).home.works;
 
 <style>
   .works {
-    --logo-scale: 1;
-    --logo-gap: 4.5rem;
-    padding-block: var(--section-y);
-    background: var(--paper);
+    --logo-scale: 0.8;
+    --logo-gap: 3.75rem;
+    padding-block: 0 clamp(3rem, 2rem + 3vw, 4.5rem);
+    background: var(--page);
     color: var(--ink);
   }
 
+  /* A hairline ties the banner to the hero above it */
   .works__head {
-    max-width: calc(44rem + var(--gut) * 2);
+    padding-top: clamp(2.5rem, 1.75rem + 2.5vw, 3.75rem);
+    border-top: 1px solid var(--line);
     text-align: center;
   }
 
@@ -65,32 +71,16 @@ const v = t(lang).home.works;
     font-size: var(--fs-h2);
   }
 
-  /* Straight after How it works, the logos read as part of it: a quiet caption, not a new section */
-  :global(.how) + .works {
-    padding-top: var(--s-4);
-  }
-
-  :global(.how) + .works h2 {
-    color: var(--steel);
-    font-family: var(--font);
-    font-size: var(--fs-body);
-    font-weight: 400;
-  }
-
-  :global(.how) + .works h2 :global(br) {
-    display: none;
-  }
-
   .works__head p {
-    margin: var(--s-3) auto 0;
-    color: var(--steel);
-    font-size: var(--fs-lead);
+    max-width: 36rem;
+    margin: var(--s-2) auto 0;
+    color: var(--text-2);
   }
 
   /* The logos fade in and out at the edges of the band */
   .band {
     overflow: hidden;
-    margin-top: var(--s-7);
+    margin-top: var(--s-5);
     padding-block: var(--s-2);
     -webkit-mask-image: linear-gradient(90deg, transparent, var(--black) 12%, var(--black) 88%, transparent);
     mask-image: linear-gradient(90deg, transparent, var(--black) 12%, var(--black) 88%, transparent);
@@ -104,7 +94,7 @@ const v = t(lang).home.works;
   .band__track {
     display: flex;
     width: max-content;
-    animation: band 36s linear infinite;
+    animation: band 84s linear infinite; /* 21 logos at the pace the 9 had at 36 s */
   }
 
   /* Keeps moving under the pointer; keyboard focus still holds it still */
@@ -200,28 +190,9 @@ const v = t(lang).home.works;
       }
     }
 
-    /* Phones show every logo at once, still, rather than a moving band cut by the screen's edges */
-    .band {
-      overflow: visible;
-      -webkit-mask-image: none;
-      mask-image: none;
-    }
-
-    .band__track {
-      width: auto;
-      animation: none;
-    }
-
-    .band__set {
-      flex: 1 1 100%;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: var(--s-3) var(--logo-gap);
-      padding: 0 var(--gut);
-    }
-
-    .band__set[aria-hidden='true'] {
-      display: none;
+    /* Phones keep the moving band too: 21 logos would stack too deep as a still grid */
+    .works__head p {
+      padding-inline: var(--gut);
     }
   }
 

@@ -6,6 +6,7 @@ const de: Dict = {
   nav: {
     label: 'Hauptnavigation',
     solutions: 'Lösungen',
+    how: 'So funktioniert’s',
     solutionsMenu: 'Menü Lösungen',
     allSolutions: 'Alle Lösungen',
     faq: 'Häufige Fragen →',
@@ -24,20 +25,24 @@ const de: Dict = {
     comingSoon: 'Demnächst',
   },
   hero: {
-    title: 'Ihr Hotel verliert Geld. Tyll zeigt Ihnen, wo.',
-    sub: 'Tyll prüft jeden Abend Gästerechnungen, Belege, Bestand und Lieferantenrechnungen und sagt Ihrem Team, was zu klären und was zu kaufen ist.',
+    title: 'Wissen, was Ihr Hotel letzte Nacht verloren hat. Und was Sie nächste Woche kaufen sollten.',
+    sub: 'Tyll gleicht über Nacht jede Gästerechnung, jeden Beleg und jede Lieferantenrechnung ab und macht aus den Zahlen eine Bestandszählung und eine Bestellliste, mit der Ihr Team arbeiten kann.',
     try: 'Demo ausprobieren →',
     watch: 'So sieht es aus →',
     report: 'Kostenlosen Bericht anfordern →',
     pause: 'Hintergrundvideo anhalten',
     play: 'Hintergrundvideo abspielen',
-    videoLabel: 'Ein Hotel bei der Arbeit: Eine Hand im Handschuh prüft den Bestand im Regal, ein Stift notiert die Zählung, ein Gast läutet die Empfangsglocke, ein Koch richtet einen Teller an.',
+    // The flagged receipt lines' labels and the example morning card (fictional data, as the footer says)
+    flags: ['Entfernt, ohne Grund', 'Ausschank nicht berechnet', 'Nicht auf der Zimmerrechnung', 'Doppelt berechnet', 'Kein Lieferschein'],
+    card: { title: 'Heute Morgen · Bar & Restaurant', count: '3 Posten zu prüfen', total: '€264', rows: <[string, string, string, string][]>[['Negroni', 'Bonniert, dann storniert. Ohne Grund.', '€68', 'TAB 2094'], ['Hauswein weiß, Glas', 'Ausgeschenkt, nie berechnet.', '€52', 'TAB 2099'], ['2 × Club-Sandwich', 'Zimmerservice, fehlt auf Zimmer 517.', '€144', 'CHK 3384']], cta: 'Ganze Liste öffnen →' },
   },
   home: {
     tour: {
       title: 'Drei Stellen, an denen Ihr Hotel Geld verliert.',
       text: 'Tyll liest die Systeme, die Sie bereits nutzen, und gibt Ihrem Team eine klare Antwort.',
       scene: 'Ein Grandhotel, zunächst nur eine Zeichnung, umgeben von losen Rechnungen, einem unordentlichen Lager und zu viel Ware vor der Tür. Tyll löst ein Problem nach dem anderen, jeder Teil des Gebäudes wird fertig, und das vollendete Hotel öffnet am Abend mit ankommenden und abreisenden Gästen.',
+      play: 'Abspielen',
+      pause: 'Pause',
       more: 'So sieht es aus',
       before: 'Das Problem',
       after: 'Mit Tyll',
@@ -49,27 +54,42 @@ const de: Dict = {
       cards: { pos: 'Kasse', pms: 'PMS', stock: 'Lager', payments: 'Zahlungen' },
       steps: [
         { label: 'Umsatz und Abgleich', headline: 'Stimmen Gästerechnungen, Belege und Rechnungen überein?', problem: 'Gästerechnungen, Belege und Rechnungen liegen getrennt. Niemand kann alle prüfen.', bullets: ['Die Gästerechnungen jedes Abends gegen die Belege geprüft', 'Jede Rechnung gegen Bestellung und Lieferung geprüft'], shot: 'Tyll zeigt eine Lieferantenrechnung: AED 6.262 bestellt, AED 5.898 erhalten, AED 6.262 berechnet.' },
-        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Gästerechnungen und Belege zeigen, welcher Bestand hinausging', 'Per Telefon zählen, Abfall mit zwei Tipps erfassen'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
-        { label: 'Einkauf', headline: 'Was sollten wir diese Woche bestellen?', problem: 'Von einem wird zu viel weggeworfen, während anderes ausgeht.', bullets: ['Was und wie viel zu bestellen ist', 'Ein Bestellentwurf, nach Lieferant geordnet'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
+        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Eine zehnminütige Zählung auf dem Handy, danach minus eins, wenn etwas verbraucht wird oder kaputtgeht', 'Gästerechnungen und Belege zeigen, welcher Bestand rausging, so ist die Lücke erklärt'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
+        { label: 'Inventur und Einkauf', headline: 'Wissen wir, was wir haben, bevor wir bestellen?', problem: 'Gezählt wird auf Papier, wenn überhaupt, also wird nach Gefühl bestellt.', bullets: ['Wöchentliche Inventur, abgeglichen mit dem, was verkauft wurde', 'Eine Bestellliste nach Lieferant, aus Zählung und Prognose erstellt'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
         { label: 'Das Ergebnis', headline: 'Ein Hotel. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
       ],
     },
+    // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
     why: {
-      heading: 'Warum es zählt, in zwei Zahlen.',
-      systems: ['PMS', 'Kasse', 'Zahlungen', 'Buchhaltung', 'Einkauf', 'Lager', 'Housekeeping', 'Events', 'Personal', 'Bewertungen'],
-      title: 'Softwaresysteme laufen in einem typischen Hotel.',
-      figure: '10+',
-      text: 'Tyll kommt nicht dazu. Es arbeitet mit dem, was Sie haben.',
+      heading: 'Warum es zählt, in drei Zahlen.',
       source: 'Quelle',
-      sourceName: 'Hotel Tech Report, HotelTechAwards 2022',
-      sourceUrl: 'https://www.traveldailynews.com/hotels-lodging/top-hotel-management-software-in-2022-hoteltechawards-winners-announced/',
-      second: {
-        figure: '$7',
-        title: 'gespart für jeden US-Dollar, der in weniger Küchenabfälle investiert wurde.',
-        text: 'Unabhängige Studie über 42 Hotels, kein Tyll-Ergebnis. Genau dafür gibt es Abfall erfassen und Prognosen.',
-        sourceName: 'WRI und WRAP für Champions 12.3, 2018',
-        sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
-      },
+      step: 'Zahl {n} von 3',
+      cards: [
+        {
+          figure: '18 %',
+          title: 'von allem, was eine Küche einkauft, landet im Müll.',
+          text: 'In der Gastronomie, kein Tyll-Ergebnis. Tyll zeigt, wohin es bei Ihnen geht.',
+          sourceName: 'WRAP, UK Food Waste and Food Surplus Key Facts, Juli 2025',
+          sourceUrl: 'https://www.wrap.ngo/sites/default/files/2025-06/WRAP-UK-Food-Waste-and-Food-Surplus-Key-Facts-July-2025-v5.pdf',
+          label: '',
+        },
+        {
+          figure: '7×',
+          title: 'Rendite für jeden Euro, den Hotels in weniger Küchenabfall investiert haben.',
+          text: 'Unabhängige Studie über 42 Hotels, kein Tyll-Ergebnis. Tyll hilft Ihnen, diese Rendite zu holen.',
+          sourceName: 'WRI und WRAP für Champions 12.3, 2018',
+          sourceUrl: 'https://champions123.org/the-business-case-for-reducing-food-loss-and-waste-hotels/',
+          label: '',
+        },
+        {
+          figure: '1.150 €',
+          title: 'verloren an einem Artikel, in einer Bar, in einem Monat.',
+          text: '190 Cola boniert, dann ohne Grund von der Rechnung genommen. Niemand hat es bemerkt, bis Tyll es fand.',
+          sourceName: 'Gemessen in einem Tyll-Pilotprojekt, eine Hotelbar, ein Monat.',
+          sourceUrl: '',
+          label: 'Tyll-Pilot',
+        },
+      ],
     },
     parts: {
       cards: [
@@ -107,13 +127,20 @@ const de: Dict = {
       sendError: 'Das hat nicht geklappt. Bitte erneut versuchen oder schreiben Sie an',
     },
   },
-  how: {
-    title: 'So funktioniert es.',
-    steps: <[string, string][]>[
-      ['Verbinden', 'Nur-Lese-Zugriff auf Kasse, PMS und Zahlungen. Dort ändert sich nichts.'],
-      ['Tyll prüft', 'Jeden Abend werden Gästerechnungen, Belege, Bestand und Rechnungen abgeglichen.'],
-      ['Ihr Team handelt', 'Jede Person sieht, was zu klären ist, mit dem Betrag.'],
-    ],
+  // The dark band under the hero (9 Nov 2026): one list every morning, in three steps
+  // The homepage's short version of How it works (9 Nov 2026), in place of Getting set up
+  teaser: { steps: ['Gespräch buchen', 'Kostenlose Inventur', 'Wir lesen Ihre Kasse', 'Ihre Morgenliste'], link: 'So funktioniert’s →' },
+  // The How it works page (9 Nov 2026)
+  howPage: {
+    eyebrow: 'So funktioniert’s',
+    title: 'Vom ersten Gespräch zur ersten Morgenliste in 30 Tagen.',
+    sub: 'Nur lesend. Nichts zu installieren. Nichts zu ersetzen.',
+    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenlose Inventur', 'Wir zählen Ihre Bar mit Ihrem Team. Etwa 10 Minuten pro Person.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihre erste Morgenliste', 'Jeden Morgen die Posten, die nicht stimmen, in Euro. 30 Tage kostenlos.']],
+    call: { title: 'Tyll Einführung · 15 Min.', day: 'Dienstag', slots: ['09:30', '11:00', '14:30'] },
+    readOnly: 'Nur lesend',
+    strip: ['Nur lesend', 'Nichts zu ersetzen', 'Keine Gebühr, wenn der Pilot kein echtes Geld findet'],
+    final: 'Sehen Sie es mit Ihren eigenen Zahlen.',
+    count: { title: 'Bar · Regal 2', items: <[string, string][]>[['Gin 70cl', '6'], ['Rioja 75cl', '14'], ['Tonic 200ml', '48']], less: 'Eins weniger', more: 'Eins mehr' },
   },
   solutionPage: {
     demoEnglish: 'Die Live-Demo ist vorerst auf Englisch.',
@@ -206,7 +233,7 @@ const de: Dict = {
   },
   footer: {
     solutions: 'Lösungen',
-    linkedin: 'Tyll auf LinkedIn folgen →',
+    follow: 'Tyll folgen',
     tagline: 'Weniger Komplexität. Mehr Klarheit. Bessere Gastfreundschaft.',
     explore: 'Entdecken',
     company: 'Unternehmen',
@@ -218,6 +245,8 @@ const de: Dict = {
     rights: 'Tyll',
   },
   meta: {
+    howTitle: 'So funktioniert’s | Tyll',
+    howDescription: 'Vom ersten Gespräch zur ersten Morgenliste in 30 Tagen: eine kostenlose Inventur, nur lesender Zugriff auf Ihre Kasse und jeden Morgen die Posten, die nicht stimmen, in Euro.',
     solutionsTitle: 'Lösungen | Tyll',
     solutionsDescription: 'Sechs Bereiche, in denen Tyll Hotelteams unterstützt: Lager und Abfall, Finanzen, Prognose und Einkauf, Events und Personal, Zimmer und Gäste sowie Vertrieb.',
     bookTitle: 'Demo buchen | Tyll',

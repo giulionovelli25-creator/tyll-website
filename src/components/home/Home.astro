@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Hero from './Hero.astro';
 import HotelStory from './HotelStory.astro';
 import Integrations from './Integrations.astro';
-import HowItWorks from '../HowItWorks.astro';
+import HowTeaser from './HowTeaser.astro';
 import WhyItMatters from './WhyItMatters.astro';
 import Invitation from './Invitation.astro';
 import { site } from '../../config/site';
@@ -25,7 +25,7 @@ const schema = {
       url: site.url,
       logo: new URL('/media/tyll-icon-512.png', site.url).href,
       email: site.email,
-      sameAs: [site.social.linkedin, site.social.instagram].filter(Boolean),
+      sameAs: [site.social.linkedin, site.social.instagram, site.social.tiktok].filter(Boolean),
     },
     { '@type': 'WebSite', '@id': `${site.url}/#website`, url: site.url, name: 'Tyll', inLanguage: ['en', 'de', 'ar', 'it'], publisher: { '@id': `${site.url}/#organization` } },
   ],
@@ -34,11 +34,11 @@ const schema = {
 
 <Base lang={lang} page="home" title={d.meta.homeTitle} description={d.meta.homeDescription} overHero>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
-  <!-- The hook, Tyll in its three parts (the story), why it matters, how it works, and booking a demo at the end -->
+  <!-- The hook (over the film's opening still), the systems it works with, Tyll in its three parts (the story), why it matters, how it works in one row, and booking a demo at the end -->
   <Hero lang={lang} />
+  <Integrations lang={lang} />
   <HotelStory lang={lang} />
   <WhyItMatters lang={lang} />
-  <HowItWorks lang={lang} />
-  <Integrations lang={lang} />
+  <HowTeaser lang={lang} />
   <Invitation lang={lang} />
 </Base>

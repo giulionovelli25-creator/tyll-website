@@ -30,6 +30,19 @@ export const logos: IntegrationLogo[] = [
   { name: 'Shiji Infrasys', file: 'infrasys-pos.svg', category: 'pos', height: 34, aspect: 485 / 102, whiteFile: true },
   { name: 'Lightspeed', file: 'lightspeed.svg', category: 'pos', height: 32, aspect: 130 / 31, clear: [0, 0.0154, 0.0333, 0.0154] },
   { name: 'SumUp', file: 'sumup.svg', category: 'payments', height: 32, aspect: 1188 / 500, clear: [0.25, 0.06, 0.25, 0.105] },
+  // Added 9 Nov 2026 at the owner's request: the other connected systems, from each maker's own website (SOURCES.md)
+  { name: 'Cloudbeds', file: 'cloudbeds.svg', category: 'pms', height: 28, aspect: 240 / 35 },
+  { name: 'Foodics', file: 'foodics.svg', category: 'pos', height: 24, aspect: 194 / 26 },
+  { name: 'RoomRaccoon', file: 'roomraccoon.svg', category: 'pms', height: 34, aspect: 1514 / 216 },
+  { name: 'NCR Aloha', file: 'ncr-voyix.svg', category: 'pos', height: 22, aspect: 142 / 20, text: 'Aloha', whiteFile: true },
+  { name: 'Little Hotelier', file: 'little-hotelier.svg', category: 'pms', height: 38, aspect: 659 / 145 },
+  { name: 'Syrve', file: 'syrve.svg', category: 'pos', height: 30, aspect: 86 / 26, whiteFile: true },
+  { name: 'Zonal', file: 'zonal.svg', category: 'pos', height: 30, aspect: 567 / 170, clear: [0.0308, 0.0101, 0.0264, 0.0137] },
+  { name: 'Eats365', file: 'eats365.svg', category: 'pos', height: 48, aspect: 90 / 46 },
+  { name: 'Restroworks', file: 'restroworks.svg', category: 'pos', height: 28, aspect: 177 / 25 },
+  { name: 'orderbird', file: 'orderbird.svg', category: 'pos', height: 32, aspect: 181 / 31, clear: [0, 0.0925, 0.0081, 0.0829] },
+  { name: 'StoreHub', file: 'storehub.png', category: 'pos', height: 26, aspect: 1410 / 210 },
+  { name: 'Qashier', file: 'qashier.webp', category: 'pos', height: 28, aspect: 2560 / 496, whiteFile: true },
 ];
 
 /** The file's size and the negative margins that take its empty space out of the layout, in px on desktop. */

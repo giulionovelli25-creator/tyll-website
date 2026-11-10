@@ -1,11 +1,14 @@
 // Everything that differs between environments comes from PUBLIC_* variables (see .env.example).
 // Unset values are undefined, and the components that use them hide themselves instead of linking nowhere.
 // The public addresses the owner has approved are built in as defaults, so a build without a .env file (for
-// example one made on another computer for Railway) still has the booking calendar, the demo and LinkedIn.
+// example one made on another computer for Railway) still has the booking calendar, the demo and the social accounts
+// (LinkedIn; Instagram and TikTok given by the owner on 10 Nov 2026).
 const DEFAULTS = {
   demo: 'https://demo.tyll.ai',
   calendly: 'https://calendly.com/besher-asfari-code/new-meeting',
   linkedin: 'https://www.linkedin.com/company/tyll.ai/',
+  instagram: 'https://www.instagram.com/official_tyll.ai/',
+  tiktok: 'https://www.tiktok.com/@tyll.ai',
   reportEndpoint: 'https://formspree.io/f/mpppovdg',
 };
 
@@ -29,7 +32,8 @@ export const site = {
   calendlyUrl: value(env.PUBLIC_CALENDLY_URL) ?? DEFAULTS.calendly,
   social: {
     linkedin: value(env.PUBLIC_LINKEDIN_URL) ?? DEFAULTS.linkedin,
-    instagram: value(env.PUBLIC_INSTAGRAM_URL),
+    instagram: value(env.PUBLIC_INSTAGRAM_URL) ?? DEFAULTS.instagram,
+    tiktok: value(env.PUBLIC_TIKTOK_URL) ?? DEFAULTS.tiktok,
   },
   analytics: {
     provider: value(env.PUBLIC_ANALYTICS_PROVIDER) as 'plausible' | 'ga4' | undefined,

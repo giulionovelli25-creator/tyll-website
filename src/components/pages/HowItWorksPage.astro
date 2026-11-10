@@ -1,0 +1,757 @@
+---
+// How it works (9 Nov 2026; black, white and greys only since 10 Nov 2026, never beige): from the first call to the first
+// morning list in 30 days. The Solutions page's frame (header, silver wave banner), then four steps that alternate sides
+// of one line, each numbered on the line itself: the call (a booking card with three times, one chosen), the free count
+// (a phone counting a shelf), reading the POS (the makers' own logos for SumUp, Oracle Simphony and Lightspeed, in grey,
+// joined to Tyll, read only) and the morning list (the example card, `MorningCard.astro`). The pictures are HTML and
+// CSS, decorative, with fictional data. Then three reassurances and a black closing band. Copy: `howPage`.
+// Scrolling snaps (10 Nov 2026, the owner: "so it is clear what you are supposed to read"): each step fills the screen
+// under the header and the page stops on the banner, on each step, on the reassurances and at the end of the footer.
+// Only on screens at least 640 px tall and never under reduced motion; elsewhere the page scrolls freely.
+import Base from '../../layouts/Base.astro';
+import SilverWave from '../SilverWave.astro';
+import Logo from '../Logo.astro';
+import MorningCard from '../MorningCard.astro';
+import { t, href, type Locale } from '../../i18n';
+import { demoHref } from '../../config/demo';
+import { logos } from '../../config/integrations';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const p = d.howPage;
+const demo = demoHref(lang);
+const chosen = 1; // the booked time
+const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => logos.find((l) => l.name === name)!);
+---
+
+<Base lang={lang} page="how" title={d.meta.howTitle} description={d.meta.howDescription}>
+  <div class="how-top">
+    <SilverWave phase={0.7} />
+    <header class="intro wrap">
+      <p class="eyebrow">{p.eyebrow}</p>
+      <h1>{p.title}</h1>
+      <p class="intro__sub">{p.sub}</p>
+      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="how">{d.cta.book}</a>
+    </header>
+  </div>
+
+  <section class="wrap steps-wrap" aria-labelledby="steps-title">
+    <h2 id="steps-title" class="visually-hidden">{p.eyebrow}</h2>
+    <ol class="steps">
+      {
+        p.steps.map(([title, text], i) => (
+          <li class:list={['step', i % 2 === 1 && 'step--flip']}>
+            <span class="step__num" aria-hidden="true">
+              {i + 1}
+            </span>
+            <div class="step__text">
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+            <div class="step__visual" aria-hidden="true">
+              {i === 0 && (
+                <div class="cal">
+                  <p class="cal__head">
+                    <svg viewBox="0 0 24 24">
+                      <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+                      <path d="M3.5 10h17M8 3v4M16 3v4" />
+                    </svg>
+                    {p.call.title}
+                  </p>
+                  <p class="cal__day">{p.call.day}</p>
+                  <ul class="cal__slots" dir="ltr">
+                    {p.call.slots.map((slot, k) => (
+                      <li class:list={[k === chosen && 'is-on']}>{slot}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {i === 1 && (
+                <div class="phone">
+                  <div class="phone__screen">
+                    <p class="phone__title">{p.count.title}</p>
+                    <ul class="phone__rows">
+                      {p.count.items.map(([name, qty], k) => (
+                        <li class:list={[k === 1 && 'is-on']}>
+                          <span class="phone__name">{name}</span>
+                          <span class="phone__ctl" dir="ltr">
+                            <span class="phone__btn">−</span>
+                            <b>{qty}</b>
+                            <span class="phone__btn">+</span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+              {i === 2 && (
+                <div class="pos">
+                  <ul class="pos__from">
+                    {systems.map((l) => (
+                      <li>
+                        <span class="pos__logo">
+                          <img src={`/logos/integrations/${l.file}`} alt="" height={Math.round(l.height * 0.75)} width={Math.round(l.height * 0.75 * l.aspect)} loading="lazy" decoding="async" />
+                          {l.text && <small>{l.text}</small>}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div class="pos__lines">
+                    <svg viewBox="0 0 100 120" preserveAspectRatio="none">
+                      <path d="M0 20 C50 20 50 60 100 60 M0 60 H100 M0 100 C50 100 50 60 100 60" />
+                    </svg>
+                    <span class="pos__pill">
+                      <span class="pos__dot" />
+                      {p.readOnly}
+                    </span>
+                  </div>
+                  <div class="pos__tyll">
+                    <Logo label="" />
+                  </div>
+                </div>
+              )}
+              {i === 3 && (
+                <div class="list">
+                  <MorningCard lang={lang} link={false} />
+                </div>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="assure" aria-label={p.eyebrow}>
+    <ul class="wrap assure__list">
+      {
+        p.strip.map((item, i) => (
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              {i === 0 && (
+                <>
+                  <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </>
+              )}
+              {i === 1 && <path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0ZM12 17v4" />}
+              {i === 2 && (
+                <>
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M15.5 8.6a4.4 4.4 0 1 0 0 6.8M7.5 10.6h6M7.5 13.4h6" />
+                </>
+              )}
+            </svg>
+            {item}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="final" aria-labelledby="final-title">
+    <div class="wrap final__inner">
+      <h2 id="final-title">{p.final}</h2>
+      <div class="final__actions">
+        <a class="btn btn--lg final__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="how-final">{d.cta.book}</a>
+        {
+          demo && (
+            <a class="btn btn--lg final__try" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="how-final">
+              {d.cta.demo}
+              <span class="visually-hidden"> {d.cta.newTab}</span>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The banner, as on the Solutions page */
+  .how-top {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .how-top > :global(*:not(.wave)) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .intro {
+    padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 4vw, 6rem));
+    padding-bottom: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--steel);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 20ch;
+    margin: var(--s-2) 0 0;
+    color: var(--ink);
+    font-size: var(--fs-display);
+    line-height: 1.08;
+  }
+
+  .intro__sub {
+    max-width: 36rem;
+    margin: var(--s-3) 0 var(--s-4);
+    color: var(--text-2);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+
+  /* The four steps: text and picture alternate sides of one line, the step's number sits on the line */
+  .steps-wrap {
+    padding-bottom: var(--section-y);
+  }
+
+  .steps {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .steps::before {
+    position: absolute;
+    top: 3rem;
+    bottom: 3rem;
+    inset-inline-start: 50%;
+    border-inline-start: 1px solid rgb(var(--ink-rgb) / 0.2);
+    content: '';
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 5.5rem minmax(0, 1fr);
+    grid-template-areas: 'text num visual';
+    align-items: center;
+    padding-block: clamp(1.75rem, 1.25rem + 2vw, 3.25rem);
+  }
+
+  .step--flip {
+    grid-template-areas: 'visual num text';
+  }
+
+  /* One step per screen, stopping on each */
+  @media (prefers-reduced-motion: no-preference) and (min-height: 640px) {
+    :global(html:has(.steps-wrap)) {
+      scroll-snap-type: y mandatory;
+    }
+
+    .how-top,
+    .step,
+    .assure {
+      scroll-snap-align: start;
+    }
+
+    .how-top {
+      scroll-margin-top: calc(-1 * (var(--header-h) + 16px));
+    }
+
+    :global(html:has(.steps-wrap) .footer) {
+      scroll-snap-align: end;
+    }
+
+    .step {
+      min-height: calc(100svh - var(--header-h) - 16px);
+    }
+
+    .steps-wrap {
+      padding-bottom: 0;
+    }
+  }
+
+  .step__num {
+    position: relative;
+    display: grid;
+    grid-area: num;
+    place-items: center;
+    justify-self: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1;
+    box-shadow: 0 0 0 8px var(--paper);
+  }
+
+  .step__text {
+    grid-area: text;
+    width: min(100%, 27rem);
+  }
+
+  .step:not(.step--flip) .step__text {
+    justify-self: end;
+  }
+
+  .step h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.375rem);
+    font-weight: 300;
+    line-height: 1.15;
+  }
+
+  .step p {
+    margin: 0.75rem 0 0;
+    color: var(--text-2);
+    font-size: 1.125rem;
+    line-height: 1.55;
+  }
+
+  .step__visual {
+    display: grid;
+    grid-area: visual;
+    place-items: center;
+    min-height: 19rem;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    border: 1px solid var(--sand-300);
+    border-radius: var(--radius-lg, 22px);
+    background: var(--page-deep);
+  }
+
+  /* 1. The booking card */
+  .cal {
+    width: min(100%, 20rem);
+    padding: 1.4rem;
+    border: 1px solid var(--sand-300);
+    border-radius: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: var(--shadow-2);
+  }
+
+  .cal__head {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .cal__head svg,
+  .assure svg {
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .cal__day {
+    margin: 1.1rem 0 0;
+    color: var(--steel);
+    font-size: 0.9375rem;
+  }
+
+  .cal__slots {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0.65rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cal__slots li {
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--sand-600);
+    border-radius: 10px;
+    font: 500 1rem/1.3 var(--mono);
+    text-align: center;
+  }
+
+  .cal__slots li.is-on {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* 2. The phone counting a shelf */
+  .phone {
+    width: min(100%, 16rem);
+    padding: 0.55rem;
+    border-radius: 2.25rem;
+    background: var(--ink);
+    box-shadow: var(--shadow-2);
+  }
+
+  .phone__screen {
+    position: relative;
+    min-height: 19rem;
+    padding: 2.25rem 1rem 1.25rem;
+    border-radius: 1.8rem;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* the camera */
+  .phone__screen::before {
+    position: absolute;
+    top: 0.65rem;
+    left: 50%;
+    width: 3.5rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    background: var(--ink);
+    transform: translateX(-50%);
+    content: '';
+  }
+
+  .phone__title {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .phone__rows {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .phone__rows li {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.7rem 0.75rem;
+    border: 1px solid var(--sand-300);
+    border-radius: 12px;
+  }
+
+  .phone__rows li.is-on {
+    border-color: var(--ink);
+  }
+
+  .phone__name {
+    font-size: 0.875rem;
+  }
+
+  .phone__ctl {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .phone__ctl b {
+    font: 500 1rem/1 var(--mono);
+  }
+
+  .phone__btn {
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid var(--sand-600);
+    border-radius: 50%;
+    line-height: 1;
+  }
+
+  .phone__rows li.is-on .phone__btn {
+    border-color: var(--ink);
+  }
+
+  /* 3. Three systems joined to Tyll, read only */
+  .pos {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(4rem, 1fr) auto;
+    align-items: stretch;
+    width: 100%;
+    max-width: 30rem;
+    color: var(--ink);
+  }
+
+  .pos__from {
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pos__from li {
+    display: grid;
+    align-items: center;
+    padding-block: 0.4rem;
+  }
+
+  .pos__logo {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: center;
+    min-width: 9.5rem;
+    min-height: 3.25rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--sand-300);
+    border-radius: 12px;
+    background: var(--paper);
+    box-shadow: var(--shadow-1);
+  }
+
+  /* the makers' own logos, in grey to keep the page black and white */
+  .pos__logo img {
+    width: auto;
+    max-width: 7rem;
+    filter: grayscale(1) contrast(1.1);
+  }
+
+  .pos__logo small {
+    color: var(--steel);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .pos__lines {
+    position: relative;
+  }
+
+  .pos__lines svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: rgb(var(--ink-rgb) / 0.4);
+    stroke-width: 1.5;
+  }
+
+  .pos__lines path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  :global([dir='rtl']) .pos__lines svg {
+    transform: scaleX(-1);
+  }
+
+  .pos__pill {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--sand-600);
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+  }
+
+  .pos__dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .pos__tyll {
+    display: grid;
+    place-items: center;
+    align-self: center;
+    padding: 1.1rem 1.25rem;
+    border-radius: 16px;
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: var(--shadow-2);
+  }
+
+  .pos__tyll :global(svg) {
+    width: 4.5rem;
+    height: auto;
+  }
+
+  /* 4. The morning list */
+  .list {
+    width: min(100%, 26rem);
+  }
+
+  /* Three reassurances */
+  .assure {
+    padding-block: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+    border-block: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .assure__list {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 1.25rem clamp(1.5rem, 5vw, 4rem);
+    justify-content: center;
+    margin-block: 0;
+    list-style: none;
+  }
+
+  .assure li {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  /* The closing band */
+  .final {
+    padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .final__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .final h2 {
+    max-width: 18ch;
+    margin: 0;
+    color: var(--on-dark);
+    font-size: var(--fs-h2);
+  }
+
+  .final__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .final__book,
+  .final__book:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .final__book:hover {
+    background: var(--mist);
+  }
+
+  .final__try {
+    border-color: rgb(var(--on-dark-rgb) / 0.4);
+    background: transparent;
+    color: var(--on-dark);
+  }
+
+  .final__try:hover {
+    border-color: var(--on-dark);
+  }
+
+  /* Tablets and phones: one column, the line and the numbers down the start edge */
+  @media (max-width: 860px) {
+    .steps::before {
+      top: 2rem;
+      bottom: 2rem;
+      inset-inline-start: 1.25rem;
+    }
+
+    .step,
+    .step--flip {
+      grid-template-columns: 2.5rem minmax(0, 1fr);
+      grid-template-areas:
+        'num text'
+        'visual visual';
+      column-gap: 1.25rem;
+      row-gap: var(--s-3);
+      align-items: start;
+    }
+
+    .step__num {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.25rem;
+      box-shadow: 0 0 0 6px var(--paper);
+    }
+
+    .step .step__text {
+      justify-self: start;
+    }
+
+    /* the pictures take the full width, over the line, so nothing inside them is cramped */
+    .step__visual {
+      position: relative;
+      min-height: 16rem;
+      padding: 1.25rem 1rem;
+    }
+
+    .assure__list {
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: start;
+    }
+  }
+
+  /* Narrow: the "Read only" label moves under the picture, clear of the logos */
+  @media (max-width: 560px) {
+    .pos {
+      padding-bottom: 2.75rem;
+    }
+
+    .pos__lines {
+      position: static;
+    }
+
+    .pos__pill {
+      top: auto;
+      bottom: 0;
+      transform: translateX(-50%);
+    }
+
+    .pos__logo {
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 7.5rem;
+      min-height: 2.75rem;
+      padding: 0.5rem 0.6rem;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .pos {
+      grid-template-columns: auto minmax(2rem, 1fr) auto;
+    }
+
+    .pos__logo {
+      min-width: 0;
+    }
+
+    .pos__logo img {
+      max-width: 5.5rem;
+    }
+
+    .pos__tyll {
+      padding: 0.9rem;
+    }
+
+    .pos__tyll :global(svg) {
+      width: 3.25rem;
+    }
+  }
+</style>
