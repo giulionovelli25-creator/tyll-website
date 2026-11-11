@@ -96,7 +96,7 @@ for (const lang of LANGS) {
       const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
       const top = scrollY + root.getBoundingClientRect().top - header;
       const keys = root.dataset.hsKeys.split(',').map(Number);
-      const read = () => ({ hold: root.dataset.hold, t: +root.dataset.hsT, frame: +(canvas.dataset.frame ?? -1), text: holds.filter((h) => h.classList.contains('is-on')).map((h) => +h.dataset.hsHold).join(), current: [...root.querySelectorAll('[data-hs-go]')].findIndex((g) => g.getAttribute('aria-current') === 'step'), on: [...root.querySelectorAll('.hs__spot.is-on')].map((e) => +e.dataset.hsSpot).join(), hub: +getComputedStyle(root.querySelector('.hs__hub')).opacity });
+      const read = () => ({ hold: root.dataset.hold, t: +root.dataset.hsT, frame: +(canvas.dataset.frame ?? -1), text: holds.filter((h) => h.classList.contains('is-on')).map((h) => +h.dataset.hsHold).join(), current: [...root.querySelectorAll('[data-hs-go]')].findIndex((g) => g.getAttribute('aria-current') === 'step'), on: [...root.querySelectorAll('.hs__spot.is-on')].map((e) => +e.dataset.hsSpot).join(), parts: root.querySelectorAll('[data-hs-hold="3"] .hs__parts li').length });
       const at = async (y) => { scrollTo({ top: top + y, behavior: 'instant' }); await wait(800); return read(); };
       const mid = (i) => (keys[2 * i] + keys[2 * i + 1]) / 2;
       const r = [];
@@ -111,10 +111,10 @@ for (const lang of LANGS) {
     const near = (s) => s.frame >= 0 && Math.abs(s.frame - Math.round(Math.min(s.t * FILM.desk.fps, FILM.desk.frames - 1))) <= 1;
     if (hotel.holds !== 4 || hotel.goes !== 4 || !hotel.live || hotel.pinned !== 'sticky' || !hotel.canvas || !hotel.full || !hotel.cta || hotel.dir !== 'ltr') problems.push(`hotel section ${JSON.stringify(hotel)}`);
     hotel.r.forEach((s, i) => {
-      if (!(s.hold === String(i) && s.text === String(i) && s.current === i && s.on === (i === 3 ? '3,3,3' : String(i)))) problems.push(`hotel hold ${i + 1} ${JSON.stringify(s)}`);
+      if (!(s.hold === String(i) && s.text === String(i) && s.current === i && s.on === (i === 3 ? '' : String(i)))) problems.push(`hotel hold ${i + 1} ${JSON.stringify(s)}`);
     });
     if (!(hotel.move.hold === 'move' && hotel.move.text === '' && hotel.move.on === '')) problems.push(`hotel move ${JSON.stringify(hotel.move)}`);
-    if (!(hotel.end.hub > 0.9 && near(hotel.end))) problems.push(`hotel result ${JSON.stringify(hotel.end)}`);
+    if (!(hotel.end.parts === 3 && near(hotel.end))) problems.push(`hotel result ${JSON.stringify(hotel.end)}`);
     if (!hotel.r.slice(0, 3).every(near)) problems.push(`hotel film frames off the scroll ${JSON.stringify(hotel.r.map((s) => [s.t, s.frame]))}`);
     if (!(hotel.jumped.hold === '2' && hotel.jumped.text === '2')) problems.push(`hotel tab ${JSON.stringify(hotel.jumped)}`);
     // Why it matters, in three numbers (9 Nov 2026): three cards, two with a linked source, Book a demo on the third;
@@ -224,10 +224,34 @@ for (const lang of LANGS) {
       await Promise.all([page.waitForNavigation(), page.evaluate((o) => document.querySelector(`.header .lang a[hreflang="${o}"]`).click(), other)]);
       if (new URL(page.url()).pathname !== PAGES[other][i]) problems.push(`switch from ${path} went to ${page.url()}`);
     }
-    // FAQ: questions open and close with the keyboard-accessible <details>
+    // FAQ: questions open and close with real buttons
     await go(page, PAGES[lang][2]);
-    const faqOk = await page.evaluate(() => { const d = document.querySelector('.faq__item'); d.querySelector('summary').click(); const opened = d.open; d.querySelector('summary').click(); return opened && !d.open; });
-    if (!faqOk) problems.push('FAQ question did not open/close');
+    // Ten questions in three groups; the first is open on arrival; each is a real button that reports its state.
+    const faq = await page.evaluate(() => {
+      const items = [...document.querySelectorAll('.faq__item')];
+      const state = (i) => ({ open: i.classList.contains('is-open'), aria: i.querySelector('button.faq__q').getAttribute('aria-expanded'), shown: getComputedStyle(i.querySelector('.faq__panel')).visibility === 'visible' });
+      const first = state(items[0]);
+      const second = items[1];
+      const before = state(second);
+      second.querySelector('button.faq__q').click();
+      const opened = state(second);
+      second.querySelector('button.faq__q').click();
+      const closed = state(second);
+      const schema = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => JSON.parse(s.textContent)).find((j) => j['@type'] === 'FAQPage') ?? {};
+      return {
+        count: items.length,
+        groups: document.querySelectorAll('.faq__group').length,
+        firstOpen: first.open && first.aria === 'true' && first.shown,
+        toggles: !before.open && before.aria === 'false' && opened.open && opened.aria === 'true' && !closed.open && closed.aria === 'false',
+        oneLinkEach: items.every((i) => i.querySelectorAll('.faq__answer a').length === 1),
+        schemaClean: Array.isArray(schema.mainEntity) && schema.mainEntity.length > 0 && schema.mainEntity.every((q) => !/\[[^\]]+\]/.test(q.acceptedAnswer.text)),
+      };
+    });
+    if (faq.count !== 10 || faq.groups !== 3) problems.push(`FAQ has ${faq.count} questions in ${faq.groups} groups, expected 10 in 3`);
+    if (!faq.firstOpen) problems.push('FAQ: the first question is not open on arrival');
+    if (!faq.toggles) problems.push('FAQ question did not open/close');
+    if (!faq.oneLinkEach) problems.push('FAQ: an answer does not end with exactly one link');
+    if (!faq.schemaClean) problems.push('FAQ structured data is missing or carries a placeholder');
     // Footer: email is a working mailto, cookie preferences opens the dialog
     const footer = await page.evaluate(() => ({ mail: [...document.querySelectorAll('.footer a')].some((a) => a.getAttribute('href') === 'mailto:info@tyll.ai'), prefs: !!document.querySelector('.footer [data-consent-open]') }));
     if (!footer.mail || !footer.prefs) problems.push('footer email or cookie preferences missing');

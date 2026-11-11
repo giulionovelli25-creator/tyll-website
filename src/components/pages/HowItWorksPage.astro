@@ -1,13 +1,23 @@
 ---
-// How it works (9 Nov 2026; black, white and greys only since 10 Nov 2026, never beige): from the first call to the first
-// morning list in 30 days. The Solutions page's frame (header, silver wave banner), then four steps that alternate sides
+// How it works (9 Nov 2026; black, white and greys only since 10 Nov 2026, never beige): four steps, then
+// every morning a report of what the hotel lost. The Solutions page's frame (header, silver wave banner), then four steps that alternate sides
 // of one line, each numbered on the line itself: the call (a booking card with three times, one chosen), the free count
 // (a phone counting a shelf), reading the POS (the makers' own logos for SumUp, Oracle Simphony and Lightspeed, in grey,
-// joined to Tyll, read only) and the morning list (the example card, `MorningCard.astro`). The pictures are HTML and
+// joined to Tyll, read only) and the daily report (the example card, `MorningCard.astro`). The pictures are HTML and
 // CSS, decorative, with fictional data. Then three reassurances and a black closing band. Copy: `howPage`.
 // Scrolling snaps (10 Nov 2026, the owner: "so it is clear what you are supposed to read"): each step fills the screen
-// under the header and the page stops on the banner, on each step, on the reassurances and at the end of the footer.
-// Only on screens at least 640 px tall and never under reduced motion; elsewhere the page scrolls freely.
+// under the header and the page stops on the banner, on each step, on the reassurances and at the end of the footer; a
+// step is never skipped (`scroll-snap-stop: always`). Only on screens at least 640 px tall and never under reduced
+// motion; elsewhere the page scrolls freely. Condensed the same evening (the owner's brief, then "the same scroll
+// feature, just with less space"): one step per screen as before, but each step's content is compact and centred,
+// the pictures at most 380 px wide and drawn at 86%; the closing band carries the moving silver wave.
+// Photographs and rhythm (11 Nov 2026, the owner's brief: warmer, less like the demo): one large rounded photograph
+// beside the title (under it on tablets and phones), and the steps are full-width bands that alternate light grey and
+// white, then the reassurances on a slightly deeper grey and the dark band. Greys, not cream: the palette rule stands.
+// Later the same day (the owner: still a little too much empty space, a bit cold): each step's picture is drawn at full
+// size on a photograph of that moment (a lobby, a storeroom shelf, a kitchen pass, a manager's desk), in place of the small
+// grey panel and the photographs under the text of steps 2 and 3.
+import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
 import Logo from '../Logo.astro';
@@ -15,6 +25,11 @@ import MorningCard from '../MorningCard.astro';
 import { t, href, type Locale } from '../../i18n';
 import { demoHref } from '../../config/demo';
 import { logos } from '../../config/integrations';
+import heroPhoto from '../../assets/photos/events-banquet.jpg';
+import callPhoto from '../../assets/photos/book-lobby.jpg';
+import countPhoto from '../../assets/photos/how-count-jars.jpg';
+import passPhoto from '../../assets/photos/problem/problem-stock.jpg';
+import deskPhoto from '../../assets/photos/problem/problem-finance.jpg';
 
 interface Props {
   lang: Locale;
@@ -26,25 +41,38 @@ const p = d.howPage;
 const demo = demoHref(lang);
 const chosen = 1; // the booked time
 const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => logos.find((l) => l.name === name)!);
+// The photograph behind each step's picture, and the part of it to keep in view
+const stepPhotos: { src: ImageMetadata; focus: string }[] = [
+  { src: callPhoto, focus: '45% 55%' },
+  { src: countPhoto, focus: '60% 55%' },
+  { src: passPhoto, focus: '60% 30%' },
+  { src: deskPhoto, focus: '62% 40%' },
+];
 ---
 
 <Base lang={lang} page="how" title={d.meta.howTitle} description={d.meta.howDescription}>
   <div class="how-top">
     <SilverWave phase={0.7} />
-    <header class="intro wrap">
-      <p class="eyebrow">{p.eyebrow}</p>
-      <h1>{p.title}</h1>
-      <p class="intro__sub">{p.sub}</p>
-      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="how">{d.cta.book}</a>
-    </header>
+    <div class="wrap how-top__grid">
+      <header class="intro">
+        <p class="eyebrow">{p.eyebrow}</p>
+        <h1>{p.title}</h1>
+        <p class="intro__sub">{p.sub}</p>
+        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="how">{d.cta.book}</a>
+      </header>
+      <div class="how-top__photo">
+        <Picture src={heroPhoto} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 720, 960, 1280]} sizes="(max-width: 900px) 90vw, 620px" loading="eager" decoding="async" />
+      </div>
+    </div>
   </div>
 
-  <section class="wrap steps-wrap" aria-labelledby="steps-title">
+  <section class="steps-wrap" aria-labelledby="steps-title">
     <h2 id="steps-title" class="visually-hidden">{p.eyebrow}</h2>
     <ol class="steps">
       {
         p.steps.map(([title, text], i) => (
           <li class:list={['step', i % 2 === 1 && 'step--flip']}>
+           <div class="wrap step__grid">
             <span class="step__num" aria-hidden="true">
               {i + 1}
             </span>
@@ -53,6 +81,9 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
               <p>{text}</p>
             </div>
             <div class="step__visual" aria-hidden="true">
+              <div class="step__bg">
+                <Picture src={stepPhotos[i].src} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 720, 1040, 1400]} sizes="(max-width: 860px) 92vw, 540px" loading="lazy" decoding="async" style={`object-position: ${stepPhotos[i].focus}`} />
+              </div>
               {i === 0 && (
                 <div class="cal">
                   <p class="cal__head">
@@ -121,6 +152,7 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
                 </div>
               )}
             </div>
+           </div>
           </li>
         ))
       }
@@ -155,6 +187,7 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
   </section>
 
   <section class="final" aria-labelledby="final-title">
+    <SilverWave phase={0.4} move tone="dark" />
     <div class="wrap final__inner">
       <h2 id="final-title">{p.final}</h2>
       <div class="final__actions">
@@ -184,22 +217,44 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
     z-index: 1;
   }
 
-  .intro {
-    padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 4vw, 6rem));
-    padding-bottom: clamp(3rem, 2rem + 3vw, 5rem);
+  /* The title beside one large photograph, in the manner of the FAQ's contact card: rounded, lightly graded */
+  .how-top__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: var(--s-4) clamp(2rem, 1rem + 3vw, 4rem);
+    align-items: center;
+    padding-top: calc(var(--header-h) + var(--page-top));
+    padding-bottom: var(--intro-gap);
+  }
+
+  .how-top__photo {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-2);
+  }
+
+  .how-top__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: 72% 50%;
+    filter: var(--photo-grade);
   }
 
   .eyebrow {
     margin: 0;
     color: var(--steel);
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
   h1 {
-    max-width: 20ch;
+    max-width: 28ch;
     margin: var(--s-2) 0 0;
     color: var(--ink);
     font-size: var(--fs-display);
@@ -208,15 +263,17 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
 
   .intro__sub {
     max-width: 36rem;
-    margin: var(--s-3) 0 var(--s-4);
+    margin: 1.1rem 0 var(--s-3);
     color: var(--text-2);
     font-size: var(--fs-lead);
     line-height: 1.55;
   }
 
   /* The four steps: text and picture alternate sides of one line, the step's number sits on the line */
+  /* Each step is a band the full width of the page, light grey and white in turn. The room the snapping leaves
+     above the first step and below the last takes the colour of the band beside it (grey above, white below). */
   .steps-wrap {
-    padding-bottom: var(--section-y);
+    background: linear-gradient(to bottom, var(--page-deep) 50%, var(--paper) 0);
   }
 
   .steps {
@@ -228,26 +285,39 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
 
   .steps::before {
     position: absolute;
-    top: 3rem;
-    bottom: 3rem;
+    top: 2rem;
+    bottom: 2rem;
     inset-inline-start: 50%;
     border-inline-start: 1px solid rgb(var(--ink-rgb) / 0.2);
     content: '';
   }
 
   .step {
+    --band: var(--page-deep);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 5.5rem minmax(0, 1fr);
-    grid-template-areas: 'text num visual';
-    align-items: center;
-    padding-block: clamp(1.75rem, 1.25rem + 2vw, 3.25rem);
+    padding-block: var(--intro-gap);
+    background: var(--band);
   }
 
   .step--flip {
+    --band: var(--paper);
+  }
+
+  .step__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 4.75rem minmax(0, 1fr);
+    grid-template-areas: 'text num visual';
+    align-items: center;
+  }
+
+  .step--flip .step__grid {
     grid-template-areas: 'visual num text';
   }
 
-  /* One step per screen, stopping on each */
+  /* One step per stop, never skipping one. On desktop each step is about three quarters of the screen (more on laptops)
+     and the page stops with it in the middle: the step reads alone, its neighbours stay out of view, the scroll from
+     one to the next is shorter, and the first step already shows under the title. Phones keep a full screen per step,
+     since there the step itself nearly fills it. */
   @media (prefers-reduced-motion: no-preference) and (min-height: 640px) {
     :global(html:has(.steps-wrap)) {
       scroll-snap-type: y mandatory;
@@ -267,12 +337,32 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
       scroll-snap-align: end;
     }
 
+    /* (the second height keeps a neighbour's picture out of view on laptop screens: half the screen plus half the
+       tallest step, about 30rem, and the 16px the page stops under the header) */
     .step {
-      min-height: calc(100svh - var(--header-h) - 16px);
+      min-height: min(var(--snapport), max(calc(var(--snapport) * 0.76), calc(var(--snapport) * 0.5 + 17rem)));
+      align-content: center;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+
+    /* the screen left above the first step and below the last when they stop in the middle: room enough that the
+       title's button and the reassurances never peek in */
+    .steps-wrap {
+      --snapport: calc(100svh - var(--header-h) - 16px);
+      padding-top: max(0px, calc(var(--snapport) * 0.12 + 16px - var(--intro-gap)));
+      padding-bottom: calc(var(--snapport) * 0.12);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-height: 640px) and (max-width: 860px) {
+    .step {
+      min-height: var(--snapport);
+      padding-block: 1.25rem;
     }
 
     .steps-wrap {
-      padding-bottom: 0;
+      padding-block: 0;
     }
   }
 
@@ -282,21 +372,20 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
     grid-area: num;
     place-items: center;
     justify-self: center;
-    width: 3.25rem;
-    height: 3.25rem;
-    border: 1px solid var(--ink);
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 50%;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 1.3125rem;
     line-height: 1;
-    box-shadow: 0 0 0 8px var(--paper);
+    box-shadow: 0 0 0 8px var(--band);
   }
 
   .step__text {
     grid-area: text;
-    width: min(100%, 27rem);
+    width: min(100%, 28rem);
   }
 
   .step:not(.step--flip) .step__text {
@@ -306,27 +395,71 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
   .step h3 {
     margin: 0;
     color: var(--ink);
-    font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.375rem);
+    font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem);
     font-weight: 300;
-    line-height: 1.15;
+    line-height: 1.12;
   }
 
   .step p {
-    margin: 0.75rem 0 0;
+    margin: 0.6rem 0 0;
     color: var(--text-2);
-    font-size: 1.125rem;
+    font-size: clamp(1.0625rem, 0.95rem + 0.3vw, 1.25rem);
     line-height: 1.55;
   }
 
+  /* The picture, at full size, on a photograph of that moment; a soft shade keeps the white cards clear of it */
   .step__visual {
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-area: visual;
     place-items: center;
-    min-height: 19rem;
-    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
-    border: 1px solid var(--sand-300);
-    border-radius: var(--radius-lg, 22px);
-    background: var(--page-deep);
+    width: 100%;
+    max-width: 34rem;
+    min-height: 26rem;
+    padding: 2.25rem 2rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--night-2);
+    box-shadow: var(--shadow-2);
+  }
+
+  .step__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .step__bg::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgb(var(--black-rgb) / 0.06), rgb(var(--black-rgb) / 0.32));
+    content: '';
+  }
+
+  .step__bg :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: var(--photo-grade);
+  }
+
+  /* small laptops: the two columns are narrow, so the pictures are drawn a little smaller and keep the step short */
+  @media (min-width: 861px) and (max-width: 1100px) {
+    .step__visual {
+      min-height: 22rem;
+      padding: 1.5rem 1.25rem;
+    }
+
+    .step__visual > :not(.step__bg) {
+      zoom: 0.9;
+    }
+  }
+
+  /* the picture sits against the line, on its own side */
+  .step--flip .step__visual {
+    justify-self: end;
   }
 
   /* 1. The booking card */
@@ -475,6 +608,7 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
   }
 
   /* 3. Three systems joined to Tyll, read only */
+  /* on the photograph, the diagram sits on its own white card */
   .pos {
     position: relative;
     display: grid;
@@ -482,7 +616,11 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
     align-items: stretch;
     width: 100%;
     max-width: 30rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 18px;
+    background: var(--paper);
     color: var(--ink);
+    box-shadow: var(--shadow-2);
   }
 
   .pos__from {
@@ -587,16 +725,16 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
     height: auto;
   }
 
-  /* 4. The morning list */
+  /* 4. The daily report */
   .list {
     width: min(100%, 26rem);
   }
 
   /* Three reassurances */
   .assure {
-    padding-block: clamp(2rem, 1.5rem + 1.5vw, 3rem);
-    border-block: 1px solid var(--line);
-    background: var(--paper);
+    padding-block: var(--intro-gap);
+    border-top: 1px solid var(--line);
+    background: var(--sand-200);
     color: var(--ink);
   }
 
@@ -619,12 +757,16 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
 
   /* The closing band */
   .final {
-    padding-block: clamp(4rem, 3rem + 4vw, 6.5rem);
-    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--band-y);
+    background: var(--night-1);
     color: var(--on-dark);
   }
 
   .final__inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-4);
@@ -666,21 +808,32 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
   }
 
   /* Tablets and phones: one column, the line and the numbers down the start edge */
+  /* The title over the photograph */
+  @media (max-width: 900px) {
+    .how-top__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .how-top__photo :global(img) {
+      aspect-ratio: 3 / 2;
+    }
+  }
+
   @media (max-width: 860px) {
     .steps::before {
       top: 2rem;
       bottom: 2rem;
-      inset-inline-start: 1.25rem;
+      inset-inline-start: calc(var(--gut) + 1.25rem);
     }
 
-    .step,
-    .step--flip {
+    .step__grid,
+    .step--flip .step__grid {
       grid-template-columns: 2.5rem minmax(0, 1fr);
       grid-template-areas:
         'num text'
         'visual visual';
       column-gap: 1.25rem;
-      row-gap: var(--s-3);
+      row-gap: var(--s-2);
       align-items: start;
     }
 
@@ -688,18 +841,40 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
       width: 2.5rem;
       height: 2.5rem;
       font-size: 1.25rem;
-      box-shadow: 0 0 0 6px var(--paper);
+      box-shadow: 0 0 0 6px var(--band);
     }
 
-    .step .step__text {
-      justify-self: start;
+    /* The text takes the whole row, beside its number; the words keep their measure. (The second selector outweighs
+       the desktop rule that sends odd steps' text to the line.) */
+    .step .step__text,
+    .step:not(.step--flip) .step__text {
+      justify-self: stretch;
+      width: auto;
+    }
+
+    .step__text > h3,
+    .step__text > p {
+      max-width: 27rem;
     }
 
     /* the pictures take the full width, over the line, so nothing inside them is cramped */
-    .step__visual {
+    .step__visual,
+    .step--flip .step__visual {
       position: relative;
+      justify-self: stretch;
+      max-width: none;
       min-height: 16rem;
-      padding: 1.25rem 1rem;
+      padding: 1.5rem 1rem;
+    }
+
+    .step__visual > :not(.step__bg) {
+      zoom: 0.92;
+    }
+
+    @media (max-height: 779px) {
+      .step__visual > :not(.step__bg) {
+        zoom: 0.8;
+      }
     }
 
     .assure__list {

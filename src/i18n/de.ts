@@ -129,13 +129,13 @@ const de: Dict = {
   },
   // The dark band under the hero (9 Nov 2026): one list every morning, in three steps
   // The homepage's short version of How it works (9 Nov 2026), in place of Getting set up
-  teaser: { steps: ['Gespräch buchen', 'Kostenlose Inventur', 'Wir lesen Ihre Kasse', 'Ihre Morgenliste'], link: 'So funktioniert’s →' },
+  teaser: { steps: ['Gespräch buchen', 'Kostenlose Inventur', 'Wir lesen Ihre Kasse', 'Ihr täglicher Bericht'], link: 'So funktioniert’s →' },
   // The How it works page (9 Nov 2026)
   howPage: {
     eyebrow: 'So funktioniert’s',
-    title: 'Vom ersten Gespräch zur ersten Morgenliste in 30 Tagen.',
+    title: 'Vier Schritte. Danach sehen Sie jeden Morgen, was Ihr Hotel verloren hat.',
     sub: 'Nur lesend. Nichts zu installieren. Nichts zu ersetzen.',
-    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenlose Inventur', 'Wir zählen Ihre Bar mit Ihrem Team. Etwa 10 Minuten pro Person.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihre erste Morgenliste', 'Jeden Morgen die Posten, die nicht stimmen, in Euro. 30 Tage kostenlos.']],
+    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenlose Inventur', 'Wir zählen Ihre Bar mit Ihrem Team. Etwa 10 Minuten pro Person.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihr täglicher Bericht', 'Jeden Morgen: was gestern verloren ging und was es Sie gekostet hat. 30 Tage kostenlos.']],
     call: { title: 'Tyll Einführung · 15 Min.', day: 'Dienstag', slots: ['09:30', '11:00', '14:30'] },
     readOnly: 'Nur lesend',
     strip: ['Nur lesend', 'Nichts zu ersetzen', 'Keine Gebühr, wenn der Pilot kein echtes Geld findet'],
@@ -143,6 +143,7 @@ const de: Dict = {
     count: { title: 'Bar · Regal 2', items: <[string, string][]>[['Gin 70cl', '6'], ['Rioja 75cl', '14'], ['Tonic 200ml', '48']], less: 'Eins weniger', more: 'Eins mehr' },
   },
   solutionPage: {
+    seeTitle: 'Das sehen Sie gleich',
     demoEnglish: 'Die Live-Demo ist vorerst auf Englisch.',
     breadcrumb: 'Lösungen',
     tryHere: 'In der Demo ausprobieren →',
@@ -196,13 +197,38 @@ const de: Dict = {
     title: 'Häufige Fragen',
     intro: 'Kurze Antworten auf die Fragen, die Hotelteams uns am häufigsten stellen.',
     more: 'Noch eine Frage?',
-    moreText: 'Buchen Sie eine Demo oder schreiben Sie uns.',
-    items: [
-      { id: 'replace', q: 'Ersetzt Tyll unsere bestehende Hotelsoftware?', a: ['Nein. Tyll ist darauf ausgelegt, mit den Systemen zusammenzuarbeiten, die Sie bereits nutzen, etwa Kasse, PMS, Warenwirtschaft und Buchhaltung.'] },
-      { id: 'demo', q: 'Was zeigt die interaktive Demo?', a: ['Eine simulierte Hotelgruppe mit Lager, Finanzen, Einkauf, Events, Zimmern und Vertrieb, mit fiktiven Hotels, Personen und Zahlen.'] },
-      { id: 'integrations', q: 'Wie funktionieren Anbindungen?', a: ['Über unterstützte Anbindungen oder vereinbarte Datenexporte. Was für Ihr Hotel möglich ist, klären wir, bevor etwas verbunden wird.'] },
-      { id: 'readonly', q: 'Kann Tyll etwas in unseren Systemen ändern?', a: ['Nein. Die Verbindungen sind schreibgeschützt: Tyll liest Ihre Kassen-, PMS- und Zahlungsdaten und schreibt nichts zurück. Wir klären, was für Ihr Hotel möglich ist, bevor etwas verbunden wird.'] },
-      { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: ['Ja. Wir können ein fokussiertes Pilotprojekt vereinbaren: einen Bereich zum Start, die Daten, die Sie teilen, und woran wir den Nutzen messen.'] },
+    moreText: 'Ein Gespräch von 15 Minuten, unverbindlich. Wir antworten innerhalb von 24 Stunden.',
+    whatsapp: 'Per WhatsApp schreiben',
+    final: 'Noch unentschlossen? Sehen Sie es mit Ihren eigenen Zahlen.',
+    groups: [
+      {
+        id: 'start',
+        title: 'Erste Schritte',
+        items: [
+          { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: 'Ja. Wir beginnen mit einem kostenlosen 30-Tage-Piloten mit Ihren eigenen Daten. Findet der Pilot kein echtes Geld, zahlen Sie nichts.', link: 'book' },
+          { id: 'replace', q: 'Müssen wir unsere Kasse oder Hotelsoftware ersetzen?', a: 'Nein. Tyll arbeitet neben den Systemen, die Sie bereits nutzen. Nichts zu installieren und nichts zu ersetzen.', link: 'how' },
+          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll liest heute Daten aus SumUp, Oracle Simphony und Lightspeed. Sie nutzen etwas anderes? Sagen Sie es uns im Gespräch, wir prüfen es.', link: 'book' },
+          { id: 'setup', q: 'Wie lange dauert die Einrichtung?', a: 'Ein kurzes Gespräch, dann eine Inventur mit Ihrem Team, etwa 10 Minuten pro Person. Ihr erster täglicher Bericht folgt innerhalb von [X DAYS].', link: 'how' },
+          { id: 'staff', q: 'Wie viel Arbeit ist das für unser Team?', a: 'Sehr wenig. Nach der ersten Zählung tippt Ihr Team nur auf minus 1, wenn etwas zerbricht oder weggeworfen wird. Die Prüfung übernimmt Tyll jede Nacht.', link: 'how' },
+        ],
+      },
+      {
+        id: 'data',
+        title: 'Daten und Vertrauen',
+        items: [
+          { id: 'readonly', q: 'Kann Tyll etwas in unseren Systemen ändern?', a: 'Nein. Tyll arbeitet nur lesend. Es liest Ihre Umsätze und Rechnungen und ändert, löscht oder bucht niemals etwas.', link: 'book' },
+          { id: 'storage', q: 'Wo werden unsere Daten gespeichert, und wer kann sie sehen?', a: 'Ihre Daten werden in [HOSTING LOCATION] gespeichert und gemäß [GDPR / LOCAL DATA RULES] verarbeitet. Nur Ihr Team und die Tyll-Mitarbeitenden, die Ihren Piloten betreuen, können sie sehen.', link: 'book' },
+        ],
+      },
+      {
+        id: 'pricing',
+        title: 'Preise',
+        items: [
+          { id: 'cost', q: 'Was kostet es nach dem Piloten?', a: 'Eine feste Monatsgebühr pro Hotel, ohne Einrichtungsgebühr [CONFIRM]. Den genauen Preis nennen wir im Gespräch, je nach Anzahl Ihrer Outlets.', link: 'book' },
+          { id: 'contract', q: 'Gibt es einen langen Vertrag?', a: '[CONTRACT TERMS, e.g. monthly, cancel anytime].', link: 'book' },
+          { id: 'outlets', q: 'Funktioniert es mit mehreren Outlets und Währungen?', a: 'Ja. Sie sehen jede Bar, jedes Restaurant und jeden Zimmerservice an einem Ort, in Ihrer eigenen Währung.', link: 'book' },
+        ],
+      },
     ],
   },
   legalPage: {
@@ -246,13 +272,13 @@ const de: Dict = {
   },
   meta: {
     howTitle: 'So funktioniert’s | Tyll',
-    howDescription: 'Vom ersten Gespräch zur ersten Morgenliste in 30 Tagen: eine kostenlose Inventur, nur lesender Zugriff auf Ihre Kasse und jeden Morgen die Posten, die nicht stimmen, in Euro.',
+    howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, eine kostenlose Inventur, nur lesender Zugriff auf Ihre Kasse und dann jeden Morgen ein Bericht darüber, was verloren ging und was es gekostet hat.',
     solutionsTitle: 'Lösungen | Tyll',
     solutionsDescription: 'Sechs Bereiche, in denen Tyll Hotelteams unterstützt: Lager und Abfall, Finanzen, Prognose und Einkauf, Events und Personal, Zimmer und Gäste sowie Vertrieb.',
     bookTitle: 'Demo buchen | Tyll',
     bookDescription: 'Buchen Sie eine Demo von Tyll und sehen Sie, wo Ihr Hotel Geld verliert.',
     faqTitle: 'FAQ | Tyll',
-    faqDescription: 'Kurze Antworten zu Tyll: was es tut, wie es mit Ihrer bestehenden Hotelsoftware zusammenarbeitet, zur Demo, zu Anbindungen und Pilotprojekten.',
+    faqDescription: 'Kurze Antworten zu Tyll: der kostenlose 30-Tage-Pilot, die unterstützten Systeme, die Einrichtung, Ihre Daten und die Preise.',
     legalTitle: 'Impressum | Tyll',
     legalDescription: 'Impressum der Tyll-Website.',
     privacyTitle: 'Datenschutzerklärung | Tyll',

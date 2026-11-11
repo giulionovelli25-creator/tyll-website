@@ -94,7 +94,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
               <ul>
                 {items.map(({ key, s, url, current, soon }) => (
                   <li>
-                    <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
+                    <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key} data-accent={s.tone}>
                       <span class="panel__icon">
                         <SolutionIcon name={s.icon} />
                       </span>
@@ -115,8 +115,8 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         }
       </div>
       <div class="panel__foot">
-        <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
+        <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
       </div>
     </div>
   </div>
@@ -144,7 +144,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
                 <li class="mobile-menu__head">{name}</li>
                 {items.map(({ s, url, current, soon }) => (
                   <li>
-                    <a href={url} aria-current={current ? 'page' : undefined}>
+                    <a href={url} aria-current={current ? 'page' : undefined} data-accent={s.tone}>
                       <SolutionIcon name={s.icon} />
                       <span>{s.name[lang]}</span>
                       {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
@@ -415,10 +415,10 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     place-items: center;
     width: 44px;
     height: 44px;
-    border: 1px solid var(--line);
+    border: 1px solid rgb(var(--acc-rgb) / 0.16);
     border-radius: 12px;
-    background: var(--paper);
-    color: var(--graphite);
+    background: var(--acc-wash);
+    color: var(--acc);
   }
 
   .panel__icon :global(svg) {
@@ -615,11 +615,12 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     text-decoration: none;
   }
 
+  /* each solution's icon in its own colour, as in the desktop panel */
   .mobile-menu__group li a :global(svg) {
     flex: none;
     width: 22px;
     height: 22px;
-    color: var(--steel);
+    color: var(--acc);
   }
 
   .mobile-menu__group li a[aria-current] {

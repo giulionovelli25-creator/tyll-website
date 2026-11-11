@@ -106,26 +106,16 @@
       "to": 27.167
     }
   ],
-  "hub": {
-    "x": 0.6,
-    "y": 0.16,
-    "phone": {
-      "x": 0.62,
-      "y": 0.12,
-      "side": null
-    }
-  },
   "callouts": [
     {
       "hold": 0,
       "label": "part0",
       "x": 0.54,
       "y": 0.62,
-      "side": "up",
-      "hub": false,
+      "side": "end",
       "phone": {
         "x": 0.58,
-        "y": 0.5,
+        "y": 0.45,
         "side": "up"
       }
     },
@@ -134,8 +124,7 @@
       "label": "part1",
       "x": 0.578,
       "y": 0.48,
-      "side": "start",
-      "hub": false,
+      "side": "end",
       "phone": {
         "x": 0.578,
         "y": 0.48,
@@ -147,46 +136,10 @@
       "label": "part2",
       "x": 0.56,
       "y": 0.53,
-      "side": "up",
-      "hub": false,
-      "phone": null
-    },
-    {
-      "hold": 3,
-      "label": "part0",
-      "x": 0.55,
-      "y": 0.65,
-      "side": "up",
-      "hub": true,
+      "side": "end",
       "phone": {
-        "x": 0.585,
-        "y": 0.6,
-        "side": "up"
-      }
-    },
-    {
-      "hold": 3,
-      "label": "part1",
-      "x": 0.47,
-      "y": 0.48,
-      "side": "up",
-      "hub": true,
-      "phone": {
-        "x": 0.57,
-        "y": 0.47,
-        "side": "up"
-      }
-    },
-    {
-      "hold": 3,
-      "label": "part2",
-      "x": 0.74,
-      "y": 0.56,
-      "side": "up",
-      "hub": true,
-      "phone": {
-        "x": 0.66,
-        "y": 0.53,
+        "x": 0.56,
+        "y": 0.36,
         "side": "up"
       }
     }

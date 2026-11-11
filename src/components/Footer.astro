@@ -33,7 +33,7 @@ const socials = [
   <div class="wrap footer__top">
     <div class="footer__brand">
       <a href={home} class="footer__logo" aria-label="Tyll home">
-        <Logo anim="loop" label="Tyll" />
+        <Logo label="Tyll" />
       </a>
       {
         socials.length > 0 && (
@@ -77,7 +77,7 @@ const socials = [
             site.demoUrl && (
               <li>
                 <a href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="footer">
-                  {d.cta.demo}<span class="visually-hidden"> {d.cta.newTab}</span>
+                  {d.cta.demo.replace(/\s+([→←])$/, '\u00a0$1')}<span class="visually-hidden"> {d.cta.newTab}</span>
                 </a>
               </li>
             )
@@ -118,14 +118,14 @@ const socials = [
     background: var(--page);
     color: var(--ink);
     /* While the cookie banner is showing, the footer gets room so nothing sits under the banner */
-    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) calc(2rem + var(--consent-space, 0px));
+    padding-block: var(--band-y) calc(var(--s-4) + var(--consent-space, 0px));
   }
 
   .footer__top {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 3rem;
-    padding-bottom: 3.5rem;
+    gap: var(--s-5);
+    padding-bottom: var(--intro-gap);
   }
 
   .footer__logo {
@@ -285,14 +285,23 @@ const socials = [
   }
 
   .footer__base {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 1rem 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--hair);
     color: var(--steel);
     font-size: var(--fs-small);
+  }
+
+  /* The rule above the last row is as wide as the page's column, not the column plus its gutters */
+  .footer__base::before {
+    position: absolute;
+    top: 0;
+    inset-inline: var(--gut);
+    border-top: 1px solid var(--hair);
+    content: '';
   }
 
   .footer__lang {
@@ -317,11 +326,32 @@ const socials = [
     .footer__top {
       grid-template-columns: minmax(0, 1fr);
     }
+
+    /* Taller tap targets on phones and tablets, in about the same height: the space moves into the links */
+    .footer ul {
+      gap: 0;
+    }
+
+    .footer li > a,
+    .footer a.footer__book,
+    .footer__linkbtn,
+    .footer__lang a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.25rem;
+    }
   }
 
+  /* Phones: two columns. The long Solutions list takes the first; Contact and Company share the second, so no group
+     is left alone on a row beside an empty half. */
   @media (max-width: 520px) {
     .footer__cols {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .footer__cols > :first-child {
+      grid-row: span 2;
     }
   }
 </style>

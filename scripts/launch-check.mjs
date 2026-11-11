@@ -11,11 +11,20 @@ try {
   const { site } = await vite.ssrLoadModule('/src/config/site.ts');
   const { legalMissing } = await vite.ssrLoadModule('/src/config/legal.ts');
 
+  // Text in [SQUARE BRACKETS] in an FAQ answer is a fact the owner still has to supply; it is shown as written until then.
+  const { default: en } = await vite.ssrLoadModule('/src/i18n/en.ts');
+  const faqPlaceholders = en.faq.groups
+    .flatMap((g) => g.items)
+    .map((i) => ({ q: i.q, marks: i.a.match(/\[[^\]]+\]/g) ?? [] }))
+    .filter((i) => i.marks.length);
+
   const required = [
     ...legalMissing().map((m) => `Legal: ${m.en}`),
     !site.calendlyUrl && 'Booking: PUBLIC_CALENDLY_URL (the Calendly event to embed)',
     (!site.demoUrl || /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])/i.test(site.demoUrl)) &&
       'Demo: PUBLIC_DEMO_URL (a public demo address; localhost is ignored in production)',
+    !site.whatsapp && 'FAQ: PUBLIC_WHATSAPP_NUMBER (the WhatsApp us button links to the placeholder https://wa.me/[WHATSAPP NUMBER] until set)',
+    ...faqPlaceholders.map((p) => `FAQ: the answer to "${p.q}" still shows the placeholder ${p.marks.join(', ')} (src/i18n/en.ts, de.ts, ar.ts, it.ts)`),
   ].filter(Boolean);
   const optional = [
     !site.social.instagram && 'Footer: PUBLIC_INSTAGRAM_URL (left out of the footer until set)',

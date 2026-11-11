@@ -13,13 +13,8 @@ const d = t(lang);
 ---
 
 <section class="teaser" aria-labelledby="teaser-title">
-  <div class="wrap">
-    <div class="teaser__head">
-      <h2 id="teaser-title" class="display">{d.howPage.title}</h2>
-      <a class="teaser__link" href={href('how', lang)}>
-        {d.teaser.link.replace(/\s*[→←]\s*$/, '')} <span class="flip-rtl" aria-hidden="true">→</span>
-      </a>
-    </div>
+  <div class="wrap teaser__grid">
+    <h2 id="teaser-title" class="display">{d.howPage.title}</h2>
     <ol class="teaser__steps">
       {
         d.teaser.steps.map((step, i) => (
@@ -30,32 +25,42 @@ const d = t(lang);
         ))
       }
     </ol>
+    <a class="teaser__link" href={href('how', lang)}>
+      {d.teaser.link.replace(/\s*[→←]\s*$/, '')} <span class="flip-rtl" aria-hidden="true">→</span>
+    </a>
   </div>
 </section>
 
 <style>
   .teaser {
-    padding-block: clamp(4rem, 3rem + 3vw, 6rem);
+    padding-block: var(--section-y);
     background: var(--paper);
     color: var(--ink);
   }
 
-  .teaser__head {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3) var(--s-4);
+  /* Heading with the link beside it, the steps under both. The link comes after the steps in the page, so on phones
+     it closes the section instead of sitting between the heading and the steps. */
+  .teaser__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title link'
+      'steps steps';
+    column-gap: var(--s-4);
     align-items: end;
-    justify-content: space-between;
   }
 
   .teaser h2 {
-    max-width: 22ch;
+    grid-area: title;
+    max-width: 28ch;
     margin: 0;
     color: var(--ink);
     font-size: var(--fs-h2);
   }
 
   .teaser__link {
+    grid-area: link;
+    justify-self: end;
     display: inline-flex;
     flex: none;
     gap: 0.4rem;
@@ -74,11 +79,12 @@ const d = t(lang);
 
   /* The four steps on one line, joined through their numbers */
   .teaser__steps {
+    grid-area: steps;
     position: relative;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--s-3);
-    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    margin: var(--intro-gap) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -119,6 +125,19 @@ const d = t(lang);
 
   /* Phones: the steps stack, joined by a line down the side */
   @media (max-width: 760px) {
+    .teaser__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'title'
+        'steps'
+        'link';
+    }
+
+    .teaser__link {
+      justify-self: start;
+      margin-top: var(--s-3);
+    }
+
     .teaser__steps {
       grid-template-columns: minmax(0, 1fr);
       gap: 1.25rem;

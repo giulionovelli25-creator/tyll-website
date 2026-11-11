@@ -23,6 +23,7 @@ All of these are **public** values that end up in the page. They are not secrets
 | `PUBLIC_CALENDLY_URL` | `https://calendly.com/besher-asfari-code/new-meeting` (approved by the owner, 15 Oct 2026; built in as the default) | — |
 | `PUBLIC_LINKEDIN_URL` | `https://www.linkedin.com/company/tyll.ai/` (taken from the current site) | left out of footer |
 | `PUBLIC_INSTAGRAM_URL` | official Instagram profile | left out of footer |
+| `PUBLIC_WHATSAPP_NUMBER` | the WhatsApp number for the FAQ page's WhatsApp us button, international format (for example `+41 79 000 00 00`) | the button links to the placeholder `https://wa.me/[WHATSAPP NUMBER]`; `npm run launch-check` lists it |
 | `PUBLIC_ANALYTICS_PROVIDER` | `ga4` or `plausible` | no statistics, no consent banner for them |
 | `PUBLIC_ANALYTICS_ID` | GA4 measurement ID (`G-…`) or the Plausible site domain | — |
 | `PUBLIC_META_PIXEL_ID` | Meta Pixel ID (digits) | no Pixel, no marketing consent option |

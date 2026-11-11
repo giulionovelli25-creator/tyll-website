@@ -2,7 +2,10 @@
 // A short film of the real demo doing the job, recorded from the demo itself. It plays by itself while on screen, and
 // the chapter beside it says what is happening. A chapter can be chosen to jump to that moment. Phones get their own
 // recording of the demo's phone layout, and each language its own recording.
+// It is shown as a screen, not as a page of the demo: in a browser frame (a phone frame on phones) that hangs out of
+// a block tinted in the solution's own colour. Whatever the page puts in the slot sits on that block, above the screen.
 import film from '../content/film.json';
+import { site } from '../config/site';
 import type { Spot } from '../content/explore';
 import { t, type Locale } from '../i18n';
 import type { SolutionKey } from '../i18n/routes';
@@ -19,14 +22,25 @@ const d = t(lang);
 const { desk, phone } = (film as Record<Locale, typeof film.en>)[lang][solutionKey];
 const base = `/media/film/${lang}/${solutionKey}`;
 const PHONE = '(max-width: 700px)';
+// the address shown in the frame is the demo's real one
+const host = site.demoUrl ? new URL(site.demoUrl).host : '';
 ---
 
-<figure class="film" data-film data-desk={JSON.stringify(desk)} data-phone={JSON.stringify(phone)} data-phone-poster={`${base}-phone.jpg`} data-media={PHONE}>
-  <div class="film__screen" dir="ltr">
-    <video muted loop playsinline controls preload="none" poster={`${base}-desk.jpg`} aria-label={name}>
-      <source src={`${base}-phone.mp4`} type="video/mp4" media={PHONE} />
-      <source src={`${base}-desk.mp4`} type="video/mp4" />
-    </video>
+<div class="film" data-film data-desk={JSON.stringify(desk)} data-phone={JSON.stringify(phone)} data-phone-poster={`${base}-phone.jpg`} data-media={PHONE}>
+  <div class="film__stage">
+    <slot />
+    <figure class="film__frame">
+      <div class="film__chrome" dir="ltr" aria-hidden="true">
+        <span class="film__dots"><i></i><i></i><i></i></span>
+        {host && <span class="film__url">{host}</span>}
+      </div>
+      <div class="film__screen" dir="ltr">
+        <video muted loop playsinline controls preload="none" poster={`${base}-desk.jpg`} aria-label={name}>
+          <source src={`${base}-phone.mp4`} type="video/mp4" media={PHONE} />
+          <source src={`${base}-desk.mp4`} type="video/mp4" />
+        </video>
+      </div>
+    </figure>
   </div>
   <div class="film__bar-row">
     <ol class="film__chapters">
@@ -48,22 +62,79 @@ const PHONE = '(max-width: 700px)';
       <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6L12.6 8z" fill="currentColor"></path></svg>
     </button>
   </div>
-</figure>
+</div>
 
 <style>
   .film {
+    --film-w: 68rem;
+    --hang: clamp(2.5rem, 1rem + 6vw, 6rem);
     display: grid;
-    gap: var(--s-2);
-    max-width: 68rem;
+    gap: var(--s-3);
+  }
+
+  /* The tinted block, as wide as the page's column. The screen is narrower and hangs out of its lower edge. */
+  .film__stage {
+    position: relative;
+    padding: clamp(1.5rem, 0.75rem + 2.4vw, 3rem) clamp(1rem, 0.25rem + 3vw, 3.5rem) 0;
+  }
+
+  .film__stage::before {
+    position: absolute;
+    inset: 0 0 var(--hang);
+    border: 1px solid rgb(var(--acc-rgb) / 0.12);
+    border-radius: var(--radius-lg);
+    background: var(--acc-wash);
+    content: '';
+  }
+
+  .film__frame {
+    position: relative;
+    max-width: var(--film-w);
     margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid rgb(var(--ink-rgb) / 0.14);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+    box-shadow: var(--shadow-3);
+  }
+
+  /* the browser's bar: three dots and the demo's address */
+  .film__chrome {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--sand-100);
+  }
+
+  .film__dots {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .film__dots i {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: var(--sand-600);
+  }
+
+  .film__url {
+    min-width: min(18rem, 46vw);
+    padding: 0.2rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--pill);
+    background: var(--paper);
+    color: var(--steel);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-align: center;
   }
 
   .film__screen {
-    overflow: hidden;
-    border: 1px solid var(--hair);
-    border-radius: var(--radius-md);
     background: var(--mist);
-    box-shadow: var(--shadow-2);
   }
 
   .film video {
@@ -73,15 +144,19 @@ const PHONE = '(max-width: 700px)';
     aspect-ratio: 1360 / 860;
   }
 
+  /* the caption below is placed against the whole row (chapters and the pause button), so it centres under the film */
   .film__bar-row {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
     gap: var(--s-2);
+    width: 100%;
+    max-width: var(--film-w);
+    margin-inline: auto;
   }
 
   .film__chapters {
-    position: relative;
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(0, 1fr);
@@ -128,7 +203,7 @@ const PHONE = '(max-width: 700px)';
     display: block;
     width: 100%;
     height: 100%;
-    background: var(--ink);
+    background: var(--acc);
     transform: scaleX(var(--p, 0));
     transform-origin: left;
   }
@@ -188,10 +263,20 @@ const PHONE = '(max-width: 700px)';
     display: block;
   }
 
-  /* Phones: the upright recording, small enough that its words stay on screen */
+  /* Phones: the upright recording in a phone's frame, small enough that its words stay on screen */
   @media (max-width: 700px) {
-    .film__screen {
-      justify-self: center;
+    .film {
+      --hang: 5rem;
+    }
+
+    .film__frame {
+      width: fit-content;
+      border: 6px solid var(--ink);
+      border-radius: 2rem;
+    }
+
+    .film__chrome {
+      display: none;
     }
 
     .film video {

@@ -1,14 +1,14 @@
 ---
-// The solutions overview: the three parts of Tyll, each with its products shown as the real screen from its film, and what is in development in one quiet line. Reached from "All solutions" in the menu and from every
+// The solutions overview: what is on sale as large photo tiles, what is coming below them, smaller and quieter. Reached from "All solutions" in the menu and from every
 // "Explore Solutions" button; the Solutions dropdown in the header stays the quick way to one solution.
+import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
 import SilverWave from '../SilverWave.astro';
-import { t, href, type Locale } from '../../i18n';
-import { isComingSoon } from '../../config/products';
-import { parts } from '../../config/parts';
+import { t, href, type Locale, type SolutionKey } from '../../i18n';
+import { available, comingSoon } from '../../config/products';
 
 interface Props {
   lang: Locale;
@@ -25,29 +25,32 @@ const d = t(lang);
   </div>
   <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
     {
-      parts.map((keys, i) => (
-        <section class="part" aria-labelledby={`part-${i}`}>
-          <header class="part__head">
-            <h2 id={`part-${i}`} class="part__name">{d.home.parts.cards[i].title}</h2>
-            <p class="part__line">{d.home.parts.cards[i].text}</p>
-          </header>
-          <ul class="tiles">
+      ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).filter(([keys]) => keys.length).map(([keys, soon]) => (
+        <Fragment>
+          <ul class:list={['tiles', soon && 'tiles--soon']}>
             {keys.map((k) => {
               const s = solutions[k];
-              const soon = isComingSoon(k);
               return (
                 <li>
-                  <a class="tile" href={href(k, lang)}>
-                    <span class="tile__screen" dir="ltr">
-                      <img src={`/media/film/${lang}/${k}-desk.jpg`} alt="" width="1360" height="860" loading="lazy" decoding="async" />
-                    </span>
+                  <a class="tile on-dark" href={href(k, lang)} data-accent={s.tone}>
+                    <Picture
+                      src={s.photo}
+                      alt=""
+                      formats={['avif', 'webp']}
+                      fallbackFormat="jpg"
+                      widths={[480, 720, 1080]}
+                      sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1100px) 45vw, 380px"
+                      loading="lazy"
+                      decoding="async"
+                      style={`object-position:${s.photoFocus}`}
+                    />
+                    <span class="tile__shade" aria-hidden="true" />
                     {soon && <span class="badge-soon tile__soon">{d.cta.comingSoon}</span>}
                     <span class="tile__body">
-                      <span class="tile__name">
+                      <span class="tile__chip">
                         <SolutionIcon name={s.icon} />
-                        {s.name[lang]}
-                        <span class="tile__arrow flip-rtl" aria-hidden="true">→</span>
                       </span>
+                      <span class="tile__name">{s.name[lang]}</span>
                       <span class="tile__desc">{s.menu[lang]}</span>
                     </span>
                   </a>
@@ -55,7 +58,7 @@ const d = t(lang);
               );
             })}
           </ul>
-        </section>
+        </Fragment>
       ))
     }
     <p class="tiles__soonline">{d.home.parts.soon}</p>
@@ -91,43 +94,16 @@ const d = t(lang);
     font-size: var(--fs-small);
   }
 
-  .part {
-    padding-block: var(--s-4);
-    border-top: 1px solid var(--line);
+  .tiles--soon .tile {
+    aspect-ratio: 16 / 11;
   }
 
-  .part:first-child {
-    border-top: 0;
-    padding-top: 0;
+  .tiles--soon .tile :global(img) {
+    filter: saturate(0.5) brightness(0.86);
   }
 
-  .part__head {
-    margin-bottom: var(--s-3);
-  }
-
-  .part__name {
-    margin: 0 0 0.35rem;
-    font-size: var(--fs-h3);
-  }
-
-  .part__line {
-    margin: 0;
-    color: var(--text-2);
-  }
-
-  /* From laptop width each part is one row: its name and line beside its products */
-  @media (min-width: 1101px) {
-    .part {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
-      gap: var(--s-4);
-      align-items: start;
-    }
-
-    .part__head {
-      margin: 0;
-      padding-top: 0.25rem;
-    }
+  .tiles--soon .tile__name {
+    font-size: 1.25rem;
   }
 
   .tiles {
@@ -139,97 +115,80 @@ const d = t(lang);
     list-style: none;
   }
 
-  /* Each product is shown by its real screen (the first frame of its film), on the product's own ground */
   .tile {
     position: relative;
-    display: grid;
-    height: 100%;
-    border: 1px solid var(--line);
+    display: block;
+    aspect-ratio: 4 / 5;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    background: var(--paper);
-    color: var(--ink);
+    color: var(--on-dark);
     text-decoration: none;
-    transition:
-      border-color 0.25s var(--ease),
-      box-shadow 0.3s var(--ease);
+    isolation: isolate;
   }
 
-  .tile:hover,
-  .tile:focus-visible {
-    border-color: var(--hair-strong);
-    box-shadow: var(--shadow-2);
+  .tile :global(picture),
+  .tile :global(img),
+  .tile__shade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 
-  .tile__screen {
-    display: block;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    border-bottom: 1px solid var(--line);
-    background: var(--mist);
+  .tile :global(picture),
+  .tile :global(img) {
+    z-index: -2;
   }
 
-  /* A close framing of the screen: past the demo's side menu, its title and key numbers at a readable size. The demo is
-     left to right in every language. The whole screen plays in the film on the product's page. */
-  .tile__screen img {
-    display: block;
-    width: 190%;
-    max-width: none;
-    height: auto;
-    margin-left: -17.5%;
-    transform-origin: 0 0;
+  .tile :global(img) {
+    object-fit: cover;
+    filter: var(--photo-grade);
     transition: transform 0.8s var(--ease);
   }
 
-  .tile:hover .tile__screen img {
-    transform: scale(1.03);
+  .tile:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .tile__shade {
+    z-index: -1;
+    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.88) 0%, rgb(var(--shade-rgb) / 0.35) 55%, rgb(var(--shade-rgb) / 0.15) 100%);
   }
 
   .tile__body {
+    position: absolute;
+    inset: auto 0 0;
     display: grid;
-    align-content: start;
-    gap: 0.3rem;
-    padding: 1rem 1.25rem 1.25rem;
+    gap: 0.4rem;
+    padding: 1.5rem;
+  }
+
+  /* the solution's icon in its own colour, on a white square */
+  .tile__chip {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--acc);
+  }
+
+  .tile__chip :global(svg) {
+    width: 22px;
+    height: 22px;
   }
 
   .tile__name {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 1.1875rem;
+    font-size: 1.5rem;
     letter-spacing: 0;
   }
 
-  .tile__name :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    color: var(--steel);
-  }
-
-  .tile__arrow {
-    margin-inline-start: auto;
-    color: var(--steel);
-    transition: color 0.25s var(--ease);
-  }
-
-  .tile:hover .tile__arrow {
-    color: var(--ink);
-  }
-
   .tile__desc {
-    color: var(--text-2);
+    color: var(--on-dark-muted);
     font-size: 0.9375rem;
     line-height: 1.45;
-  }
-
-  .tiles__faq {
-    margin-top: 2rem;
-  }
-
-  .tiles__faq a {
-    font-weight: 400;
-    text-underline-offset: 4px;
   }
 
   @media (max-width: 1100px) {
@@ -241,6 +200,10 @@ const d = t(lang);
   @media (max-width: 700px) {
     .tiles {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tile {
+      aspect-ratio: 16 / 11;
     }
   }
 </style>

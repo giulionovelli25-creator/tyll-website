@@ -3,8 +3,11 @@
 // header. Down plays it forward, up plays it backward, and nothing moves without scrolling. The film alternates holds
 // (the camera still on a scene: the tired hotel, the chef's stock check, the bartender's glass inventory, the thriving
 // hotel) and moves (the camera walking between them). Each hold is a scroll plateau of 1.25 screens on which the frame
-// barely advances; only then does its text rise in, over a soft gradient at the bottom, and its callouts appear over
-// the objects they name. During a move there is only the film and the four quiet tabs.
+// barely advances; only then does its text rise in, on a dark glass panel over a soft gradient at the bottom, and its
+// callouts appear over the objects they name. During a move there is only the film and the four quiet tabs.
+// 11 Nov 2026 (the owner: the text was too small to be read, and the last stop's diagram pointed at random things):
+// the text is larger and sits on a panel, so it reads as the caption of the picture; the last stop no longer joins
+// three callouts on the façade to a Tyll mark, it names the three parts inside its panel instead.
 //
 // The frames are drawn on a canvas by `src/scripts/film.ts`, from `public/hotel-walkthrough/desktop/` (1920 x 1080)
 // or `mobile/` (1080 x 1920, for tall screens). `src/content/walkthrough.json` holds the film's frame sets, the four
@@ -12,7 +15,6 @@
 // `video-brief.md` records how the film was made. Reduced motion: one still per hold, crossfading, no scrubbing.
 // Without JavaScript: the first hold's picture and the four texts one after another. The film reads left to right,
 // so in Arabic too the text stays bottom left, clear of the entrance.
-import Logo from '../Logo.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
 import walkthrough from '../../content/walkthrough.json';
@@ -33,7 +35,6 @@ const pagesOf = [href('finance', lang), href('stock', lang), href('forecasting',
 const partIcons = [solutions.finance.icon, solutions.stock.icon, solutions.forecasting.icon];
 const words = (key: string) => (key.startsWith('part') ? v.steps[Number(key.slice(4))].label : solutions[key as SolutionKey].name[lang]);
 const icon = (key: string) => (key.startsWith('part') ? partIcons[Number(key.slice(4))] : solutions[key as SolutionKey].icon);
-const hubbed = film.callouts.filter((c) => c.hub);
 const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i + 1}-${cut}.webp`;
 ---
 
@@ -61,14 +62,8 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
       <video class="hs__film" muted playsinline preload="none" hidden aria-hidden="true" data-hs-mp4></video>
       <div class="hs__shade" aria-hidden="true"></div>
 
-      <!-- The callouts, each over the object it names during its hold; for the result, lines up to the Tyll mark -->
+      <!-- The callouts, each over the object it names during its hold (the result has none: its panel names the parts) -->
       <div class="hs__spots" aria-hidden="true">
-        <svg class="hs__links" data-hs-links>
-          {hubbed.map((c) => <line data-hs-link={film.callouts.indexOf(c)} />)}
-        </svg>
-        <span class="hs__hub" data-hs-hub>
-          <Logo mark label="" />
-        </span>
         {
           film.callouts.map((c) => (
             <div class="hs__spot" data-hs-spot={c.hold} data-x={c.x} data-y={c.y} data-side={c.side} data-side-desk={c.side} data-phone={c.phone ? JSON.stringify(c.phone) : undefined}>
@@ -114,6 +109,16 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
               <h3 class="hs__h display">{i === last ? step.headline : step.label}</h3>
             )}
             {i < last && <p class="hs__q display">{step.headline}</p>}
+            {i === last && (
+              <ul class="hs__parts" role="list">
+                {v.steps.slice(0, last).map((part, k) => (
+                  <li>
+                    <SolutionIcon name={partIcons[k]} />
+                    {part.label}
+                  </li>
+                ))}
+              </ul>
+            )}
             {step.problem && (
               <p class="hs__problem">
                 <span class="visually-hidden">{v.before}: </span>
@@ -334,7 +339,8 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     opacity: 1;
   }
 
-  /* The text: one block per hold, bottom left, rising 20 px into place while its hold is on screen */
+  /* The text: one block per hold, bottom left, rising 20 px into place while its hold is on screen. On the film it sits
+     on a dark glass panel, so it reads as the caption of the picture behind it, at a size read from across a desk. */
   .hs__copy {
     padding: var(--s-6) clamp(20px, 4.5vw, 64px);
   }
@@ -345,7 +351,7 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     left: clamp(20px, 4.5vw, 64px);
     bottom: clamp(28px, 7vh, 72px);
     z-index: 2;
-    width: min(560px, calc(100% - 40px));
+    width: min(600px, max(440px, 46vw), calc(100% - 40px));
     padding: 0;
   }
 
@@ -360,6 +366,12 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     bottom: 0;
     left: 0;
     margin: 0;
+    padding: clamp(20px, 0.9rem + 1vw, 32px) clamp(20px, 0.9rem + 1.2vw, 36px);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.14);
+    border-radius: var(--radius-lg);
+    background: rgb(var(--night-rgb) / 0.62);
+    box-shadow: var(--shadow-2);
+    text-shadow: none;
     opacity: 0;
     transform: translateY(20px);
     pointer-events: none;
@@ -376,16 +388,16 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
   }
 
   .hs__hold {
-    max-width: 560px;
+    max-width: 600px;
     text-align: start;
     text-shadow: 0 1px 14px rgb(var(--black-rgb) / 0.35);
   }
 
   .hs__h {
     max-width: 16ch;
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     color: var(--on-dark);
-    font-size: clamp(2.25rem, 1.55rem + 1.7vw, 3.25rem);
+    font-size: clamp(2.375rem, 1.6rem + 1.9vw, 3.375rem);
     font-weight: 300;
     letter-spacing: 0;
     line-height: 1.06;
@@ -393,24 +405,24 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
   }
 
   .hs__q {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     color: var(--on-dark);
-    font-size: clamp(1.25rem, 1.1rem + 0.45vw, 1.625rem);
+    font-size: clamp(1.375rem, 1.15rem + 0.55vw, 1.75rem);
     font-weight: 300;
     line-height: 1.2;
   }
 
   .hs__problem {
-    margin: 0 0 16px;
-    color: rgb(var(--on-dark-rgb) / 0.88);
-    font-size: 1.0625rem;
+    margin: 0 0 18px;
+    color: rgb(var(--on-dark-rgb) / 0.9);
+    font-size: clamp(1.0625rem, 0.9rem + 0.4vw, 1.25rem);
     line-height: 1.45;
   }
 
   .hs__with {
-    margin: 0 0 6px;
-    color: rgb(var(--on-dark-rgb) / 0.75);
-    font-size: 0.8125rem;
+    margin: 0 0 8px;
+    color: rgb(var(--on-dark-rgb) / 0.78);
+    font-size: 0.9375rem;
     font-weight: 600;
   }
 
@@ -418,14 +430,18 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 1rem;
+    font-size: clamp(1rem, 0.88rem + 0.3vw, 1.1875rem);
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   .hs__points li {
     display: flex;
     gap: 10px;
+  }
+
+  .hs__points li + li {
+    margin-top: 4px;
   }
 
   .hs__points li::before {
@@ -435,10 +451,39 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
 
   .hs__more {
     display: inline-block;
-    margin-top: 14px;
+    margin-top: 16px;
     color: var(--on-dark);
-    font-size: 0.9375rem;
+    font-size: 1rem;
+    font-weight: 600;
     text-underline-offset: 4px;
+  }
+
+  /* The result names the three parts the film stopped at, as the same white labels the callouts wore there */
+  .hs__parts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 20px;
+    padding: 0;
+    list-style: none;
+    text-shadow: none;
+  }
+
+  .hs__parts li {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 14px 7px 10px;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 600 0.9375rem/1.1 var(--font);
+  }
+
+  .hs__parts :global(svg) {
+    width: 18px;
+    height: 18px;
+    flex: none;
   }
 
   .hs__cta {
@@ -548,50 +593,6 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     transform: translate(-50%, -100%);
   }
 
-  /* The result: lines from the three callouts up to the Tyll mark */
-  .hs__links {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .hs__links line {
-    stroke: var(--paper);
-    stroke-width: 1.25;
-    stroke-opacity: 0.85;
-  }
-
-  .hs__hub {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 64px;
-    border-radius: 18px;
-    background: var(--paper);
-    box-shadow: var(--shadow-2);
-    color: var(--ink);
-    opacity: 0;
-    transform: translate(calc(var(--hx, -999px) - 50%), calc(var(--hy, -999px) - 50%));
-    transition: opacity 0.4s ease;
-  }
-
-  .hs__hub :global(svg) {
-    width: 38px;
-    height: auto;
-  }
-
-  .hs.is-result .hs__links,
-  .hs.is-result .hs__hub {
-    opacity: 1;
-  }
-
   /* Tall screens: the portrait frames, the text bottom centre, the tabs as numbers with the current name */
   @media (max-aspect-ratio: 9/10) {
     .hs {
@@ -600,9 +601,9 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
 
     .hs.is-live .hs__copy,
     .hs.is-still .hs__copy {
-      right: 20px;
-      bottom: 22px;
-      left: 20px;
+      right: 16px;
+      bottom: 16px;
+      left: 16px;
       width: auto;
       margin: 0 auto;
     }
@@ -612,25 +613,59 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
       text-align: center;
     }
 
+    .hs.is-live .hs__hold,
+    .hs.is-still .hs__hold {
+      margin-inline: auto;
+      padding: 18px 18px 20px;
+      border-radius: 20px;
+    }
+
     .hs__h {
       max-width: none;
-      font-size: 2rem;
+      margin-bottom: 10px;
+      font-size: 2.125rem;
     }
 
     .hs__q {
-      font-size: 1.3125rem;
+      margin-bottom: 10px;
+      font-size: 1.375rem;
     }
 
     .hs__problem {
-      font-size: 0.9375rem;
+      margin-bottom: 14px;
+      font-size: 1rem;
+    }
+
+    .hs__with {
+      font-size: 0.875rem;
     }
 
     /* The list centred as a block, its lines still aligned with each other; the link below it on its own line */
     .hs__points {
       display: table;
       margin-inline: auto;
-      font-size: 0.875rem;
+      font-size: 0.9375rem;
       text-align: start;
+    }
+
+    .hs__more {
+      margin-top: 12px;
+    }
+
+    .hs__parts {
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .hs__parts li {
+      padding: 6px 11px 6px 8px;
+      font-size: 0.8125rem;
+    }
+
+    .hs__parts :global(svg) {
+      width: 15px;
+      height: 15px;
     }
 
     .hs.is-live .hs__tabs,
@@ -653,12 +688,47 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     }
   }
 
+  /* Short phones: the type a step smaller, so the panel leaves the picture above it */
+  @media (max-aspect-ratio: 9/10) and (max-height: 740px) {
+    .hs.is-live .hs__hold,
+    .hs.is-still .hs__hold {
+      padding: 14px 16px 16px;
+    }
+
+    .hs__h {
+      margin-bottom: 6px;
+      font-size: 1.75rem;
+    }
+
+    .hs__q {
+      margin-bottom: 6px;
+      font-size: 1.1875rem;
+    }
+
+    .hs__problem {
+      margin-bottom: 10px;
+      font-size: 0.9375rem;
+      line-height: 1.4;
+    }
+
+    .hs__with {
+      margin-bottom: 4px;
+    }
+
+    .hs__points {
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    .hs__more {
+      margin-top: 8px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hs__hold,
     .hs__spot,
-    .hs__shade,
-    .hs__links,
-    .hs__hub {
+    .hs__shade {
       transition-duration: 0.01s;
     }
   }
@@ -678,9 +748,6 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     const goes = [...root.querySelectorAll<HTMLButtonElement>('[data-hs-go]')];
     const stills = [...root.querySelectorAll<HTMLElement>('[data-hs-still]')];
     const spots = [...root.querySelectorAll<HTMLElement>('[data-hs-spot]')];
-    const svg = root.querySelector<SVGSVGElement>('[data-hs-links]')!;
-    const links = [...root.querySelectorAll<SVGLineElement>('[data-hs-link]')];
-    const hub = root.querySelector<HTMLElement>('[data-hs-hub]')!;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     // The frame set is chosen once per visit, like the film's own (src/scripts/film.ts)
     const portrait = matchMedia(portraitQuery).matches;
@@ -760,26 +827,24 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     const place = () => {
       const w = stage.clientWidth;
       const h = stage.clientHeight;
-      const at = spots.map((spot) => {
+      spots.forEach((spot) => {
         const phone = spot.dataset.phone ? JSON.parse(spot.dataset.phone) : undefined;
         spot.dataset.side = (portrait && phone?.side) || spot.dataset.sideDesk;
         const [x, y] = toStage(Number(spot.dataset.x), Number(spot.dataset.y), Number(spot.dataset.hsSpot), phone);
         spot.style.setProperty('--sx', `${x}px`);
         spot.style.setProperty('--sy', `${y}px`);
         spot.hidden = x < 12 || y < 12 || x > w - 12 || y > h - 12; // off the cropped picture: left out
-        return [x, y];
       });
-      const [hx, hy] = toStage(film.hub.x, film.hub.y, last, film.hub.phone);
-      hub.style.setProperty('--hx', `${hx}px`);
-      hub.style.setProperty('--hy', `${hy}px`);
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      for (const line of links) {
-        const [x, y] = at[Number(line.dataset.hsLink)];
-        line.setAttribute('x1', String(x));
-        line.setAttribute('y1', String(y));
-        line.setAttribute('x2', String(hx));
-        line.setAttribute('y2', String(hy));
-      }
+      // A callout the hold's text panel would cover (a short screen, a longer language) is left out too. The panel is
+      // measured where it rests when on (20 px above where it waits), with a little air around it.
+      spots.forEach((spot) => {
+        if (spot.hidden) return;
+        const panel = holds[Number(spot.dataset.hsSpot)].getBoundingClientRect();
+        if (!panel.height) return;
+        const top = panel.top - (holds[Number(spot.dataset.hsSpot)].classList.contains('is-on') ? 0 : 20) - 10;
+        const parts = [spot.querySelector('.hs__dot')!, spot.querySelector('.hs__card')!].map((el) => el.getBoundingClientRect());
+        spot.hidden = parts.some((r) => r.right > panel.left - 10 && r.left < panel.right + 10 && r.bottom > top && r.top < panel.bottom);
+      });
     };
 
     const measure = () => {
@@ -808,7 +873,6 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
       root.dataset.hold = hold < 0 ? 'move' : String(hold);
       root.dataset.hsT = time.toFixed(2); // read by the browser tests
       root.classList.toggle('is-hold', hold >= 0);
-      root.classList.toggle('is-result', hold === last);
       if (hold !== shownHold) {
         holds.forEach((el, i) => {
           el.classList.toggle('is-on', i === hold);
@@ -901,6 +965,8 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     new ResizeObserver(() => {
       place();
     }).observe(stage);
+    // the panels grow a little once the web fonts are in
+    document.fonts?.ready.then(place);
     measure();
     render();
   }

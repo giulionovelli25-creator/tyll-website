@@ -40,6 +40,10 @@ export const site = {
     id: value(env.PUBLIC_ANALYTICS_ID),
   },
   metaPixelId: value(env.PUBLIC_META_PIXEL_ID),
+  /** WhatsApp number for the FAQ page's "WhatsApp us" button, in international format (digits, with or without + and
+   * spaces). The owner has not given one yet: until then the button links to the visible placeholder
+   * https://wa.me/[WHATSAPP NUMBER] and `npm run launch-check` lists it as a blocker. Never guess a number. */
+  whatsapp: value(env.PUBLIC_WHATSAPP_NUMBER),
   /** Form service that receives report requests (for example a Formspree form address). The owner's Formspree form is the default. */
   reportEndpoint: value(env.PUBLIC_REPORT_ENDPOINT) ?? DEFAULTS.reportEndpoint,
 };

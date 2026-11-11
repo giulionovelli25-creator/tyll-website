@@ -176,6 +176,32 @@
   /* The Tyll demo's own UI accent, for drawn mocks of its screens */
   --demo-teal: #0f766e;
   --demo-teal-soft: #e3f2ef;
+  /* The one colour on the solutions (11 Nov 2026, the owner: "a bit of color, without going over the top"): the
+     demo's teal on the Solutions menu icons, the solution's name, the "What you are about to see" panel and the
+     film's progress. 5.5:1 on white. Never on large areas. */
+  --demo-teal-rgb: 15 118 110;
+  --demo-teal-wash: #f1f7f6;
+  /* Each solution's own colour (11 Nov 2026, the owner's brief), taken from the colour that feature has in the
+     product (Demo-Tyll, MODULE_TONE): Log waste and Stock teal, Predictions violet, Revenue and Reconciliation blue,
+     Drinks control rose. For the solution's name, icons, one word of its headline and a soft tinted block; never on
+     large areas, and only on the solutions. All at least 4.5:1 on white and on the light grey ground. */
+  --tone-violet: #4a3fb5;
+  --tone-violet-rgb: 74 63 181;
+  --tone-violet-soft: #efedfb;
+  --tone-violet-wash: #f4f3fb;
+  --tone-blue: #1f5aa6;
+  --tone-blue-rgb: 31 90 166;
+  --tone-blue-soft: #e6eefa;
+  --tone-blue-wash: #f1f5fa;
+  --tone-rose: #a33a68;
+  --tone-rose-rgb: 163 58 104;
+  --tone-rose-soft: #f9e9f0;
+  --tone-rose-wash: #f9f3f6;
+  /* the accent in use: teal unless an element names another with data-accent */
+  --acc: var(--demo-teal);
+  --acc-rgb: var(--demo-teal-rgb);
+  --acc-soft: var(--demo-teal-soft);
+  --acc-wash: var(--demo-teal-wash);
   --amber-800: #6b4d0f;
   --amber-900: #5c430e;
 
@@ -266,7 +292,15 @@
   --wrap: 1200px;
   --gut: clamp(16px, 5vw, 64px);
   --header-h: 72px;
-  --section-y: clamp(4.5rem, 2.6rem + 5.3vw, 7.5rem); /* one rhythm: 72 px on phones, 120 px on desktop */
+  /* One spacing scale between sections (11 Nov 2026): 64 px on phones, 96 px on tablets (768), 120 px from 1280 */
+  --section-y: clamp(4rem, min(2.09rem + 8.14vw, 3.75rem + 4.69vw), 7.5rem);
+  /* Inner pages share one top (10 Nov 2026): the first line sits this far under the header (48 px on phones, about
+     90 px on desktop), and the title block sits this far above the page's content (32 to 56 px). */
+  --page-top: clamp(3rem, 2rem + 4vw, 6rem);
+  --intro-gap: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  /* The compact step, for bands inside a page (the dark Book a demo bands, the number bands, the logo band, the
+     footer): 64 px on phones to 96 px on desktop */
+  --band-y: clamp(4rem, 3.17rem + 3.54vw, 6rem);
 
   /* One tone for photographs, closer to the film. Never used on product screens. */
   --photo-grade: saturate(0.86);
@@ -284,6 +318,35 @@
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: light;
+}
+
+/* A solution's own colour, set on its page, its menu entry and its tile */
+[data-accent='teal'] {
+  --acc: var(--demo-teal);
+  --acc-rgb: var(--demo-teal-rgb);
+  --acc-soft: var(--demo-teal-soft);
+  --acc-wash: var(--demo-teal-wash);
+}
+
+[data-accent='violet'] {
+  --acc: var(--tone-violet);
+  --acc-rgb: var(--tone-violet-rgb);
+  --acc-soft: var(--tone-violet-soft);
+  --acc-wash: var(--tone-violet-wash);
+}
+
+[data-accent='blue'] {
+  --acc: var(--tone-blue);
+  --acc-rgb: var(--tone-blue-rgb);
+  --acc-soft: var(--tone-blue-soft);
+  --acc-wash: var(--tone-blue-wash);
+}
+
+[data-accent='rose'] {
+  --acc: var(--tone-rose);
+  --acc-rgb: var(--tone-rose-rgb);
+  --acc-soft: var(--tone-rose-soft);
+  --acc-wash: var(--tone-rose-wash);
 }
 
 /* The dark sections: the hero film, the cans section and the closing call to action */
@@ -509,6 +572,15 @@ a {
     white-space: normal;
     text-align: center;
     line-height: 1.3;
+  }
+}
+
+/* Narrow phones: large buttons give up a little side padding and size so longer German and Italian labels stay on
+   one line */
+@media (max-width: 420px) {
+  .btn--lg {
+    padding-inline: 1.1rem;
+    font-size: 1rem;
   }
 }
 

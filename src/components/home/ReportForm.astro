@@ -360,6 +360,11 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
     gap: 0.4rem;
   }
 
+  /* a third field takes the whole row instead of sitting beside an empty half */
+  .step__fields > .field:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
   /* The fields and choices arrive one after another as a step opens */
   .rf.is-enhanced .step.is-open :is(.field, .chip) {
     animation: rf-rise 0.5s var(--ease) both;
