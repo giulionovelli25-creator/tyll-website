@@ -1,0 +1,26 @@
+# Tyll
+
+> Tyll is software for hotels and restaurants that shows where they lose money on stock, waste and invoices, and what to order next. It works read only on top of the POS, PMS and payment systems a hotel or restaurant already runs. Nothing to install and nothing to replace.
+
+## Products
+
+- Log waste: two taps log what was wasted or broken, with what it cost.
+- Stock: see what runs out first, before a guest asks for it.
+- Predictions: one draft order, built from covers, events and real usage.
+- Revenue: revenue and estimated profit, by day and by outlet.
+- Reconciliation: tabs against receipts and invoices against deliveries, so you only see what differs.
+- Drinks control (pour control): see the gap between pours and glasses sold by outlet and shift, and what it is worth.
+
+## English
+
+- [Home](https://tyll.ai/en/)
+- [Solutions](https://tyll.ai/en/solutions/)
+- [FAQ](https://tyll.ai/en/faq/)
+- [Book a call](https://tyll.ai/en/book-a-call/)
+
+## Deutsch
+
+- [Startseite](https://tyll.ai/de/)
+- [Lösungen](https://tyll.ai/de/loesungen/)
+- [FAQ](https://tyll.ai/de/faq/)
+- [Gespräch buchen](https://tyll.ai/de/gespraech-buchen/)

@@ -9,6 +9,7 @@ import SilverWave from '../SilverWave.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
 import { explore } from '../../content/explore';
+import { solutionSeo } from '../../content/seo';
 import { demoLink } from '../../config/demo';
 import { t, href, solutionKeys, type Locale, type SolutionKey } from '../../i18n';
 
@@ -25,6 +26,11 @@ const ex = explore[solution];
 const name = s.name[lang];
 const demo = demoLink(solution, lang);
 const others = solutionKeys.filter((k) => k !== solution);
+
+// Search title and description: from seo.ts where the language has one, otherwise the page's own name and lines
+const seo = solutionSeo[solution][lang];
+const metaTitle = seo?.title ?? `${name} | Tyll`;
+const metaDescription = seo?.description ?? `${s.headline[lang]} ${s.intro[lang]}`;
 
 // One word or phrase of the question in the solution's colour
 const headline = s.headline[lang];
@@ -45,7 +51,7 @@ const say =
       : undefined;
 ---
 
-<Base lang={lang} page={solution} title={`${name} | Tyll`} description={`${s.headline[lang]} ${s.intro[lang]}`}>
+<Base lang={lang} page={solution} title={metaTitle} description={metaDescription}>
   <section class="sol" data-accent={s.tone} aria-labelledby="sol-title">
     <SilverWave phase={0.2} class="sol__wave" />
     <div class="wrap sol__head">

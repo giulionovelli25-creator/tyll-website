@@ -277,19 +277,19 @@ const en = {
   meta: {
     howTitle: 'How it works | Tyll',
     howDescription: 'How Tyll works in four steps: a short call, a free stock count, read-only access to your POS, then every morning a report of what went missing and what it cost.',
-    solutionsTitle: 'Solutions | Tyll',
-    solutionsDescription: 'Six areas where Tyll helps hotel teams: stock and waste, finance, forecasting and purchasing, events and staffing, rooms and guests, and sales.',
-    bookTitle: 'Book a demo | Tyll',
-    bookDescription: 'Book a demo of Tyll and see where your hotel is losing money.',
-    faqTitle: 'FAQ | Tyll',
+    solutionsTitle: 'Stock, Waste & Invoice Tools for Restaurants & Hotels | Tyll',
+    solutionsDescription: 'Six tools that work with your POS: log waste, stock counts, purchasing forecasts, revenue, invoice matching and pour control. Try the demo.',
+    bookTitle: 'Book a Free Call With Our Team | Tyll',
+    bookDescription: 'Book a short, free call with the Tyll team about your restaurant or hotel and where Tyll could help. Pick a time that suits you.',
+    faqTitle: 'FAQ: How Tyll Works With Your POS and Systems | Tyll',
     faqDescription: 'Short answers about Tyll: the free 30 day pilot, the systems it works with, setup, your data and pricing.',
     legalTitle: 'Legal notice | Tyll',
     legalDescription: 'Legal notice for the Tyll website.',
     privacyTitle: 'Privacy policy | Tyll',
     privacyDescription: 'How the Tyll website handles personal data, cookies and booking requests.',
-    homeTitle: 'Tyll | Find where your hotel loses money on stock and waste',
+    homeTitle: 'Tyll | Food Cost Control Software for Restaurants & Hotels',
     homeDescription:
-      'Find out where your hotel loses money every night. Tyll checks tabs, receipts, stock, waste and invoices, then tells your team what to fix and what to order.',
+      'Count stock on your phone, log waste in two taps, catch supplier invoices that don\'t match and know what to order. Works with your POS. Try the demo.',
   },
 };
 

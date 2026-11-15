@@ -273,19 +273,19 @@ const de: Dict = {
   meta: {
     howTitle: 'So funktioniert’s | Tyll',
     howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, eine kostenlose Inventur, nur lesender Zugriff auf Ihre Kasse und dann jeden Morgen ein Bericht darüber, was verloren ging und was es gekostet hat.',
-    solutionsTitle: 'Lösungen | Tyll',
-    solutionsDescription: 'Sechs Bereiche, in denen Tyll Hotelteams unterstützt: Lager und Abfall, Finanzen, Prognose und Einkauf, Events und Personal, Zimmer und Gäste sowie Vertrieb.',
-    bookTitle: 'Demo buchen | Tyll',
-    bookDescription: 'Buchen Sie eine Demo von Tyll und sehen Sie, wo Ihr Hotel Geld verliert.',
-    faqTitle: 'FAQ | Tyll',
+    solutionsTitle: 'Inventur, Abfall & Rechnungsabgleich für Gastronomie | Tyll',
+    solutionsDescription: 'Sechs Werkzeuge, die mit Ihrer Kasse arbeiten: Abfall erfassen, Inventur, Einkaufsprognose, Umsatz, Rechnungsabgleich und Pour Control. Demo testen.',
+    bookTitle: 'Kostenloses Gespräch buchen | Tyll',
+    bookDescription: 'Buchen Sie ein kurzes, kostenloses Gespräch mit dem Tyll-Team über Ihr Restaurant oder Hotel und darüber, wo Tyll helfen könnte.',
+    faqTitle: 'FAQ: So arbeitet Tyll mit Ihren Systemen | Tyll',
     faqDescription: 'Kurze Antworten zu Tyll: der kostenlose 30-Tage-Pilot, die unterstützten Systeme, die Einrichtung, Ihre Daten und die Preise.',
     legalTitle: 'Impressum | Tyll',
     legalDescription: 'Impressum der Tyll-Website.',
     privacyTitle: 'Datenschutzerklärung | Tyll',
     privacyDescription: 'Wie die Tyll-Website mit personenbezogenen Daten, Cookies und Terminanfragen umgeht.',
-    homeTitle: 'Tyll | Finden Sie, wo Ihr Hotel bei Bestand und Abfall Geld verliert',
+    homeTitle: 'Tyll | Inventur App & Wareneinsatz für Gastronomie und Hotels',
     homeDescription:
-      'Erfahren Sie, wo Ihr Hotel jede Nacht Geld verliert. Tyll prüft Gästerechnungen, Belege, Bestand, Abfall und Lieferantenrechnungen und sagt Ihrem Team, was zu beheben und zu bestellen ist.',
+      'Inventur per Handy, Abfall in zwei Tipps erfasst, falsche Lieferantenrechnungen erkannt und wissen, was zu bestellen ist. Arbeitet mit Ihrer Kasse.',
   },
 };
 

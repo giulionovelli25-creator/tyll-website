@@ -28,6 +28,21 @@ const schema = {
       sameAs: [site.social.linkedin, site.social.instagram, site.social.tiktok].filter(Boolean),
     },
     { '@type': 'WebSite', '@id': `${site.url}/#website`, url: site.url, name: 'Tyll', inLanguage: ['en', 'de', 'ar', 'it'], publisher: { '@id': `${site.url}/#organization` } },
+    // English and German only for now; Arabic and Italian keep their graph as it was
+    ...(lang === 'en' || lang === 'de'
+      ? [
+          {
+            '@type': 'SoftwareApplication',
+            '@id': `${site.url}/#software`,
+            name: 'Tyll',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
+            url: site.url,
+            description: d.meta.homeDescription,
+            publisher: { '@id': `${site.url}/#organization` },
+          },
+        ]
+      : []),
   ],
 };
 ---
