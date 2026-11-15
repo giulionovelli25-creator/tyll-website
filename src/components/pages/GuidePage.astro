@@ -1,0 +1,333 @@
+---
+// A long-form guide (the stock count guide, English and German). The text is the owner's Markdown in src/guides/,
+// rendered as it is; this frame gives it the legal pages' look: a pearl band with the title, "On this page" beside
+// the text from 1100 px, and readable long-form styles. Article and FAQPage structured data come from the same text.
+import Base from '../../layouts/Base.astro';
+import { site } from '../../config/site';
+import { pages, intlLocale, type Locale } from '../../i18n';
+import * as en from '../../guides/en.md';
+import * as de from '../../guides/de.md';
+
+interface Props {
+  lang: 'en' | 'de';
+}
+
+type Front = { title: string; description: string; h1: string; updated: string };
+
+const { lang } = Astro.props;
+const guide = { en, de }[lang];
+const fm = guide.frontmatter as Front;
+const { Content } = guide;
+const sections = guide.getHeadings().filter((h) => h.depth === 2);
+const updatedIso = new Date(fm.updated).toISOString().slice(0, 10);
+const updated = new Intl.DateTimeFormat(intlLocale[lang as Locale], { dateStyle: 'long' }).format(new Date(fm.updated));
+const words = {
+  en: { updated: 'Updated', onThisPage: 'On this page', quick: 'Quick answers' },
+  de: { updated: 'Aktualisiert', onThisPage: 'Auf dieser Seite', quick: 'Kurze Antworten' },
+}[lang];
+
+// The quick answers at the end: each one is a bold question on its own line, then the answer
+const raw = guide.rawContent();
+const quick = raw.split(new RegExp(`^## ${words.quick}\\s*$`, 'm'))[1] ?? '';
+const plain = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\*\*/g, '').trim();
+const faq = [...quick.matchAll(/^\*\*(.+?)\*\*\s*\n(.+)$/gm)].map(([, q, a]) => ({ q: plain(q), a: plain(a) }));
+
+const url = new URL(pages.guide[lang], site.url).href;
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      '@id': `${url}#article`,
+      headline: fm.h1,
+      description: fm.description,
+      inLanguage: lang,
+      datePublished: updatedIso,
+      dateModified: updatedIso,
+      mainEntityOfPage: url,
+      url,
+      author: { '@id': `${site.url}/#organization` },
+      publisher: { '@id': `${site.url}/#organization` },
+    },
+    { '@type': 'Organization', '@id': `${site.url}/#organization`, name: 'Tyll', url: site.url, logo: new URL('/media/tyll-icon-512.png', site.url).href },
+    ...(faq.length
+      ? [
+          {
+            '@type': 'FAQPage',
+            '@id': `${url}#faq`,
+            inLanguage: lang,
+            mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+          },
+        ]
+      : []),
+  ],
+};
+---
+
+<Base lang={lang} page="guide" title={fm.title} description={fm.description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
+  <div class="guide-page">
+    <header class="guide__band">
+      <div class="wrap guide__band-inner">
+        <h1>{fm.h1}</h1>
+        <p class="guide__meta">{words.updated}: <time datetime={updatedIso}>{updated}</time></p>
+      </div>
+    </header>
+
+    <div class="wrap guide">
+      <article class="guide__body">
+        <Content />
+      </article>
+
+      <nav class="guide__toc" aria-labelledby="guide-toc-title" data-toc>
+        <h2 id="guide-toc-title">{words.onThisPage}</h2>
+        <ol>
+          {
+            sections.map((h) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .guide__band {
+    padding-top: calc(var(--header-h) + var(--page-top));
+    padding-bottom: var(--intro-gap);
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(60% 120% at 85% 0%, rgb(var(--silver-rgb) / 0.28), transparent 70%),
+      linear-gradient(180deg, var(--sand-100) 0%, var(--sand-50) 100%);
+  }
+
+  /* A short silver rule above the title, as on the legal pages */
+  .guide__band-inner::before {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 2px;
+    margin-bottom: 1.5rem;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--silver-deep), var(--line));
+  }
+
+  h1 {
+    max-width: 24ch;
+    font-size: var(--fs-h2);
+  }
+
+  .guide__meta {
+    margin-top: 0.9rem;
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  /* The text starts at the column's start and the list ends at its end */
+  .guide {
+    display: grid;
+    grid-template-columns: minmax(0, 46rem) minmax(0, 16rem);
+    justify-content: space-between;
+    gap: 2.5rem clamp(3rem, 1rem + 5vw, 7rem);
+    padding-top: var(--intro-gap);
+    padding-bottom: var(--section-y);
+  }
+
+  .guide__body {
+    min-width: 0;
+    color: var(--graphite);
+    line-height: 1.7;
+  }
+
+  .guide__body > :global(:first-child) {
+    margin-top: 0;
+    color: var(--ink);
+    font-size: var(--fs-lead);
+    line-height: 1.6;
+  }
+
+  .guide__body :global(h2) {
+    margin-top: 2.75rem;
+    padding-top: 2.25rem;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.3;
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .guide__body :global(p),
+  .guide__body :global(ul),
+  .guide__body :global(ol),
+  .guide__body :global(table) {
+    margin-top: 0.9rem;
+  }
+
+  .guide__body :global(p),
+  .guide__body :global(ul),
+  .guide__body :global(ol) {
+    max-width: var(--measure);
+  }
+
+  .guide__body :global(ul),
+  .guide__body :global(ol) {
+    padding-inline-start: 1.3rem;
+  }
+
+  .guide__body :global(li + li) {
+    margin-top: 0.45rem;
+  }
+
+  .guide__body :global(strong) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .guide__body :global(a) {
+    color: var(--ink);
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+
+  /* The worked example: two columns, amounts lined up at the end */
+  .guide__body :global(table) {
+    width: 100%;
+    max-width: 34rem;
+    border-collapse: collapse;
+    font-size: 0.9688rem;
+  }
+
+  .guide__body :global(thead:not(:has(th:not(:empty)))) {
+    display: none;
+  }
+
+  .guide__body :global(td) {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  .guide__body :global(td + td) {
+    padding-inline-start: 1.5rem;
+    text-align: end;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The contents list sits beside the text and stays in view; the current section is marked */
+  .guide__toc {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    align-self: start;
+    padding-inline-start: 1.25rem;
+    border-inline-start: 1px solid var(--line);
+    font-size: 0.875rem;
+  }
+
+  .guide__toc h2 {
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .guide__toc ol {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .guide__toc li {
+    padding-block: 0.3rem;
+  }
+
+  .guide__toc a {
+    position: relative;
+    display: block;
+    color: var(--steel);
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+  }
+
+  .guide__toc a::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.1em;
+    inset-inline-start: calc(-1.25rem - 1px);
+    width: 2px;
+    border-radius: 2px;
+    background: var(--ink);
+    opacity: 0;
+    transition: opacity 0.2s var(--ease);
+  }
+
+  .guide__toc a:hover,
+  .guide__toc a.is-current {
+    color: var(--ink);
+  }
+
+  .guide__toc a.is-current::before {
+    opacity: 1;
+  }
+
+  @media (max-width: 1099px) {
+    .guide {
+      grid-template-columns: minmax(0, 46rem);
+    }
+
+    .guide__toc {
+      position: static;
+      order: -1;
+      padding: 1.25rem 0;
+      border-inline-start: 0;
+      border-block: 1px solid var(--line);
+    }
+
+    .guide__toc ol {
+      columns: 2 15rem;
+      column-gap: 2.5rem;
+    }
+
+    .guide__toc li {
+      padding-block: 0;
+      break-inside: avoid;
+    }
+
+    /* the whole row is the tap target */
+    .guide__toc a {
+      padding-block: 0.45rem;
+    }
+
+    .guide__toc a::before {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Marks the section being read in the contents list
+  const toc = document.querySelector<HTMLElement>('[data-toc]');
+  if (toc) {
+    const links = new Map([...toc.querySelectorAll<HTMLAnchorElement>('a')].map((a) => [a.hash.slice(1), a]));
+    const seen = new Set<string>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? seen.add(e.target.id) : seen.delete(e.target.id)));
+        const first = [...links.keys()].find((id) => seen.has(id));
+        if (first) links.forEach((a, id) => a.classList.toggle('is-current', id === first));
+      },
+      { rootMargin: '-15% 0px -70% 0px' },
+    );
+    links.forEach((_, id) => {
+      const h = document.getElementById(id);
+      if (h) io.observe(h);
+    });
+  }
+</script>

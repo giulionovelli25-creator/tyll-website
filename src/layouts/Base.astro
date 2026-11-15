@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ConsentBanner from '../components/ConsentBanner.astro';
 import { site } from '../config/site';
-import { t, pages, locales, dirOf, ogLocale, type Locale, type PageKey } from '../i18n';
+import { t, pages, langsOf, dirOf, ogLocale, type Locale, type PageKey } from '../i18n';
 
 interface Props {
   lang: Locale;
@@ -22,6 +22,8 @@ const d = t(lang);
 const abs = (path: string) => new URL(path, site.url).href;
 const canonical = abs(pages[page][lang]);
 const ogImage = abs(`/media/og-${lang}.jpg`);
+// The languages this page exists in (all four, except the guide)
+const locales = langsOf(page);
 ---
 
 <!doctype html>

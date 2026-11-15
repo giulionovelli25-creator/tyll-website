@@ -17,6 +17,7 @@
 - [Solutions](https://tyll.ai/en/solutions/)
 - [FAQ](https://tyll.ai/en/faq/)
 - [Book a call](https://tyll.ai/en/book-a-call/)
+- [Guide: how to do a restaurant stock count, with a free stocktake template](https://tyll.ai/en/guides/restaurant-stock-count/)
 
 ## Deutsch
 
@@ -24,3 +25,4 @@
 - [Lösungen](https://tyll.ai/de/loesungen/)
 - [FAQ](https://tyll.ai/de/faq/)
 - [Gespräch buchen](https://tyll.ai/de/gespraech-buchen/)
+- [Ratgeber: Inventur in der Gastronomie, mit kostenloser Inventurliste](https://tyll.ai/de/ratgeber/inventur-gastronomie/)
