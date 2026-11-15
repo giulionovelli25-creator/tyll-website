@@ -14,6 +14,8 @@ const { lang, page } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
 const year = new Date().getFullYear();
+// The stock count guide exists in English and German only, so only those footers link to it
+const guideLabel = ({ en: 'Stock count guide', de: 'Inventur-Ratgeber' } as Partial<Record<Locale, string>>)[lang];
 // "Book a Demo →": the arrow is set apart so it can move on hover
 const [, bookText = d.cta.book, bookArrow = ''] = d.cta.book.match(/^(.*?)\s*([→←])$/) ?? [];
 // The social accounts that are set, in this order, each with its monochrome mark (Simple Icons, CC0)
@@ -83,6 +85,7 @@ const socials = [
             )
           }
           <li><a href={href('faq', lang)}>{d.nav.faqShort}</a></li>
+          {guideLabel && <li><a href={href('guide', lang)} aria-current={page === 'guide' ? 'page' : undefined}>{guideLabel}</a></li>}
           <li><a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>
         </ul>
       </div>
