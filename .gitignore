@@ -9,3 +9,23 @@ review/
 
 # Scratch scripts for local checks
 tests/tmp/
+
+# Video pipeline: raw generated clips and the joined masters stay local (scripts/video/README.md)
+assets/video/raw/
+assets/video/master-*.mp4
+# The film's stills, takes and approval sheets stay local too; their fal addresses are in video-brief.md
+assets/video/city/
+# Earlier rounds' stills (the first film's keyframes, the first hold drafts) stay local as well
+assets/video/keyframes/
+assets/video/holds/
+# The scale's source photographs and previews stay local (the photograph left the page on 9 Nov 2026)
+assets/scale/
+# Review screenshots and recordings made for the owner stay local
+assets/review/
+
+# Reference recordings from social media: look, never publish
+assets/video/reference-*
+
+# Reference pack: third-party recordings and screenshots stay local; only the notes are kept in git
+refs/*
+!refs/NOTES.md

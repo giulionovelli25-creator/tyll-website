@@ -1,0 +1,84 @@
+---
+// The Tyll silver wave, wherever it appears: one ribbon of fine lines from `src/scripts/wave.ts`. Still by default;
+// `move` lets it drift like the homepage's closing wave, only while on screen and never with reduced motion.
+import { ribbon } from '../scripts/wave';
+
+interface Props {
+  phase?: number;
+  move?: boolean;
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+
+const { phase = 0.3, move = false, tone = 'light', class: cls } = Astro.props;
+const id = `wave-${Math.random().toString(36).slice(2, 8)}`;
+const lines = ribbon(phase);
+---
+
+<svg class:list={['wave', `wave--${tone}`, cls]} viewBox="0 0 1440 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true" data-wave={move ? 'move' : 'still'} data-phase={phase}>
+  <defs>
+    <linearGradient id={id} x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="var(--silver)" stop-opacity="0" />
+      <stop offset="0.3" stop-color="var(--silver)" stop-opacity="0.35" />
+      <stop offset="0.6" stop-color={tone === 'dark' ? 'var(--silver-light)' : 'var(--silver-deep)'} stop-opacity="0.85" />
+      <stop offset="0.85" stop-color="var(--silver-deep)" stop-opacity="0.45" />
+      <stop offset="1" stop-color="var(--silver)" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke={`url(#${id})`} stroke-width="1">
+    {lines.map((l) => <path d={l.d} opacity={l.opacity} vector-effect="non-scaling-stroke" />)}
+  </g>
+</svg>
+
+<style>
+  .wave {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .wave--light {
+    opacity: 0.55;
+  }
+
+  .wave--dark {
+    opacity: 0.8;
+  }
+
+  :global([dir='rtl']) .wave {
+    transform: scaleX(-1);
+  }
+</style>
+
+<script>
+  import { ribbon, PERIOD } from '../scripts/wave';
+
+  // Moving waves redraw about 30 times a second, only while on screen
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<SVGSVGElement>('[data-wave="move"]').forEach((svg) => {
+    const paths = [...svg.querySelectorAll('path')];
+    let visible = false;
+    let raf = 0;
+    let last = 0;
+    let t = Number(svg.dataset.phase) * PERIOD;
+    const draw = (now: number) => {
+      raf = requestAnimationFrame(draw);
+      if (now - last < 33) return;
+      t = (t + Math.min(now - last, 100) / 1000) % PERIOD;
+      last = now;
+      ribbon(t / PERIOD).forEach((l, i) => paths[i]?.setAttribute('d', l.d));
+    };
+    const sync = () => {
+      cancelAnimationFrame(raf);
+      if (visible && !reduce.matches) {
+        last = performance.now();
+        raf = requestAnimationFrame(draw);
+      }
+    };
+    new IntersectionObserver(([e]) => ((visible = e.isIntersecting), sync())).observe(svg);
+    reduce.addEventListener('change', sync);
+  });
+</script>

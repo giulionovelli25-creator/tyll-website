@@ -1,10 +1,11 @@
 ---
-// "Works with the systems you already use": the real logos from src/config/integrations.ts in an endless band.
+// Straight under the hero (9 Nov 2026), as on the live tyll.ai: "Works with the systems you already run", one line on
+// how Tyll connects, then the real logos from src/config/integrations.ts in an endless band.
 // The set is drawn twice and the band moves by exactly one set, so the loop has no visible jump. It uses a CSS
-// transform only, pauses under the pointer, under a finger and when focused, and always reads left to right, also in
-// Arabic. With reduced motion it stands still as a centred, wrapping grid. Logos are never links.
+// transform only, keeps moving under the pointer, a finger and a click, pauses only for keyboard focus, and always reads left to right,
+// also in Arabic, on phones too. With reduced motion it stands still as a centred, wrapping grid. Logos are never links.
 import { logos, logoBox } from '../../config/integrations';
-import { t, href, type Locale } from '../../i18n';
+import { t, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -15,9 +16,11 @@ const v = t(lang).home.works;
 ---
 
 <section class="works" id="integrations" aria-labelledby="works-title">
-  <div class="wrap works__head">
-    <h2 id="works-title" class="display">{v.title}</h2>
-    <p>{v.text}</p>
+  <div class="wrap">
+    <div class="works__head">
+      <h2 id="works-title" class="display">{v.title}</h2>
+      <p>{v.text}</p>
+    </div>
   </div>
 
   <div class="band" dir="ltr" tabindex="0" role="group" aria-labelledby="works-title" data-band>
@@ -46,23 +49,21 @@ const v = t(lang).home.works;
       }
     </div>
   </div>
-
-  <p class="works__note">
-    <a href={href('book', lang)} data-track="book_demo_click" data-track-from="integrations">{v.note}</a>
-  </p>
 </section>
 
 <style>
   .works {
-    --logo-scale: 1;
-    --logo-gap: 4.5rem;
-    padding-block: var(--section-y);
-    background: var(--paper);
+    --logo-scale: 0.8;
+    --logo-gap: 3.75rem;
+    padding-block: 0 var(--band-y);
+    background: var(--page);
     color: var(--ink);
   }
 
+  /* A hairline ties the banner to the hero above it */
   .works__head {
-    max-width: calc(44rem + var(--gut) * 2);
+    padding-top: var(--band-y);
+    border-top: 1px solid var(--line);
     text-align: center;
   }
 
@@ -71,15 +72,15 @@ const v = t(lang).home.works;
   }
 
   .works__head p {
-    margin: var(--s-3) auto 0;
-    color: var(--steel);
-    font-size: var(--fs-lead);
+    max-width: 36rem;
+    margin: var(--s-2) auto 0;
+    color: var(--text-2);
   }
 
   /* The logos fade in and out at the edges of the band */
   .band {
     overflow: hidden;
-    margin-top: var(--s-7);
+    margin-top: var(--s-5);
     padding-block: var(--s-2);
     -webkit-mask-image: linear-gradient(90deg, transparent, var(--black) 12%, var(--black) 88%, transparent);
     mask-image: linear-gradient(90deg, transparent, var(--black) 12%, var(--black) 88%, transparent);
@@ -93,12 +94,12 @@ const v = t(lang).home.works;
   .band__track {
     display: flex;
     width: max-content;
-    animation: band 36s linear infinite;
+    animation: band 84s linear infinite; /* 21 logos at the pace the 9 had at 36 s */
   }
 
-  .band:hover .band__track,
-  .band:focus .band__track,
-  .band.is-held .band__track {
+  /* Keeps moving under the pointer, and after a click or a tap (11 Nov 2026: a click gave the band focus and it stayed
+     still until the visitor clicked somewhere else). Only keyboard focus holds it still, and Tab moves on. */
+  .band:focus-visible .band__track {
     animation-play-state: paused;
   }
 
@@ -152,13 +153,6 @@ const v = t(lang).home.works;
     white-space: nowrap;
   }
 
-  .works__note {
-    margin: var(--s-6) auto 0;
-    padding-inline: var(--gut);
-    color: var(--steel);
-    font-size: var(--fs-small);
-    text-align: center;
-  }
 
   .works__note a {
     text-decoration: underline;
@@ -184,8 +178,22 @@ const v = t(lang).home.works;
       margin-top: var(--s-5);
     }
 
-    .works__note {
-      margin-top: var(--s-5);
+
+    @media (max-width: 430px) {
+      .works {
+        --logo-scale: 0.6;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .works {
+        --logo-scale: 0.5;
+      }
+    }
+
+    /* Phones keep the moving band too: 21 logos would stack too deep as a still grid */
+    .works__head p {
+      padding-inline: var(--gut);
     }
   }
 
@@ -215,11 +223,3 @@ const v = t(lang).home.works;
     }
   }
 </style>
-
-<script>
-  // A finger on the band holds it still, as the pointer does on a desktop
-  document.querySelectorAll<HTMLElement>('[data-band]').forEach((band) => {
-    band.addEventListener('touchstart', () => band.classList.add('is-held'), { passive: true });
-    for (const end of ['touchend', 'touchcancel']) band.addEventListener(end, () => band.classList.remove('is-held'), { passive: true });
-  });
-</script>

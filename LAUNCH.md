@@ -10,7 +10,7 @@ Run `npm run launch-check` at any time to list what is still missing.
 | --- | --- | --- |
 | **tyll.ai** | Old static site, served by Vercel (DNS `A 216.198.79.1`). **www** is a Vercel CNAME. | Deploy this project to Vercel, then move the domains to it (step 3). |
 | **book.tyll.ai** | No DNS record. Does not resolve. | Add it to the new Vercel project (step 4). |
-| **demo.tyll.ai** | No DNS record. The demo runs only on a laptop. | Separate work in the demo project; see [docs/demo-public-readiness.md](docs/demo-public-readiness.md). |
+| **demo.tyll.ai** | Live on Railway (checked 10 Nov 2026): every demo link opens its sign-in page with the requested screen kept in `next`; visitors pick a demo person, whose details fill in, and press Sign in. | Nothing; the local `.env` points at it too. |
 
 ## 1. Settings (Vercel → Project → Settings → Environment Variables)
 
@@ -23,6 +23,7 @@ All of these are **public** values that end up in the page. They are not secrets
 | `PUBLIC_CALENDLY_URL` | `https://calendly.com/besher-asfari-code/new-meeting` (approved by the owner, 15 Oct 2026; built in as the default) | — |
 | `PUBLIC_LINKEDIN_URL` | `https://www.linkedin.com/company/tyll.ai/` (taken from the current site) | left out of footer |
 | `PUBLIC_INSTAGRAM_URL` | official Instagram profile | left out of footer |
+| `PUBLIC_WHATSAPP_NUMBER` | the WhatsApp number for the FAQ page's WhatsApp us button, international format (for example `+41 79 000 00 00`) | the button links to the placeholder `https://wa.me/[WHATSAPP NUMBER]`; `npm run launch-check` lists it |
 | `PUBLIC_ANALYTICS_PROVIDER` | `ga4` or `plausible` | no statistics, no consent banner for them |
 | `PUBLIC_ANALYTICS_ID` | GA4 measurement ID (`G-…`) or the Plausible site domain | — |
 | `PUBLIC_META_PIXEL_ID` | Meta Pixel ID (digits) | no Pixel, no marketing consent option |
@@ -76,7 +77,7 @@ The website shows "Your call is booked" only when Calendly reports the event as 
 - **GA4:** create a property in **Tyll's own** Google account. Copy the measurement ID (`G-…`). Set `PUBLIC_ANALYTICS_PROVIDER=ga4` and `PUBLIC_ANALYTICS_ID`.
 - **Plausible** (EU-hosted, cookieless, paid): add the site `tyll.ai`. Set `PUBLIC_ANALYTICS_PROVIDER=plausible` and `PUBLIC_ANALYTICS_ID=tyll.ai`.
 
-Events sent (with only a location label and the page language): `book_call_click`, `explore_demo_click`, `explore_solutions_click`, `connect_story_played`, `booking_calendar_opened`, `booking_started`, `booking_confirmed`, `language_changed`, `video_play`, `video_pause`, `faq_opened`, `email_click`, `linkedin_click`. In GA4, mark `booking_confirmed` as a key event.
+Events sent (with only a location label and the page language): `book_call_click`, `explore_demo_click`, `explore_solutions_click`, `connect_story_played`, `booking_calendar_opened`, `booking_started`, `booking_confirmed`, `language_changed`, `video_play`, `video_pause`, `faq_opened`, `email_click`, `linkedin_click`, `instagram_click`, `tiktok_click`. In GA4, mark `booking_confirmed` as a key event.
 
 ## 7. Meta Pixel (optional)
 

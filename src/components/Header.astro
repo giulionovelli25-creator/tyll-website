@@ -1,10 +1,11 @@
 ---
-import { Picture } from 'astro:assets';
 import Logo from './Logo.astro';
 import SolutionIcon from './SolutionIcon.astro';
 import { site } from '../config/site';
+import { demoHref } from '../config/demo';
 import { solutions } from '../content/solutions';
-import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
+import { t, href, pages, locales, solutionKeys, type Locale, type PageKey, type SolutionKey } from '../i18n';
+import { parts } from '../config/parts';
 import { isComingSoon } from '../config/products';
 
 interface Props {
@@ -17,7 +18,9 @@ interface Props {
 const { lang, page, overHero = false } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
-const items = solutionKeys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k, soon: isComingSoon(k) }));
+const item = (k: SolutionKey) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k, soon: isComingSoon(k) });
+// The menu follows the three parts, so it explains Tyll the same way as the homepage
+const groups = parts.map((keys, i) => ({ name: d.home.parts.cards[i].title, items: keys.map(item) }));
 const fwd = lang === 'ar' ? '←' : '→';
 const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).includes(page);
 ---
@@ -39,6 +42,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         {d.nav.solutions}
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
+      <a class="header__link" href={href('how', lang)} aria-current={page === 'how' ? 'page' : undefined}>{d.nav.how}</a>
     </nav>
 
     <div class="header__end">
@@ -63,13 +67,13 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
       </div>
       {
         site.demoUrl && (
-          <a class="btn btn--line btn--sm header__demo" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
+          <a class="btn btn--line btn--sm header__demo" href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
             {d.cta.demo}
             <span class="visually-hidden"> {d.cta.newTab}</span>
           </a>
         )
       }
-      <a class="btn btn--solid btn--sm header__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="header">
+      <a class="btn btn--solid header__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="header">
         {d.cta.book}
       </a>
       <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu">
@@ -82,54 +86,37 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   <!-- Desktop: the Solutions panel -->
   <div class="panel" id="solutions-panel" role="region" aria-labelledby="solutions-trigger" hidden>
     <div class="wrap panel__layout">
-      <ul class="panel__grid">
+      <div class="panel__grid">
         {
-          items.map(({ key, s, url, current, soon }) => (
-            <li>
-              <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
-                <span class="panel__icon">
-                  <SolutionIcon name={s.icon} />
-                </span>
-                <span class="panel__text">
-                  <span class="panel__name">
-                    {s.name[lang]}
-                    {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                    {!soon && <span class="panel__arrow" aria-hidden="true">{fwd}</span>}
-                  </span>
-                  <span class="panel__desc">{s.menu[lang]}</span>
-                </span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-      <!-- A quiet preview of the solution under the pointer or keyboard focus -->
-      <div class="panel__preview" aria-hidden="true">
-        {
-          items.map(({ key, s }, i) => (
-            <figure class:list={['preview', i === 0 && 'is-active']} data-preview={key}>
-              <Picture
-                src={s.photo}
-                alt=""
-                formats={['avif', 'webp']}
-                fallbackFormat="jpg"
-                widths={[400, 640]}
-                sizes="320px"
-                loading="lazy"
-                decoding="async"
-                style={`object-position:${s.photoFocus}`}
-              />
-              <figcaption>
-                <span>{s.name[lang]}</span>
-                {s.headline[lang]}
-              </figcaption>
-            </figure>
+          groups.map(({ name, items }) => (
+            <section class="panel__part">
+              <h2 class="panel__head">{name}</h2>
+              <ul>
+                {items.map(({ key, s, url, current, soon }) => (
+                  <li>
+                    <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key} data-accent={s.tone}>
+                      <span class="panel__icon">
+                        <SolutionIcon name={s.icon} />
+                      </span>
+                      <span class="panel__text">
+                        <span class="panel__name">
+                          {s.name[lang]}
+                          {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
+                          {!soon && <span class="panel__arrow" aria-hidden="true">{fwd}</span>}
+                        </span>
+                        <span class="panel__desc">{s.menu[lang]}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))
         }
       </div>
       <div class="panel__foot">
-        <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
+        <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
       </div>
     </div>
   </div>
@@ -141,7 +128,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <a class="btn btn--solid" href={href('book', lang)} data-track="book_demo_click" data-track-from="menu">{d.cta.book}</a>
         {
           site.demoUrl && (
-            <a class="btn btn--line" href={site.demoUrl} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
+            <a class="btn btn--line" href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
               {d.cta.demoLong}
               <span class="visually-hidden"> {d.cta.newTab}</span>
             </a>
@@ -152,14 +139,19 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <summary>{d.nav.solutions}</summary>
         <ul>
           {
-            items.map(({ s, url, current, soon }) => (
-              <li>
-                <a href={url} aria-current={current ? 'page' : undefined}>
-                  <SolutionIcon name={s.icon} />
-                  <span>{s.name[lang]}</span>
-                  {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                </a>
-              </li>
+            groups.map(({ name, items }) => (
+              <Fragment>
+                <li class="mobile-menu__head">{name}</li>
+                {items.map(({ s, url, current, soon }) => (
+                  <li>
+                    <a href={url} aria-current={current ? 'page' : undefined} data-accent={s.tone}>
+                      <SolutionIcon name={s.icon} />
+                      <span>{s.name[lang]}</span>
+                      {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
+                    </a>
+                  </li>
+                ))}
+              </Fragment>
             ))
           }
           <li class="mobile-menu__faq">
@@ -167,6 +159,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
           </li>
         </ul>
       </details>
+      <a class="mobile-menu__how" href={href('how', lang)} aria-current={page === 'how' ? 'page' : undefined}>{d.nav.how}</a>
       <div class="lang mobile-menu__lang" role="group" aria-label={d.nav.language}>
         {
           locales.map((l) => (
@@ -248,25 +241,48 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   }
 
   .header__nav {
+    display: flex;
     flex: 1;
+    align-items: center;
+    gap: 0.25rem;
   }
+
 
   .header__trigger {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    min-height: 40px;
-    padding: 0 0.85rem;
-    margin-inline-start: -0.85rem;
-    border: 0;
+    min-height: 42px;
+    padding: 0 1rem;
+    /* A visible button, so nobody misses the menu */
+    border: 1.5px solid currentColor;
     border-radius: var(--pill);
     background: transparent;
     color: inherit;
     font: inherit;
-    font-size: 0.9375rem;
-    font-weight: 400;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s var(--ease);
+  }
+
+  /* How it works: a plain text link beside the Solutions button (9 Nov 2026) */
+  .header__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 0.85rem;
+    margin-inline-start: 0.35rem;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    text-underline-offset: 6px;
+  }
+
+  .header__link:hover,
+  .header__link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
   }
 
   .header__trigger:hover,
@@ -344,78 +360,38 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .panel__layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
     grid-template-areas:
-      'list preview'
-      'foot foot';
-    column-gap: 2rem;
+      'list'
+      'foot';
   }
 
   .panel__grid {
     grid-area: list;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.25rem 1.5rem;
     margin: 0;
     padding: 1.75rem 0 1.25rem;
+  }
+
+  .panel__part ul {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
     list-style: none;
   }
 
-  .panel__preview {
-    grid-area: preview;
-    position: relative;
-    margin: 1.75rem 0 1.25rem;
-    border-radius: 16px;
-    background: var(--ink);
-    overflow: hidden;
-  }
-
-  .preview {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    transition: opacity 0.4s var(--ease);
-  }
-
-  .preview.is-active {
-    opacity: 1;
-  }
-
-  .preview :global(picture),
-  .preview :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .preview :global(img) {
-    object-fit: cover;
-    transform: scale(1.03);
-    transition: transform 1.2s var(--ease);
-  }
-
-  .preview.is-active :global(img) {
-    transform: scale(1);
-  }
-
-  .preview figcaption {
-    position: absolute;
-    inset: auto 0 0;
-    padding: 2.5rem 1.1rem 1rem;
-    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.85), transparent);
-    color: var(--on-dark);
-    font-size: 1rem;
-    line-height: 1.3;
+  /* Each column is one of the three parts */
+  .panel__head {
+    margin: 0 1.1rem 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--steel);
+    font-family: var(--font);
+    font-size: 0.875rem;
+    font-weight: 600;
     letter-spacing: 0;
-  }
-
-  .preview figcaption span {
-    display: block;
-    margin-bottom: 0.2rem;
-    color: var(--on-dark-muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.02em;
   }
 
   .panel__item {
@@ -439,10 +415,10 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     place-items: center;
     width: 44px;
     height: 44px;
-    border: 1px solid var(--line);
+    border: 1px solid rgb(var(--acc-rgb) / 0.16);
     border-radius: 12px;
-    background: var(--paper);
-    color: var(--graphite);
+    background: var(--acc-wash);
+    color: var(--acc);
   }
 
   .panel__icon :global(svg) {
@@ -485,6 +461,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     font-size: 0.9375rem;
     line-height: 1.45;
   }
+
 
   .panel__foot {
     grid-area: foot;
@@ -622,6 +599,13 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     list-style: none;
   }
 
+  .mobile-menu__head {
+    padding: 1rem 0 0.15rem;
+    color: var(--steel);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
   .mobile-menu__group li a {
     display: flex;
     align-items: center;
@@ -631,15 +615,25 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     text-decoration: none;
   }
 
+  /* each solution's icon in its own colour, as in the desktop panel */
   .mobile-menu__group li a :global(svg) {
     flex: none;
     width: 22px;
     height: 22px;
-    color: var(--steel);
+    color: var(--acc);
   }
 
   .mobile-menu__group li a[aria-current] {
     font-weight: 400;
+  }
+
+  .mobile-menu__how {
+    display: block;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+    color: inherit;
+    font-size: 1.5rem;
+    text-decoration: none;
   }
 
   .mobile-menu__faq {
@@ -687,10 +681,16 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     }
   }
 
-  @media (max-width: 380px) {
+  /* Small phones: the longest labels (Arabic, German) still fit beside the logo and the menu */
+  @media (max-width: 430px) {
+    .header__bar {
+      gap: 0.5rem;
+    }
+
     .header__book {
       padding-inline: 0.8rem;
       font-size: 0.875rem;
+      white-space: nowrap;
     }
   }
 
@@ -759,13 +759,6 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
       e.preventDefault();
       setPanel(true, true);
     }
-  });
-  // The preview follows the solution under the pointer or keyboard focus
-  const previews = [...panel.querySelectorAll<HTMLElement>('[data-preview]')];
-  const showPreview = (key?: string) => previews.forEach((el) => el.classList.toggle('is-active', el.dataset.preview === key));
-  panel.querySelectorAll<HTMLElement>('[data-solution]').forEach((a) => {
-    a.addEventListener('pointerenter', () => showPreview(a.dataset.solution));
-    a.addEventListener('focus', () => showPreview(a.dataset.solution));
   });
 
   // Arrow keys move between the panel's links

@@ -15,7 +15,7 @@ type Text = Record<Locale, string>;
 
 export const legal = {
   /** Full names of the founders who operate the site, as private persons (owner, 31 Oct 2026). */
-  operators: ['Giulio Novelli', 'Pawel Gruca', 'Fynn Kopitz', 'Bisher Asfari'] as string[],
+  operators: ['Giulio Novelli', 'Pawel Gruca', 'Fynn Kopitz', 'Besher Asfari'] as string[],
   /**
    * Postal address where the operators can receive mail, one line per entry. For now the owner chose CODE University
    * of Applied Sciences in Berlin (address from the imprint on code.berlin, checked 31 Oct 2026). Replace it with the

@@ -16,8 +16,8 @@ const { title, intro } = Astro.props;
 
 <style>
   .intro {
-    padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 4vw, 6rem));
-    padding-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    padding-top: calc(var(--header-h) + var(--page-top));
+    padding-bottom: var(--intro-gap);
   }
 
   h1 {

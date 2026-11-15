@@ -6,6 +6,7 @@ import Base from '../../layouts/Base.astro';
 import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions } from '../../content/solutions';
+import SilverWave from '../SilverWave.astro';
 import { t, href, type Locale, type SolutionKey } from '../../i18n';
 import { available, comingSoon } from '../../config/products';
 
@@ -18,18 +19,20 @@ const d = t(lang);
 ---
 
 <Base lang={lang} page="solutions" title={d.meta.solutionsTitle} description={d.meta.solutionsDescription}>
-  <PageIntro title={d.solutionPage.indexTitle} intro={d.solutionPage.indexIntro} />
+  <div class="index-top">
+    <SilverWave phase={0.7} />
+    <PageIntro title={d.solutionPage.indexTitle} />
+  </div>
   <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
     {
       ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).filter(([keys]) => keys.length).map(([keys, soon]) => (
         <Fragment>
-          <h2 class="tiles__label">{soon ? d.cta.comingSoon : d.home.now.label}</h2>
           <ul class:list={['tiles', soon && 'tiles--soon']}>
             {keys.map((k) => {
               const s = solutions[k];
               return (
                 <li>
-                  <a class="tile on-dark" href={href(k, lang)}>
+                  <a class="tile on-dark" href={href(k, lang)} data-accent={s.tone}>
                     <Picture
                       src={s.photo}
                       alt=""
@@ -44,7 +47,9 @@ const d = t(lang);
                     <span class="tile__shade" aria-hidden="true" />
                     {soon && <span class="badge-soon tile__soon">{d.cta.comingSoon}</span>}
                     <span class="tile__body">
-                      <SolutionIcon name={s.icon} />
+                      <span class="tile__chip">
+                        <SolutionIcon name={s.icon} />
+                      </span>
                       <span class="tile__name">{s.name[lang]}</span>
                       <span class="tile__desc">{s.menu[lang]}</span>
                     </span>
@@ -56,12 +61,21 @@ const d = t(lang);
         </Fragment>
       ))
     }
-    <p class="tiles__soonline">{d.home.now.soon}</p>
-    <p class="tiles__faq"><a href={href('faq', lang)}>{d.nav.faq}</a></p>
+    <p class="tiles__soonline">{d.home.parts.soon}</p>
   </section>
 </Base>
 
 <style>
+  .index-top {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .index-top > :global(*:not(.wave)) {
+    position: relative;
+    z-index: 1;
+  }
+
   /* Products in development carry the badge in the photo's top corner */
   .tile__soon {
     position: absolute;
@@ -78,19 +92,6 @@ const d = t(lang);
     margin-top: var(--s-4);
     color: var(--text-2);
     font-size: var(--fs-small);
-  }
-
-  .tiles__label {
-    font-family: var(--font);
-    margin: var(--s-5) 0 var(--s-2);
-    color: var(--text-2);
-    font-size: var(--fs-small);
-    font-weight: 400;
-    letter-spacing: 0;
-  }
-
-  .tiles__label:first-child {
-    margin-top: 0;
   }
 
   .tiles--soon .tile {
@@ -162,11 +163,21 @@ const d = t(lang);
     padding: 1.5rem;
   }
 
-  .tile__body :global(svg) {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 0.4rem;
-    opacity: 0.8;
+  /* the solution's icon in its own colour, on a white square */
+  .tile__chip {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--acc);
+  }
+
+  .tile__chip :global(svg) {
+    width: 22px;
+    height: 22px;
   }
 
   .tile__name {
@@ -178,15 +189,6 @@ const d = t(lang);
     color: var(--on-dark-muted);
     font-size: 0.9375rem;
     line-height: 1.45;
-  }
-
-  .tiles__faq {
-    margin-top: 2rem;
-  }
-
-  .tiles__faq a {
-    font-weight: 400;
-    text-underline-offset: 4px;
   }
 
   @media (max-width: 1100px) {

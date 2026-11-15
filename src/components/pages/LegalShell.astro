@@ -72,8 +72,8 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
 
 <style>
   .legal__band {
-    padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 4vw, 5.5rem));
-    padding-bottom: clamp(2.25rem, 1.5rem + 2vw, 3.5rem);
+    padding-top: calc(var(--header-h) + var(--page-top));
+    padding-bottom: var(--intro-gap);
     border-bottom: 1px solid var(--line);
     background:
       radial-gradient(60% 120% at 85% 0%, rgb(var(--silver-rgb) / 0.28), transparent 70%),
@@ -109,12 +109,14 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     display: grid;
     grid-template-columns: minmax(0, 46rem);
     gap: 2.5rem clamp(3rem, 1rem + 5vw, 7rem);
-    padding-top: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    padding-top: var(--intro-gap);
     padding-bottom: var(--section-y);
   }
 
+  /* The text starts at the column's start and the list ends at its end, like the header's logo and button */
   .legal--toc {
     grid-template-columns: minmax(0, 46rem) minmax(0, 16rem);
+    justify-content: space-between;
   }
 
   .legal__main {
@@ -223,7 +225,13 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     }
 
     .legal__toc li {
+      padding-block: 0;
       break-inside: avoid;
+    }
+
+    /* the whole row is the tap target */
+    .legal__toc a {
+      padding-block: 0.45rem;
     }
 
     .legal__toc a::before {
@@ -269,7 +277,9 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     font-style: normal;
   }
 
+  /* list lines are as long as the paragraphs' */
   .legal__body :global(ul) {
+    max-width: var(--measure);
     padding-inline-start: 1.2rem;
   }
 

@@ -8,9 +8,11 @@
 
 import puppeteer from 'puppeteer-core';
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 
+// The hotel film's frame count comes from its manifest, so the tests follow a re-cut film
+const FILM = JSON.parse(readFileSync(new URL('../src/content/walkthrough.json', import.meta.url), 'utf8'));
 const BASE = process.env.BASE_URL || 'http://localhost:4321';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const TRACKERS = /googletagmanager\.com|google-analytics\.com|plausible\.io|connect\.facebook\.net|facebook\.com\/tr/;
@@ -23,10 +25,10 @@ const SOL = {
 const LANGS = ['en', 'de', 'ar', 'it'];
 // Same order in every language, so index i is the same page
 const PAGES = {
-  en: ['/en/', '/en/book-a-call/', '/en/faq/', '/en/legal-notice/', '/en/privacy/', '/en/solutions/', ...SOL.en],
-  de: ['/de/', '/de/gespraech-buchen/', '/de/faq/', '/de/impressum/', '/de/datenschutz/', '/de/loesungen/', ...SOL.de],
-  ar: ['/ar/', '/ar/book-a-call/', '/ar/faq/', '/ar/legal-notice/', '/ar/privacy/', '/ar/solutions/', ...SOL.ar],
-  it: ['/it/', '/it/prenota-una-chiamata/', '/it/faq/', '/it/note-legali/', '/it/privacy/', '/it/soluzioni/', ...SOL.it],
+  en: ['/en/', '/en/book-a-call/', '/en/faq/', '/en/legal-notice/', '/en/privacy/', '/en/solutions/', ...SOL.en, '/en/how-it-works/'],
+  de: ['/de/', '/de/gespraech-buchen/', '/de/faq/', '/de/impressum/', '/de/datenschutz/', '/de/loesungen/', ...SOL.de, '/de/so-funktionierts/'],
+  ar: ['/ar/', '/ar/book-a-call/', '/ar/faq/', '/ar/legal-notice/', '/ar/privacy/', '/ar/solutions/', ...SOL.ar, '/ar/how-it-works/'],
+  it: ['/it/', '/it/prenota-una-chiamata/', '/it/faq/', '/it/note-legali/', '/it/privacy/', '/it/soluzioni/', ...SOL.it, '/it/come-funziona/'],
 };
 const ALL = LANGS.flatMap((l) => PAGES[l]);
 
@@ -35,6 +37,8 @@ const record = (id, name, status, detail = '') => {
   results.push({ id, name, status, detail });
   // Progress as each check finishes, so a stalled run shows where it stopped
   console.error(`… ${id} ${status}`);
+  // A failure says why, as soon as it happens, so a run that stops early still shows the reason
+  if (status === 'FAIL' && detail) console.error(`    ${detail.slice(0, 1500)}`);
 };
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
@@ -80,54 +84,91 @@ for (const lang of LANGS) {
   try {
     await go(page, `/${lang}/`);
     const h1 = await page.$eval('h1', (e) => e.textContent.trim());
-    if (!/Know exactly what to buy|Wissen, was Sie einkaufen|اعرف بالضبط|Sai esattamente/.test(h1)) problems.push(`hero headline is "${h1}"`);
-    // The scroll story: the hotel starts as a drawing in a mess, the text follows the scroll, and it ends finished
+    if (!/Know what your hotel lost last night|Wissen, was Ihr Hotel letzte Nacht verloren hat|اعرف ما خسره فندقك|Scopri cosa ha perso il tuo hotel/.test(h1)) problems.push(`hero headline is "${h1}"`);
+    // The hotel section: one full-screen film played by scrolling, its frames drawn on a canvas. It stops on four holds
+    // (scroll plateaus); a hold's text and callouts show only on its plateau, never during the moves between them, and
+    // a tab takes the reader to its hold. Positions come from the page (data-hs-keys), frame rates from the manifest.
     const hotel = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       const root = document.querySelector('[data-hs]');
-      const box = root.querySelector('[data-hs-steps]');
-      const steps = [...root.querySelectorAll('[data-hs-step]')];
-      const to = (b) => { const pin = parseFloat(getComputedStyle(steps[0].firstElementChild).top); const i = Math.floor(b); scrollTo({ top: scrollY + steps[i].getBoundingClientRect().top - pin + (b - i) * steps[0].offsetHeight, behavior: 'instant' }); };
-      const shown = () => [...root.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity > 0.5 && getComputedStyle(e).visibility !== 'hidden').length;
-      const read = () => ({ active: steps.findIndex((s) => s.classList.contains('is-active')), count: root.querySelectorAll('.hs__step.is-active').length, shown: shown(), on: root.querySelectorAll('.hs__card.is-on').length, alive: root.classList.contains('is-alive') });
-      to(0.02); await wait(250); const start = read();
-      to(3.7); await wait(350); const end = read();
-      to(1.7); await wait(250); const back = read();
-      return { start, end, back, steps: steps.length, total: root.querySelectorAll('[data-b]:not([data-ob])').length, pinned: getComputedStyle(root.querySelector('.hs__scene')).position, cta: root.querySelector('.hs__cta')?.getAttribute('href'), sign: root.querySelectorAll('.c-sign').length };
+      const holds = [...root.querySelectorAll('[data-hs-hold]')];
+      const canvas = root.querySelector('[data-hs-film]');
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
+      const top = scrollY + root.getBoundingClientRect().top - header;
+      const keys = root.dataset.hsKeys.split(',').map(Number);
+      const read = () => ({ hold: root.dataset.hold, t: +root.dataset.hsT, frame: +(canvas.dataset.frame ?? -1), text: holds.filter((h) => h.classList.contains('is-on')).map((h) => +h.dataset.hsHold).join(), current: [...root.querySelectorAll('[data-hs-go]')].findIndex((g) => g.getAttribute('aria-current') === 'step'), on: [...root.querySelectorAll('.hs__spot.is-on')].map((e) => +e.dataset.hsSpot).join(), parts: root.querySelectorAll('[data-hs-hold="3"] .hs__parts li').length });
+      const at = async (y) => { scrollTo({ top: top + y, behavior: 'instant' }); await wait(800); return read(); };
+      const mid = (i) => (keys[2 * i] + keys[2 * i + 1]) / 2;
+      const r = [];
+      for (let i = 0; i < 4; i++) r.push(await at(mid(i)));
+      const move = await at((keys[1] + keys[2]) / 2);
+      await at(mid(3)); await wait(900); const end = read();
+      root.querySelectorAll('[data-hs-go]')[2].click(); await wait(2500); const jumped = read();
+      scrollTo({ top: 0, behavior: 'instant' }); await wait(200);
+      const stage = root.querySelector('[data-hs-stage]').getBoundingClientRect();
+      return { r, move, end, jumped, holds: holds.length, goes: root.querySelectorAll('[data-hs-go]').length, live: root.classList.contains('is-live'), pinned: getComputedStyle(root.querySelector('[data-hs-pin]')).position, canvas: !!canvas, full: Math.round(stage.width) === innerWidth, cta: root.querySelector('.hs__cta')?.getAttribute('href'), dir: root.querySelector('[data-hs-stage]').getAttribute('dir') };
     });
-    if (hotel.steps !== 4 || hotel.pinned !== 'sticky' || hotel.cta !== '#report' || hotel.sign !== 5) problems.push(`hotel story ${JSON.stringify(hotel)}`);
-    if (!(hotel.start.active === 0 && hotel.start.count === 1 && hotel.start.on === 0 && !hotel.start.alive && hotel.start.shown < hotel.total * 0.25)) problems.push(`hotel start ${JSON.stringify(hotel.start)}`);
-    if (!(hotel.end.active === 3 && hotel.end.on === 4 && hotel.end.alive && hotel.end.shown === hotel.total)) problems.push(`hotel end ${JSON.stringify({ end: hotel.end, total: hotel.total })}`);
-    if (!(hotel.back.active === 1 && !hotel.back.alive && hotel.back.shown < hotel.end.shown && hotel.back.on === 3)) problems.push(`hotel scrolled back ${JSON.stringify(hotel.back)}`);
-    // Two sourced statistics, each with its source
-    const stats = await page.evaluate(() => ({ figures: [...document.querySelectorAll('.stat__number')].map((n) => n.textContent.trim()), sources: document.querySelectorAll('.stat__source a[href^="https://"]').length }));
-    if (stats.figures.length !== 2 || !stats.figures[1].startsWith('$') || stats.sources !== 2) problems.push(`statistics ${JSON.stringify(stats)}`);
-    // The integrations band: ten real logos, each with its product name as alt text; logos are never links
+    const near = (s) => s.frame >= 0 && Math.abs(s.frame - Math.round(Math.min(s.t * FILM.desk.fps, FILM.desk.frames - 1))) <= 1;
+    if (hotel.holds !== 4 || hotel.goes !== 4 || !hotel.live || hotel.pinned !== 'sticky' || !hotel.canvas || !hotel.full || !hotel.cta || hotel.dir !== 'ltr') problems.push(`hotel section ${JSON.stringify(hotel)}`);
+    hotel.r.forEach((s, i) => {
+      if (!(s.hold === String(i) && s.text === String(i) && s.current === i && s.on === (i === 3 ? '' : String(i)))) problems.push(`hotel hold ${i + 1} ${JSON.stringify(s)}`);
+    });
+    if (!(hotel.move.hold === 'move' && hotel.move.text === '' && hotel.move.on === '')) problems.push(`hotel move ${JSON.stringify(hotel.move)}`);
+    if (!(hotel.end.parts === 3 && near(hotel.end))) problems.push(`hotel result ${JSON.stringify(hotel.end)}`);
+    if (!hotel.r.slice(0, 3).every(near)) problems.push(`hotel film frames off the scroll ${JSON.stringify(hotel.r.map((s) => [s.t, s.frame]))}`);
+    if (!(hotel.jumped.hold === '2' && hotel.jumped.text === '2')) problems.push(`hotel tab ${JSON.stringify(hotel.jumped)}`);
+    // Why it matters, in three numbers (9 Nov 2026): three cards, two with a linked source, Book a demo on the third;
+    // on a laptop the section pins and scrolling steps the cards sideways, one at a time
+    const why = await page.evaluate(() => {
+      const r = document.querySelector('[data-why]');
+      return { cards: r.querySelectorAll('[data-why-card]').length, figures: [...r.querySelectorAll('.why__figure')].map((f) => f.textContent.trim()), sources: r.querySelectorAll('.why__source a[href^="https://"]').length, book: !!r.querySelector('[data-why-card]:nth-child(3) a[data-track="book_demo_click"]'), pin: r.classList.contains('is-pin'), dots: r.querySelectorAll('[data-why-go]').length, top: r.getBoundingClientRect().top + scrollY, range: r.offsetHeight - innerHeight };
+    });
+    const steps = [];
+    for (const f of [0.1, 0.5, 0.9]) {
+      await page.evaluate((y) => scrollTo(0, y), Math.round(why.top + f * why.range));
+      await sleep(900);
+      steps.push(await page.evaluate(() => ({ now: document.querySelector('[data-why-now]').textContent, on: [...document.querySelectorAll('[data-why-card]')].findIndex((c) => c.classList.contains('is-on')), visible: (() => { const c = document.querySelector('[data-why-card].is-on').getBoundingClientRect(); return c.left >= 0 && c.right <= innerWidth && c.top >= 0 && c.bottom <= innerHeight; })() })));
+    }
+    const figures = { en: '18% 7× €1,150', de: '18 % 7× 1.150 €', ar: '18% 7× €1,150', it: '18% 7× 1.150 €' }[lang];
+    if (why.cards !== 3 || why.figures.join(' ') !== figures || why.sources !== 2 || !why.book || !why.pin || why.dots !== 3) problems.push(`why it matters ${JSON.stringify(why)}`);
+    if (!steps.every((st, i) => st.now === String(i + 1) && st.on === i && st.visible)) problems.push(`why it matters steps ${JSON.stringify(steps)}`);
+    // How it works on the homepage: one row of four steps and a link to the page; Getting set up and its snapping are gone
+    const teaser = await page.evaluate(() => ({ steps: document.querySelectorAll('.teaser__steps li').length, link: document.querySelector('.teaser a')?.getAttribute('href'), setup: document.querySelectorAll('.setup, [data-panel]').length, snap: document.documentElement.classList.contains('setup-snap') }));
+    if (teaser.steps !== 4 || teaser.link !== PAGES[lang][PAGES[lang].length - 1] || teaser.setup || teaser.snap) problems.push(`how it works teaser ${JSON.stringify(teaser)}`);
+    // The systems band, straight under the hero: twenty-one real logos moving in an endless band (the set drawn twice), each
+    // with its product name as alt text; logos are never links
     const band = await page.evaluate(() => {
       const set = document.querySelector('.band__set:not([aria-hidden])');
       const imgs = [...set.querySelectorAll('img')];
-      const broken = imgs.filter((i) => { i.loading = 'eager'; return !i.getAttribute('src').startsWith('/logos/integrations/'); }).length;
-      return { logos: imgs.length, sets: document.querySelectorAll('.band__set').length, alts: imgs.filter((i) => i.alt.length > 2).length, links: document.querySelectorAll('.band a').length, broken, note: document.querySelector('.works__note a')?.getAttribute('href') ?? '', spin: getComputedStyle(document.querySelector('.band__track')).animationDuration };
+      const broken = imgs.filter((i) => !i.getAttribute('src').startsWith('/logos/integrations/')).length;
+      const hero = document.querySelector('.hero');
+      const after = (el) => {
+        let next = el?.nextElementSibling;
+        while (next && next.tagName !== 'SECTION') next = next.nextElementSibling;
+        return next;
+      };
+      const next = after(hero);
+      return { logos: imgs.length, sets: document.querySelectorAll('.band__set').length, alts: imgs.filter((i) => i.alt.length > 2).length, links: document.querySelectorAll('.band a').length, broken, afterHero: !!next?.matches('.works'), once: document.querySelectorAll('.works').length, spin: getComputedStyle(document.querySelector('.band__track')).animationDuration };
     });
-    if (band.logos !== 10 || band.sets !== 2 || band.alts !== 10 || band.links || band.broken || !/\//.test(band.note)) problems.push(`logo band ${JSON.stringify(band)}`);
+    if (band.logos !== 21 || band.sets !== 2 || band.alts !== 21 || band.links || band.broken || !band.afterHero || band.once !== 1) problems.push(`logo band ${JSON.stringify(band)}`);
     const seconds = parseFloat(band.spin);
-    if (!(seconds >= 30 && seconds <= 40)) problems.push(`logo band loop is ${band.spin}`);
-    // The homepage leads with what is on sale: the hero's report button reaches the form and "Available now" links
-    // the six products, none of them marked Coming soon
+    if (!(seconds >= 70 && seconds <= 100)) problems.push(`logo band loop is ${band.spin}`);
+    // Tyll is explained one way: the menu groups the six products into the three parts, and the homepage has no
+    // second summary of them; none is marked Coming soon
     await go(page, `/${lang}/`);
     const product = await page.evaluate(() => ({
-      report: document.querySelector('.hero__actions a[href="#report"]') && !!document.querySelector('#report form[data-report]'),
-      now: [...document.querySelectorAll('.now__cards a')].map((a) => a.getAttribute('href')),
+      report: !!document.querySelector('.hero__actions a[data-track="book_demo_click"]') && !!document.querySelector('#report form[data-report]'),
+      parts: document.querySelectorAll('#solutions-panel .panel__head').length,
+      repeats: document.querySelectorAll('.now').length,
       menuBadges: document.querySelectorAll('.panel__item .badge-soon').length,
     }));
-    const nowPages = SOL[lang].slice(1, 4);
-    if (!product.report || product.now.join() !== nowPages.join() || product.menuBadges !== 0) problems.push(`homepage products ${JSON.stringify(product)}`);
+    if (!product.report || product.parts !== 3 || product.repeats || product.menuBadges !== 0) problems.push(`homepage products ${JSON.stringify(product)}`);
     // The report form stays folded until asked for; the hero's button opens it, and it asks for one step at a time
     const form = await page.evaluate(async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       const wrap = document.querySelector('[data-report-wrap]');
       const closed = !wrap.classList.contains('is-open') && document.querySelector('[data-report-panel]').getBoundingClientRect().height < 1;
-      document.querySelector('.hero__actions a[href="#report"]').click();
+      document.querySelector('[data-report-wrap] button').click();
       await wait(900);
       const panel = document.querySelector('[data-report-panel]').getBoundingClientRect().height;
       const openSteps = document.querySelectorAll('[data-step].is-open').length;
@@ -154,16 +195,17 @@ for (const lang of LANGS) {
       const sol = await page.evaluate(() => ({
         path: location.pathname,
         h1: document.querySelectorAll('h1').length,
-        steps: document.querySelectorAll('[data-ex] [role=tab]').length,
+        steps: document.querySelectorAll('[data-film] [data-chapter]').length,
         demo: [...document.querySelectorAll('main a[data-track="explore_demo_click"]')].map((a) => a.getAttribute('href')),
         book: !!document.querySelector('main a[data-track="book_demo_click"]'),
       }));
       if (sol.path !== url || sol.h1 !== 1 || sol.steps < 3 || !sol.book) problems.push(`${url}: ${JSON.stringify(sol)}`);
       if (sol.demo.length && sol.demo.some((h) => !new URL(h).search && !new URL(h).pathname.match(/\/\w/))) problems.push(`${url}: demo link without a solution route`);
-      // The parts of the screen can be chosen, and the explanation follows
-      await page.evaluate(() => document.querySelectorAll('[data-ex] [role=tab]')[2].click());
-      const part = await page.evaluate(() => ({ tab: document.querySelectorAll('[data-ex] [role=tab]')[2].getAttribute('aria-selected'), note: document.querySelector('[data-ex] .ex__note.is-on')?.dataset.note }));
-      if (part.tab !== 'true' || part.note !== '2') problems.push(`${url}: explorer part did not change ${JSON.stringify(part)}`);
+      // A chapter can be chosen, and the explanation follows
+      await page.evaluate(() => document.querySelectorAll('[data-film] [data-chapter] button')[2].click());
+      await sleep(1500);
+      const part = await page.$eval('[data-film] .film__chapter.is-on', (c) => c.dataset.chapter);
+      if (part !== '2') problems.push(`${url}: chapter did not change (${part})`);
     }
     await go(page, `/${lang}/`);
     // Book a Call from the header lands on the booking page
@@ -182,10 +224,34 @@ for (const lang of LANGS) {
       await Promise.all([page.waitForNavigation(), page.evaluate((o) => document.querySelector(`.header .lang a[hreflang="${o}"]`).click(), other)]);
       if (new URL(page.url()).pathname !== PAGES[other][i]) problems.push(`switch from ${path} went to ${page.url()}`);
     }
-    // FAQ: questions open and close with the keyboard-accessible <details>
+    // FAQ: questions open and close with real buttons
     await go(page, PAGES[lang][2]);
-    const faqOk = await page.evaluate(() => { const d = document.querySelector('.faq__item'); d.querySelector('summary').click(); const opened = d.open; d.querySelector('summary').click(); return opened && !d.open; });
-    if (!faqOk) problems.push('FAQ question did not open/close');
+    // Ten questions in three groups; the first is open on arrival; each is a real button that reports its state.
+    const faq = await page.evaluate(() => {
+      const items = [...document.querySelectorAll('.faq__item')];
+      const state = (i) => ({ open: i.classList.contains('is-open'), aria: i.querySelector('button.faq__q').getAttribute('aria-expanded'), shown: getComputedStyle(i.querySelector('.faq__panel')).visibility === 'visible' });
+      const first = state(items[0]);
+      const second = items[1];
+      const before = state(second);
+      second.querySelector('button.faq__q').click();
+      const opened = state(second);
+      second.querySelector('button.faq__q').click();
+      const closed = state(second);
+      const schema = [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => JSON.parse(s.textContent)).find((j) => j['@type'] === 'FAQPage') ?? {};
+      return {
+        count: items.length,
+        groups: document.querySelectorAll('.faq__group').length,
+        firstOpen: first.open && first.aria === 'true' && first.shown,
+        toggles: !before.open && before.aria === 'false' && opened.open && opened.aria === 'true' && !closed.open && closed.aria === 'false',
+        oneLinkEach: items.every((i) => i.querySelectorAll('.faq__answer a').length === 1),
+        schemaClean: Array.isArray(schema.mainEntity) && schema.mainEntity.length > 0 && schema.mainEntity.every((q) => !/\[[^\]]+\]/.test(q.acceptedAnswer.text)),
+      };
+    });
+    if (faq.count !== 10 || faq.groups !== 3) problems.push(`FAQ has ${faq.count} questions in ${faq.groups} groups, expected 10 in 3`);
+    if (!faq.firstOpen) problems.push('FAQ: the first question is not open on arrival');
+    if (!faq.toggles) problems.push('FAQ question did not open/close');
+    if (!faq.oneLinkEach) problems.push('FAQ: an answer does not end with exactly one link');
+    if (!faq.schemaClean) problems.push('FAQ structured data is missing or carries a placeholder');
     // Footer: email is a working mailto, cookie preferences opens the dialog
     const footer = await page.evaluate(() => ({ mail: [...document.querySelectorAll('.footer a')].some((a) => a.getAttribute('href') === 'mailto:info@tyll.ai'), prefs: !!document.querySelector('.footer [data-consent-open]') }));
     if (!footer.mail || !footer.prefs) problems.push('footer email or cookie preferences missing');
@@ -193,8 +259,11 @@ for (const lang of LANGS) {
     if (!(await page.$eval('#consent-dialog', (d) => d.open))) problems.push('cookie preferences did not open');
     if (page.errors.length) problems.push(`console: ${page.errors.join(' | ')}`);
     record(id, `${lang.toUpperCase()} visitor journey`, problems.length ? 'FAIL' : 'PASS', problems.join('; '));
+  } catch (e) {
+    // Report what went wrong, rather than letting a stuck page hide it
+    record(id, `${lang.toUpperCase()} visitor journey`, 'FAIL', `${problems.join('; ')} | stopped: ${e.message}`);
   } finally {
-    await page.ctx.close();
+    await Promise.race([page.ctx.close().catch(() => {}), sleep(15000)]);
   }
 }
 
@@ -224,17 +293,15 @@ for (const lang of LANGS) {
       // Headings and buttons that are cut off or reach past the screen edge
       clipped: [...document.querySelectorAll('h1, h2, h3, .btn')].filter((e) => {
         const r = e.getBoundingClientRect();
-        // Visually hidden headings (1px boxes for screen readers) are not on screen
-        return r.width > 1 && (e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1);
+        // Visually hidden headings (1px boxes for screen readers) are not on screen; cards in a sideways swipe strip
+        // (Why it matters on phones) sit past the edge on purpose and are reached by swiping
+        let a = e.parentElement;
+        while (a && !['auto', 'scroll'].includes(getComputedStyle(a).overflowX)) a = a.parentElement;
+        const inSwipe = !!a && a !== document.documentElement && a !== document.body;
+        return r.width > 1 && (e.scrollWidth > e.clientWidth + 1 || (r.right > innerWidth + 1 && !inSwipe));
       }).map((e) => e.textContent.trim().slice(0, 30)),
-      // Demo screens keep their proportions (never stretched)
-      stretched: [...document.querySelectorAll('.ex__canvas')].filter((c) => {
-        const r = c.getBoundingClientRect();
-        return r.width > 0 && Math.abs(r.width / r.height - 1440 / 1240) > 0.02;
-      }).length,
     }));
     if (w.sw > w.iw) problems.push(`${p} scrolls sideways (${w.sw}px)`);
-    if (w.stretched) problems.push(`${p} ${w.stretched} demo screens stretched`);
     if (w.clipped.length) problems.push(`${p} clipped: ${w.clipped.join(' | ')}`);
   }
   await go(page, '/de/');
@@ -282,20 +349,11 @@ for (const lang of LANGS) {
   const story = await page.evaluate(() => {
     const out = [];
     if (document.querySelector('[data-hs-stage]').getAttribute('dir') !== 'ltr') out.push('scene direction');
-    document.querySelectorAll('.hs__head, .hs__scene, .hs__stage, .hs__step').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    document.querySelectorAll('.hs__tabs, .hs__copy, .hs__stage').forEach((e) => { const r = e.getBoundingClientRect(); if (r.left < -1 || r.right > innerWidth + 1) out.push(e.className.split(' ')[0]); });
+    if (document.documentElement.scrollWidth > innerWidth) out.push('page scrolls sideways');
     return out;
   });
   if (story.length) p.push(`story items outside the screen: ${story.join(', ')}`);
-  // Product explorer: the viewer's arrow keys follow the reading direction
-  await go(page, '/ar/solutions/stock-waste/');
-  await page.evaluate(() => document.querySelector('[data-ex] [data-enlarge]').click());
-  await sleep(500);
-  const t0 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
-  await page.keyboard.press('ArrowLeft');
-  await sleep(300);
-  const t1 = await page.$eval('[data-ex] .viewer__title', (e) => e.textContent);
-  if (!t0.includes('1 /') || !t1.includes('2 /')) p.push(`ArrowLeft in Arabic should go to the next screen: ${t0} → ${t1}`);
-  await page.keyboard.press('Escape');
   // Booking page: text and email in place
   await go(page, '/ar/book-a-call/');
   const book = await page.evaluate(() => ({ mail: !!document.querySelector('a[href^="mailto:info@tyll.ai"]'), h1: document.querySelector('h1').textContent.trim() }));
@@ -313,17 +371,21 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   for (const lang of LANGS) {
     await go(page, `/${lang}/`);
     const home = await page.evaluate(() => ({
-      shots: document.querySelectorAll('.hs__step').length,
+      shots: document.querySelectorAll('[data-hs-hold]').length,
       oldShelf: document.querySelectorAll('[data-story], [data-tour], .shot, .sample, .ticker').length,
       oldDiagram: document.querySelectorAll('[data-flow], [data-cine], .frag').length,
-      quiet: !!document.querySelector('.hero__actions a.hero__quiet[href="#report"]'),
-      sources: [...document.querySelectorAll('.hero video source')].map((s) => s.getAttribute('src')),
+      book: !!document.querySelector('.hero__actions a.hero__book'),
+      heroVideo: document.querySelectorAll('.hero video').length,
+      // the owner's picture of the sunny square behind the words (10 Nov 2026), decorative; the header white on it
+      heroPhoto: (() => { const i = document.querySelector('.hero__photo img'); return !!i && i.alt === '' && /\/media\/hero\/square-/.test(i.currentSrc) && i.complete && i.naturalWidth > 0; })(),
+      headerTone: document.getElementById('site-header').dataset.tone,
+      band: !!document.querySelector('.daily'),
       h1: document.querySelector('.hero h1').textContent.replace(/\s+/g, ' ').trim(),
       ctas: document.querySelectorAll('.hero__actions .btn').length,
       ar: document.querySelector('.lang a[hreflang="ar"]')?.textContent.trim(),
       codes: [...document.querySelectorAll('.header__end .lang a')].map((a) => a.querySelector('[aria-hidden="true"], .lang__ar').textContent.trim()).join(' '),
     }));
-    if (home.shots !== 4) p.push(`${lang}: ${home.shots} steps in the hotel story`);
+    if (home.shots !== 4) p.push(`${lang}: ${home.shots} holds in the hotel story`);
     if (home.oldShelf) p.push(`${lang}: removed story, example report or ticker still present`);
     if (home.oldDiagram) p.push(`${lang}: old diagram still present`);
     // Book a Call: the booking button is in the first screen, with the email and the Calendly note beside it
@@ -338,16 +400,22 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     const hero = await page.evaluate(() => {
       const h1 = document.querySelector('.hero h1'); const rg = document.createRange(); rg.selectNodeContents(h1);
       const rects = [...rg.getClientRects()].filter((x) => x.width > 0);
-      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), extraText: document.querySelectorAll('.hero__inner p:not(.hero__sub)').length, mark: document.querySelectorAll('.hero__inner svg').length };
+      return { fits: rects.every((x) => x.left >= 0 && x.right <= innerWidth), fs: parseFloat(getComputedStyle(h1).fontSize), overflow: document.documentElement.scrollWidth > innerWidth, extraText: document.querySelectorAll('.hero__inner p:not(.hero__sub)').length };
     });
-    if (!hero.fits || hero.fs > 100 || hero.extraText || hero.mark) p.push(`${lang}: hero ${JSON.stringify(hero)}`);
+    if (!hero.fits || hero.fs > 100 || hero.overflow || hero.extraText) p.push(`${lang}: hero ${JSON.stringify(hero)}`);
     // Each solution page ends with a link to all solutions
     await go(page, SOL[lang][0]);
     const all = await page.$eval('.others__all', (a) => a.getAttribute('href')).catch(() => null);
     if (all !== PAGES[lang][5]) p.push(`${lang}: All Solutions link ${all}`);
-    if (!home.sources.some((s) => /hero-film/.test(s)) || home.sources.some((s) => /reception/.test(s))) p.push(`${lang}: hero video sources ${home.sources}`);
-    if (lang === 'en' && home.h1 !== 'Know exactly what to buy. Every week.') p.push(`hero headline changed: "${home.h1}"`);
-    if (home.ctas !== 1 || !home.quiet) p.push(`${lang}: hero has ${home.ctas} buttons, quiet link ${home.quiet}`);
+    // How it works (9 Nov 2026): a link beside Solutions in the header, and its page: four steps, three reassurances,
+    // Book a demo at the top and the bottom, no sideways scroll
+    await go(page, PAGES[lang][PAGES[lang].length - 1]);
+    const how = await page.evaluate(() => ({ nav: document.querySelector('.header__nav .header__link')?.getAttribute('aria-current'), h1: document.querySelector('h1')?.textContent.trim(), steps: document.querySelectorAll('.steps .step').length, strip: document.querySelectorAll('.assure li').length, book: document.querySelectorAll('main a[data-track="book_demo_click"]').length, overflow: document.documentElement.scrollWidth > innerWidth }));
+    if (how.steps !== 4 || how.strip !== 3 || how.book < 2 || !how.h1 || how.overflow || (!mobile && how.nav !== 'page')) p.push(`${lang}: how it works page ${JSON.stringify(how)}`);
+    // The hero is a photograph with the words over it, no video; the dark How it works band is gone
+    if (home.heroVideo || !home.heroPhoto || home.headerTone !== 'dark' || home.band) p.push(`${lang}: hero should be the square photograph ${JSON.stringify({ video: home.heroVideo, photo: home.heroPhoto, tone: home.headerTone, band: home.band })}`);
+    if (lang === 'en' && home.h1 !== 'Know what your hotel lost last night. And what to buy next week.') p.push(`hero headline changed: "${home.h1}"`);
+    if (home.ctas < 1 || home.ctas > 2 || !home.book) p.push(`${lang}: hero has ${home.ctas} buttons, book ${home.book}`);
     if (home.ar !== 'العربية') p.push(`${lang}: Arabic language label is "${home.ar}"`);
     if (!mobile && home.codes !== 'EN DE العربية IT') p.push(`${lang}: header languages "${home.codes}"`);
   }
@@ -368,165 +436,68 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     return { lines: paths.length, changed: before.filter((d, i) => d !== after[i]).length, coherent };
   });
   if (wave.lines < 9 || wave.changed !== wave.lines || !wave.coherent) p.push(`closing wave ${JSON.stringify(wave)}`);
-  // The video actually plays (when motion is allowed) and can be paused
-  await go(page, '/en/');
-  await sleep(1500);
-  const video = await page.evaluate(async () => {
-    const v = document.querySelector('.hero video');
-    const playing = !v.paused && v.currentTime > 0;
-    document.querySelector('.hero__toggle').click();
-    await new Promise((r) => setTimeout(r, 200));
-    return { playing, src: v.currentSrc.split('/').pop(), pausedAfter: v.paused, w: v.videoWidth };
-  });
-  if (!video.playing || !video.pausedAfter) p.push(`hero video ${JSON.stringify(video)}`);
-  if (mobile ? video.w !== 720 : video.w !== 1920) p.push(`hero video on ${where} is ${video.w}px wide (${video.src})`);
-  // The product explorer on every solution page: click or tap, keyboard, one explanation at a time, a detail panel
-  // for parts on another screen, the whole screen on request, and every screen in the viewer
+  // The film on every solution page: real recording, plays by itself on screen, chapters follow it, and chapters can be chosen
   for (const lang of ['en', 'ar']) {
     for (const url of SOL[lang]) {
       await go(page, url);
-      await page.evaluate(() => document.querySelector('[data-ex]').scrollIntoView({ block: 'center', behavior: 'instant' }));
-      const tabs = await page.$$('[data-ex] [role=tab]');
-      if (tabs.length < 3) { p.push(`${url}: ${tabs.length} parts`); continue; }
-      const state = () => page.evaluate(() => {
-        const ex = document.querySelector('[data-ex]');
-        const tabs = [...ex.querySelectorAll('[role=tab]')];
-        const sel = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-        return {
-          selected: sel,
-          notes: [...ex.querySelectorAll('.ex__note')].filter((x) => getComputedStyle(x).visibility === 'visible').length,
-          panel: ex.querySelector('.ex__layer.is-on')?.dataset.layer !== tabs[0].dataset.frame,
-          needsPanel: tabs[sel].dataset.frame !== tabs[0].dataset.frame,
-          ring: !!ex.querySelector(`.ex__mark.is-on[data-mark="${sel}"]`),
-        };
+      await page.evaluate(() => document.querySelector('[data-film]').scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await sleep(2500);
+      const film = await page.evaluate(async () => {
+        const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+        const v = document.querySelector('[data-film] video');
+        const a = { playing: !v.paused && v.currentTime > 0, src: v.currentSrc.split('/').pop(), texts: [...document.querySelectorAll('.film__text')].filter((t) => t.getBoundingClientRect().height > 0).length };
+        const buttons = document.querySelectorAll('.film__chapter button');
+        buttons[buttons.length - 1].click();
+        await wait(1500);
+        const on = document.querySelector('.film__chapter.is-on').dataset.chapter;
+        document.querySelector('.film__toggle').click();
+        await wait(200);
+        return { ...a, on, last: String(buttons.length - 1), paused: v.paused };
       });
-      if (mobile) await tabs[1].tap(); else await tabs[1].click();
-      await sleep(900);
-      const a = await state();
-      await page.focus('[data-ex] [role=tab][aria-selected="true"]');
-      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
-      await sleep(900);
-      const b = await state();
-      await page.keyboard.press('End');
-      await sleep(900);
-      const c = await state();
-      await page.keyboard.press('Home');
-      await sleep(900);
-      const d = await state();
-      if (a.selected !== 1 || b.selected !== 2 || c.selected !== tabs.length - 1 || d.selected !== 0) p.push(`${url}: parts selected ${a.selected}/${b.selected}/${c.selected}/${d.selected}`);
-      for (const [k, x] of Object.entries({ a, b, c, d })) {
-        if (x.notes !== 1 || x.panel !== x.needsPanel || !x.ring) p.push(`${url} ${k}: ${JSON.stringify(x)}`);
-      }
-      // Whole screen: the complete capture fits inside the view, in proportion
-      const whole = await page.evaluate(async () => {
-        const ex = document.querySelector('[data-ex]');
-        ex.querySelector('[data-whole]').click();
-        await new Promise((r) => setTimeout(r, 1100));
-        const v = ex.querySelector('.ex__view').getBoundingClientRect();
-        const cam = ex.querySelector('.ex__layer.is-on .ex__cam');
-        const r = cam.getBoundingClientRect();
-        const img = cam.querySelector('img');
-        return { fits: r.left >= v.left - 1 && r.right <= v.right + 1 && r.top >= v.top - 1 && r.bottom <= v.bottom + 1, ratio: Math.abs(r.width / r.height - 1440 / 1240) < 0.02, pressed: ex.querySelector('[data-whole]').getAttribute('aria-pressed'), loaded: img.complete && img.naturalWidth > 0 };
-      });
-      if (!whole.fits || !whole.ratio || whole.pressed !== 'true' || !whole.loaded) p.push(`${url}: whole screen ${JSON.stringify(whole)}`);
-      // Enlarge opens the viewer with every screen of this solution
-      const view = await page.evaluate(async () => {
-        const ex = document.querySelector('[data-ex]');
-        ex.querySelector('[data-enlarge]').click();
-        await new Promise((r) => setTimeout(r, 400));
-        const dlg = ex.querySelector('.viewer');
-        const out = { open: dlg.open, title: dlg.querySelector('.viewer__title').textContent, src: dlg.querySelector('.viewer__img').getAttribute('src') };
-        dlg.close();
-        return out;
-      });
-      if (!view.open || !/\d+ \/ \d+/.test(view.title) || !view.src) p.push(`${url}: viewer ${JSON.stringify(view)}`);
+      if (!film.playing || film.texts !== 1 || film.on !== film.last || !film.paused) p.push(`${url}: film ${JSON.stringify(film)}`);
+      if (mobile ? !/-phone\.mp4$/.test(film.src) : !/-desk\.mp4$/.test(film.src)) p.push(`${url}: wrong film ${film.src}`);
     }
   }
   if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
-  record('N', `Refinements on ${where}: wave, product sequence, hero, product explorer, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('N', `Refinements on ${where}: wave, product sequence, hero, solution films, العربية label, booking`, p.length ? 'FAIL' : 'PASS', p.join('; '));
   await page.ctx.close();
 }
 
-// ── P: product media fit — every part of every solution screen, desktop to phone ──────────────────
+// ── P: the film fits at every width, in every language, with no sideways scrolling ──────────────────
 {
   const p = [];
   let checked = 0;
   for (const [w, h, mobile] of [[1440, 900, false], [1280, 800, false], [1024, 768, false], [768, 1024, false], [390, 844, true]]) {
     const page = await freshPage({ width: w, height: h, mobile });
-    for (const lang of ['en', 'de', 'ar', 'it']) {
+    for (const lang of LANGS) {
       for (const url of SOL[lang]) {
         await go(page, url);
-        const r = await page.evaluate(async () => {
-          const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-          const ex = document.querySelector('[data-ex]');
-          ex.scrollIntoView({ block: 'start', behavior: 'instant' });
-          const tabs = [...ex.querySelectorAll('[role=tab]')];
-          const view = ex.querySelector('.ex__view');
-          const phone = innerWidth <= 900;
-          const out = [];
-          for (const [i, tab] of tabs.entries()) {
-            tab.click();
-            await wait(phone ? 120 : 1000);
-            const cam = ex.querySelector('.ex__layer.is-on .ex__cam');
-            const v = view.getBoundingClientRect();
-            const c = cam.getBoundingClientRect();
-            const [x, y, rw, rh] = tab.dataset.rect.split(',').map(Number);
-            if (phone) {
-              // The part keeps the capture's proportions and a readable scale; wider parts scroll sideways
-              const scale = c.width / (rw * 1440);
-              if (scale < 0.79 && c.width < view.clientWidth - 24) out.push(`${i}: scale ${scale.toFixed(2)}`);
-              if (Math.abs(c.height / c.width - (rh * 1240) / (rw * 1440)) > 0.02) out.push(`${i}: proportions`);
-            } else {
-              // The whole part is inside the view and in proportion
-              const card = { l: c.left + x * c.width, t: c.top + y * c.height, r: c.left + (x + rw) * c.width, b: c.top + (y + rh) * c.height };
-              if (card.l < v.left - 1 || card.r > v.right + 1 || card.t < v.top - 1 || card.b > v.bottom + 1) out.push(`${i}: outside the view ${JSON.stringify({ l: Math.round(card.l - v.left), t: Math.round(card.t - v.top), r: Math.round(v.right - card.r), b: Math.round(v.bottom - card.b) })}`);
-              if (Math.abs(c.width / c.height - 1440 / 1240) > 0.01) out.push(`${i}: stretched`);
-              const textScale = (c.width / 1440);
-              if (textScale < 0.7) out.push(`${i}: small (${textScale.toFixed(2)})`);
-            }
-          }
-          return { n: tabs.length, out, over: document.documentElement.scrollWidth > innerWidth };
+        const r = await page.evaluate(() => {
+          const v = document.querySelector('[data-film] video').getBoundingClientRect();
+          const chapters = [...document.querySelectorAll('.film__chapter')].map((c) => c.getBoundingClientRect());
+          return { over: document.documentElement.scrollWidth > innerWidth, inside: v.left >= -1 && v.right <= innerWidth + 1 && v.width > 100, chapters: chapters.every((c) => c.left >= -1 && c.right <= innerWidth + 1), tall: v.height <= innerHeight };
         });
-        checked += r.n;
-        if (r.out.length) p.push(`${w}px ${url}: ${r.out.join(', ')}`);
-        if (r.over) p.push(`${w}px ${url}: page scrolls sideways`);
+        checked++;
+        if (r.over || !r.inside || !r.chapters || !r.tall) p.push(`${w}px ${url}: ${JSON.stringify(r)}`);
       }
     }
     if (page.errors.length) p.push(`console at ${w}px: ${page.errors.join(' | ')}`);
     await page.ctx.close();
   }
-  record('P', `Product screens fit and stay readable: ${checked} parts across 6 pages, 4 languages, 5 widths`, p.length ? 'FAIL' : 'PASS', p.slice(0, 12).join('; '));
+  record('P', `Solution films fit: ${checked} pages, 4 languages, 5 widths`, p.length ? 'FAIL' : 'PASS', p.slice(0, 12).join('; '));
 }
 
-// ── Q: on a 1440 × 900 screen the tabs, the whole product screen and its explanation are seen together ────────
+// ── Q: demo links carry the visitor's language ────────────────────────────────────────
 {
   const p = [];
-  const page = await freshPage({ width: 1440, height: 900 });
-  for (const url of SOL.en) {
-    await go(page, url);
-    const r = await page.evaluate(async () => {
-      const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-      const ex = document.querySelector('[data-ex]');
-      const tabs = ex.querySelector('.ex__parts');
-      const header = document.querySelector('header').getBoundingClientRect().height;
-      scrollTo({ top: tabs.getBoundingClientRect().top + scrollY - header - 16, behavior: 'instant' });
-      await wait(200);
-      const out = [];
-      for (const [i, tab] of [...ex.querySelectorAll('[role=tab]')].entries()) {
-        tab.click();
-        await wait(700);
-        const note = ex.querySelector('.ex__note.is-on').getBoundingClientRect();
-        const win = ex.querySelector('.ex__window').getBoundingClientRect();
-        if (tabs.getBoundingClientRect().top < header || note.bottom > innerHeight) out.push(`${i}: note ends at ${Math.round(note.bottom)}`);
-        if (Math.abs(win.width / (win.height - 44) - 1.66) > 0.02) out.push(`${i}: screen proportions`);
-      }
-      return { out, scrolled: Math.round(scrollY) };
-    });
-    if (r.out.length) p.push(`${url}: ${r.out.join(', ')}`);
+  const page = await freshPage();
+  for (const lang of LANGS) {
+    await go(page, SOL[lang][1]);
+    const links = await page.$$eval('a[data-track="explore_demo_click"]', (a) => a.map((x) => x.href));
+    if (links.some((h) => new URL(h).searchParams.get('lang') !== lang)) p.push(`${lang}: ${links.join(' ')}`);
   }
-  if (page.errors.length) p.push(`console: ${page.errors.join(' | ')}`);
   await page.ctx.close();
-  record('Q', 'Product explorer fits one 1440 × 900 screen: tabs, screen and explanation', p.length ? 'FAIL' : 'PASS', p.join('; '));
+  record('Q', 'Demo links carry the language', p.length ? 'FAIL' : 'PASS', p.join('; '));
 }
 
 // ── D + E: consent ────────────────────────────────────────────────────────────────────────────────
@@ -636,18 +607,21 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await sleep(1200);
   const motion = await page.evaluate(() => ({
-    playing: !document.querySelector('.hero video').paused,
+    playing: !!document.querySelector('.hero video'),
     hiddenMarks: [...document.querySelectorAll('.ck-s, .ck-l')].filter((e) => (e.getAttribute('transform') || 'translate(0 0)') !== 'translate(0 0)').length,
     hiddenText: [...document.querySelectorAll('.step__text')].filter((e) => getComputedStyle(e).opacity !== '1').length,
     toggle: !!document.querySelector('.hero__toggle:not([hidden])'),
   }));
   const still = await page.evaluate(() => {
-    const band = document.querySelector('.band__set[aria-hidden]');
     const hs = document.querySelector('[data-hs]');
-    return { hotelHidden: [...hs.querySelectorAll('[data-b]:not([data-ob])')].filter((e) => +getComputedStyle(e).opacity < 1).length, hotelAlive: hs.classList.contains('is-alive'), bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
+    const band = document.querySelector('.band__set[aria-hidden]');
+    return { hotelStill: hs.classList.contains('is-still'), stillsOn: hs.querySelectorAll('.hs__still.is-on').length, canvasShown: getComputedStyle(hs.querySelector('[data-hs-film]')).display !== 'none', bandAnimation: getComputedStyle(document.querySelector('.band__track')).animationName, secondSet: getComputedStyle(band).display, wrap: getComputedStyle(document.querySelector('.band__set')).flexWrap };
   });
-  if (still.hotelHidden || still.hotelAlive) p.push(`hotel not shown finished and still under reduced motion: ${JSON.stringify(still)}`);
+  if (!still.hotelStill || still.stillsOn !== 1 || still.canvasShown) p.push(`hotel film not shown as one still per stage under reduced motion: ${JSON.stringify(still)}`);
   if (still.bandAnimation !== 'none' || still.secondSet !== 'none' || still.wrap !== 'wrap') p.push(`logo band not a still grid under reduced motion: ${JSON.stringify(still)}`);
+  // Reduced motion: the three numbers are stacked
+  const calm = await page.evaluate(() => ({ pin: document.querySelector('[data-why]').classList.contains('is-pin'), track: getComputedStyle(document.querySelector('[data-why-track]')).display }));
+  if (calm.pin || calm.track !== 'grid') p.push(`three numbers not stacked under reduced motion: ${JSON.stringify(calm)}`);
   if (motion.playing) p.push('hero video plays despite reduced motion');
   const wavePaused = await page.evaluate(async () => {
     const path = document.querySelector('.invite__waves path');
@@ -657,7 +631,7 @@ for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
   });
   if (!wavePaused) p.push('closing wave moves despite reduced motion');
   if (motion.hiddenMarks || motion.hiddenText) p.push('content hidden under reduced motion');
-  if (!motion.toggle) p.push('no video play/pause control');
+  if (motion.toggle) p.push('a video play/pause control is left in the still hero');
   // Images have alt text, buttons and links have names
   const unnamed = await page.evaluate(() => [...document.querySelectorAll('a, button')].filter((e) => !(e.textContent.trim() || e.getAttribute('aria-label'))).length);
   const noAlt = await page.evaluate(() => [...document.querySelectorAll('img')].filter((i) => !i.hasAttribute('alt')).length);

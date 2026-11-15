@@ -9,6 +9,7 @@ export type SolutionKey = (typeof solutionKeys)[number];
 export const pages = {
   home: { en: '/en/', de: '/de/', ar: '/ar/', it: '/it/' },
   solutions: { en: '/en/solutions/', de: '/de/loesungen/', ar: '/ar/solutions/', it: '/it/soluzioni/' },
+  how: { en: '/en/how-it-works/', de: '/de/so-funktionierts/', ar: '/ar/how-it-works/', it: '/it/come-funziona/' },
   waste: { en: '/en/solutions/log-waste/', de: '/de/loesungen/abfall-erfassen/', ar: '/ar/solutions/log-waste/', it: '/it/soluzioni/registra-sprechi/' },
   revenue: { en: '/en/solutions/revenue/', de: '/de/loesungen/umsatz/', ar: '/ar/solutions/revenue/', it: '/it/soluzioni/ricavi/' },
   pour: { en: '/en/solutions/pour-control/', de: '/de/loesungen/pour-control/', ar: '/ar/solutions/pour-control/', it: '/it/soluzioni/pour-control/' },
