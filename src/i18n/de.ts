@@ -283,7 +283,7 @@ const de: Dict = {
     legalDescription: 'Impressum der Tyll-Website.',
     privacyTitle: 'Datenschutzerklärung | Tyll',
     privacyDescription: 'Wie die Tyll-Website mit personenbezogenen Daten, Cookies und Terminanfragen umgeht.',
-    homeTitle: 'Tyll | Inventur App & Wareneinsatz für Gastronomie und Hotels',
+    homeTitle: 'Tyll | Inventur App & Wareneinsatz für Gastronomie & Hotels',
     homeDescription:
       'Inventur per Handy, Abfall in zwei Tipps erfasst, falsche Lieferantenrechnungen erkannt und wissen, was zu bestellen ist. Arbeitet mit Ihrer Kasse.',
   },
