@@ -298,7 +298,9 @@ html,body{margin:0;padding:0;background:#000}
  * really sits from each page's own drawing commands, sets the MediaBox to exactly w x h mm around it, adds
  * BleedBox and TrimBox, and shifts the cross-reference offsets to match.
  */
-export const fixPdfBoxes = (file, w, h, bleed, expectPages) => {
+export const fixPdfBoxes = (file, w, h, bleed, expectPages, cropToTrim = false, originZero = false) => {
+  // cropToTrim: the page itself is the trim size (MediaBox = TrimBox), for printers whose upload check rejects bleed
+  const outer = cropToTrim ? bleed : 0;
   const pdf = readFileSync(file, 'latin1');
   const n = (v) => String(Math.round(v * 1000) / 1000);
   const stream = (num) => {
@@ -319,7 +321,9 @@ export const fixPdfBoxes = (file, w, h, bleed, expectPages) => {
     const top = cms[0][3] - cms[1][3] * s;
     const box = (inset) => `${n(left + inset * PT)} ${n(top - (h - inset) * PT)} ${n(left + (w - inset) * PT)} ${n(top - inset * PT)}`;
     if (left < -0.01 || top - h * PT < -0.01 || left + w * PT > Number(m[1]) + 0.01) throw new Error(`PDF page smaller than ${w} x ${h} mm`);
-    edits.push({ at: m.index, from: m[0].length, to: `/MediaBox [${box(0)}] /BleedBox [${box(0)}] /TrimBox [${box(bleed)}]` });
+    // originZero: every box is [0 0 w h] (for upload checks that read only the upper corner)
+    const zero = `0 0 ${n(w * PT)} ${n(h * PT)}`;
+    edits.push({ at: m.index, from: m[0].length, to: originZero ? `/MediaBox [${zero}] /CropBox [${zero}] /BleedBox [${zero}] /TrimBox [${zero}]` : `/MediaBox [${box(outer)}] /BleedBox [${box(outer)}] /TrimBox [${box(bleed)}]` });
   }
   if (edits.length !== expectPages) throw new Error(`Expected ${expectPages} PDF pages, found ${edits.length}`);
   const shift = (off) => off + edits.reduce((d, e) => (e.at < off ? d + e.to.length - e.from : d), 0);

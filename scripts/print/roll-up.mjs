@@ -63,32 +63,32 @@ const HEAD_SIZE = (CW * 0.985) / width(HEAD[0], 'serif-r', 1); // about 90 mm
 const HEAD_LH = HEAD_SIZE * 1.06;
 const HEAD_Y = 478;
 const HEAD_2_SIZE = 66;
-const HEAD_2_Y = HEAD_Y + HEAD_LH + 78;
+const HEAD_2_Y = HEAD_Y + HEAD_LH + 98; // clear of the descenders of "every night."
 const SUB_SIZE = 29;
-const SUB_Y = HEAD_2_Y + 62;
+const SUB_Y = HEAD_2_Y + 76;
 const SUB_LH = SUB_SIZE * 1.42;
 
 const DUSK = [SUB_Y + SUB_LH * (SUB.length - 1) + 16, 0]; // white begins to darken here
 DUSK[1] = DUSK[0] + 104; // and is black by here
-const OFFER_SIZE = 86;
-const OFFER_Y = DUSK[1] + 74;
+const OFFER_SIZE = 78; // narrower, so it keeps a clear gap to the QR code
+const OFFER_Y = DUSK[1] + 86;
 // The QR code, 240 mm (was 190; the owner: "make the QR code bigger"), its top level with the offer's capitals
 const QR_SIDE = 240;
 const QR_X = TRIM_W - X - QR_SIDE;
-const QR_Y = OFFER_Y - 62;
+const QR_Y = OFFER_Y - 56; // its top level with the offer's capitals
 const PILL_W = 452;
-const PILL_H = 78;
+const PILL_H = 72;
 const PILL_Y = QR_Y + QR_SIDE - PILL_H;
-const OFFER_SUB_Y = OFFER_Y + 50;
+const OFFER_SUB_Y = OFFER_Y + 52;
 // Three screens of the demo as bubbles, scattered across the night below the offer (the owner: "some bubbles
 // where it shows off the demo at the bottom"), one per part of Tyll, each labelled with the screen's own question.
 // The crops are from the demo films' posters (public/media/film/en/*-desk.jpg, 1360 x 860, Demo-Tyll's own data).
 // Zigzag: each screen on one side, its question beside it on the other, so nothing stacks.
 const Q0 = QR_Y + QR_SIDE; // the QR code's foot
 const BUBBLES = [
-  { file: 'stock-desk.jpg', crop: [252, 62, 760, 238], x: 36, y: Q0 + 56, w: 430, rot: -2.4, label: ['How much', 'stock is left?'], side: 'right' },
-  { file: 'forecasting-desk.jpg', crop: [252, 62, 760, 238], x: 386, y: Q0 + 218, w: 430, rot: 2.0, label: ['What do I', 'need to order?'], side: 'left' },
-  { file: 'finance-desk.jpg', crop: [252, 128, 860, 370], x: 36, y: Q0 + 382, w: 400, rot: -1.2, label: ['Do the invoices', 'match?'], side: 'right' },
+  { file: 'stock-desk.jpg', crop: [252, 62, 760, 238], x: 36, y: Q0 + 46, w: 430, rot: -2.4, label: ['How much', 'stock is left?'], side: 'right' },
+  { file: 'forecasting-desk.jpg', crop: [252, 62, 760, 238], x: 386, y: Q0 + 198, w: 430, rot: 2.0, label: ['What do I', 'need to order?'], side: 'left' },
+  { file: 'finance-desk.jpg', crop: [252, 128, 860, 370], x: 36, y: Q0 + 352, w: 400, rot: -1.2, label: ['Do the invoices', 'match?'], side: 'right' },
 ];
 const URL_Y = 1780; // tyll.ai at the foot, right, just above the stand
 
@@ -210,9 +210,9 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
 
  <g id="offer" data-safe="">
   <text class="serif-r" font-size="${OFFER_SIZE}" fill="${C.white}" x="${X - 3}" y="${OFFER_Y.toFixed(2)}">${OFFER[0]}</text>
-  <text class="sans" font-size="27" fill="${C.silver}">${tspans(OFFER[1], X, OFFER_SUB_Y, 36)}</text>
+  <text class="sans" font-size="26" fill="${C.silver}">${tspans(OFFER[1], X, OFFER_SUB_Y, 35)}</text>
   <rect x="${X}" y="${PILL_Y.toFixed(2)}" width="${PILL_W}" height="${PILL_H}" rx="${PILL_H / 2}" fill="${C.white}"/>
-  <text class="sans-b" font-size="27" fill="${C.ink}" x="${X + 34}" y="${(PILL_Y + 49).toFixed(2)}">${CTA}</text>
+  <text class="sans-b" font-size="27" fill="${C.ink}" x="${X + 34}" y="${(PILL_Y + 46).toFixed(2)}">${CTA}</text>
   <path d="M${X + PILL_W - 66} ${(PILL_Y + PILL_H / 2).toFixed(2)}h30m-11 -10l11 10l-11 10" fill="none" stroke="${C.ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
  </g>
  ${qrTile({ url: QR_URL, x: QR_X, y: QR_Y, side: QR_SIDE, r: 10 })}
