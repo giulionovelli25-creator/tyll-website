@@ -47,7 +47,7 @@ const say =
   pr.kind === 'story'
     ? { ask: d.home.tour.steps[pr.step].headline, answer: d.home.tour.steps[pr.step].problem }
     : faqItem
-      ? { ask: faqItem.q, answer: faqItem.a }
+      ? { ask: faqItem.q, answer: faqItem.a.replace(/\{(?:home|book):([^}]+)\}/g, '$1') }
       : undefined;
 ---
 
@@ -107,6 +107,27 @@ const say =
         </section>
       </DemoFilm>
       {(s.note || p.demoEnglish) && <p class="sol__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
+      {
+        s.more && (
+          <section class:list={['more', s.more.length > 1 && 'more--two']} aria-labelledby="more-title">
+            <h2 id="more-title" class="more__title">{p.moreTitle.replace('{name}', name)}</h2>
+            <div class="more__groups">
+              {s.more.map((g) => (
+                <div class="more__group">
+                  {g.title && <h3>{g.title[lang]}</h3>}
+                  {g.lead && <p class="more__lead">{g.lead[lang]}</p>}
+                  <ul role="list">
+                    {g.points.map((pt) => (
+                      <li>{pt[lang]}</li>
+                    ))}
+                  </ul>
+                  {g.foot && <p class="more__foot">{g.foot[lang]}</p>}
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
     </div>
   </section>
 
@@ -385,6 +406,86 @@ const say =
     text-align: center;
   }
 
+  /* The demo's other features for this product: a short list under the film, as wide as it, its bullets in the
+     solution's colour; two groups side by side where a page has two */
+  .more {
+    max-width: var(--film-w, 68rem);
+    margin: var(--intro-gap) auto 0;
+    padding-top: var(--s-4);
+    border-top: 1px solid rgb(var(--acc-rgb) / 0.2);
+  }
+
+  .more__title {
+    margin: 0 0 var(--s-3);
+    color: var(--acc);
+    font-family: var(--font);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .more__groups {
+    display: grid;
+    gap: var(--s-4) clamp(2rem, 1rem + 3vw, 4rem);
+  }
+
+  .more--two .more__groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .more h3 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  .more ul {
+    display: grid;
+    gap: 0.55rem 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .more:not(.more--two) ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .more li {
+    position: relative;
+    padding-inline-start: 1.1rem;
+    color: var(--graphite);
+    font-size: 0.9688rem;
+    line-height: 1.5;
+  }
+
+  .more li::before {
+    position: absolute;
+    top: 0.62em;
+    inset-inline-start: 0;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--acc);
+    content: '';
+  }
+
+  .more__lead,
+  .more__foot {
+    max-width: none;
+    margin: 0 0 0.6rem;
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .more__foot {
+    margin: 0.8rem 0 0;
+  }
+
   /* One number or statement the site already makes, on a light grey band: the number or the question at the start,
      what it means at the end */
   .proof {
@@ -565,6 +666,11 @@ const say =
   }
 
   @media (max-width: 820px) {
+    .more--two .more__groups,
+    .more:not(.more--two) ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .see__list {
       grid-template-columns: minmax(0, 1fr);
     }

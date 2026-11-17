@@ -9,7 +9,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | why-chef.jpg | https://unsplash.com/photos/chef-garnishing-a-small-dish-with-fresh-greens-Bq44jpoeFf4 | Unsplash License (no longer used since 18 Oct 2026) |
 | faq-lounge.jpg | https://unsplash.com/photos/modern-lounge-area-with-contemporary-furniture-and-large-windows-yGEohCLnrl0 | Unsplash License |
 | problem/problem-stock.jpg | https://unsplash.com/photos/a-man-standing-in-a-kitchen-preparing-food-hM6MSq__M0Q (also How it works, behind the POS step, since 11 Nov 2026) | Unsplash License |
-| problem/problem-finance.jpg | https://unsplash.com/photos/a-woman-working-at-a-counter-with-a-computer-HVsYPecRjdw (How it works, behind the daily report, since 11 Nov 2026) | Unsplash License |
+| problem/problem-finance.jpg | https://unsplash.com/photos/a-woman-working-at-a-counter-with-a-computer-HVsYPecRjdw (How it works, behind the morning brief, since 11 Nov 2026) | Unsplash License |
 | problem/problem-forecasting.jpg | https://unsplash.com/photos/a-person-in-black-gloves-putting-food-on-a-plate-Rp0KQRcQfDc | Unsplash License |
 | problem/problem-events.jpg | https://unsplash.com/photos/elegant-banquet-hall-set-for-an-event-with-round-tables-cQxEJoQZ_-E | Unsplash License |
 | problem/problem-rooms.jpg | https://unsplash.com/photos/white-and-black-hallway-with-lights-turned-on-in-the-middle-I1bcW_t4mPU | Unsplash License |
@@ -18,7 +18,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | stock-chef.jpg | https://unsplash.com/photos/chef-preparing-foods-0sYLBZjgTTw | Unsplash License |
 | forecast-produce.jpg | https://unsplash.com/photos/person-slicing-parsleys-_SC2X6gphkg | Unsplash License |
 | events-ballroom.jpg | https://www.pexels.com/photo/33914525/ (The Visionary Vows; Events & Staffing, added 2 Nov 2026) | Pexels License (free commercial use, no attribution required) |
-| events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww (the Drinks control tile on the Solutions overview, and since 11 Nov 2026 the large photograph beside the How it works title; empty glasses on a set table, no drinks) | Unsplash License |
+| events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww (the Over pouring tile on the Solutions overview, and since 11 Nov 2026 the large photograph beside the How it works title; empty glasses on a set table, no drinks) | Unsplash License |
 | sales-buffet.jpg | https://unsplash.com/photos/man-pick-some-food-at-buffet-table-ZjEEJ-TjJgs (Sales & Performance opening, added 17 Oct 2026) | Unsplash License |
 | problem/problem-sales-frontdesk.jpg | https://unsplash.com/photos/a-woman-is-standing-at-the-front-desk-of-a-restaurant-wOkEwfChQqM (Sales & Performance, added 17 Oct 2026) | Unsplash License |
 | problem/problem-rooms-housekeeping.jpg | https://unsplash.com/photos/person-holding-white-pillow-5-S_JpT7NGQ (Rooms & Guest Experience, added 17 Oct 2026) | Unsplash License |
@@ -31,7 +31,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | stock-shelf.jpg | https://www.pexels.com/photo/clear-glass-jar-lot-458796/ (beside the question on the Stock page, added 11 Nov 2026; 2000 × 1170) | Pexels License (free commercial use, no attribution required) |
 | predictions-delivery.jpg | https://www.pexels.com/photo/a-person-carrying-a-basket-with-vegetables-7844010/ (beside the question on the Predictions page, added 11 Nov 2026; 2000 × 1335) | Pexels License (free commercial use, no attribution required) |
 | reconciliation-tickets.jpg | https://www.pexels.com/photo/restaurant-kitchen-order-tickets-management-37539842/ (beside the question on the Reconciliation page, added 11 Nov 2026; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
-| drinks-cola.jpg | https://www.pexels.com/photo/refreshing-glass-of-iced-cola-beverage-37925075/ (beside the question on the Drinks control page, added 11 Nov 2026; a soft drink, no label, no alcohol; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
+| drinks-cola.jpg | https://www.pexels.com/photo/refreshing-glass-of-iced-cola-beverage-37925075/ (beside the question on the Over pouring page, added 11 Nov 2026; a soft drink, no label, no alcohol; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
 | how-count-jars.jpg | https://www.pexels.com/photo/close-up-of-jars-with-dry-food-on-a-rack-10560073/ (How it works, behind the stock count, added 11 Nov 2026; 2000 × 2500) | Pexels License (free commercial use, no attribution required) |
 | tyll-problem-1.jpg | Tyll's own asset from the current website (tyll.ai/bilder/problem-1.jpg) | Tyll |
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |

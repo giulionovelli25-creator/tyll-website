@@ -58,11 +58,11 @@ export const solutionSeo: Record<SolutionKey, Partial<Record<Locale, Meta>>> = {
   pour: {
     en: {
       title: 'Bar Inventory Variance: Pours vs Glasses Sold | Tyll',
-      description: 'See how many glasses each bottle really gave, by outlet and shift, and what the gap is worth. About the shift, not a person. Try the demo.',
+      description: 'See how many glasses each bottle really gave, by outlet and shift, and what the gap is worth. Then see who was on, day by day. Try the demo.',
     },
     de: {
-      title: 'Schankverlust messen: Pour Control für Bars | Tyll',
-      description: 'Wie viele Gläser jede Flasche wirklich ergab, nach Outlet und Schicht, mit dem Wert der Differenz. Es geht um die Schicht, nicht um eine Person.',
+      title: 'Schankverlust messen: Überschenken erkennen | Tyll',
+      description: 'Wie viele Gläser jede Flasche wirklich ergab, nach Outlet und Schicht, mit dem Wert der Differenz. Danach: wer Tag für Tag im Dienst war.',
     },
   },
 };

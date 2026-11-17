@@ -1,15 +1,15 @@
 # Tyll
 
-> Tyll is software for hotels and restaurants that shows where they lose money on stock, waste and invoices, and what to order next. It works read only on top of the POS, PMS and payment systems a hotel or restaurant already runs. Nothing to install and nothing to replace.
+> Tyll is software for hotels and restaurants that shows where they lose money on stock, waste, bills and invoices, and what to order next. It works read only on top of the POS, PMS, reservations and purchasing systems a hotel or restaurant already runs, and sends a morning brief at 7 AM. Nothing to install and nothing to replace.
 
 ## Products
 
-- Log waste: two taps log what was wasted or broken, with what it cost.
-- Stock: see what runs out first, before a guest asks for it.
-- Predictions: one draft order, built from covers, events and real usage.
-- Revenue: revenue and estimated profit, by day and by outlet.
-- Reconciliation: tabs against receipts and invoices against deliveries, so you only see what differs.
-- Drinks control (pour control): see the gap between pours and glasses sold by outlet and shift, and what it is worth.
+- Log waste: two taps, the item then the amount, log what was wasted or broken, with what it cost.
+- Stock levels: see what runs out first, count stock with the expected amount filled in, and find missing stock.
+- Predictions: one order list grouped by supplier, built from forecast guests, events and the last 4 weeks of use. Nothing is sent until a manager approves it.
+- Revenue: revenue and estimated profit, by day and by outlet, with menu performance.
+- Reconciliation: bills against kitchen and bar tickets, and supplier invoices against deliveries, so you only see what differs.
+- Over pouring: see what was poured but not billed, by outlet and shift, and what it is worth.
 
 ## English
 

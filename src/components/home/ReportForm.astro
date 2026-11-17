@@ -7,7 +7,7 @@
 // the page. Without it, or if sending fails, it falls back to the visitor's email app, addressed to info@tyll.ai.
 // A hidden field catches bots. Nothing is stored on this website.
 import { site } from '../../config/site';
-import { integrations } from '../../config/integrations';
+import { reportPos } from '../../config/integrations';
 import { t, href, type Locale } from '../../i18n';
 
 interface Props {
@@ -18,7 +18,7 @@ const { lang } = Astro.props;
 const v = t(lang).home.report;
 const f = v.fields;
 const check = 'M2.5 8.5 6.2 12 13.5 4';
-const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
+const posChoices = reportPos;
 ---
 
 <div class="rf" data-report-wrap>
@@ -106,8 +106,8 @@ const posChoices = integrations.filter((i) => i.type === 'pos' && i.featured);
                   {
                     posChoices.map((i, n) => (
                       <label class="chip" style={`--i:${n}`}>
-                        <input type="radio" name="pos" value={i.name} />
-                        <span dir="ltr">{i.name}</span>
+                        <input type="radio" name="pos" value={i.value} />
+                        <span dir="ltr">{i.label}</span>
                       </label>
                     ))
                   }

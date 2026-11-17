@@ -15,36 +15,39 @@ const { lang } = Astro.props;
 const d = t(lang);
 const f = d.faq;
 
-// A fact the owner has not supplied yet stands in the copy in [SQUARE BRACKETS] and is shown exactly as written.
-const PLACEHOLDER = /(\[[^\]]+\])/;
-const pieces = (a: string) =>
-  a
-    .split(PLACEHOLDER)
-    .filter(Boolean)
-    .map((text) => ({ text, placeholder: PLACEHOLDER.test(text) }));
+// An answer may link inside its own text: {home:words} goes to the homepage's systems band, {book:words} to booking.
+const INLINE = /\{(home|book):([^}]+)\}/g;
+const inlineHref = { home: `${href('home', lang)}#integrations`, book: href('book', lang) };
+const pieces = (a: string) => {
+  const out: { text: string; to?: 'home' | 'book' }[] = [];
+  let at = 0;
+  for (const m of a.matchAll(INLINE)) {
+    if (m.index > at) out.push({ text: a.slice(at, m.index) });
+    out.push({ text: m[2], to: m[1] as 'home' | 'book' });
+    at = m.index + m[0].length;
+  }
+  if (at < a.length) out.push({ text: a.slice(at) });
+  return out;
+};
+const plain = (a: string) => a.replace(INLINE, '$2');
 
-// Every answer ends with one link: Book a demo, or See how it works.
+// Most answers end with one link: Book a demo, or See how it works.
 const links = {
   book: { href: href('book', lang), label: d.cta.book, track: 'book_demo_click' },
   how: { href: href('how', lang), label: d.teaser.link, track: undefined },
 };
 
-// Until the owner gives a number (PUBLIC_WHATSAPP_NUMBER), the link keeps its placeholder.
-const whatsapp = `https://wa.me/${site.whatsapp ? site.whatsapp.replace(/\D/g, '') : '[WHATSAPP NUMBER]'}`;
-
 // FAQPage structured data, built from the questions and answers shown on the page, in this page's language.
-// An answer that still has a placeholder is left out until it is filled in.
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   inLanguage: lang,
   mainEntity: f.groups
     .flatMap((g) => g.items)
-    .filter((i) => !PLACEHOLDER.test(i.a))
     .map((i) => ({
       '@type': 'Question',
       name: i.q,
-      acceptedAnswer: { '@type': 'Answer', text: i.a },
+      acceptedAnswer: { '@type': 'Answer', text: plain(i.a) },
     })),
 };
 ---
@@ -83,7 +86,7 @@ const schema = {
             <div class="faq__items">
               {g.items.map((i, ii) => {
                 const open = gi === 0 && ii === 0;
-                const link = links[i.link];
+                const link = i.link && links[i.link];
                 return (
                   <div id={i.id} class:list={['faq__item', open && 'is-open']}>
                     <h3 class="faq__h">
@@ -94,10 +97,23 @@ const schema = {
                     <div class="faq__panel" id={`a-${i.id}`}>
                       <div class="faq__panel-inner">
                         <p class="faq__answer">
-                          {pieces(i.a).map((p) => (p.placeholder ? <bdi dir="ltr">{p.text}</bdi> : p.text))}{' '}
-                          <a class="faq__link" href={link.href} data-track={link.track} data-track-from={link.track && 'faq-answer'}>
-                            {link.label}
-                          </a>
+                          {pieces(i.a).map((p) =>
+                            p.to ? (
+                              <a class="faq__inline" href={inlineHref[p.to]} data-track={p.to === 'book' ? 'book_demo_click' : undefined} data-track-from={p.to === 'book' ? 'faq-answer' : undefined}>
+                                {p.text}
+                              </a>
+                            ) : (
+                              p.text
+                            ),
+                          )}
+                          {link && (
+                            <>
+                              {' '}
+                              <a class="faq__link" href={link.href} data-track={link.track} data-track-from={link.track && 'faq-answer'}>
+                                {link.label}
+                              </a>
+                            </>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -127,14 +143,7 @@ const schema = {
         <p>{f.moreText}</p>
         <div class="faq__actions">
           <a class="btn btn--solid" href={href('book', lang)} data-track="book_demo_click" data-track-from="faq">{d.cta.book}</a>
-          <a class="btn btn--line" href={whatsapp} target="_blank" rel="noopener" data-track="whatsapp_click">
-            <svg class="faq__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
-              <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" />
-            </svg>
-            {f.whatsapp}
-            <span class="visually-hidden"> {d.cta.newTab}</span>
-          </a>
+          <a class="btn btn--line" href={href('book', lang)} data-track="book_demo_click" data-track-from="faq-call">{f.call}</a>
           <a class="btn btn--line" href={`mailto:${site.email}`} data-track="email_click">{site.email}</a>
         </div>
       </div>
@@ -289,8 +298,17 @@ const schema = {
     white-space: nowrap;
   }
 
-  .faq__link:hover {
+  .faq__link:hover,
+  .faq__inline:hover {
     text-decoration-thickness: 2px;
+  }
+
+  /* a link inside the answer's own words */
+  .faq__inline {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -342,10 +360,6 @@ const schema = {
     display: grid;
     gap: 0.6rem;
     margin-top: 1.5rem;
-  }
-
-  .faq__icon {
-    flex: none;
   }
 
   /* On a short desktop window the photo gives way so the whole card still fits under the header */

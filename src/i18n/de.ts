@@ -26,7 +26,7 @@ const de: Dict = {
   },
   hero: {
     title: 'Wissen, was Ihr Hotel letzte Nacht verloren hat. Und was Sie nächste Woche kaufen sollten.',
-    sub: 'Tyll gleicht über Nacht jede Gästerechnung, jeden Beleg und jede Lieferantenrechnung ab und macht aus den Zahlen eine Bestandszählung und eine Bestellliste, mit der Ihr Team arbeiten kann.',
+    sub: 'Jede Nacht prüft Tyll Ihre Gästerechnungen gegen die Küchen- und Barbons und Ihre Lieferantenrechnungen gegen die Lieferungen, aktualisiert Ihren Bestand und erstellt die Bestellliste.',
     try: 'Demo ausprobieren →',
     watch: 'So sieht es aus →',
     report: 'Kostenlosen Bericht anfordern →',
@@ -34,7 +34,7 @@ const de: Dict = {
     play: 'Hintergrundvideo abspielen',
     // The flagged receipt lines' labels and the example morning card (fictional data, as the footer says)
     flags: ['Entfernt, ohne Grund', 'Ausschank nicht berechnet', 'Nicht auf der Zimmerrechnung', 'Doppelt berechnet', 'Kein Lieferschein'],
-    card: { title: 'Heute Morgen · Bar & Restaurant', count: '3 Posten zu prüfen', total: '€264', rows: <[string, string, string, string][]>[['Negroni', 'Bonniert, dann storniert. Ohne Grund.', '€68', 'TAB 2094'], ['Hauswein weiß, Glas', 'Ausgeschenkt, nie berechnet.', '€52', 'TAB 2099'], ['2 × Club-Sandwich', 'Zimmerservice, fehlt auf Zimmer 517.', '€144', 'CHK 3384']], cta: 'Ganze Liste öffnen →' },
+    card: { title: 'Morgenbericht · Grand Resort Dubai', lost: 'Gestern verloren', total: 'AED 583', split: 'AED 337 Abfall, AED 0 Bruch, AED 246 nicht berechnete Getränke', todo: 'Drei Dinge für heute', rows: <[string, string, string][]>[['5 kritische Artikel bestellen', 'Zu bestellen', 'AED 43,2k'], ['Gratisartikel über dem vereinbarten Limit', 'Maison Lune', 'AED 459'], ['Ausschank in der Lobby Lounge prüfen', 'Sonntag, Tagschicht, nicht berechnet', 'AED 1.430']], cta: 'Morgenbericht öffnen →' },
   },
   home: {
     tour: {
@@ -53,10 +53,10 @@ const de: Dict = {
       button: 'Demo buchen',
       cards: { pos: 'Kasse', pms: 'PMS', stock: 'Lager', payments: 'Zahlungen' },
       steps: [
-        { label: 'Umsatz und Abgleich', headline: 'Stimmen Gästerechnungen, Belege und Rechnungen überein?', problem: 'Gästerechnungen, Belege und Rechnungen liegen getrennt. Niemand kann alle prüfen.', bullets: ['Die Gästerechnungen jedes Abends gegen die Belege geprüft', 'Jede Rechnung gegen Bestellung und Lieferung geprüft'], shot: 'Tyll zeigt eine Lieferantenrechnung: AED 6.262 bestellt, AED 5.898 erhalten, AED 6.262 berechnet.' },
-        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Eine zehnminütige Zählung auf dem Handy, danach minus eins, wenn etwas verbraucht wird oder kaputtgeht', 'Gästerechnungen und Belege zeigen, welcher Bestand rausging, so ist die Lücke erklärt'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
-        { label: 'Inventur und Einkauf', headline: 'Wissen wir, was wir haben, bevor wir bestellen?', problem: 'Gezählt wird auf Papier, wenn überhaupt, also wird nach Gefühl bestellt.', bullets: ['Wöchentliche Inventur, abgeglichen mit dem, was verkauft wurde', 'Eine Bestellliste nach Lieferant, aus Zählung und Prognose erstellt'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
-        { label: 'Das Ergebnis', headline: 'Ein Hotel. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
+        { label: 'Umsatz und Abgleich', headline: 'Stimmen Gästerechnungen, Bons und Rechnungen überein?', problem: 'Alles liegt getrennt. Niemand kann alles prüfen.', bullets: ['Rechnungen gegen Bons: Stornos, Erstattungen, Rabatte, Gratisartikel, nach dem Bonieren entfernte Posten', 'Zimmerbelastungen auf der Gästerechnung', 'Lieferantenrechnungen gegen Bestellung und Lieferung'], shot: 'Tyll zeigt eine Rechnung von Gulf Prime Meats: AED 6.709 bestellt, AED 6.099 erhalten, AED 6.709 berechnet.' },
+        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Eine zehnminütige Zählung auf dem Handy, danach zwei Tipps, wenn etwas weggeworfen wird oder kaputtgeht', 'Gästerechnungen und Bons zeigen, welcher Bestand rausging, so ist die Lücke erklärt', 'Dazu fünf kurze Stichproben am Tag bei den wichtigsten Artikeln'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
+        { label: 'Inventur und Einkauf', headline: 'Wissen wir, was wir haben, bevor wir bestellen?', problem: 'Gezählt wird auf Papier, wenn überhaupt, also wird nach Gefühl bestellt.', bullets: ['Wöchentliche Inventur, abgeglichen mit dem, was verkauft wurde', 'Eine Bestellliste nach Lieferant, aus erwarteten Gästen, Events und dem Verbrauch der letzten 4 Wochen', 'Nichts geht an einen Lieferanten, bevor eine Führungskraft es freigibt'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
+        { label: 'Das Ergebnis', headline: 'Ein Hotel oder eine ganze Gruppe. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
       ],
     },
     // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
@@ -95,13 +95,13 @@ const de: Dict = {
       cards: [
         { title: 'Bestand und Abfall', text: 'Sehen, was noch da ist, per Telefon zählen, Abfall mit zwei Tipps erfassen.' },
         { title: 'Einkauf', text: 'Wissen, was und wie viel zu bestellen ist.' },
-        { title: 'Umsatz und Abgleich', text: 'Gästerechnungen, Belege und Lieferantenrechnungen jedes Abends prüfen.' },
+        { title: 'Umsatz und Abgleich', text: 'Jede Nacht: Gästerechnungen gegen Bons, Rechnungen gegen Lieferungen.' },
       ],
       soon: 'In Entwicklung: Events und Personal, Zimmer und Gästeerlebnis, Vertrieb und Performance.',
     },
     works: {
       title: 'Funktioniert mit den Systemen, die Sie bereits nutzen',
-      text: 'Lesezugriff auf Ihre Kassen-, PMS- und Zahlungssysteme.',
+      text: 'Lesezugriff auf Ihre Kassen-, PMS-, Reservierungs- und Einkaufssysteme.',
       note: 'Ihr System fehlt? Wir arbeiten auch mit Datenexporten.',
     },
     invite: { title: 'Sehen Sie es für Ihr Hotel.' },
@@ -129,18 +129,18 @@ const de: Dict = {
   },
   // The dark band under the hero (9 Nov 2026): one list every morning, in three steps
   // The homepage's short version of How it works (9 Nov 2026), in place of Getting set up
-  teaser: { steps: ['Gespräch buchen', 'Kostenlose Inventur', 'Wir lesen Ihre Kasse', 'Ihr täglicher Bericht'], link: 'So funktioniert’s →' },
+  teaser: { steps: ['Gespräch buchen', 'Kostenlose Inventur', 'Wir lesen Ihre Kasse', 'Ihr Morgenbericht'], link: 'So funktioniert’s →' },
   // The How it works page (9 Nov 2026)
   howPage: {
     eyebrow: 'So funktioniert’s',
     title: 'Vier Schritte. Danach sehen Sie jeden Morgen, was Ihr Hotel verloren hat.',
     sub: 'Nur lesend. Nichts zu installieren. Nichts zu ersetzen.',
-    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenlose Inventur', 'Wir zählen Ihre Bar mit Ihrem Team. Etwa 10 Minuten pro Person.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihr täglicher Bericht', 'Jeden Morgen: was gestern verloren ging und was es Sie gekostet hat. 30 Tage kostenlos.']],
+    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenlose Inventur', 'Wir zählen Ihren Bestand mit Ihrem Team. Etwa 10 Minuten pro Person.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihr Morgenbericht', 'Jeden Morgen um 7 Uhr per E-Mail: was Sie gestern verloren haben und was es gekostet hat, die drei Dinge für heute und der bisherige Monat. 30 Tage kostenlos.']],
     call: { title: 'Tyll Einführung · 15 Min.', day: 'Dienstag', slots: ['09:30', '11:00', '14:30'] },
     readOnly: 'Nur lesend',
     strip: ['Nur lesend', 'Nichts zu ersetzen', 'Keine Gebühr, wenn der Pilot kein echtes Geld findet'],
     final: 'Sehen Sie es mit Ihren eigenen Zahlen.',
-    count: { title: 'Bar · Regal 2', items: <[string, string][]>[['Gin 70cl', '6'], ['Rioja 75cl', '14'], ['Tonic 200ml', '48']], less: 'Eins weniger', more: 'Eins mehr' },
+    count: { title: 'Gesamtprüfung, Kühlraum', items: <[string, string][]>[['Rinderfilet', '15,4'], ['Hähnchenbrust', '15,9'], ['Lachsfilet', '20,4']], unit: 'kg', note: 'Soll, nur bei Abweichung ändern', less: 'Eins weniger', more: 'Eins mehr' },
   },
   solutionPage: {
     seeTitle: 'Das sehen Sie gleich',
@@ -156,6 +156,20 @@ const de: Dict = {
     finalText: 'Öffnen Sie diesen Bereich der interaktiven Demo oder sprechen Sie mit uns über Ihr Hotel.',
     finalTextNoDemo: 'Buchen Sie ein Gespräch, und wir zeigen Ihnen diesen Bereich von Tyll in der Demo.',
     others: 'Weitere Lösungen',
+    moreTitle: 'Außerdem in {name}',
+    also: {
+      title: 'Außerdem in Tyll',
+      items: <[string, string][]>[
+        ['Warnungen', 'Alles, was eine Entscheidung braucht, in einer Liste, der größte Betrag zuerst.'],
+        ['Rückholliste', 'Jeder Geldfall, offen und abgeschlossen, und was zurückgeholt wurde.'],
+        ['Menüleistung', 'Was jedes Gericht verkauft und einbringt, und welche Margen sinken.'],
+        ['Tyll Flow', 'Jede offene Küchen- und Barbestellung, und ob sie sich verspätet.'],
+        ['Berichte', 'Managementbericht, Outlet-Vergleich, Abfallprotokoll und Bestandsdaten, als PDF oder CSV.'],
+        ['Morgenbericht', 'Die Verluste von gestern und die drei Aufgaben für heute, um 7 Uhr per E-Mail.'],
+        ['Rollen und Zugriff', 'Eigentümer, Hoteldirektion, Finanzcontrolling, F&B, Küchenchefs und Team sehen jeweils, was ihre Rolle braucht.'],
+        ['Mehrere Hotels', 'Eine Gruppenansicht über alle Häuser, jedes in seiner eigenen Währung.'],
+      ],
+    },
     indexTitle: 'Wo verliert Ihr Hotel Geld?',
     step: 'Schritt',
     pause: 'Rundgang anhalten',
@@ -198,7 +212,7 @@ const de: Dict = {
     intro: 'Kurze Antworten auf die Fragen, die Hotelteams uns am häufigsten stellen.',
     more: 'Noch eine Frage?',
     moreText: 'Ein Gespräch von 15 Minuten, unverbindlich. Wir antworten innerhalb von 24 Stunden.',
-    whatsapp: 'Per WhatsApp schreiben',
+    call: 'Gespräch buchen →',
     final: 'Noch unentschlossen? Sehen Sie es mit Ihren eigenen Zahlen.',
     groups: [
       {
@@ -207,9 +221,9 @@ const de: Dict = {
         items: [
           { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: 'Ja. Wir beginnen mit einem kostenlosen 30-Tage-Piloten mit Ihren eigenen Daten. Findet der Pilot kein echtes Geld, zahlen Sie nichts.', link: 'book' },
           { id: 'replace', q: 'Müssen wir unsere Kasse oder Hotelsoftware ersetzen?', a: 'Nein. Tyll arbeitet neben den Systemen, die Sie bereits nutzen. Nichts zu installieren und nichts zu ersetzen.', link: 'how' },
-          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll liest heute Daten aus SumUp, Oracle Simphony und Lightspeed. Sie nutzen etwas anderes? Sagen Sie es uns im Gespräch, wir prüfen es.', link: 'book' },
-          { id: 'setup', q: 'Wie lange dauert die Einrichtung?', a: 'Ein kurzes Gespräch, dann eine Inventur mit Ihrem Team, etwa 10 Minuten pro Person. Ihr erster täglicher Bericht folgt innerhalb von [X DAYS].', link: 'how' },
-          { id: 'staff', q: 'Wie viel Arbeit ist das für unser Team?', a: 'Sehr wenig. Nach der ersten Zählung tippt Ihr Team nur auf minus 1, wenn etwas zerbricht oder weggeworfen wird. Die Prüfung übernimmt Tyll jede Nacht.', link: 'how' },
+          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll arbeitet mit den Systemen auf {home:unserer Startseite}, darunter Oracle OPERA, MICROS Simphony, Mews, apaleo, Lightspeed und SumUp. Sie nutzen etwas anderes? {book:Fragen Sie uns}, wir prüfen Ihr System.' },
+          { id: 'setup', q: 'Wie lange dauert die Einrichtung?', a: 'Ein kurzes Gespräch, dann eine Inventur mit Ihrem Team, etwa 10 Minuten pro Person. Ihr erster Morgenbericht folgt innerhalb von 48 Stunden.', link: 'how' },
+          { id: 'staff', q: 'Wie viel Arbeit ist das für unser Team?', a: 'Sehr wenig. Nach der ersten Zählung erfasst Ihr Team Abfall und Bruch mit zwei Tipps: Artikel, dann Menge. Ein Grund ist optional. Jeden Tag zählt es fünf wichtige Artikel, das dauert wenige Minuten. Die Prüfung übernimmt Tyll jede Nacht und schickt um 7 Uhr einen Morgenbericht.', link: 'how' },
         ],
       },
       {
@@ -217,16 +231,17 @@ const de: Dict = {
         title: 'Daten und Vertrauen',
         items: [
           { id: 'readonly', q: 'Kann Tyll etwas in unseren Systemen ändern?', a: 'Nein. Tyll arbeitet nur lesend. Es liest Ihre Umsätze und Rechnungen und ändert, löscht oder bucht niemals etwas.', link: 'book' },
-          { id: 'storage', q: 'Wo werden unsere Daten gespeichert, und wer kann sie sehen?', a: 'Ihre Daten werden in [HOSTING LOCATION] gespeichert und gemäß [GDPR / LOCAL DATA RULES] verarbeitet. Nur Ihr Team und die Tyll-Mitarbeitenden, die Ihren Piloten betreuen, können sie sehen.', link: 'book' },
+          { id: 'storage', q: 'Wo werden unsere Daten gespeichert, und wer kann sie sehen?', a: 'Ihre Daten liegen in Europa und werden nach der DSGVO verarbeitet. Jede Person sieht nur die Hotels, Outlets und Zahlen, die ihre Rolle erlaubt, zum Beispiel sieht ein Küchenchef seine Küche, eine Finanzcontrollerin die ganze Gruppe. Außer Ihrem Team sehen nur die Tyll-Mitarbeitenden, die Ihren Piloten betreuen, Ihre Daten.', link: 'book' },
+          { id: 'statements', q: 'Kann Tyll Kartenzahlungen und Kontoauszüge abgleichen?', a: 'Das ist ein eigenes Tyll-Produkt, das die Kasse mit den Abrechnungen der Kartenanbieter und den Kontoauszügen abgleicht. Fragen Sie uns im Gespräch danach.', link: 'book' },
         ],
       },
       {
         id: 'pricing',
         title: 'Preise',
         items: [
-          { id: 'cost', q: 'Was kostet es nach dem Piloten?', a: 'Eine feste Monatsgebühr pro Hotel, ohne Einrichtungsgebühr [CONFIRM]. Den genauen Preis nennen wir im Gespräch, je nach Anzahl Ihrer Outlets.', link: 'book' },
-          { id: 'contract', q: 'Gibt es einen langen Vertrag?', a: '[CONTRACT TERMS, e.g. monthly, cancel anytime].', link: 'book' },
-          { id: 'outlets', q: 'Funktioniert es mit mehreren Outlets und Währungen?', a: 'Ja. Sie sehen jede Bar, jedes Restaurant und jeden Zimmerservice an einem Ort, in Ihrer eigenen Währung.', link: 'book' },
+          { id: 'cost', q: 'Was kostet es nach dem Piloten?', a: 'Es gibt keine Einrichtungsgebühr. Der Preis hängt von Ihrem Hotel und der Zahl Ihrer Outlets ab, und wir nennen ihn im Gespräch.', link: 'book' },
+          { id: 'contract', q: 'Gibt es einen langen Vertrag?', a: 'Nach dem kostenlosen 30-Tage-Piloten läuft Tyll mit einem Dreimonatsvertrag, lang genug, um die Ergebnisse in Ihren eigenen Zahlen zu sehen.', link: 'book' },
+          { id: 'outlets', q: 'Funktioniert es mit mehreren Outlets und Währungen?', a: 'Ja. Sie sehen jede Bar, jedes Restaurant und jeden Zimmerservice an einem Ort. Führen Sie mehrere Hotels, erscheint jedes in seiner eigenen Währung, und die Gruppenansicht führt sie zusammen.', link: 'book' },
         ],
       },
     ],
@@ -272,9 +287,9 @@ const de: Dict = {
   },
   meta: {
     howTitle: 'So funktioniert’s | Tyll',
-    howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, eine kostenlose Inventur, nur lesender Zugriff auf Ihre Kasse und dann jeden Morgen ein Bericht darüber, was verloren ging und was es gekostet hat.',
+    howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, eine kostenlose Inventur, nur lesender Zugriff auf Ihre Kasse und dann um 7 Uhr ein Morgenbericht darüber, was verloren ging und was es gekostet hat.',
     solutionsTitle: 'Inventur, Abfall & Rechnungsabgleich für Gastronomie | Tyll',
-    solutionsDescription: 'Sechs Werkzeuge, die mit Ihrer Kasse arbeiten: Abfall erfassen, Inventur, Einkaufsprognose, Umsatz, Rechnungsabgleich und Pour Control. Demo testen.',
+    solutionsDescription: 'Sechs Werkzeuge, die mit Ihrer Kasse arbeiten: Abfall erfassen, Lagerbestand, Einkaufsprognose, Umsatz, Rechnungsabgleich und Überschenken. Demo testen.',
     bookTitle: 'Kostenloses Gespräch buchen | Tyll',
     bookDescription: 'Buchen Sie ein kurzes, kostenloses Gespräch mit dem Tyll-Team über Ihr Restaurant oder Hotel und darüber, wo Tyll helfen könnte.',
     faqTitle: 'FAQ: So arbeitet Tyll mit Ihren Systemen | Tyll',

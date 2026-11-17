@@ -54,8 +54,28 @@ export function logoBox({ height, aspect, clear = [0, 0, 0, 0] }: IntegrationLog
   return { width: px(w), height: px(h), top: px(-top * h), right: px(-right * w), bottom: px(-bottom * h), left: px(-left * w) };
 }
 
-// `featured` POS systems are offered as quick choices in the free report form (with "Other"). Researched for the Gulf
-// (Dubai), Singapore and Europe on 1 Nov 2026 from public vendor lists and market guides.
+// The POS systems the free report form offers as quick choices (with "Other"), the POS systems of the homepage's logo
+// band (17 Nov 2026). `value` is what the form sends: the three first offered keep their old values, so form handling
+// and earlier requests read the same.
+export const reportPos: { value: string; label: string }[] = [
+  { value: 'Oracle MICROS', label: 'MICROS Simphony' },
+  { value: 'Lightspeed', label: 'Lightspeed' },
+  { value: 'SumUp', label: 'SumUp' },
+  { value: 'Foodics', label: 'Foodics' },
+  { value: 'NCR Aloha', label: 'NCR Aloha' },
+  { value: 'Syrve', label: 'Syrve' },
+  { value: 'Zonal', label: 'Zonal' },
+  { value: 'Eats365', label: 'Eats365' },
+  { value: 'Restroworks', label: 'Restroworks' },
+  { value: 'orderbird', label: 'orderbird' },
+  { value: 'StoreHub', label: 'StoreHub' },
+  { value: 'Qashier', label: 'Qashier' },
+  { value: 'Shiji Infrasys', label: 'Shiji Infrasys' },
+  { value: 'Infor HMS', label: 'Infor HMS' },
+];
+
+// POS and PMS systems researched for the Gulf (Dubai), Singapore and Europe on 1 Nov 2026 from public vendor lists and
+// market guides.
 
 export type Integration = { name: string; type: 'pos' | 'pms'; featured?: boolean };
 

@@ -2,8 +2,9 @@
 // How it works (9 Nov 2026; black, white and greys only since 10 Nov 2026, never beige): four steps, then
 // every morning a report of what the hotel lost. The Solutions page's frame (header, silver wave banner), then four steps that alternate sides
 // of one line, each numbered on the line itself: the call (a booking card with three times, one chosen), the free count
-// (a phone counting a shelf), reading the POS (the makers' own logos for SumUp, Oracle Simphony and Lightspeed, in grey,
-// joined to Tyll, read only) and the daily report (the example card, `MorningCard.astro`). The pictures are HTML and
+// (a phone on the demo's total check of the walk-in fridge, the expected amount filled in), reading the POS (the makers'
+// own logos of three POS makers, in grey, joined to Tyll, read only) and the morning brief (the
+// example card, `MorningCard.astro`). The pictures are HTML and
 // CSS, decorative, with fictional data. Then three reassurances and a black closing band. Copy: `howPage`.
 // Scrolling snaps (10 Nov 2026, the owner: "so it is clear what you are supposed to read"): each step fills the screen
 // under the header and the page stops on the banner, on each step, on the reassurances and at the end of the footer; a
@@ -105,13 +106,16 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
                 <div class="phone">
                   <div class="phone__screen">
                     <p class="phone__title">{p.count.title}</p>
+                    <p class="phone__note">{p.count.note}</p>
                     <ul class="phone__rows">
                       {p.count.items.map(([name, qty], k) => (
                         <li class:list={[k === 1 && 'is-on']}>
                           <span class="phone__name">{name}</span>
                           <span class="phone__ctl" dir="ltr">
                             <span class="phone__btn">−</span>
-                            <b>{qty}</b>
+                            <b>
+                              {qty} <small>{p.count.unit}</small>
+                            </b>
                             <span class="phone__btn">+</span>
                           </span>
                         </li>
@@ -558,6 +562,19 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     font-weight: 600;
   }
 
+  .phone__note {
+    max-width: none;
+    margin: 0.3rem 0 0;
+    color: var(--steel);
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .phone__ctl small {
+    color: var(--steel);
+    font-size: 0.75rem;
+  }
+
   .phone__rows {
     display: grid;
     gap: 0.5rem;
@@ -725,7 +742,7 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     height: auto;
   }
 
-  /* 4. The daily report */
+  /* 4. The morning brief */
   .list {
     width: min(100%, 26rem);
   }

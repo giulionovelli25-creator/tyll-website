@@ -65,7 +65,7 @@ export const explore: Record<SolutionKey, Explore> = {
   revenue: {
     spots: [
       {
-        label: t('Revenue and profit', 'Umsatz und Gewinn', 'الإيرادات والربح', 'Ricavi e profitto'),
+        label: t('Revenue and estimated profit', 'Umsatz und geschätzter Gewinn', 'الإيرادات والربح التقديري', 'Ricavi e profitto stimato'),
         text: t('Revenue and estimated profit, side by side.', 'Umsatz und geschätzter Gewinn, nebeneinander.', 'الإيرادات والربح التقديري جنبًا إلى جنب.', 'Ricavi e profitto stimato, fianco a fianco.'),
       },
       {
@@ -74,14 +74,14 @@ export const explore: Record<SolutionKey, Explore> = {
       },
       {
         label: t('By outlet', 'Nach Outlet', 'حسب المنفذ', 'Per punto vendita'),
-        text: t('Every outlet’s revenue, cost and profit.', 'Umsatz, Kosten und Gewinn jedes Outlets.', 'إيرادات كل منفذ وتكلفته وربحه.', 'Ricavi, costi e profitto di ogni punto vendita.'),
+        text: t('Every outlet’s revenue, estimated cost and estimated profit.', 'Umsatz, geschätzte Kosten und geschätzter Gewinn jedes Outlets.', 'إيرادات كل منفذ وتكلفته التقديرية وربحه التقديري.', 'Ricavi, costi stimati e profitto stimato di ogni punto vendita.'),
       },
     ],
   },
   finance: {
     spots: [
       {
-        label: t('Supplier invoices', 'Lieferantenrechnungen', 'فواتير الموردين', 'Fatture fornitori'),
+        label: t('Deliveries and invoices', 'Lieferungen und Rechnungen', 'التوريدات والفواتير', 'Consegne e fatture'),
         text: t('Every invoice with a difference.', 'Jede Rechnung mit einer Abweichung.', 'كل فاتورة بها فرق.', 'Ogni fattura con una differenza.'),
       },
       {
@@ -101,7 +101,7 @@ export const explore: Record<SolutionKey, Explore> = {
         text: t('Sold against actually used.', 'Verkauft gegenüber tatsächlich verbraucht.', 'المبيع مقابل المستخدم فعليًا.', 'Venduto contro usato davvero.'),
       },
       {
-        label: t('Over pouring', 'Zu viel eingeschenkt', 'الإفراط في السكب', 'Versato in eccesso'),
+        label: t('Over pouring', 'Überschenken', 'الإفراط في السكب', 'Versamento eccessivo'),
         text: t('Glasses not billed, and what they cost.', 'Nicht berechnete Gläser, und was sie kosten.', 'الكؤوس غير المفوترة وتكلفتها.', 'I calici non fatturati, e quanto costano.'),
       },
       {
@@ -109,7 +109,7 @@ export const explore: Record<SolutionKey, Explore> = {
         text: t('By outlet and shift, with no names.', 'Nach Outlet und Schicht, ohne Namen.', 'حسب المنفذ والوردية، من دون أسماء.', 'Per punto vendita e turno, senza nomi.'),
       },
       {
-        label: t('All patterns', 'Alle Muster', 'كل الأنماط', 'Tutti i pattern'),
+        label: t('All patterns', 'Alle Muster', 'جميع الأنماط', 'Tutti gli schemi'),
         text: t('The biggest gaps of the last 4 weeks.', 'Die größten Lücken der letzten 4 Wochen.', 'أكبر الفروق في آخر 4 أسابيع.', 'Le differenze maggiori delle ultime 4 settimane.'),
       },
     ],
