@@ -5,10 +5,10 @@
 ## Products
 
 - Log waste: two taps, the item then the amount, log what was wasted or broken, with what it cost.
-- Stock levels: worked out from sales, deliveries and logged waste, so you see what runs out first, what expires soon and where use was above sales.
-- Predictions: one order list grouped by supplier, built from forecast guests, bookings, events, occupancy and current stock by Tyll's own forecasting model. Orders wait for approval, or automatic ordering places them every morning within limits the hotel sets. Suppliers, catalogues and approval limits per hotel.
-- Revenue: revenue and estimated operating contribution, by day and by outlet, with menu performance.
-- Reconciliation: bills against kitchen and bar tickets, supplier invoices against deliveries, and cash counted at the end of each shift against cash sales, so you only see what differs.
+- Stock levels: worked out from sales, deliveries and logged waste, so you see what runs out first.
+- Predictions: one order list grouped by supplier, built from forecast guests, events and the last 4 weeks of use. Nothing is sent until a manager approves it.
+- Revenue: revenue and estimated profit, by day and by outlet, with menu performance.
+- Reconciliation: bills against kitchen and bar tickets, and supplier invoices against deliveries, so you only see what differs.
 - Over pouring: see what was poured but not billed, by outlet and shift, and what it is worth.
 
 ## English
@@ -16,7 +16,6 @@
 - [Home](https://tyll.ai/en/)
 - [Solutions](https://tyll.ai/en/solutions/)
 - [FAQ](https://tyll.ai/en/faq/)
-- [For hotel groups](https://tyll.ai/en/hotel-groups/)
 - [Book a call](https://tyll.ai/en/book-a-call/)
 
 ## Deutsch
@@ -24,5 +23,4 @@
 - [Startseite](https://tyll.ai/de/)
 - [Lösungen](https://tyll.ai/de/loesungen/)
 - [FAQ](https://tyll.ai/de/faq/)
-- [Für Hotelgruppen](https://tyll.ai/de/hotelgruppen/)
 - [Gespräch buchen](https://tyll.ai/de/gespraech-buchen/)

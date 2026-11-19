@@ -184,12 +184,6 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     </ul>
   </section>
 
-  <!-- Where Tyll comes from: the founder's own nights, in two sentences (from the company deck, 19 Nov 2026) -->
-  <section class="wrap origin" aria-labelledby="origin-title">
-    <h2 id="origin-title">{p.story.title}</h2>
-    <p>{p.story.text}</p>
-  </section>
-
   <section class="final" aria-labelledby="final-title">
     <SilverWave phase={0.4} move tone="dark" />
     <div class="wrap final__inner">
@@ -329,13 +323,8 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
 
     .how-top,
     .step,
-    .assure,
-    .origin {
+    .assure {
       scroll-snap-align: start;
-    }
-
-    .origin {
-      scroll-margin-top: var(--header-h);
     }
 
     .how-top {
@@ -710,23 +699,6 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
   }
 
   /* The closing band */
-  .origin {
-    max-width: 46rem;
-    padding-block: var(--band-y);
-    text-align: center;
-  }
-
-  .origin h2 {
-    font-size: var(--fs-h3);
-  }
-
-  .origin p {
-    margin: var(--s-2) auto 0;
-    color: var(--graphite);
-    font-size: var(--fs-lead);
-    line-height: 1.55;
-  }
-
   .final {
     position: relative;
     overflow: hidden;

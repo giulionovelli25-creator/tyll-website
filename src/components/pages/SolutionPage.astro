@@ -7,7 +7,6 @@ import Base from '../../layouts/Base.astro';
 import DemoFilm from '../DemoFilm.astro';
 import SilverWave from '../SilverWave.astro';
 import SolutionIcon from '../SolutionIcon.astro';
-import SustainabilityBand from '../SustainabilityBand.astro';
 import { solutions } from '../../content/solutions';
 import { explore } from '../../content/explore';
 import { solutionSeo } from '../../content/seo';
@@ -131,8 +130,6 @@ const say =
       }
     </div>
   </section>
-
-  {solution === 'waste' && <SustainabilityBand lang={lang} onWastePage />}
 
   {
     (number || say) && (

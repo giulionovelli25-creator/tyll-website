@@ -1,7 +1,6 @@
 ---
-// The morning brief, as one example card (the demo's fictional data, as the footer says), in the demo's own order: what
-// Grand Hotel Lumière lost yesterday and on what, yesterday's revenue and the flags still open, the three things to do
-// today, each with its amount where it has one, then the last 30 days, lost against saved, and a link. Used as step 4 of the
+// The morning brief, as one example card (the demo's fictional data, as the footer says): what Grand Resort Dubai lost
+// yesterday and on what, then the three things to do today, each with its amount, and a link. Used as step 4 of the
 // How it works page (its link drawn as plain text because the picture there is decorative). Copy: `hero.card`.
 import { href } from '../i18n/routes';
 import { t, type Locale } from '../i18n';
@@ -25,9 +24,6 @@ const arrow = lang === 'ar' ? '←' : '→';
     <b dir="ltr">{h.card.total}</b>
   </p>
   <p class="morning__split">{h.card.split}</p>
-  <ul class="morning__day" role="list">
-    {h.card.yesterday.map((line) => <li>{line}</li>)}
-  </ul>
   <p class="morning__todo">{h.card.todo}</p>
   <ol class="morning__rows">
     {
@@ -38,12 +34,13 @@ const arrow = lang === 'ar' ? '←' : '→';
             <b>{what}</b>
             <span>{detail}</span>
           </span>
-          <span class="morning__money">{amount && <b dir="ltr">{amount}</b>}</span>
+          <span class="morning__money">
+            <b dir="ltr">{amount}</b>
+          </span>
         </li>
       ))
     }
   </ol>
-  <p class="morning__month">{h.card.month}</p>
   {
     link ? (
       <a class="morning__cta" href={href('finance', lang)}>
@@ -108,28 +105,6 @@ const arrow = lang === 'ar' ? '←' : '→';
     max-width: none;
     margin: 0.3rem 0 0;
     color: var(--steel);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-  }
-
-  .morning__day {
-    display: grid;
-    gap: 0.2rem;
-    margin: 0.7rem 0 0;
-    padding: 0.7rem 0 0;
-    border-top: 1px solid rgb(var(--ink-rgb) / 0.08);
-    color: var(--graphite);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-    list-style: none;
-  }
-
-  .morning__month {
-    max-width: none;
-    margin: 0.2rem 0 0;
-    padding-top: 0.8rem;
-    border-top: 1px solid rgb(var(--ink-rgb) / 0.08);
-    color: var(--graphite);
     font-size: 0.8125rem;
     line-height: 1.4;
   }
