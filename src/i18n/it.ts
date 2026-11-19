@@ -13,6 +13,8 @@ const it: Dict = {
     allSolutions: 'Tutte le soluzioni',
     faq: 'Domande frequenti →',
     faqShort: 'FAQ',
+    sustainability: 'Sostenibilità',
+    report: 'Report gratuito',
     menu: 'Menu',
     close: 'Chiudi il menu',
     language: 'Lingua',
@@ -133,6 +135,7 @@ const it: Dict = {
   teaser: { steps: ['Prenota una chiamata', 'Report acquisti gratuito', 'Leggiamo il tuo POS', 'Il tuo brief del mattino'], link: 'Scopri come funziona →' },
   // The How it works page (9 Nov 2026)
   howPage: {
+    story: { title: 'Da dove nasce Tyll', text: 'Il nostro CEO ha chiuso la notte a mano per sei mesi in un hotel di lusso a Zurigo: da 45 a 60 minuti ogni notte, a confrontare i totali. Ciò che si perde non si vede mai in un totale. Così è nato Tyll. Oggi Tyll è attivo in hotel a Berlino e Zurigo.' },
     eyebrow: 'Come funziona',
     title: 'Quattro passi. Poi ogni mattina vedi cosa ha perso il tuo hotel.',
     sub: 'Sola lettura. Niente da installare. Niente da sostituire.',
@@ -159,7 +162,7 @@ const it: Dict = {
   },
   solutionPage: {
     seeTitle: 'Cosa stai per vedere',
-    demoEnglish: 'La demo dal vivo per ora è in inglese.',
+    demoEnglish: '',
     breadcrumb: 'Soluzioni',
     tryHere: 'Provalo nella demo →',
     problemLabel: 'Il problema',
@@ -184,6 +187,7 @@ const it: Dict = {
         ['Brief del mattino', 'Perdite, ricavi e segnalazioni aperte di ieri, le tre azioni di oggi e gli ultimi 30 giorni, via email alle 7.'],
         ['Vista per il personale', 'Il personale ha una sua schermata semplice per registrare sprechi e rotture e seguire la bacheca degli ordini. Non vede mai vendite né costi.'],
         ['Ruoli e accessi', 'Proprietari, direttori, controller finanziari, F&B, chef e personale vedono ciò che serve al loro ruolo.'],
+        ['Impostazioni', 'Gli accessi di ogni persona, l’email per le richieste importanti, le fonti di dati dietro ogni numero e un registro di ogni modifica.'],
         ['Più hotel', 'Una vista di gruppo su tutte le strutture, ognuna nella sua valuta.'],
       ],
     },
@@ -238,8 +242,8 @@ const it: Dict = {
         items: [
           { id: 'test', q: 'Possiamo provare Tyll nel nostro hotel?', a: 'Sì. Iniziamo con un pilota gratuito di 30 giorni sui tuoi dati. Se il pilota non trova soldi veri, non paghi nulla.', link: 'book' },
           { id: 'replace', q: 'Dobbiamo sostituire il nostro POS o il software dell’hotel?', a: 'No. Tyll lavora accanto ai sistemi che usi già. Niente da installare e niente da sostituire.', link: 'how' },
-          { id: 'systems', q: 'Con quali sistemi lavorate?', a: 'Tyll funziona con sistemi di cassa come MICROS Simphony, Sapaad e HMS e con PMS come Oracle OPERA e Shiji Infrasys. Altri sono nella {home:nostra home page}. Usi altro? {book:Chiedicelo} e verifichiamo il tuo sistema.' },
-          { id: 'setup', q: 'Quanto tempo richiede l’avvio?', a: 'Una breve chiamata. Il tuo primo brief del mattino arriva entro 48 ore.', link: 'how' },
+          { id: 'systems', q: 'Con quali sistemi lavorate?', a: 'Tyll funziona con sistemi di cassa come MICROS Simphony, Sapaad e HMS e con PMS come Oracle OPERA e Shiji Infrasys. Altri sono nella {home:nostra home page}. Usi altro? {book:Chiedicelo} e verifichiamo il tuo sistema. Per i partner del pilota, una connessione dedicata a un sistema interno è gratuita.' },
+          { id: 'setup', q: 'Quanto tempo richiede l’avvio?', a: 'Una breve chiamata. Il tuo primo brief del mattino arriva entro 48 ore. Nessuna visita e nessun progetto IT: basta l’accesso in sola lettura o un export delle vendite.', link: 'how' },
           { id: 'staff', q: 'Quanto lavoro è per il nostro personale?', a: 'Pochissimo. Il personale registra sprechi e rotture con due tocchi: l’articolo, poi la quantità. Il motivo è facoltativo. Ai controlli pensa Tyll, ogni notte, e alle 7 invia un brief del mattino.', link: 'how' },
           { id: 'auto', q: 'Tyll può ordinare in automatico?', a: 'Sì, se lo attivi. Ogni mattina alle 06:00 invia gli ordini in scadenza, entro i limiti che scegli. Tutto ciò che li supera attende un responsabile. Puoi anche lasciare ogni ordine manuale.', link: 'book' },
           { id: 'ai', q: 'È un’intelligenza artificiale a decidere cosa ordiniamo?', a: 'No. Il modello di previsione di Tyll calcola ogni quantità da storico vendite, prenotazioni, eventi, occupazione e scorte attuali, e mostra come l’ha calcolata.', link: 'how' },
@@ -252,6 +256,7 @@ const it: Dict = {
         items: [
           { id: 'readonly', q: 'Tyll può modificare qualcosa nei nostri sistemi?', a: 'No. Tyll è in sola lettura. Legge vendite e fatture e non modifica, cancella o registra mai nulla.', link: 'book' },
           { id: 'storage', q: 'Dove sono conservati i nostri dati e chi può vederli?', a: 'I tuoi dati sono ospitati in Europa e trattati secondo il GDPR. Ogni ruolo vede solo i propri hotel, punti vendita e numeri: proprietario, direttore generale, controller finanziario, direttore F&B, responsabili di ristorante e bar, responsabile eventi, acquisti, magazziniere, capo chef, front office, housekeeping, concierge, bell captain e personale. Un capo chef vede la sua cucina, un controller finanziario l’intero gruppo. Oltre al tuo team, solo il personale Tyll che segue il tuo pilota può vedere i tuoi dati.', link: 'book' },
+          { id: 'security', q: 'Come sono protetti i nostri dati?', a: 'Tyll legge i tuoi sistemi in sola lettura e non modifica nulla. I tuoi dati sono cifrati sia archiviati sia in transito e ospitati nell’UE, su AWS tramite Supabase. Non vengono conservati numeri di carta né dati personali degli ospiti, e i tuoi dati non vengono mai venduti o condivisi.', link: 'book' },
           { id: 'cash', q: 'Tyll controlla i contanti?', a: 'Sì: i contanti contati a fine turno contro le vendite in contanti della cassa. I pagamenti con carta li riconcilia il tuo fornitore di pagamenti; il confronto della cassa con gli estratti dei circuiti delle carte e delle banche è un prodotto Tyll separato.', link: 'book' },
           { id: 'export', q: 'Possiamo esportare verso il nostro sistema di acquisti o di contabilità?', a: 'Sì: ordini di acquisto, entrate merci e fatture dei fornitori, in CSV o JSON.', link: 'book' },
         ],

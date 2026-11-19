@@ -75,12 +75,22 @@ export const solutions: Record<SolutionKey, Solution> = {
     ],
     more: [
       {
+        title: t('What staff log', 'Was das Team erfasst', 'ما يسجله الموظفون', 'Cosa registra il personale'),
         points: [
           t('Food, beverage and inventory (glassware, plates, linen) are logged separately.', 'Speisen, Getränke und Inventar (Gläser, Teller, Wäsche) werden getrennt erfasst.', 'تُسجَّل الأطعمة والمشروبات والمستلزمات (الأواني الزجاجية والأطباق والبياضات) كلٌّ على حدة.', 'Cibo, bevande e inventario (bicchieri, piatti, biancheria) si registrano separatamente.'),
-          t('Waste and breakage are tracked separately.', 'Abfall und Bruch werden getrennt verfolgt.', 'يُتابَع الهدر والكسر كلٌّ على حدة.', 'Sprechi e rotture sono tracciati separatamente.'),
-          t('The top reason and the top item each week.', 'Der häufigste Grund und der häufigste Artikel jeder Woche.', 'السبب الأكثر تكرارًا والصنف الأكثر هدرًا كل أسبوع.', 'Il motivo e l’articolo principali di ogni settimana.'),
-          t('Today’s log and the month’s total, split into food, beverage and inventory.', 'Das heutige Protokoll und die Monatssumme, aufgeteilt in Speisen, Getränke und Inventar.', 'سجل اليوم وإجمالي الشهر، مقسّمين إلى أطعمة ومشروبات ومستلزمات.', 'Il registro di oggi e il totale del mese, divisi tra cibo, bevande e inventario.'),
+          t('Waste and breakage are tracked separately, per outlet.', 'Abfall und Bruch werden getrennt verfolgt, je Outlet.', 'يُتابَع الهدر والكسر كلٌّ على حدة، لكل منفذ.', 'Sprechi e rotture sono tracciati separatamente, per punto vendita.'),
           t('Prepared dishes and notes can be logged too.', 'Auch zubereitete Gerichte und Notizen lassen sich erfassen.', 'يمكن تسجيل الأطباق المحضّرة والملاحظات أيضًا.', 'Si possono registrare anche piatti preparati e note.'),
+          t('Expired is its own reason, so food that passed its date shows apart from spoilage.', 'Abgelaufen ist ein eigener Grund, so erscheint Ware nach ihrem Datum getrennt vom Verderb.', '«منتهي الصلاحية» سبب مستقل، فيظهر ما تجاوز تاريخه منفصلًا عن التلف.', 'Scaduto è un motivo a sé, così ciò che ha superato la data appare separato dal deterioramento.'),
+          t('Late entries are marked, and a correction is added without overwriting the original.', 'Späte Einträge werden markiert, und eine Korrektur kommt hinzu, ohne das Original zu überschreiben.', 'تُميَّز الإدخالات المتأخرة، ويُضاف التصحيح دون استبدال الأصل.', 'Le voci tardive sono segnate, e una correzione si aggiunge senza sovrascrivere l’originale.'),
+        ],
+      },
+      {
+        title: t('What managers see', 'Was die Führung sieht', 'ما يراه المديرون', 'Cosa vedono i responsabili'),
+        points: [
+          t('Today’s log and the month’s total, split into food, beverage and inventory.', 'Das heutige Protokoll und die Monatssumme, aufgeteilt in Speisen, Getränke und Inventar.', 'سجل اليوم وإجمالي الشهر، مقسّمين إلى أطعمة ومشروبات ومستلزمات.', 'Il registro di oggi e il totale del mese, divisi tra cibo, bevande e inventario.'),
+          t('Waste and breakage this week against last week, and the last 30 days day by day.', 'Abfall und Bruch dieser Woche gegen die Vorwoche, und die letzten 30 Tage Tag für Tag.', 'الهدر والكسر هذا الأسبوع مقابل الأسبوع الماضي، وآخر 30 يومًا يومًا بيوم.', 'Sprechi e rotture di questa settimana contro la precedente, e gli ultimi 30 giorni giorno per giorno.'),
+          t('The top reason and the top item each week.', 'Der häufigste Grund und der häufigste Artikel jeder Woche.', 'السبب الأكثر تكرارًا والصنف الأكثر هدرًا كل أسبوع.', 'Il motivo e l’articolo principali di ogni settimana.'),
+          t('Possible reasons and how to help, by outlet and reason, worked out by fixed rules. To check, not proven.', 'Mögliche Ursachen und was hilft, je Outlet und Grund, nach festen Regeln ermittelt. Zum Prüfen, nicht bewiesen.', 'الأسباب المحتملة وكيفية المساعدة، لكل منفذ وسبب، وفق قواعد ثابتة. للتحقق، وليست مثبتة.', 'Cause possibili e come aiutare, per punto vendita e motivo, calcolate con regole fisse. Da verificare, non provate.'),
         ],
       },
     ],
@@ -102,7 +112,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     headline: t('What’s really on your shelf?', 'Was steht wirklich im Regal?', 'ما الموجود فعلًا على رفوفك؟', 'Cosa c’è davvero sullo scaffale?'),
     intro: t('See what runs out first, before a guest asks for it.', 'Sehen Sie, was zuerst ausgeht, bevor ein Gast danach fragt.', 'اعرف ما ينفد أولًا، قبل أن يطلبه ضيف.', 'Vedi cosa finisce per primo, prima che un ospite lo chieda.'),
     see: [
-      { title: t('Critical, low or fine', 'Critical, low oder fine', 'Critical أو low أو fine', 'Critical, low o fine'), text: t('Your whole stock at a glance.', 'Ihr ganzer Bestand auf einen Blick.', 'مخزونك كله بنظرة واحدة.', 'Tutta la merce a colpo d’occhio.') },
+      { title: t('Critical, low or fine', 'Kritisch, niedrig oder in Ordnung', 'حرج أو منخفض أو جيد', 'Critico, basso o a posto'), text: t('Your whole stock at a glance.', 'Ihr ganzer Bestand auf einen Blick.', 'مخزونك كله بنظرة واحدة.', 'Tutta la merce a colpo d’occhio.') },
       { title: t('What runs out first', 'Was zuerst ausgeht', 'ما ينفد أولًا', 'Cosa finisce per primo'), text: t('Act on it before a guest asks for it.', 'Handeln Sie, bevor ein Gast danach fragt.', 'تصرّف قبل أن يطلبه ضيف.', 'Intervieni prima che un ospite lo chieda.') },
       { title: t('Why did we use more than we sold?', 'Warum haben wir mehr verbraucht als verkauft?', 'لماذا استخدمنا أكثر مما بعنا؟', 'Perché abbiamo usato più di quanto venduto?'), text: t('Use between two counts, against what the recipes of what was sold explain.', 'Verbrauch zwischen zwei Zählungen, gegen das, was die Rezepte des Verkauften erklären.', 'الاستخدام بين عمليتي جرد، مقابل ما تفسّره وصفات ما بيع.', 'Il consumo tra due conteggi, contro ciò che spiegano le ricette di quanto venduto.') },
     ],
@@ -149,7 +159,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     photo: forecastProduce,
     photoAlt: t('A chef chopping fresh herbs beside trays of lemons and greens.', 'Ein Koch hackt frische Kräuter neben Schalen mit Zitronen und Grün.', 'طاهٍ يفرم أعشابًا طازجة بجانب صوانٍ من الليمون والخضار.', 'Uno chef trita erbe fresche accanto a vassoi di limoni e verdure.'),
     photoFocus: '60% 45%',
-    tone: 'violet',
+    tone: 'blue',
     mark: t('guessing', 'Raten', 'تخمّن', 'indovinando'),
     pagePhoto: pagePredictions,
     pagePhotoFocus: '55% 40%',
@@ -184,11 +194,19 @@ export const solutions: Record<SolutionKey, Solution> = {
         ],
       },
       {
+        title: t('Par levels and purchase orders', 'Meldebestände und Bestellungen', 'مستويات المخزون وأوامر الشراء', 'Livelli di riordino e ordini d’acquisto'),
+        points: [
+          t('Par levels: a minimum and maximum per item and location, with levels suggested from the prediction.', 'Meldebestände: ein Minimum und Maximum je Artikel und Lagerort, mit Vorschlägen aus der Prognose.', 'مستويات المخزون: حد أدنى وأقصى لكل صنف وموقع، مع مستويات مقترحة من التوقعات.', 'Livelli di riordino: un minimo e un massimo per articolo e luogo, con livelli suggeriti dalla previsione.'),
+          t('To order: what is below its minimum, brought back to the maximum in the supplier’s packs, less what is already on order, plus top-ups for the outlets from the main store.', 'Zu bestellen: was unter dem Minimum liegt, bis zum Maximum aufgefüllt in den Gebinden des Lieferanten, abzüglich bereits Bestelltem, dazu Nachschub für die Outlets aus dem Hauptlager.', 'للطلب: ما هو دون الحد الأدنى، يُعاد إلى الحد الأقصى بعبوات المورد، بعد خصم ما هو مطلوب بالفعل، إضافة إلى تزويد المنافذ من المخزن الرئيسي.', 'Da ordinare: ciò che è sotto il minimo, riportato al massimo nelle confezioni del fornitore, meno quanto già ordinato, più i rifornimenti dei punti vendita dal magazzino principale.'),
+          t('Each purchase order goes to the supplier by email with its PDF, in the supplier’s packs, with VAT and the delivery day. Orders can also be placed by hand.', 'Jede Bestellung geht per E-Mail mit PDF an den Lieferanten, in seinen Gebinden, mit Mehrwertsteuer und Liefertag. Bestellungen lassen sich auch von Hand aufgeben.', 'يُرسل كل أمر شراء إلى المورد بالبريد الإلكتروني مع ملف PDF، بعبوات المورد، مع ضريبة القيمة المضافة ويوم التسليم. ويمكن أيضًا تقديم الطلبات يدويًا.', 'Ogni ordine d’acquisto va al fornitore via email con il suo PDF, nelle confezioni del fornitore, con IVA e giorno di consegna. Si può anche ordinare a mano.'),
+        ],
+      },
+      {
         title: t('Orders and approval limits', 'Bestellungen und Freigabelimits', 'الطلبات وحدود الموافقة', 'Ordini e limiti di approvazione'),
         points: [
           t('Orders go through Draft, Waiting for approval, Approved not sent, Sent, Partly received, Received and Closed.', 'Bestellungen durchlaufen Entwurf, Wartet auf Freigabe, Freigegeben nicht gesendet, Gesendet, Teilweise eingegangen, Eingegangen und Geschlossen.', 'تمر الطلبات بمراحل: مسودة، بانتظار الموافقة، معتمد ولم يُرسل، أُرسل، مستلم جزئيًا، مستلم، مغلق.', 'Gli ordini passano per Bozza, In attesa di approvazione, Approvato non inviato, Inviato, Ricevuto in parte, Ricevuto e Chiuso.'),
           t('Each hotel sets its own approval chain. For example: purchasing reviews every order, accounting approves every order, the F&B director approves orders over €2,000 and the general manager also approves orders over €5,000.', 'Jedes Hotel legt seine eigene Freigabekette fest. Zum Beispiel: Der Einkauf prüft jede Bestellung, die Buchhaltung gibt jede Bestellung frei, der F&B-Direktor gibt Bestellungen über 2.000 € frei und die Hoteldirektion zusätzlich Bestellungen über 5.000 €.', 'يضع كل فندق سلسلة الموافقة الخاصة به. مثلًا: يراجع قسم المشتريات كل طلب، ويعتمد قسم المحاسبة كل طلب، ويعتمد مدير الأغذية والمشروبات الطلبات التي تتجاوز €2,000، ويعتمد المدير العام أيضًا الطلبات التي تتجاوز €5,000.', 'Ogni hotel imposta la sua catena di approvazione. Per esempio: gli acquisti esaminano ogni ordine, la contabilità approva ogni ordine, il direttore F&B approva gli ordini oltre 2.000 € e il direttore generale anche quelli oltre 5.000 €.'),
-          t('Nobody approves an order they raised. The storekeeper receives.', 'Niemand gibt eine eigene Bestellung frei. Das Lager nimmt die Ware an.', 'لا أحد يعتمد طلبًا أنشأه بنفسه. ويستلم أمين المخزن البضاعة.', 'Nessuno approva un ordine che ha creato. Il magazziniere riceve la merce.'),
+          t('Nobody approves an order they raised. The storekeeper receives what arrived, and only the delivered quantity is added to stock.', 'Niemand gibt eine eigene Bestellung frei. Das Lager nimmt an, was angekommen ist, und nur die gelieferte Menge kommt in den Bestand.', 'لا أحد يعتمد طلبًا أنشأه بنفسه. ويستلم أمين المخزن ما وصل، ولا تُضاف إلى المخزون إلا الكمية المسلَّمة.', 'Nessuno approva un ordine che ha creato. Il magazziniere riceve ciò che è arrivato, e solo la quantità consegnata entra nelle scorte.'),
         ],
       },
       {
@@ -208,7 +226,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     photo: revenuePayment,
     photoAlt: t('A waiter in white gloves holds a card terminal while a guest checks the bill.', 'Ein Kellner mit weißen Handschuhen hält ein Kartenterminal, während ein Gast die Rechnung prüft.', 'نادل بقفازين أبيضين يحمل جهاز الدفع بينما يراجع ضيف الفاتورة.', 'Un cameriere con guanti bianchi tiene il terminale mentre un ospite controlla il conto.'),
     photoFocus: '55% 12%',
-    tone: 'blue',
+    tone: 'violet',
     mark: t('money', 'Geld', 'المال', 'guadagnare'),
     pagePhoto: revenuePayment,
     pagePhotoFocus: '50% 4%',
@@ -241,7 +259,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     photo: reconciliation,
     photoAlt: t('A guest paying by card at a hotel reception desk beside a brass bell.', 'Ein Gast zahlt an einer Hotelrezeption neben einer Messingglocke mit Karte.', 'ضيف يدفع بالبطاقة عند مكتب استقبال فندق بجانب جرس نحاسي.', 'Un ospite paga con carta alla reception di un hotel accanto a un campanello d’ottone.'),
     photoFocus: '60% 50%',
-    tone: 'blue',
+    tone: 'violet',
     mark: t('never received', 'nie ankam', 'لم تستلمها', 'mai ricevuta'),
     pagePhoto: pageReconciliation,
     pagePhotoFocus: '40% 55%',
@@ -293,8 +311,11 @@ export const solutions: Record<SolutionKey, Solution> = {
         foot: t('A cash difference is something to check with the shift manager, not a finding about anyone.', 'Eine Bargelddifferenz klären Sie mit der Schichtleitung; sie ist kein Befund über eine Person.', 'فرق النقد أمر يُراجع مع مدير الوردية، وليس حكمًا على أي شخص.', 'Una differenza di cassa è da verificare con il responsabile del turno, non un giudizio su qualcuno.'),
       },
       {
-        title: t('Late deliveries', 'Verspätete Lieferungen', 'التوريدات المتأخرة', 'Consegne in ritardo'),
+        title: t('Deliveries and invoices', 'Lieferungen und Rechnungen', 'التوريدات والفواتير', 'Consegne e fatture'),
         points: [
+          t('Every delivery checked three ways: ordered, delivered and invoiced, with the difference in units and money.', 'Jede Lieferung dreifach geprüft: bestellt, geliefert und berechnet, mit der Differenz in Einheiten und Geld.', 'يُفحص كل توريد بثلاث طرق: المطلوب والمسلَّم والمفوتر، مع الفرق بالوحدات والمال.', 'Ogni consegna controllata in tre modi: ordinato, consegnato e fatturato, con la differenza in unità e in denaro.'),
+          t('Supplier invoices are approved on their own, after the order.', 'Lieferantenrechnungen werden eigens freigegeben, getrennt von der Bestellung.', 'تُعتمد فواتير الموردين بشكل منفصل عن الطلب.', 'Le fatture dei fornitori si approvano a parte, separate dall’ordine.'),
+          t('A delivery with a difference offers a credit request: a polite email to copy. Tyll never sends it. Once a credit is recorded, it counts as money saved.', 'Eine Lieferung mit Differenz bietet eine Gutschriftanfrage an: eine höfliche E-Mail zum Kopieren. Tyll schickt sie nie selbst. Sobald eine Gutschrift erfasst ist, zählt sie als gespartes Geld.', 'يقدّم التوريد الذي به فرق طلب إشعار دائن: رسالة بريد إلكتروني مهذبة للنسخ. لا يرسلها Tyll أبدًا. وعند تسجيل الإشعار الدائن يُحتسب مالًا موفَّرًا.', 'Una consegna con una differenza propone una richiesta di nota di credito: un’email cortese da copiare. Tyll non la invia mai. Una volta registrato, il credito conta come denaro risparmiato.'),
           t('Tyll alerts when a confirmed delivery has not arrived, for example “Fresh fish delivery due 15:00 has not arrived”, with two actions: call the supplier, or order from the backup supplier.', 'Tyll warnt, wenn eine bestätigte Lieferung nicht angekommen ist, zum Beispiel „Frischfisch-Lieferung, fällig um 15:00, ist nicht angekommen“, mit zwei Aktionen: den Lieferanten anrufen oder beim Ersatzlieferanten bestellen.', 'ينبّه Tyll عندما لا يصل توريد مؤكد، مثل «توريد السمك الطازج المقرر في 15:00 لم يصل»، مع إجراءين: الاتصال بالمورد، أو الطلب من المورد البديل.', 'Tyll avvisa quando una consegna confermata non è arrivata, per esempio «La consegna di pesce fresco prevista alle 15:00 non è arrivata», con due azioni: chiamare il fornitore o ordinare dal fornitore di riserva.'),
         ],
       },
@@ -315,7 +336,7 @@ export const solutions: Record<SolutionKey, Solution> = {
     photo: banquet,
     photoAlt: t('A waiter setting a long banquet table with glasses and flowers.', 'Ein Kellner deckt eine lange Banketttafel mit Gläsern und Blumen ein.', 'نادل يُعدّ طاولة مأدبة طويلة بالكؤوس والزهور.', 'Un cameriere apparecchia un lungo tavolo da banchetto con bicchieri e fiori.'),
     photoFocus: '40% 50%',
-    tone: 'rose',
+    tone: 'teal',
     mark: t('never', 'nie', 'أبدًا', 'mai'),
     pagePhoto: pageDrinks,
     pagePhotoFocus: '50% 50%',
@@ -346,6 +367,7 @@ export const solutions: Record<SolutionKey, Solution> = {
           t('Wine by the glass and spirits by the measure.', 'Wein im Glas und Spirituosen nach Maß.', 'المشروبات بالكأس وبالمعيار.', 'Vino al calice e distillati a misura.'),
           t('Missing drinks between counts.', 'Fehlende Getränke zwischen zwei Zählungen.', 'المشروبات المفقودة بين عمليتي جرد.', 'Bevande mancanti tra due conteggi.'),
           t('All patterns over the last 4 weeks.', 'Alle Muster der letzten 4 Wochen.', 'جميع الأنماط في آخر 4 أسابيع.', 'Tutti gli schemi delle ultime 4 settimane.'),
+          t('Each pattern lists possible reasons and how to help, by fixed rules, labelled to check, not proven.', 'Zu jedem Muster stehen mögliche Ursachen und was hilft, nach festen Regeln, gekennzeichnet als zu prüfen, nicht bewiesen.', 'يعرض كل نمط الأسباب المحتملة وكيفية المساعدة وفق قواعد ثابتة، مع وسم «للتحقق، وليس مثبتًا».', 'Ogni schema elenca cause possibili e come aiutare, con regole fisse, segnate come da verificare, non provate.'),
         ],
         foot: t('A gap means generous pours, glasses not rung up or breakage. Tyll never says which.', 'Eine Lücke bedeutet großzügiges Einschenken, nicht bonierte Gläser oder Bruch. Tyll sagt nie, was davon.', 'الفرق يعني سكبًا سخيًا أو كؤوسًا لم تُسجَّل أو كسرًا. ولا يحدد Tyll أبدًا أيّها.', 'Una differenza significa versamenti generosi, bicchieri non battuti o rotture. Tyll non dice mai quale.'),
       },

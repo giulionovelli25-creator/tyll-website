@@ -1,0 +1,248 @@
+---
+// The sustainability band: one component for the homepage, the Log waste page and the hotel groups page. Headline and
+// intro at the start, the four sourced figures in a 2 x 2 grid at the end, then what Tyll does and the two links at full
+// width. On a faint tint of the waste teal already in the palette: no new colour, no icons, the numbers carry it.
+// Copy: src/content/sustainability.ts. On the Log waste page the link to that page is left out (`onWastePage`).
+import { band } from '../content/sustainability';
+import { t, href, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  onWastePage?: boolean;
+}
+
+const { lang, onWastePage = false } = Astro.props;
+const d = t(lang);
+const b = band[lang];
+---
+
+<section class="sus" id="sustainability" aria-labelledby="sus-title">
+  <div class="wrap sus__grid">
+    <div class="sus__head">
+      <p class="sus__eyebrow">{b.eyebrow}</p>
+      <h2 id="sus-title" class="display">{b.title}</h2>
+      <p class="sus__intro">{b.intro}</p>
+    </div>
+
+    <div class="sus__numbers">
+      <ul class="sus__stats" role="list">
+        {
+          b.stats.map((s) => (
+            <li class="sus__stat">
+              <p class="sus__figure">
+                <span dir="auto">{s.figure}</span>
+              </p>
+              <p class="sus__text">{s.text}</p>
+              <p class="sus__source">
+                <a href={s.url} target="_blank" rel="noopener">
+                  {s.source}
+                  <span class="visually-hidden"> {d.cta.newTab}</span>
+                </a>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="sus__note">{b.note}</p>
+    </div>
+
+    <div class="sus__does">
+      <h3>{b.listTitle}</h3>
+      <ul role="list">
+        {b.list.map((line) => <li>{line}</li>)}
+      </ul>
+      <div class="sus__actions">
+        {
+          !onWastePage && (
+            <a class="btn btn--line btn--lg" href={href('waste', lang)}>
+              {b.wasteLink}
+            </a>
+          )
+        }
+        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="sustainability">
+          {d.cta.book}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sus {
+    padding-block: var(--section-y);
+    border-block: 1px solid rgb(var(--demo-teal-rgb) / 0.12);
+    background: var(--demo-teal-wash);
+    scroll-margin-top: var(--header-h);
+  }
+
+  .sus__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-areas:
+      'head numbers'
+      'does does';
+    gap: var(--intro-gap) clamp(2rem, 1rem + 4vw, 5rem);
+  }
+
+  .sus__head {
+    grid-area: head;
+    align-self: start;
+  }
+
+  .sus__eyebrow {
+    margin: 0 0 var(--s-2);
+    color: var(--demo-teal);
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+
+  .sus h2 {
+    max-width: 16ch;
+    font-size: var(--fs-h2);
+  }
+
+  .sus__intro {
+    max-width: 34rem;
+    margin: var(--s-3) 0 0;
+    color: var(--graphite);
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+
+  .sus__numbers {
+    grid-area: numbers;
+  }
+
+  /* Four figures, two by two, in the large light serif of the homepage's three numbers */
+  .sus__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4) clamp(1.5rem, 1rem + 2vw, 3rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sus__stat {
+    padding-top: var(--s-3);
+    border-top: 1px solid rgb(var(--demo-teal-rgb) / 0.25);
+  }
+
+  .sus__figure {
+    max-width: none;
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 2rem + 2.4vw, 4.25rem);
+    font-weight: 300;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .sus__text {
+    max-width: 30ch;
+    margin: 0.7rem 0 0;
+    color: var(--ink);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .sus__source {
+    margin: 0.6rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .sus__source a {
+    color: var(--steel);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .sus__source a:hover {
+    color: var(--ink);
+    text-decoration-thickness: 2px;
+  }
+
+  .sus__note {
+    max-width: none;
+    margin: var(--s-3) 0 0;
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  .sus__does {
+    grid-area: does;
+    padding-top: var(--s-4);
+    border-top: 1px solid rgb(var(--demo-teal-rgb) / 0.25);
+  }
+
+  .sus__does h3 {
+    margin: 0 0 var(--s-2);
+    font-family: var(--font);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .sus__does ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sus__does li {
+    position: relative;
+    padding-inline-start: 1.1rem;
+    color: var(--graphite);
+    line-height: 1.5;
+  }
+
+  .sus__does li::before {
+    position: absolute;
+    top: 0.62em;
+    inset-inline-start: 0;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--demo-teal);
+    content: '';
+  }
+
+  .sus__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-top: var(--s-4);
+  }
+
+  /* Tablets: the figures go under the headline, still two by two */
+  @media (max-width: 960px) {
+    .sus__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'head'
+        'numbers'
+        'does';
+    }
+
+    .sus__does ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Phones: one column of figures */
+  @media (max-width: 600px) {
+    .sus__stats {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sus__actions :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+</style>

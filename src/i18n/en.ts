@@ -15,6 +15,8 @@ const en = {
     allSolutions: 'All solutions',
     faq: 'Frequently Asked Questions →',
     faqShort: 'FAQ',
+    sustainability: 'Sustainability',
+    report: 'Free report',
     menu: 'Menu',
     close: 'Close menu',
     language: 'Language',
@@ -135,6 +137,7 @@ const en = {
   teaser: { steps: ['Book a call', 'Free purchasing report', 'We read your POS', 'Your morning brief'], link: 'See how it works →' },
   // The How it works page (9 Nov 2026)
   howPage: {
+    story: { title: 'Where Tyll comes from', text: 'Our CEO closed the night by hand for six months at a luxury hotel in Zürich: 45 to 60 minutes every night, comparing totals. What leaks never shows in a total. That became Tyll. Today Tyll is live in hotels in Berlin and Zürich.' },
     eyebrow: 'How it works',
     title: 'Four steps. Then every morning you see what your hotel lost.',
     sub: 'Read only. Nothing to install. Nothing to replace.',
@@ -187,6 +190,7 @@ const en = {
         ['Morning brief', 'Yesterday’s losses, revenue and open flags, today’s three actions and the last 30 days, by email at 7 AM.'],
         ['Staff view', 'Staff get their own simple screen to log waste and breakage and to follow the order board. They never see sales or cost figures.'],
         ['Roles and access', 'Owners, general managers, financial controllers, F&B, chefs and staff each see what their role needs.'],
+        ['Settings', 'Each person’s access, email for important requests, the data sources behind every figure and a record of every change.'],
         ['Several hotels', 'A group view across properties, each in its own currency.'],
       ],
     },
@@ -243,8 +247,8 @@ const en = {
         items: [
           { id: 'test', q: 'Can we test Tyll at our hotel?', a: 'Yes. We start with a free 30 day pilot on your own data. If the pilot finds no real money, you pay nothing.', link: 'book' },
           { id: 'replace', q: 'Do we have to replace our POS or hotel software?', a: 'No. Tyll works next to the systems you already use. Nothing to install and nothing to replace.', link: 'how' },
-          { id: 'systems', q: 'Which systems do you work with?', a: 'Tyll works with POS systems such as MICROS Simphony, Sapaad and HMS, and PMS such as Oracle OPERA and Shiji Infrasys. More are shown on {home:our home page}. Using something else? {book:Ask us} and we’ll check your system.' },
-          { id: 'setup', q: 'How long does setup take?', a: 'One short call. Your first morning brief follows within 48 hours.', link: 'how' },
+          { id: 'systems', q: 'Which systems do you work with?', a: 'Tyll works with POS systems such as MICROS Simphony, Sapaad and HMS, and PMS such as Oracle OPERA and Shiji Infrasys. More are shown on {home:our home page}. Using something else? {book:Ask us} and we’ll check your system. For pilot partners, a custom connection to an in-house system is free.' },
+          { id: 'setup', q: 'How long does setup take?', a: 'One short call. Your first morning brief follows within 48 hours. No visit and no IT project: read-only access or a sales export is enough.', link: 'how' },
           { id: 'staff', q: 'How much work is it for our staff?', a: 'Very little. Staff log waste and breakage in two taps: the item, then the amount. Adding a reason is optional. Tyll does the checking every night and sends a morning brief at 7 AM.', link: 'how' },
           { id: 'auto', q: 'Can Tyll order automatically?', a: 'Yes, if you switch it on. Every morning at 06:00 it places the orders that are due, within limits you set. Anything above your limits waits for a manager. You can also keep every order manual.', link: 'book' },
           { id: 'ai', q: 'Does an AI decide what we order?', a: 'No. Tyll’s own forecasting model works out every quantity from sales history, bookings, events, occupancy and current stock, and shows how it was calculated.', link: 'how' },
@@ -257,6 +261,7 @@ const en = {
         items: [
           { id: 'readonly', q: 'Can Tyll change anything in our systems?', a: 'No. Tyll is read only. It reads your sales and invoices and never changes, deletes or posts anything.', link: 'book' },
           { id: 'storage', q: 'Where is our data stored, and who can see it?', a: 'Your data is hosted in Europe and handled under the GDPR. Each role sees only its own hotels, outlets and figures: owner, general manager, financial controller, F&B director, restaurant and bar managers, events manager, purchasing, storekeeper, head chef, front office, housekeeping, concierge, bell captain and staff. A head chef sees their kitchen; a financial controller sees the whole group. Besides your team, only the Tyll staff supporting your pilot can see your data.', link: 'book' },
+          { id: 'security', q: 'How is our data protected?', a: 'Tyll reads your systems read only and changes nothing in them. Your data is encrypted at rest and in transit and hosted in the EU, on AWS via Supabase. No card numbers or guest personal data are stored, and your data is never sold or shared.', link: 'book' },
           { id: 'cash', q: 'Does Tyll check cash?', a: 'Yes: the cash counted at the end of each shift against the cash sales on the till. Card payments are reconciled by your payment provider; matching the till against card company and bank statements runs as a separate Tyll product.', link: 'book' },
           { id: 'export', q: 'Can we export to our procurement or accounting system?', a: 'Yes: purchase orders, goods receipts and supplier invoices, as CSV or JSON.', link: 'book' },
         ],

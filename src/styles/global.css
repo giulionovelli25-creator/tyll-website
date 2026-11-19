@@ -174,25 +174,25 @@
   /* Ledger and ticket numbers (9 Nov 2026) */
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   /* The Tyll demo's own UI accent, for drawn mocks of its screens */
-  --demo-teal: #0f766e;
-  --demo-teal-soft: #e3f2ef;
+  --demo-teal: #0f5e58;
+  --demo-teal-soft: #e1eeec;
   /* The one colour on the solutions (11 Nov 2026, the owner: "a bit of color, without going over the top"): the
      demo's teal on the Solutions menu icons, the solution's name, the "What you are about to see" panel and the
      film's progress. 5.5:1 on white. Never on large areas. */
-  --demo-teal-rgb: 15 118 110;
-  --demo-teal-wash: #f1f7f6;
+  --demo-teal-rgb: 15 94 88;
+  --demo-teal-wash: #f0f6f5;
   /* Each solution's own colour (11 Nov 2026, the owner's brief), taken from the colour that feature has in the
      product (Demo-Tyll, MODULE_TONE): Log waste and Stock teal, Predictions violet, Revenue and Reconciliation blue,
      Over pouring rose. For the solution's name, icons, one word of its headline and a soft tinted block; never on
      large areas, and only on the solutions. All at least 4.5:1 on white and on the light grey ground. */
-  --tone-violet: #4a3fb5;
-  --tone-violet-rgb: 74 63 181;
-  --tone-violet-soft: #efedfb;
-  --tone-violet-wash: #f4f3fb;
-  --tone-blue: #1f5aa6;
-  --tone-blue-rgb: 31 90 166;
-  --tone-blue-soft: #e6eefa;
-  --tone-blue-wash: #f1f5fa;
+  --tone-violet: #5e3a8c;
+  --tone-violet-rgb: 94 58 140;
+  --tone-violet-soft: #eee8f5;
+  --tone-violet-wash: #f5f2f9;
+  --tone-blue: #1f4f8f;
+  --tone-blue-rgb: 31 79 143;
+  --tone-blue-soft: #e5ecf5;
+  --tone-blue-wash: #f1f4f9;
   --tone-rose: #a33a68;
   --tone-rose-rgb: 163 58 104;
   --tone-rose-soft: #f9e9f0;

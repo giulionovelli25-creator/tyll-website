@@ -12,6 +12,8 @@ const de: Dict = {
     allSolutions: 'Alle Lösungen',
     faq: 'Häufige Fragen →',
     faqShort: 'FAQ',
+    sustainability: 'Nachhaltigkeit',
+    report: 'Gratis-Bericht',
     menu: 'Menü',
     close: 'Menü schließen',
     language: 'Sprache',
@@ -132,6 +134,7 @@ const de: Dict = {
   teaser: { steps: ['Gespräch buchen', 'Kostenloser Einkaufsbericht', 'Wir lesen Ihre Kasse', 'Ihr Morgenbericht'], link: 'So funktioniert’s →' },
   // The How it works page (9 Nov 2026)
   howPage: {
+    story: { title: 'Woher Tyll kommt', text: 'Unser CEO hat sechs Monate lang in einem Luxushotel in Zürich jede Nacht von Hand abgeschlossen: 45 bis 60 Minuten pro Nacht, Summen vergleichen. Was verloren geht, zeigt sich nie in einer Summe. Daraus wurde Tyll. Heute läuft Tyll in Hotels in Berlin und Zürich.' },
     eyebrow: 'So funktioniert’s',
     title: 'Vier Schritte. Danach sehen Sie jeden Morgen, was Ihr Hotel verloren hat.',
     sub: 'Nur lesend. Nichts zu installieren. Nichts zu ersetzen.',
@@ -158,7 +161,7 @@ const de: Dict = {
   },
   solutionPage: {
     seeTitle: 'Das sehen Sie gleich',
-    demoEnglish: 'Die Live-Demo ist vorerst auf Englisch.',
+    demoEnglish: '',
     breadcrumb: 'Lösungen',
     tryHere: 'In der Demo ausprobieren →',
     problemLabel: 'Das Problem',
@@ -183,6 +186,7 @@ const de: Dict = {
         ['Morgenbericht', 'Verluste, Umsatz und offene Hinweise von gestern, die drei Aufgaben für heute und die letzten 30 Tage, um 7 Uhr per E-Mail.'],
         ['Ansicht für das Team', 'Das Team hat einen eigenen, einfachen Bildschirm, um Abfall und Bruch zu erfassen und die Bestelltafel zu verfolgen. Umsätze und Kosten sieht es nie.'],
         ['Rollen und Zugriff', 'Eigentümer, Hoteldirektion, Finanzcontrolling, F&B, Küchenchefs und Team sehen jeweils, was ihre Rolle braucht.'],
+        ['Einstellungen', 'Der Zugriff jeder Person, E-Mail für wichtige Anfragen, die Datenquellen hinter jeder Zahl und ein Protokoll jeder Änderung.'],
         ['Mehrere Hotels', 'Eine Gruppenansicht über alle Häuser, jedes in seiner eigenen Währung.'],
       ],
     },
@@ -237,8 +241,8 @@ const de: Dict = {
         items: [
           { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: 'Ja. Wir beginnen mit einem kostenlosen 30-Tage-Piloten mit Ihren eigenen Daten. Findet der Pilot kein echtes Geld, zahlen Sie nichts.', link: 'book' },
           { id: 'replace', q: 'Müssen wir unsere Kasse oder Hotelsoftware ersetzen?', a: 'Nein. Tyll arbeitet neben den Systemen, die Sie bereits nutzen. Nichts zu installieren und nichts zu ersetzen.', link: 'how' },
-          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll arbeitet mit Kassensystemen wie MICROS Simphony, Sapaad und HMS und mit PMS wie Oracle OPERA und Shiji Infrasys. Weitere sehen Sie auf {home:unserer Startseite}. Sie nutzen etwas anderes? {book:Fragen Sie uns}, wir prüfen Ihr System.' },
-          { id: 'setup', q: 'Wie lange dauert die Einrichtung?', a: 'Ein kurzes Gespräch. Ihr erster Morgenbericht folgt innerhalb von 48 Stunden.', link: 'how' },
+          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll arbeitet mit Kassensystemen wie MICROS Simphony, Sapaad und HMS und mit PMS wie Oracle OPERA und Shiji Infrasys. Weitere sehen Sie auf {home:unserer Startseite}. Sie nutzen etwas anderes? {book:Fragen Sie uns}, wir prüfen Ihr System. Für Pilotpartner ist eine eigene Anbindung an ein hauseigenes System kostenlos.' },
+          { id: 'setup', q: 'Wie lange dauert die Einrichtung?', a: 'Ein kurzes Gespräch. Ihr erster Morgenbericht folgt innerhalb von 48 Stunden. Kein Besuch und kein IT-Projekt: Lesezugriff oder ein Umsatzexport genügt.', link: 'how' },
           { id: 'staff', q: 'Wie viel Arbeit ist das für unser Team?', a: 'Sehr wenig. Ihr Team erfasst Abfall und Bruch mit zwei Tipps: Artikel, dann Menge. Ein Grund ist optional. Die Prüfung übernimmt Tyll jede Nacht und schickt um 7 Uhr einen Morgenbericht.', link: 'how' },
           { id: 'auto', q: 'Kann Tyll automatisch bestellen?', a: 'Ja, wenn Sie es einschalten. Jeden Morgen um 06:00 gibt es die fälligen Bestellungen auf, innerhalb Ihrer Limits. Alles darüber wartet auf eine Führungskraft. Sie können auch jede Bestellung manuell lassen.', link: 'book' },
           { id: 'ai', q: 'Entscheidet eine KI, was wir bestellen?', a: 'Nein. Tylls eigenes Prognosemodell berechnet jede Menge aus Verkaufshistorie, Buchungen, Events, Auslastung und aktuellem Bestand und zeigt, wie gerechnet wurde.', link: 'how' },
@@ -251,6 +255,7 @@ const de: Dict = {
         items: [
           { id: 'readonly', q: 'Kann Tyll etwas in unseren Systemen ändern?', a: 'Nein. Tyll arbeitet nur lesend. Es liest Ihre Umsätze und Rechnungen und ändert, löscht oder bucht niemals etwas.', link: 'book' },
           { id: 'storage', q: 'Wo werden unsere Daten gespeichert, und wer kann sie sehen?', a: 'Ihre Daten liegen in Europa und werden nach der DSGVO verarbeitet. Jede Rolle sieht nur ihre eigenen Hotels, Outlets und Zahlen: Eigentümer, Hoteldirektion, Finanzcontrolling, F&B-Direktion, Restaurant- und Barleitung, Eventleitung, Einkauf, Lager, Küchenchef, Rezeption, Housekeeping, Concierge, Bell Captain und Team. Ein Küchenchef sieht seine Küche, eine Finanzcontrollerin die ganze Gruppe. Außer Ihrem Team sehen nur die Tyll-Mitarbeitenden, die Ihren Piloten betreuen, Ihre Daten.', link: 'book' },
+          { id: 'security', q: 'Wie sind unsere Daten geschützt?', a: 'Tyll liest Ihre Systeme nur und ändert nichts darin. Ihre Daten sind im Ruhezustand und bei der Übertragung verschlüsselt und werden in der EU gehostet, bei AWS über Supabase. Kartennummern und personenbezogene Gästedaten werden nicht gespeichert, und Ihre Daten werden nie verkauft oder weitergegeben.', link: 'book' },
           { id: 'cash', q: 'Prüft Tyll das Bargeld?', a: 'Ja: das am Ende jeder Schicht gezählte Bargeld gegen die Barumsätze der Kasse. Kartenzahlungen gleicht Ihr Zahlungsanbieter ab; der Abgleich der Kasse mit den Abrechnungen der Kartenanbieter und den Kontoauszügen ist ein eigenes Tyll-Produkt.', link: 'book' },
           { id: 'export', q: 'Können wir in unser Einkaufs- oder Buchhaltungssystem exportieren?', a: 'Ja: Bestellungen, Wareneingänge und Lieferantenrechnungen, als CSV oder JSON.', link: 'book' },
         ],
