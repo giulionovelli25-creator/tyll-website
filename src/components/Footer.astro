@@ -82,6 +82,7 @@ const socials = [
               </li>
             )
           }
+          <li><a href={href('groups', lang)} aria-current={page === 'groups' ? 'page' : undefined}>{d.nav.groups}</a></li>
           <li><a href={href('faq', lang)}>{d.nav.faqShort}</a></li>
           <li><a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>
         </ul>

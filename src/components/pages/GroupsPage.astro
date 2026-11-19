@@ -1,0 +1,247 @@
+---
+// For hotel groups (19 Nov 2026): the solution pages' layout for a group buyer. One question beside a photograph,
+// Book a demo and Try the demo, then six short sections on what changes with several hotels (roles, approval limits,
+// countries and currencies, systems and exports, the audit trail, trust), and the closing Book a demo band.
+// Every line is something the demo shows. Copy: `groupsPage` and `meta.groupsTitle` in the language files.
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SilverWave from '../SilverWave.astro';
+import { demoHref } from '../../config/demo';
+import { t, href, type Locale } from '../../i18n';
+import photo from '../../assets/photos/book-lobby.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const g = d.groupsPage;
+const demo = demoHref(lang);
+---
+
+<Base lang={lang} page="groups" title={d.meta.groupsTitle} description={d.meta.groupsDescription}>
+  <section class="grp" aria-labelledby="grp-title">
+    <SilverWave phase={0.2} class="grp__wave" />
+    <div class="wrap grp__head">
+      <div class="grp__copy">
+        <p class="grp__eyebrow">{g.eyebrow}</p>
+        <h1 id="grp-title" class="display">{g.title}</h1>
+        <p class="grp__intro">{g.sub}</p>
+        <div class="grp__actions">
+          <a class="btn btn--solid btn--lg grp__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="groups-hero">{d.cta.book}</a>
+          {
+            demo && (
+              <a class="btn btn--line btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="groups-hero">
+                {d.hero.try}
+                <span class="visually-hidden"> {d.cta.newTab}</span>
+              </a>
+            )
+          }
+        </div>
+      </div>
+      <div class="grp__photo">
+        <Picture src={photo} formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 720, 960, 1280]} sizes="(max-width: 900px) 92vw, 560px" alt="" loading="eager" decoding="async" />
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap parts" aria-label={g.eyebrow}>
+    <ol class="parts__list" role="list">
+      {
+        g.sections.map(([title, text], i) => (
+          <li class="part">
+            <span class="part__num" aria-hidden="true">{i + 1}</span>
+            <h2>{title}</h2>
+            <p>{text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="close on-dark" data-dark aria-labelledby="grp-final">
+    <SilverWave phase={0.4} move tone="dark" />
+    <div class="wrap close__inner">
+      <h2 id="grp-final" class="display">{d.home.invite.title}</h2>
+      <a class="btn btn--solid btn--lg grp__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="groups-final">{d.cta.book}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grp {
+    position: relative;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + var(--page-top));
+    padding-bottom: var(--intro-gap);
+  }
+
+  .grp :global(.grp__wave) {
+    height: 70%;
+    top: 0;
+    opacity: 0.4;
+    -webkit-mask-image: linear-gradient(180deg, var(--black) 40%, transparent 100%);
+    mask-image: linear-gradient(180deg, var(--black) 40%, transparent 100%);
+  }
+
+  .grp__head {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: center;
+  }
+
+  .grp__eyebrow {
+    margin: 0 0 var(--s-3);
+    color: var(--steel);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .grp h1 {
+    font-size: clamp(2.375rem, 1.6rem + 2.6vw, 4rem);
+    line-height: 1.08;
+  }
+
+  .grp__intro {
+    max-width: 34rem;
+    margin: var(--s-3) 0 0;
+    color: var(--steel);
+    font-size: var(--fs-lead);
+    line-height: 1.4;
+  }
+
+  .grp__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-top: var(--s-4);
+  }
+
+  .grp__book {
+    min-height: 60px;
+    padding-inline: 2.25rem;
+    font-size: 1.1875rem;
+  }
+
+  .grp__photo :global(picture) {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--cloud);
+    box-shadow: var(--shadow-2);
+  }
+
+  .grp__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    filter: var(--photo-grade);
+  }
+
+  /* The six sections: three columns of short numbered blocks on the light grey of the site's other lists */
+  .parts {
+    padding-block: var(--intro-gap) var(--section-y);
+  }
+
+  .parts__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .part {
+    padding: 1.6rem 1.5rem 1.7rem;
+    border: 1px solid var(--sand-300);
+    border-radius: 18px;
+    background: var(--page-deep);
+  }
+
+  .part__num {
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .part h2 {
+    margin: 0;
+    font-size: 1.375rem;
+    line-height: 1.25;
+  }
+
+  .part p {
+    max-width: none;
+    margin: 0.6rem 0 0;
+    color: var(--graphite);
+    font-size: 0.9688rem;
+    line-height: 1.55;
+  }
+
+  .close {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--band-y);
+    background: var(--night-1);
+    color: var(--text-1);
+  }
+
+  .close__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-4);
+    text-align: center;
+  }
+
+  .close h2 {
+    font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
+  }
+
+  @media (max-width: 1100px) {
+    .parts__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .grp__head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .grp h1 {
+      max-width: 20ch;
+    }
+
+    .grp__photo :global(img) {
+      aspect-ratio: 3 / 2;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .parts__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .grp__actions :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+</style>

@@ -54,15 +54,15 @@ export const explore: Record<SolutionKey, Explore> = {
       },
       {
         label: t('Build order', 'Build order', 'Build order', 'Build order'),
-        text: t('One draft. Nothing is sent until you approve.', 'Ein Entwurf. Nichts geht raus ohne Ihre Freigabe.', 'مسودة واحدة. لا يُرسل شيء قبل موافقتك.', 'Una bozza. Nulla parte senza la tua approvazione.'),
+        text: t('One draft, sent once it is approved.', 'Ein Entwurf, gesendet nach der Freigabe.', 'مسودة واحدة تُرسل بعد اعتمادها.', 'Una bozza, inviata dopo l’approvazione.'),
       },
     ],
   },
   revenue: {
     spots: [
       {
-        label: t('Revenue and estimated profit', 'Umsatz und geschätzter Gewinn', 'الإيرادات والربح التقديري', 'Ricavi e profitto stimato'),
-        text: t('Revenue and estimated profit, side by side.', 'Umsatz und geschätzter Gewinn, nebeneinander.', 'الإيرادات والربح التقديري جنبًا إلى جنب.', 'Ricavi e profitto stimato, fianco a fianco.'),
+        label: t('Revenue and operating contribution', 'Umsatz und Betriebsbeitrag', 'الإيرادات والمساهمة التشغيلية', 'Ricavi e contributo operativo'),
+        text: t('Revenue and estimated operating contribution, side by side.', 'Umsatz und geschätzter Betriebsbeitrag, nebeneinander.', 'الإيرادات والمساهمة التشغيلية التقديرية جنبًا إلى جنب.', 'Ricavi e contributo operativo stimato, fianco a fianco.'),
       },
       {
         label: t('Three totals', 'Drei Summen', 'ثلاثة إجماليات', 'Tre totali'),
@@ -70,7 +70,7 @@ export const explore: Record<SolutionKey, Explore> = {
       },
       {
         label: t('By outlet', 'Nach Outlet', 'حسب المنفذ', 'Per punto vendita'),
-        text: t('Every outlet’s revenue, estimated cost and estimated profit.', 'Umsatz, geschätzte Kosten und geschätzter Gewinn jedes Outlets.', 'إيرادات كل منفذ وتكلفته التقديرية وربحه التقديري.', 'Ricavi, costi stimati e profitto stimato di ogni punto vendita.'),
+        text: t('Every outlet’s revenue, estimated cost and estimated operating contribution.', 'Umsatz, geschätzte Kosten und geschätzter Betriebsbeitrag jedes Outlets.', 'إيرادات كل منفذ وتكلفته التقديرية ومساهمته التشغيلية التقديرية.', 'Ricavi, costi stimati e contributo operativo stimato di ogni punto vendita.'),
       },
     ],
   },

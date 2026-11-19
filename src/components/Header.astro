@@ -43,6 +43,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
       <a class="header__link" href={href('how', lang)} aria-current={page === 'how' ? 'page' : undefined}>{d.nav.how}</a>
+      <a class="header__link header__link--next" href={href('groups', lang)} aria-current={page === 'groups' ? 'page' : undefined}>{d.nav.groups}</a>
     </nav>
 
     <div class="header__end">
@@ -116,6 +117,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
       </div>
       <div class="panel__foot">
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
+        <a href={href('groups', lang)} aria-current={page === 'groups' ? 'page' : undefined}>{d.groupsPage.link}</a>
         <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
       </div>
     </div>
@@ -160,6 +162,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         </ul>
       </details>
       <a class="mobile-menu__how" href={href('how', lang)} aria-current={page === 'how' ? 'page' : undefined}>{d.nav.how}</a>
+      <a class="mobile-menu__how" href={href('groups', lang)} aria-current={page === 'groups' ? 'page' : undefined}>{d.nav.groups}</a>
       <div class="lang mobile-menu__lang" role="group" aria-label={d.nav.language}>
         {
           locales.map((l) => (
@@ -277,6 +280,18 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     font-weight: 600;
     text-decoration: none;
     text-underline-offset: 6px;
+  }
+
+  /* For hotel groups (19 Nov 2026), the second text link: no extra gap before it, and only where the bar has room for
+     it in every language (from 1280 px); narrower screens reach the page from the Solutions menu's foot row */
+  .header__link--next {
+    margin-inline-start: 0;
+  }
+
+  @media (max-width: 1279px) {
+    .header__link--next {
+      display: none;
+    }
   }
 
   .header__link:hover,

@@ -28,7 +28,7 @@ export const solutionSeo: Record<SolutionKey, Partial<Record<Locale, Meta>>> = {
   forecasting: {
     en: {
       title: 'Restaurant Purchasing Forecast: Know What to Order | Tyll',
-      description: 'See what to order and when, from forecast covers, events and recent use, with your cost to month end. Stop over-ordering and running short. Try the demo.',
+      description: 'See what to order and when, from forecast covers, events and recent use. Approve each order, or let automatic ordering run within your limits. Try the demo.',
     },
     de: {
       title: 'Bestellmenge berechnen für die Gastronomie | Tyll',
@@ -37,12 +37,12 @@ export const solutionSeo: Record<SolutionKey, Partial<Record<Locale, Meta>>> = {
   },
   revenue: {
     en: {
-      title: 'Restaurant End of Day Revenue & Profit Report | Tyll',
-      description: 'Today, the last 7 and the last 30 days of revenue from your POS, each with estimated profit. No spreadsheet needed. Try the demo.',
+      title: 'Hotel Revenue & Operating Contribution by Outlet | Tyll',
+      description: 'Today, the last 7 and the last 30 days of revenue from your POS, each with estimated operating contribution. No spreadsheet needed. Try the demo.',
     },
     de: {
-      title: 'Tagesumsatz und Gewinn für Gastronomie & Hotels | Tyll',
-      description: 'Umsatz von heute, den letzten 7 und 30 Tagen aus Ihrer Kasse, jeweils mit geschätztem Gewinn. Ohne Excel-Tabelle. Testen Sie die Demo.',
+      title: 'Umsatz und Betriebsbeitrag je Outlet im Hotel | Tyll',
+      description: 'Umsatz von heute, den letzten 7 und 30 Tagen aus Ihrer Kasse, jeweils mit geschätztem Betriebsbeitrag. Ohne Excel-Tabelle. Testen Sie die Demo.',
     },
   },
   finance: {

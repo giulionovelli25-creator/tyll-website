@@ -136,9 +136,12 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
                 {v.more} <span class="flip-rtl" aria-hidden="true">→</span>
               </a>
             ) : (
-              <a class="btn btn--solid btn--lg hs__cta" href={href('book', lang)} data-track="book_demo_click" data-track-from="hotel">
-                {d.cta.book}
-              </a>
+              <div class="hs__end">
+                <a class="btn btn--solid btn--lg hs__cta" href={href('book', lang)} data-track="book_demo_click" data-track-from="hotel">
+                  {d.cta.book}
+                </a>
+                <a class="hs__more" href={href('groups', lang)}>{d.groupsPage.link}</a>
+              </div>
             )}
           </div>
         ))
@@ -492,6 +495,20 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
     background: var(--paper);
     color: var(--ink);
     text-shadow: none;
+  }
+
+  /* The result: Book a demo, and beside it the way to the hotel groups page */
+  .hs__end {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .hs__end .hs__cta,
+  .hs__end .hs__more {
+    margin-top: 0;
   }
 
   .hs__cta:hover {

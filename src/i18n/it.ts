@@ -8,6 +8,7 @@ const it: Dict = {
     label: 'Navigazione principale',
     solutions: 'Soluzioni',
     how: 'Come funziona',
+    groups: 'Gruppi alberghieri',
     solutionsMenu: 'Menu soluzioni',
     allSolutions: 'Tutte le soluzioni',
     faq: 'Domande frequenti →',
@@ -35,7 +36,7 @@ const it: Dict = {
     play: 'Riproduci il video di sfondo',
     // The flagged receipt lines' labels and the example morning card (fictional data, as the footer says)
     flags: ['Rimosso, senza motivo', 'Versato, non fatturato', 'Non sul conto camera', 'Fatturato due volte', 'Nessuna bolla'],
-    card: { title: 'Brief del mattino · Grand Resort Dubai', lost: 'Perso ieri', total: 'AED 583', split: 'AED 337 sprechi, AED 0 rotture, AED 246 bevande non fatturate', todo: 'Tre cose da fare oggi', rows: <[string, string, string][]>[['Ordina 5 articoli critici', 'Da ordinare', 'AED 43,2k'], ['Omaggi oltre il limite concordato', 'Maison Lune', 'AED 459'], ['Controlla il versamento al Lobby Lounge', 'Domenica, turno di giorno, non fatturato', 'AED 1.430']], cta: 'Apri il brief del mattino →' },
+    card: { title: 'Brief del mattino · Grand Hotel Lumière', lost: 'Perso ieri', total: '113 €', split: '38 € sprechi, 0 € rotture, 75 € bevande non fatturate', yesterday: ['Ricavi 8.342 € da 229 ospiti', '8 conti segnalati ancora aperti, 320 € da controllare'], todo: 'Tre cose da fare oggi', rows: <[string, string, string][]>[['La consegna di pesce fresco prevista alle 15:00 non è arrivata', 'Mercado', ''], ['Macinato di manzo wagyu 1,8 kg oltre le ricette', 'Mercado, a rischio', '86 €'], ['Controlla il versamento, venerdì turno serale', 'Bar Azulejo, non fatturato', '351 €']], month: 'Ultimi 30 giorni: 10.488 € persi, 3.914 € risparmiati, il 37,3% della perdita', cta: 'Apri il brief del mattino →' },
   },
   home: {
     tour: {
@@ -53,10 +54,10 @@ const it: Dict = {
       button: 'Prenota una demo',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Magazzino', payments: 'Pagamenti' },
       steps: [
-        { label: 'Ricavi e riconciliazione', headline: 'Conti, comande e fatture coincidono?', problem: 'Conti, comande e fatture stanno in posti separati. Nessuno può controllarli tutti.', bullets: ['Conti contro comande di cucina e bar: storni, rimborsi, sconti, omaggi e articoli tolti dopo l’invio', 'Addebiti in camera sul conto dell’ospite', 'Fatture dei fornitori contro ordini e consegne'], shot: 'Tyll mostra una fattura di Gulf Prime Meats: AED 6.709 ordinati, AED 6.099 ricevuti, AED 6.709 fatturati.' },
-        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Livelli di scorta calcolati da vendite, consegne e sprechi registrati. Due tocchi ogni volta che qualcosa si spreca o si rompe.', 'Conti e comande mostrano quale merce è uscita, così il buco ha una spiegazione'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
-        { label: 'Inventario e acquisti', headline: 'Sappiamo cosa abbiamo prima di ordinare?', problem: 'Si conta su carta, se si conta, quindi gli ordini sono tentativi.', bullets: ['Una lista d’ordine per fornitore, costruita da ospiti previsti, eventi e consumi delle ultime 4 settimane', 'Nulla va a un fornitore finché un responsabile non lo approva'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
-        { label: 'Il risultato', headline: 'Un hotel o un intero gruppo. Una risposta chiara.', problem: '', bullets: ['Ogni sistema collegato', 'Denaro perso trovato prima che sparisca'], shot: '' },
+        { label: 'Ricavi e riconciliazione', headline: 'Conti, comande e fatture coincidono?', problem: 'Conti, comande e fatture stanno in posti separati. Nessuno può controllarli tutti.', bullets: ['Conti contro comande di cucina e bar: storni, rimborsi, sconti, omaggi e articoli tolti dopo l’invio', 'Addebiti in camera sul conto dell’ospite', 'Fatture dei fornitori contro ordini e consegne'] },
+        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Livelli di scorta calcolati da vendite, consegne e sprechi registrati. Due tocchi ogni volta che qualcosa si spreca o si rompe.', 'Conti e comande mostrano quale merce è uscita, così il buco ha una spiegazione'] },
+        { label: 'Inventario e acquisti', headline: 'Sappiamo cosa abbiamo prima di ordinare?', problem: 'Si conta su carta, se si conta, quindi gli ordini sono tentativi.', bullets: ['Una lista d’ordine per fornitore, costruita da ospiti previsti, eventi e consumi delle ultime 4 settimane', 'Decidi tu. Ogni ordine può attendere l’approvazione, oppure attivi l’ordine automatico con i limiti che scegli. Tutto ciò che supera i tuoi limiti attende comunque un responsabile.'] },
+        { label: 'Il risultato', headline: 'Un hotel o un intero gruppo. Una risposta chiara.', problem: '', bullets: ['Ogni sistema collegato', 'Denaro perso trovato prima che sparisca'] },
       ],
     },
     // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
@@ -135,11 +136,26 @@ const it: Dict = {
     eyebrow: 'Come funziona',
     title: 'Quattro passi. Poi ogni mattina vedi cosa ha perso il tuo hotel.',
     sub: 'Sola lettura. Niente da installare. Niente da sostituire.',
-    steps: <[string, string][]>[['Prenota una chiamata di 15 minuti', 'Guardiamo insieme i tuoi punti vendita e verifichiamo che Tyll faccia per te.'], ['Report acquisti gratuito', 'Invia un mese di vendite POS, ricevi il report entro 48 ore.'], ['Leggiamo il tuo POS', 'Tyll legge le vendite di ieri sera dal sistema che usi già.'], ['Il tuo brief del mattino', 'Ogni mattina alle 7, via email: cosa hai perso ieri e quanto è costato, le tre cose da fare oggi e il mese fino a oggi. 30 giorni gratis.']],
+    steps: <[string, string][]>[['Prenota una chiamata di 15 minuti', 'Guardiamo insieme i tuoi punti vendita e verifichiamo che Tyll faccia per te.'], ['Report acquisti gratuito', 'Invia un mese di vendite POS, ricevi il report entro 48 ore.'], ['Leggiamo il tuo POS', 'Tyll legge le vendite di ieri sera dal sistema che usi già.'], ['Il tuo brief del mattino', 'Ogni mattina alle 7, via email ai responsabili che lo scelgono: la perdita di ieri divisa tra sprechi, rotture e bevande non fatturate, ricavi e ospiti di ieri, conti segnalati ancora aperti, le tre cose da fare oggi e gli ultimi 30 giorni, perso contro risparmiato. 30 giorni gratis.']],
     call: { title: 'Introduzione a Tyll · 15 min', day: 'Martedì', slots: ['09:30', '11:00', '14:30'] },
     readOnly: 'Sola lettura',
     strip: ['Sola lettura', 'Niente da sostituire', 'Nessun costo se il pilota non trova soldi veri'],
     final: 'Guardalo sui tuoi numeri.',
+  },
+  // The For hotel groups page (19 Nov 2026)
+  groupsPage: {
+    eyebrow: 'Per gruppi alberghieri',
+    title: 'Tyll funziona per un intero gruppo alberghiero?',
+    sub: 'Una vista di gruppo su tutti gli hotel, ognuno con la sua valuta, i suoi fornitori e le sue regole di approvazione.',
+    link: 'Per gruppi alberghieri →',
+    sections: <[string, string][]>[
+      ['Ogni ruolo vede ciò che gli serve.', 'Proprietario, direttore generale, controller finanziario, direttore F&B, responsabili di ristorante e bar, responsabile eventi, acquisti, magazziniere, capo chef, front office, housekeeping, concierge, bell captain e personale. Ognuno vede solo i suoi hotel, punti vendita e numeri. Un capo chef vede la sua cucina, un controller finanziario l’intero gruppo.'],
+      ['Limiti di approvazione per hotel.', 'Ogni hotel imposta la sua catena di approvazione, con limiti al netto dell’IVA. Per esempio: gli acquisti esaminano ogni ordine, la contabilità approva ogni ordine, il direttore F&B approva gli ordini oltre 2.000 € e il direttore generale anche quelli oltre 5.000 €. Nessuno approva un ordine che ha creato. Il magazziniere riceve la merce.'],
+      ['Più hotel, più paesi.', 'Ogni hotel riporta nella sua valuta, per esempio EUR, AED o SAR, e importi in valute diverse non vengono mai sommati. L’IVA di ogni paese compare su ogni ordine di acquisto e fattura. Ogni hotel sceglie il suo metodo di valorizzazione delle scorte e ha i suoi fornitori e le sue condizioni.'],
+      ['Si adatta ai sistemi del tuo gruppo.', 'Connessioni in sola lettura a POS, PMS, prenotazioni e acquisti. Ordini di acquisto approvati, entrate merci e fatture dei fornitori si possono esportare per il sistema di acquisti o di contabilità del gruppo, in CSV (una riga per voce) o JSON (un record per documento).'],
+      ['Ogni modifica registrata.', 'Un registro di ogni accesso e di ogni modifica, visibile a proprietari, direttori generali e controller finanziari. I limiti dei controlli si concordano con ogni hotel all’inizio.'],
+      ['Fiducia.', 'Tyll non modifica, cancella o registra mai nulla nei tuoi sistemi. Dati ospitati in Europa secondo il GDPR.'],
+    ],
   },
   solutionPage: {
     seeTitle: 'Cosa stai per vedere',
@@ -159,12 +175,14 @@ const it: Dict = {
     also: {
       title: 'Anche in Tyll',
       items: <[string, string][]>[
-        ['Avvisi', 'Tutto ciò che richiede una decisione, in un’unica lista, prima gli importi più alti.'],
-        ['Lista recuperi', 'Ogni caso di denaro, aperto e chiuso, e quanto è stato recuperato.'],
+        ['Panoramica e avvisi', 'Denaro perso e risparmiato negli ultimi 30 giorni, con la quota risparmiata, e le tre cose che ti aspettano oggi. Avvisi divisi tra oggi e questa settimana, prima gli importi più alti, da rimandare o risolvere.'],
+        ['Ricerca e notifiche', 'Ricerca tra articoli, punti vendita e azioni. Una campanella per le richieste, e i passaggi importanti anche via email.'],
+        ['Lista recuperi', 'Ogni caso di denaro, aperto e chiuso, con perdite confermate e denaro recuperato. Esportabile in CSV.'],
         ['Rendimento del menu', 'Quanto vende e rende ogni piatto, e quali margini stanno calando.'],
-        ['Tyll Flow', 'Ogni ordine aperto di cucina e bar, e se arriverà in ritardo.'],
-        ['Report', 'Report direzionale, confronto tra punti vendita, registro sprechi e dati delle scorte, in PDF o CSV.'],
-        ['Brief del mattino', 'Le perdite di ieri e le tre azioni di oggi, via email alle 7.'],
+        ['Tyll Flow', 'Ogni ordine aperto di cucina e bar, dove si trova e se arriverà in ritardo. L’ora di fine è stimata dai piatti sulla comanda, da quanto è carica la postazione e da quanto ci mette davvero questa cucina. Prima gli ordini in ritardo, probabilmente in ritardo o a rischio di annullamento, con dove intervenire. Obiettivi per punto vendita, per esempio cibo entro 18 minuti, bevande entro 8.'],
+        ['Report', 'Report direzionale, confronto tra punti vendita, rendimento del menu e registro sprechi, più dati delle scorte, ricette e costi, storico articoli, la Lista recuperi, addebiti in camera e mance. Stampa o salva in PDF, oppure scarica in CSV.'],
+        ['Brief del mattino', 'Perdite, ricavi e segnalazioni aperte di ieri, le tre azioni di oggi e gli ultimi 30 giorni, via email alle 7.'],
+        ['Vista per il personale', 'Il personale ha una sua schermata semplice per registrare sprechi e rotture e seguire la bacheca degli ordini. Non vede mai vendite né costi.'],
         ['Ruoli e accessi', 'Proprietari, direttori, controller finanziari, F&B, chef e personale vedono ciò che serve al loro ruolo.'],
         ['Più hotel', 'Una vista di gruppo su tutte le strutture, ognuna nella sua valuta.'],
       ],
@@ -220,9 +238,12 @@ const it: Dict = {
         items: [
           { id: 'test', q: 'Possiamo provare Tyll nel nostro hotel?', a: 'Sì. Iniziamo con un pilota gratuito di 30 giorni sui tuoi dati. Se il pilota non trova soldi veri, non paghi nulla.', link: 'book' },
           { id: 'replace', q: 'Dobbiamo sostituire il nostro POS o il software dell’hotel?', a: 'No. Tyll lavora accanto ai sistemi che usi già. Niente da installare e niente da sostituire.', link: 'how' },
-          { id: 'systems', q: 'Con quali sistemi lavorate?', a: 'Tyll funziona con i sistemi indicati nella {home:nostra home page}, tra cui Oracle OPERA, MICROS Simphony, Mews, apaleo, Lightspeed e SumUp. Usi altro? {book:Chiedicelo} e verifichiamo il tuo sistema.' },
+          { id: 'systems', q: 'Con quali sistemi lavorate?', a: 'Tyll funziona con sistemi di cassa come MICROS Simphony, Sapaad e HMS e con PMS come Oracle OPERA e Shiji Infrasys. Altri sono nella {home:nostra home page}. Usi altro? {book:Chiedicelo} e verifichiamo il tuo sistema.' },
           { id: 'setup', q: 'Quanto tempo richiede l’avvio?', a: 'Una breve chiamata. Il tuo primo brief del mattino arriva entro 48 ore.', link: 'how' },
           { id: 'staff', q: 'Quanto lavoro è per il nostro personale?', a: 'Pochissimo. Il personale registra sprechi e rotture con due tocchi: l’articolo, poi la quantità. Il motivo è facoltativo. Ai controlli pensa Tyll, ogni notte, e alle 7 invia un brief del mattino.', link: 'how' },
+          { id: 'auto', q: 'Tyll può ordinare in automatico?', a: 'Sì, se lo attivi. Ogni mattina alle 06:00 invia gli ordini in scadenza, entro i limiti che scegli. Tutto ciò che li supera attende un responsabile. Puoi anche lasciare ogni ordine manuale.', link: 'book' },
+          { id: 'ai', q: 'È un’intelligenza artificiale a decidere cosa ordiniamo?', a: 'No. Il modello di previsione di Tyll calcola ogni quantità da storico vendite, prenotazioni, eventi, occupazione e scorte attuali, e mostra come l’ha calcolata.', link: 'how' },
+          { id: 'limits', q: 'Possiamo impostare i nostri limiti di approvazione?', a: 'Sì, per ogni hotel. Per esempio: gli acquisti esaminano ogni ordine, la contabilità approva ogni ordine, il direttore F&B approva gli ordini oltre 2.000 € e il direttore generale anche quelli oltre 5.000 €. Nessuno approva un ordine che ha creato.', link: 'book' },
         ],
       },
       {
@@ -230,8 +251,9 @@ const it: Dict = {
         title: 'Dati e fiducia',
         items: [
           { id: 'readonly', q: 'Tyll può modificare qualcosa nei nostri sistemi?', a: 'No. Tyll è in sola lettura. Legge vendite e fatture e non modifica, cancella o registra mai nulla.', link: 'book' },
-          { id: 'storage', q: 'Dove sono conservati i nostri dati e chi può vederli?', a: 'I tuoi dati sono ospitati in Europa e trattati secondo il GDPR. Ogni persona vede solo gli hotel, i punti vendita e i numeri che il suo ruolo consente: per esempio un capo chef vede la sua cucina, un controller finanziario l’intero gruppo. Oltre al tuo team, solo il personale Tyll che segue il tuo pilota può vedere i tuoi dati.', link: 'book' },
-          { id: 'statements', q: 'Tyll può riconciliare i pagamenti con carta e gli estratti conto?', a: 'È un prodotto Tyll separato, che confronta la cassa con gli estratti dei circuiti delle carte e delle banche. Chiedicelo in chiamata.', link: 'book' },
+          { id: 'storage', q: 'Dove sono conservati i nostri dati e chi può vederli?', a: 'I tuoi dati sono ospitati in Europa e trattati secondo il GDPR. Ogni ruolo vede solo i propri hotel, punti vendita e numeri: proprietario, direttore generale, controller finanziario, direttore F&B, responsabili di ristorante e bar, responsabile eventi, acquisti, magazziniere, capo chef, front office, housekeeping, concierge, bell captain e personale. Un capo chef vede la sua cucina, un controller finanziario l’intero gruppo. Oltre al tuo team, solo il personale Tyll che segue il tuo pilota può vedere i tuoi dati.', link: 'book' },
+          { id: 'cash', q: 'Tyll controlla i contanti?', a: 'Sì: i contanti contati a fine turno contro le vendite in contanti della cassa. I pagamenti con carta li riconcilia il tuo fornitore di pagamenti; il confronto della cassa con gli estratti dei circuiti delle carte e delle banche è un prodotto Tyll separato.', link: 'book' },
+          { id: 'export', q: 'Possiamo esportare verso il nostro sistema di acquisti o di contabilità?', a: 'Sì: ordini di acquisto, entrate merci e fatture dei fornitori, in CSV o JSON.', link: 'book' },
         ],
       },
       {
@@ -287,6 +309,8 @@ const it: Dict = {
   meta: {
     howTitle: 'Come funziona | Tyll',
     howDescription: 'Come funziona Tyll in quattro passi: una breve chiamata, un report acquisti gratuito, accesso in sola lettura al tuo POS e poi alle 7 un brief del mattino con cosa è andato perso e quanto è costato.',
+    groupsTitle: 'Controllo di scorte e perdite per gruppi alberghieri | Tyll',
+    groupsDescription: 'Una vista su tutti gli hotel: ruoli che vedono solo i propri numeri, limiti di approvazione per hotel, ogni hotel nella sua valuta, export e registro modifiche.',
     solutionsTitle: 'Soluzioni | Tyll',
     solutionsDescription: 'Sei aree in cui Tyll aiuta i team alberghieri: magazzino e sprechi, finanza, previsioni e acquisti, eventi e personale, camere e ospiti, vendite.',
     bookTitle: 'Prenota una demo | Tyll',

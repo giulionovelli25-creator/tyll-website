@@ -7,6 +7,7 @@ const de: Dict = {
     label: 'Hauptnavigation',
     solutions: 'Lösungen',
     how: 'So funktioniert’s',
+    groups: 'Hotelgruppen',
     solutionsMenu: 'Menü Lösungen',
     allSolutions: 'Alle Lösungen',
     faq: 'Häufige Fragen →',
@@ -34,7 +35,7 @@ const de: Dict = {
     play: 'Hintergrundvideo abspielen',
     // The flagged receipt lines' labels and the example morning card (fictional data, as the footer says)
     flags: ['Entfernt, ohne Grund', 'Ausschank nicht berechnet', 'Nicht auf der Zimmerrechnung', 'Doppelt berechnet', 'Kein Lieferschein'],
-    card: { title: 'Morgenbericht · Grand Resort Dubai', lost: 'Gestern verloren', total: 'AED 583', split: 'AED 337 Abfall, AED 0 Bruch, AED 246 nicht berechnete Getränke', todo: 'Drei Dinge für heute', rows: <[string, string, string][]>[['5 kritische Artikel bestellen', 'Zu bestellen', 'AED 43,2k'], ['Gratisartikel über dem vereinbarten Limit', 'Maison Lune', 'AED 459'], ['Ausschank in der Lobby Lounge prüfen', 'Sonntag, Tagschicht, nicht berechnet', 'AED 1.430']], cta: 'Morgenbericht öffnen →' },
+    card: { title: 'Morgenbericht · Grand Hotel Lumière', lost: 'Gestern verloren', total: '113 €', split: '38 € Abfall, 0 € Bruch, 75 € nicht berechnete Getränke', yesterday: ['Umsatz 8.342 € mit 229 Gästen', '8 markierte Rechnungen noch offen, 320 € bis zur Prüfung'], todo: 'Drei Dinge für heute', rows: <[string, string, string][]>[['Frischfisch-Lieferung, fällig um 15:00, ist nicht angekommen', 'Mercado', ''], ['Wagyu-Rinderhack 1,8 kg über den Rezepten', 'Mercado, gefährdet', '86 €'], ['Ausschank prüfen, Freitag Spätschicht', 'Bar Azulejo, nicht berechnet', '351 €']], month: 'Letzte 30 Tage: 10.488 € verloren, 3.914 € gespart, 37,3 % des Verlusts', cta: 'Morgenbericht öffnen →' },
   },
   home: {
     tour: {
@@ -52,10 +53,10 @@ const de: Dict = {
       button: 'Demo buchen',
       cards: { pos: 'Kasse', pms: 'PMS', stock: 'Lager', payments: 'Zahlungen' },
       steps: [
-        { label: 'Umsatz und Abgleich', headline: 'Stimmen Gästerechnungen, Bons und Rechnungen überein?', problem: 'Alles liegt getrennt. Niemand kann alles prüfen.', bullets: ['Rechnungen gegen Bons: Stornos, Erstattungen, Rabatte, Gratisartikel, nach dem Bonieren entfernte Posten', 'Zimmerbelastungen auf der Gästerechnung', 'Lieferantenrechnungen gegen Bestellung und Lieferung'], shot: 'Tyll zeigt eine Rechnung von Gulf Prime Meats: AED 6.709 bestellt, AED 6.099 erhalten, AED 6.709 berechnet.' },
-        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Lagerbestand aus Ihren Verkäufen, Lieferungen und erfasstem Abfall berechnet. Zwei Tipps, wenn etwas weggeworfen wird oder kaputtgeht.', 'Gästerechnungen und Bons zeigen, welcher Bestand rausging, so ist die Lücke erklärt'], shot: 'Tyll zeigt kritische Artikel: Hähnchenbrust geht in 1 Tag aus, Hummerschwanz in 2 Tagen.' },
-        { label: 'Inventur und Einkauf', headline: 'Wissen wir, was wir haben, bevor wir bestellen?', problem: 'Gezählt wird auf Papier, wenn überhaupt, also wird nach Gefühl bestellt.', bullets: ['Eine Bestellliste nach Lieferant, aus erwarteten Gästen, Events und dem Verbrauch der letzten 4 Wochen', 'Nichts geht an einen Lieferanten, bevor eine Führungskraft es freigibt'], shot: 'Ein Bestellentwurf nach Lieferant: Emirates Dairy & Dry Goods mit Cheddar, Parmesan, Mozzarella, Frischkäse und Labneh.' },
-        { label: 'Das Ergebnis', headline: 'Ein Hotel oder eine ganze Gruppe. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Verlorenes Geld gefunden, bevor es weg ist'], shot: '' },
+        { label: 'Umsatz und Abgleich', headline: 'Stimmen Gästerechnungen, Bons und Rechnungen überein?', problem: 'Alles liegt getrennt. Niemand kann alles prüfen.', bullets: ['Rechnungen gegen Bons: Stornos, Erstattungen, Rabatte, Gratisartikel, nach dem Bonieren entfernte Posten', 'Zimmerbelastungen auf der Gästerechnung', 'Lieferantenrechnungen gegen Bestellung und Lieferung'] },
+        { label: 'Bestand und Abfall', headline: 'Wohin geht unser Bestand?', problem: 'Bestand verschwindet, und niemand weiß, wo.', bullets: ['Lagerbestand aus Ihren Verkäufen, Lieferungen und erfasstem Abfall berechnet. Zwei Tipps, wenn etwas weggeworfen wird oder kaputtgeht.', 'Gästerechnungen und Bons zeigen, welcher Bestand rausging, so ist die Lücke erklärt'] },
+        { label: 'Inventur und Einkauf', headline: 'Wissen wir, was wir haben, bevor wir bestellen?', problem: 'Gezählt wird auf Papier, wenn überhaupt, also wird nach Gefühl bestellt.', bullets: ['Eine Bestellliste nach Lieferant, aus erwarteten Gästen, Events und dem Verbrauch der letzten 4 Wochen', 'Sie entscheiden. Jede Bestellung kann auf Freigabe warten, oder Sie schalten die automatische Bestellung mit Ihren eigenen Limits ein. Alles über Ihren Limits wartet weiter auf eine Führungskraft.'] },
+        { label: 'Das Ergebnis', headline: 'Ein Hotel oder eine ganze Gruppe. Eine klare Antwort.', problem: '', bullets: ['Alle Systeme verbunden', 'Verlorenes Geld gefunden, bevor es weg ist'] },
       ],
     },
     // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
@@ -134,11 +135,26 @@ const de: Dict = {
     eyebrow: 'So funktioniert’s',
     title: 'Vier Schritte. Danach sehen Sie jeden Morgen, was Ihr Hotel verloren hat.',
     sub: 'Nur lesend. Nichts zu installieren. Nichts zu ersetzen.',
-    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenloser Einkaufsbericht', 'Senden Sie einen Monat Kassenumsätze, Sie erhalten den Bericht innerhalb von 48 Stunden.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihr Morgenbericht', 'Jeden Morgen um 7 Uhr per E-Mail: was Sie gestern verloren haben und was es gekostet hat, die drei Dinge für heute und der bisherige Monat. 30 Tage kostenlos.']],
+    steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenloser Einkaufsbericht', 'Senden Sie einen Monat Kassenumsätze, Sie erhalten den Bericht innerhalb von 48 Stunden.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihr Morgenbericht', 'Jeden Morgen um 7 Uhr per E-Mail an die Führungskräfte, die ihn wählen: der Verlust von gestern nach Abfall, Bruch und nicht berechneten Getränken, Umsatz und Gäste von gestern, offene markierte Rechnungen, die drei Dinge für heute und die letzten 30 Tage, verloren gegen gespart. 30 Tage kostenlos.']],
     call: { title: 'Tyll Einführung · 15 Min.', day: 'Dienstag', slots: ['09:30', '11:00', '14:30'] },
     readOnly: 'Nur lesend',
     strip: ['Nur lesend', 'Nichts zu ersetzen', 'Keine Gebühr, wenn der Pilot kein echtes Geld findet'],
     final: 'Sehen Sie es mit Ihren eigenen Zahlen.',
+  },
+  // The For hotel groups page (19 Nov 2026)
+  groupsPage: {
+    eyebrow: 'Für Hotelgruppen',
+    title: 'Funktioniert Tyll für eine ganze Hotelgruppe?',
+    sub: 'Eine Gruppenansicht über alle Hotels, jedes mit eigener Währung, eigenen Lieferanten und eigenen Freigaberegeln.',
+    link: 'Für Hotelgruppen →',
+    sections: <[string, string][]>[
+      ['Jede Rolle sieht, was sie braucht.', 'Eigentümer, Hoteldirektion, Finanzcontrolling, F&B-Direktion, Restaurant- und Barleitung, Eventleitung, Einkauf, Lager, Küchenchef, Rezeption, Housekeeping, Concierge, Bell Captain und Team. Jede Person sieht nur ihre Hotels, Outlets und Zahlen. Ein Küchenchef sieht seine Küche, eine Finanzcontrollerin die ganze Gruppe.'],
+      ['Freigabelimits je Hotel.', 'Jedes Hotel legt seine eigene Freigabekette fest, mit Limits vor Mehrwertsteuer. Zum Beispiel: Der Einkauf prüft jede Bestellung, die Buchhaltung gibt jede Bestellung frei, der F&B-Direktor gibt Bestellungen über 2.000 € frei und die Hoteldirektion zusätzlich Bestellungen über 5.000 €. Niemand gibt eine eigene Bestellung frei. Das Lager nimmt die Ware an.'],
+      ['Mehrere Hotels, mehrere Länder.', 'Jedes Hotel berichtet in seiner eigenen Währung, zum Beispiel EUR, AED oder SAR, und Beträge in verschiedenen Währungen werden nie addiert. Die Mehrwertsteuer des jeweiligen Landes steht auf jeder Bestellung und Rechnung. Jedes Hotel wählt seine Methode der Bestandsbewertung und hat eigene Lieferanten und Konditionen.'],
+      ['Passt zu den Systemen Ihrer Gruppe.', 'Nur lesender Zugriff auf Kasse, PMS, Reservierungen und Einkauf. Freigegebene Bestellungen, Wareneingänge und Lieferantenrechnungen lassen sich für das Einkaufs- oder Buchhaltungssystem der Gruppe exportieren, als CSV (eine Zeile pro Position) oder JSON (ein Datensatz pro Beleg).'],
+      ['Jede Änderung dokumentiert.', 'Ein Protokoll jeder Anmeldung und jeder Änderung, sichtbar für Eigentümer, Hoteldirektion und Finanzcontrolling. Die Prüfgrenzen werden zu Beginn mit jedem Hotel vereinbart.'],
+      ['Vertrauen.', 'Tyll ändert, löscht oder bucht nie etwas in Ihren Systemen. Daten in Europa gehostet, nach der DSGVO.'],
+    ],
   },
   solutionPage: {
     seeTitle: 'Das sehen Sie gleich',
@@ -158,12 +174,14 @@ const de: Dict = {
     also: {
       title: 'Außerdem in Tyll',
       items: <[string, string][]>[
-        ['Warnungen', 'Alles, was eine Entscheidung braucht, in einer Liste, der größte Betrag zuerst.'],
-        ['Rückholliste', 'Jeder Geldfall, offen und abgeschlossen, und was zurückgeholt wurde.'],
+        ['Übersicht und Warnungen', 'Verlorenes und gespartes Geld der letzten 30 Tage, mit dem gesparten Anteil, und die drei Dinge, die heute Ihre Entscheidung brauchen. Warnungen nach heute und diese Woche getrennt, der größte Betrag zuerst, zum Zurückstellen oder Erledigen.'],
+        ['Suche und Benachrichtigungen', 'Suche über Artikel, Outlets und Aufgaben. Eine Glocke für Anfragen, wichtige Übergaben auch per E-Mail.'],
+        ['Rückholliste', 'Jeder Geldfall, offen und abgeschlossen, mit bestätigten Verlusten und zurückgeholtem Geld. Export als CSV.'],
         ['Menüleistung', 'Was jedes Gericht verkauft und einbringt, und welche Margen sinken.'],
-        ['Tyll Flow', 'Jede offene Küchen- und Barbestellung, und ob sie sich verspätet.'],
-        ['Berichte', 'Managementbericht, Outlet-Vergleich, Abfallprotokoll und Bestandsdaten, als PDF oder CSV.'],
-        ['Morgenbericht', 'Die Verluste von gestern und die drei Aufgaben für heute, um 7 Uhr per E-Mail.'],
+        ['Tyll Flow', 'Jede offene Küchen- und Barbestellung, wo sie steht und ob sie sich verspätet. Die Fertigzeit wird aus den Gerichten auf dem Bon, der Auslastung der Station und der tatsächlichen Dauer dieser Küche geschätzt. Verspätete, wahrscheinlich verspätete und stornogefährdete Bestellungen zuerst, mit dem Hinweis, wo Sie eingreifen. Ziele je Outlet, zum Beispiel Speisen in 18 Minuten, Getränke in 8.'],
+        ['Berichte', 'Managementbericht, Outlet-Vergleich, Menüleistung und Abfallprotokoll, dazu Bestandsdaten, Rezepte und Kosten, Artikelhistorie, die Rückholliste, Zimmerbelastungen und Trinkgelder. Drucken oder als PDF speichern, oder als CSV herunterladen.'],
+        ['Morgenbericht', 'Verluste, Umsatz und offene Hinweise von gestern, die drei Aufgaben für heute und die letzten 30 Tage, um 7 Uhr per E-Mail.'],
+        ['Ansicht für das Team', 'Das Team hat einen eigenen, einfachen Bildschirm, um Abfall und Bruch zu erfassen und die Bestelltafel zu verfolgen. Umsätze und Kosten sieht es nie.'],
         ['Rollen und Zugriff', 'Eigentümer, Hoteldirektion, Finanzcontrolling, F&B, Küchenchefs und Team sehen jeweils, was ihre Rolle braucht.'],
         ['Mehrere Hotels', 'Eine Gruppenansicht über alle Häuser, jedes in seiner eigenen Währung.'],
       ],
@@ -219,9 +237,12 @@ const de: Dict = {
         items: [
           { id: 'test', q: 'Können wir Tyll in unserem Hotel testen?', a: 'Ja. Wir beginnen mit einem kostenlosen 30-Tage-Piloten mit Ihren eigenen Daten. Findet der Pilot kein echtes Geld, zahlen Sie nichts.', link: 'book' },
           { id: 'replace', q: 'Müssen wir unsere Kasse oder Hotelsoftware ersetzen?', a: 'Nein. Tyll arbeitet neben den Systemen, die Sie bereits nutzen. Nichts zu installieren und nichts zu ersetzen.', link: 'how' },
-          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll arbeitet mit den Systemen auf {home:unserer Startseite}, darunter Oracle OPERA, MICROS Simphony, Mews, apaleo, Lightspeed und SumUp. Sie nutzen etwas anderes? {book:Fragen Sie uns}, wir prüfen Ihr System.' },
+          { id: 'systems', q: 'Mit welchen Systemen arbeiten Sie?', a: 'Tyll arbeitet mit Kassensystemen wie MICROS Simphony, Sapaad und HMS und mit PMS wie Oracle OPERA und Shiji Infrasys. Weitere sehen Sie auf {home:unserer Startseite}. Sie nutzen etwas anderes? {book:Fragen Sie uns}, wir prüfen Ihr System.' },
           { id: 'setup', q: 'Wie lange dauert die Einrichtung?', a: 'Ein kurzes Gespräch. Ihr erster Morgenbericht folgt innerhalb von 48 Stunden.', link: 'how' },
           { id: 'staff', q: 'Wie viel Arbeit ist das für unser Team?', a: 'Sehr wenig. Ihr Team erfasst Abfall und Bruch mit zwei Tipps: Artikel, dann Menge. Ein Grund ist optional. Die Prüfung übernimmt Tyll jede Nacht und schickt um 7 Uhr einen Morgenbericht.', link: 'how' },
+          { id: 'auto', q: 'Kann Tyll automatisch bestellen?', a: 'Ja, wenn Sie es einschalten. Jeden Morgen um 06:00 gibt es die fälligen Bestellungen auf, innerhalb Ihrer Limits. Alles darüber wartet auf eine Führungskraft. Sie können auch jede Bestellung manuell lassen.', link: 'book' },
+          { id: 'ai', q: 'Entscheidet eine KI, was wir bestellen?', a: 'Nein. Tylls eigenes Prognosemodell berechnet jede Menge aus Verkaufshistorie, Buchungen, Events, Auslastung und aktuellem Bestand und zeigt, wie gerechnet wurde.', link: 'how' },
+          { id: 'limits', q: 'Können wir eigene Freigabelimits festlegen?', a: 'Ja, je Hotel. Zum Beispiel: Der Einkauf prüft jede Bestellung, die Buchhaltung gibt jede Bestellung frei, der F&B-Direktor gibt Bestellungen über 2.000 € frei und die Hoteldirektion zusätzlich Bestellungen über 5.000 €. Niemand gibt eine eigene Bestellung frei.', link: 'book' },
         ],
       },
       {
@@ -229,8 +250,9 @@ const de: Dict = {
         title: 'Daten und Vertrauen',
         items: [
           { id: 'readonly', q: 'Kann Tyll etwas in unseren Systemen ändern?', a: 'Nein. Tyll arbeitet nur lesend. Es liest Ihre Umsätze und Rechnungen und ändert, löscht oder bucht niemals etwas.', link: 'book' },
-          { id: 'storage', q: 'Wo werden unsere Daten gespeichert, und wer kann sie sehen?', a: 'Ihre Daten liegen in Europa und werden nach der DSGVO verarbeitet. Jede Person sieht nur die Hotels, Outlets und Zahlen, die ihre Rolle erlaubt, zum Beispiel sieht ein Küchenchef seine Küche, eine Finanzcontrollerin die ganze Gruppe. Außer Ihrem Team sehen nur die Tyll-Mitarbeitenden, die Ihren Piloten betreuen, Ihre Daten.', link: 'book' },
-          { id: 'statements', q: 'Kann Tyll Kartenzahlungen und Kontoauszüge abgleichen?', a: 'Das ist ein eigenes Tyll-Produkt, das die Kasse mit den Abrechnungen der Kartenanbieter und den Kontoauszügen abgleicht. Fragen Sie uns im Gespräch danach.', link: 'book' },
+          { id: 'storage', q: 'Wo werden unsere Daten gespeichert, und wer kann sie sehen?', a: 'Ihre Daten liegen in Europa und werden nach der DSGVO verarbeitet. Jede Rolle sieht nur ihre eigenen Hotels, Outlets und Zahlen: Eigentümer, Hoteldirektion, Finanzcontrolling, F&B-Direktion, Restaurant- und Barleitung, Eventleitung, Einkauf, Lager, Küchenchef, Rezeption, Housekeeping, Concierge, Bell Captain und Team. Ein Küchenchef sieht seine Küche, eine Finanzcontrollerin die ganze Gruppe. Außer Ihrem Team sehen nur die Tyll-Mitarbeitenden, die Ihren Piloten betreuen, Ihre Daten.', link: 'book' },
+          { id: 'cash', q: 'Prüft Tyll das Bargeld?', a: 'Ja: das am Ende jeder Schicht gezählte Bargeld gegen die Barumsätze der Kasse. Kartenzahlungen gleicht Ihr Zahlungsanbieter ab; der Abgleich der Kasse mit den Abrechnungen der Kartenanbieter und den Kontoauszügen ist ein eigenes Tyll-Produkt.', link: 'book' },
+          { id: 'export', q: 'Können wir in unser Einkaufs- oder Buchhaltungssystem exportieren?', a: 'Ja: Bestellungen, Wareneingänge und Lieferantenrechnungen, als CSV oder JSON.', link: 'book' },
         ],
       },
       {
@@ -286,6 +308,8 @@ const de: Dict = {
   meta: {
     howTitle: 'So funktioniert’s | Tyll',
     howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, ein kostenloser Einkaufsbericht, nur lesender Zugriff auf Ihre Kasse und dann um 7 Uhr ein Morgenbericht darüber, was verloren ging und was es gekostet hat.',
+    groupsTitle: 'Bestands- und Verlustkontrolle für Hotelgruppen | Tyll',
+    groupsDescription: 'Eine Ansicht über alle Hotels: Rollen, die nur ihre Zahlen sehen, Freigabelimits je Hotel, jedes Hotel in eigener Währung, Exporte und ein Änderungsprotokoll.',
     solutionsTitle: 'Bestand, Abfall & Rechnungsabgleich für Gastronomie | Tyll',
     solutionsDescription: 'Sechs Werkzeuge, die mit Ihrer Kasse arbeiten: Abfall erfassen, Lagerbestand, Einkaufsprognose, Umsatz, Rechnungsabgleich und Überschenken. Demo testen.',
     bookTitle: 'Kostenloses Gespräch buchen | Tyll',

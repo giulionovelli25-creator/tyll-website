@@ -10,6 +10,7 @@ const en = {
     label: 'Main',
     solutions: 'Solutions',
     how: 'How it works',
+    groups: 'Hotel groups',
     solutionsMenu: 'Solutions menu',
     allSolutions: 'All solutions',
     faq: 'Frequently Asked Questions →',
@@ -37,7 +38,7 @@ const en = {
     play: 'Play background video',
     // The flagged receipt lines' labels, and the example morning brief (the demo's fictional data, as the footer says)
     flags: ['Removed, no reason', 'Unbilled pour', 'Not on room folio', 'Billed twice', 'No delivery note'],
-    card: { title: 'Morning brief · Grand Resort Dubai', lost: 'Lost yesterday', total: 'AED 583', split: 'AED 337 waste, AED 0 breakage, AED 246 drinks not billed', todo: 'Three things to do today', rows: <[string, string, string][]>[['Order 5 critical items', 'To order', 'AED 43.2k'], ['Complimentary items above the agreed limit', 'Maison Lune', 'AED 459'], ['Check pouring at Lobby Lounge', 'Sunday day shift, not billed', 'AED 1,430']], cta: 'Open the morning brief →' },
+    card: { title: 'Morning brief · Grand Hotel Lumière', lost: 'Lost yesterday', total: '€113', split: '€38 waste, €0 breakage, €75 drinks not billed', yesterday: ['Revenue €8,342 from 229 guests', '8 flagged bills still open, €320 until checked'], todo: 'Three things to do today', rows: <[string, string, string][]>[['Fresh fish delivery due 15:00 has not arrived', 'Mercado', ''], ['Wagyu beef mince 1.8 kg above the recipes', 'Mercado, at risk', '€86'], ['Check pouring, Friday late shift', 'Bar Azulejo, not billed', '€351']], month: 'Last 30 days: €10,488 lost, €3,914 saved, 37.3% of the loss', cta: 'Open the morning brief →' },
   },
   home: {
     tour: {
@@ -55,10 +56,10 @@ const en = {
       button: 'Book a demo',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Stock', payments: 'Payments' },
       steps: [
-        { label: 'Revenue and Reconciliation', headline: 'Do our bills, tickets and invoices match?', problem: 'Bills, tickets and invoices sit in separate places. Nobody can check them all.', bullets: ['Bills against kitchen and bar tickets: voids, refunds, discounts, complimentary items, and items removed after they were sent', 'Room charges posted to the guest bill', 'Supplier invoices against what was ordered and delivered'], shot: 'Tyll showing one supplier invoice from Gulf Prime Meats: AED 6,709 ordered, AED 6,099 received, AED 6,709 invoiced.' },
-        { label: 'Stock and Waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['Stock levels worked out from your sales, deliveries and logged waste. Two taps each time something is wasted or broken.', 'Bills and tickets show what stock went out, so the gap is explained'], shot: 'Tyll showing critical items: chicken breast runs out in 1 day, lobster tail in 2 days.' },
-        { label: 'Inventory and Purchasing', headline: 'Do we know what we have before we order?', problem: 'Counts happen on paper, if at all, so orders are guesses.', bullets: ['An order list grouped by supplier, built from forecast guests, events and the last 4 weeks of use', 'Nothing goes to a supplier until a manager approves it'], shot: 'A draft order grouped by supplier: Emirates Dairy & Dry Goods, with cheddar, parmesan, mozzarella, cream cheese and labneh.' },
-        { label: 'The result', headline: 'One hotel or a whole group. One clear answer.', problem: '', bullets: ['Every system connected', 'Lost money found before it is gone'], shot: '' },
+        { label: 'Revenue and Reconciliation', headline: 'Do our bills, tickets and invoices match?', problem: 'Bills, tickets and invoices sit in separate places. Nobody can check them all.', bullets: ['Bills against kitchen and bar tickets: voids, refunds, discounts, complimentary items, and items removed after they were sent', 'Room charges posted to the guest bill', 'Supplier invoices against what was ordered and delivered'] },
+        { label: 'Stock and Waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['Stock levels worked out from your sales, deliveries and logged waste. Two taps each time something is wasted or broken.', 'Bills and tickets show what stock went out, so the gap is explained'] },
+        { label: 'Inventory and Purchasing', headline: 'Do we know what we have before we order?', problem: 'Counts happen on paper, if at all, so orders are guesses.', bullets: ['An order list grouped by supplier, built from forecast guests, events and the last 4 weeks of use', 'You decide. Every order can wait for approval, or you switch on automatic ordering with limits you set. Anything above your limits still waits for a manager.'] },
+        { label: 'The result', headline: 'One hotel or a whole group. One clear answer.', problem: '', bullets: ['Every system connected', 'Lost money found before it is gone'] },
       ],
     },
     // Why it matters, in three numbers (9 Nov 2026): industry research twice, then the owner's own pilot
@@ -137,11 +138,26 @@ const en = {
     eyebrow: 'How it works',
     title: 'Four steps. Then every morning you see what your hotel lost.',
     sub: 'Read only. Nothing to install. Nothing to replace.',
-    steps: <[string, string][]>[['Book a 15 minute call', 'We look at your outlets together and check that Tyll fits.'], ['Free purchasing report', 'Send one month of POS sales, get a report within 48 hours.'], ['We read your POS', 'Tyll reads last night’s sales from the system you already use.'], ['Your morning brief', 'Every morning at 7 AM, by email: what you lost yesterday and what it cost, the three things to do today, and the month so far. Free for 30 days.']],
+    steps: <[string, string][]>[['Book a 15 minute call', 'We look at your outlets together and check that Tyll fits.'], ['Free purchasing report', 'Send one month of POS sales, get a report within 48 hours.'], ['We read your POS', 'Tyll reads last night’s sales from the system you already use.'], ['Your morning brief', 'Every morning at 7 AM, by email to the managers who choose it: yesterday’s loss split into waste, breakage and drinks not billed, yesterday’s revenue and guests, flagged bills still open, the three things to do today, and the last 30 days, lost against saved. Free for 30 days.']],
     call: { title: 'Tyll intro · 15 min', day: 'Tuesday', slots: ['09:30', '11:00', '14:30'] },
     readOnly: 'Read only',
     strip: ['Read only', 'Nothing to replace', 'No fee unless the pilot finds real money'],
     final: 'See it on your own numbers.',
+  },
+  // The For hotel groups page (19 Nov 2026)
+  groupsPage: {
+    eyebrow: 'For hotel groups',
+    title: 'Does Tyll work for a whole hotel group?',
+    sub: 'A group view across every hotel, each with its own currency, suppliers and approval rules.',
+    link: 'For hotel groups →',
+    sections: <[string, string][]>[
+      ['Every role sees what it needs.', 'Owner, general manager, financial controller, F&B director, restaurant and bar managers, events manager, purchasing, storekeeper, head chef, front office, housekeeping, concierge, bell captain and staff. Each sees only their hotels, outlets and figures. A head chef sees their kitchen; a financial controller sees the whole group.'],
+      ['Approval limits per hotel.', 'Each hotel sets its own approval chain, with limits before VAT. For example: purchasing reviews every order, accounting approves every order, the F&B director approves orders over €2,000 and the general manager also approves orders over €5,000. Nobody approves an order they raised. The storekeeper receives.'],
+      ['Several hotels, several countries.', 'Each hotel reports in its own currency, for example EUR, AED or SAR, and amounts in different currencies are never added together. VAT per country is shown on every purchase order and invoice. Each hotel chooses its stock valuation method and keeps its own suppliers and terms.'],
+      ['Fits your group’s systems.', 'Read-only connections to POS, PMS, reservations and purchasing. Approved purchase orders, goods receipts and supplier invoices can be exported for the group’s procurement or accounting system, as CSV (one row per line) or JSON (one record per document).'],
+      ['Every change on record.', 'An audit trail of every sign-in and every change, visible to owners, general managers and financial controllers. The detection limits are agreed with each hotel at the start.'],
+      ['Trust.', 'Tyll never changes, deletes or posts anything in your systems. Data hosted in Europe under the GDPR.'],
+    ],
   },
   solutionPage: {
     seeTitle: 'What you are about to see',
@@ -162,12 +178,14 @@ const en = {
     also: {
       title: 'Also in Tyll',
       items: <[string, string][]>[
-        ['Alerts', 'Everything that needs a decision, in one list, largest amount first.'],
-        ['Money Back List', 'Every money case, open and closed, and what was recovered.'],
+        ['Overview and alerts', 'Money lost and saved over the last 30 days, with the share saved, and the three things that need you today. Alerts split into act today and this week, largest amount first, to snooze or resolve.'],
+        ['Search and notifications', 'Search across items, outlets and actions. A bell for requests, and important handoffs can also go by email.'],
+        ['Money Back List', 'Every money case, open and closed, with confirmed losses and money recovered. Export as CSV.'],
         ['Menu performance', 'What each dish sells and earns, and which margins are falling.'],
-        ['Tyll Flow', 'Every open kitchen and bar order, and whether it will be late.'],
-        ['Reports', 'Management report, outlet comparison, waste log and stock records, as PDF or CSV.'],
-        ['Morning brief', 'Yesterday’s losses and today’s three actions, by email at 7 AM.'],
+        ['Tyll Flow', 'Every open kitchen and bar order, where it is and whether it will be late. The finish time is estimated from the dishes on the ticket, how busy the station is and how long this kitchen has actually taken. Orders late, likely to be late or at risk of cancellation come first, with where to step in. Targets per outlet, for example food within 18 minutes, drinks within 8.'],
+        ['Reports', 'Management report, outlet comparison, menu performance and waste log, plus stock records, recipes and costs, item history, the Money Back List, room charges and tips. Print or save as PDF, or download CSV.'],
+        ['Morning brief', 'Yesterday’s losses, revenue and open flags, today’s three actions and the last 30 days, by email at 7 AM.'],
+        ['Staff view', 'Staff get their own simple screen to log waste and breakage and to follow the order board. They never see sales or cost figures.'],
         ['Roles and access', 'Owners, general managers, financial controllers, F&B, chefs and staff each see what their role needs.'],
         ['Several hotels', 'A group view across properties, each in its own currency.'],
       ],
@@ -225,9 +243,12 @@ const en = {
         items: [
           { id: 'test', q: 'Can we test Tyll at our hotel?', a: 'Yes. We start with a free 30 day pilot on your own data. If the pilot finds no real money, you pay nothing.', link: 'book' },
           { id: 'replace', q: 'Do we have to replace our POS or hotel software?', a: 'No. Tyll works next to the systems you already use. Nothing to install and nothing to replace.', link: 'how' },
-          { id: 'systems', q: 'Which systems do you work with?', a: 'Tyll works with the systems shown on {home:our home page}, including Oracle OPERA, MICROS Simphony, Mews, apaleo, Lightspeed and SumUp. Using something else? {book:Ask us} and we’ll check your system.' },
+          { id: 'systems', q: 'Which systems do you work with?', a: 'Tyll works with POS systems such as MICROS Simphony, Sapaad and HMS, and PMS such as Oracle OPERA and Shiji Infrasys. More are shown on {home:our home page}. Using something else? {book:Ask us} and we’ll check your system.' },
           { id: 'setup', q: 'How long does setup take?', a: 'One short call. Your first morning brief follows within 48 hours.', link: 'how' },
           { id: 'staff', q: 'How much work is it for our staff?', a: 'Very little. Staff log waste and breakage in two taps: the item, then the amount. Adding a reason is optional. Tyll does the checking every night and sends a morning brief at 7 AM.', link: 'how' },
+          { id: 'auto', q: 'Can Tyll order automatically?', a: 'Yes, if you switch it on. Every morning at 06:00 it places the orders that are due, within limits you set. Anything above your limits waits for a manager. You can also keep every order manual.', link: 'book' },
+          { id: 'ai', q: 'Does an AI decide what we order?', a: 'No. Tyll’s own forecasting model works out every quantity from sales history, bookings, events, occupancy and current stock, and shows how it was calculated.', link: 'how' },
+          { id: 'limits', q: 'Can we set our own approval limits?', a: 'Yes, per hotel. For example: purchasing reviews every order, accounting approves every order, the F&B director approves orders over €2,000 and the general manager also approves orders over €5,000. Nobody approves an order they raised.', link: 'book' },
         ],
       },
       {
@@ -235,8 +256,9 @@ const en = {
         title: 'Data and trust',
         items: [
           { id: 'readonly', q: 'Can Tyll change anything in our systems?', a: 'No. Tyll is read only. It reads your sales and invoices and never changes, deletes or posts anything.', link: 'book' },
-          { id: 'storage', q: 'Where is our data stored, and who can see it?', a: 'Your data is hosted in Europe and handled under the GDPR. Each person sees only the hotels, outlets and figures their role allows, for example a head chef sees their kitchen, a financial controller sees the whole group. Besides your team, only the Tyll staff supporting your pilot can see your data.', link: 'book' },
-          { id: 'statements', q: 'Can Tyll match card payments and bank statements?', a: 'That runs as a separate Tyll product that matches the till against card company and bank statements. Ask us about it on the call.', link: 'book' },
+          { id: 'storage', q: 'Where is our data stored, and who can see it?', a: 'Your data is hosted in Europe and handled under the GDPR. Each role sees only its own hotels, outlets and figures: owner, general manager, financial controller, F&B director, restaurant and bar managers, events manager, purchasing, storekeeper, head chef, front office, housekeeping, concierge, bell captain and staff. A head chef sees their kitchen; a financial controller sees the whole group. Besides your team, only the Tyll staff supporting your pilot can see your data.', link: 'book' },
+          { id: 'cash', q: 'Does Tyll check cash?', a: 'Yes: the cash counted at the end of each shift against the cash sales on the till. Card payments are reconciled by your payment provider; matching the till against card company and bank statements runs as a separate Tyll product.', link: 'book' },
+          { id: 'export', q: 'Can we export to our procurement or accounting system?', a: 'Yes: purchase orders, goods receipts and supplier invoices, as CSV or JSON.', link: 'book' },
         ],
       },
       {
@@ -292,6 +314,8 @@ const en = {
   meta: {
     howTitle: 'How it works | Tyll',
     howDescription: 'How Tyll works in four steps: a short call, a free purchasing report, read-only access to your POS, then a morning brief at 7 AM of what you lost and what it cost.',
+    groupsTitle: 'Stock and Loss Control for Hotel Groups | Tyll',
+    groupsDescription: 'One view across every hotel: roles that see only their own figures, approval limits per hotel, each hotel in its own currency, exports and an audit trail.',
     solutionsTitle: 'Stock, Waste & Invoice Tools for Restaurants & Hotels | Tyll',
     solutionsDescription: 'Six tools that work with your POS: log waste, stock levels, purchasing forecasts, revenue, invoice matching and over pouring. Try the demo.',
     bookTitle: 'Book a Free Call With Our Team | Tyll',
