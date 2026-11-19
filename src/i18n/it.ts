@@ -50,13 +50,12 @@ const it: Dict = {
       stepOf: 'Passo {n} di {t}',
       links: { report: 'Scopri come funziona il report acquisti gratuito', integrations: 'Vedi le integrazioni supportate' },
       zones: { store: 'Magazzino', bar: 'Bar' },
-      labels: { counted: 'Contati 42 di 60', romaine: 'Lattuga romana: restano 8 kg, finisce giovedì', eggs: 'Uova: ordinarne 180 entro gio' },
       button: 'Prenota una demo',
       cards: { pos: 'POS', pms: 'PMS', stock: 'Magazzino', payments: 'Pagamenti' },
       steps: [
         { label: 'Ricavi e riconciliazione', headline: 'Conti, comande e fatture coincidono?', problem: 'Conti, comande e fatture stanno in posti separati. Nessuno può controllarli tutti.', bullets: ['Conti contro comande di cucina e bar: storni, rimborsi, sconti, omaggi e articoli tolti dopo l’invio', 'Addebiti in camera sul conto dell’ospite', 'Fatture dei fornitori contro ordini e consegne'], shot: 'Tyll mostra una fattura di Gulf Prime Meats: AED 6.709 ordinati, AED 6.099 ricevuti, AED 6.709 fatturati.' },
-        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Un conteggio di dieci minuti dal telefono, poi due tocchi ogni volta che qualcosa si spreca o si rompe', 'Conti e comande mostrano quale merce è uscita, così il buco ha una spiegazione', 'In più cinque rapidi controlli a campione al giorno sugli articoli più importanti'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
-        { label: 'Inventario e acquisti', headline: 'Sappiamo cosa abbiamo prima di ordinare?', problem: 'Si conta su carta, se si conta, quindi gli ordini sono tentativi.', bullets: ['Inventario settimanale confrontato con ciò che si è venduto', 'Una lista d’ordine per fornitore, costruita da ospiti previsti, eventi e consumi delle ultime 4 settimane', 'Nulla va a un fornitore finché un responsabile non lo approva'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
+        { label: 'Magazzino e sprechi', headline: 'Dove va a finire il nostro magazzino?', problem: 'La merce sparisce, e nessuno sa dire dove.', bullets: ['Livelli di scorta calcolati da vendite, consegne e sprechi registrati. Due tocchi ogni volta che qualcosa si spreca o si rompe.', 'Conti e comande mostrano quale merce è uscita, così il buco ha una spiegazione'], shot: 'Tyll mostra gli articoli critici: il petto di pollo finisce in 1 giorno, la coda di aragosta in 2.' },
+        { label: 'Inventario e acquisti', headline: 'Sappiamo cosa abbiamo prima di ordinare?', problem: 'Si conta su carta, se si conta, quindi gli ordini sono tentativi.', bullets: ['Una lista d’ordine per fornitore, costruita da ospiti previsti, eventi e consumi delle ultime 4 settimane', 'Nulla va a un fornitore finché un responsabile non lo approva'], shot: 'Una bozza d\'ordine per fornitore: Emirates Dairy & Dry Goods, con cheddar, parmigiano, mozzarella, formaggio spalmabile e labneh.' },
         { label: 'Il risultato', headline: 'Un hotel o un intero gruppo. Una risposta chiara.', problem: '', bullets: ['Ogni sistema collegato', 'Denaro perso trovato prima che sparisca'], shot: '' },
       ],
     },
@@ -94,7 +93,7 @@ const it: Dict = {
     },
     parts: {
       cards: [
-        { title: 'Magazzino e sprechi', text: 'Vedi cosa resta, conta col telefono, registra gli sprechi con due tocchi.' },
+        { title: 'Magazzino e sprechi', text: 'Vedi cosa resta e registra gli sprechi con due tocchi.' },
         { title: 'Acquisti', text: 'Sai cosa ordinare e quanto.' },
         { title: 'Ricavi e riconciliazione', text: 'Ogni notte: conti contro comande, fatture contro consegne.' },
       ],
@@ -130,18 +129,17 @@ const it: Dict = {
   },
   // The dark band under the hero (9 Nov 2026): one list every morning, in three steps
   // The homepage's short version of How it works (9 Nov 2026), in place of Getting set up
-  teaser: { steps: ['Prenota una chiamata', 'Conteggio gratuito', 'Leggiamo il tuo POS', 'Il tuo brief del mattino'], link: 'Scopri come funziona →' },
+  teaser: { steps: ['Prenota una chiamata', 'Report acquisti gratuito', 'Leggiamo il tuo POS', 'Il tuo brief del mattino'], link: 'Scopri come funziona →' },
   // The How it works page (9 Nov 2026)
   howPage: {
     eyebrow: 'Come funziona',
     title: 'Quattro passi. Poi ogni mattina vedi cosa ha perso il tuo hotel.',
     sub: 'Sola lettura. Niente da installare. Niente da sostituire.',
-    steps: <[string, string][]>[['Prenota una chiamata di 15 minuti', 'Guardiamo insieme i tuoi punti vendita e verifichiamo che Tyll faccia per te.'], ['Conteggio di magazzino gratuito', 'Contiamo le tue scorte con il tuo team. Circa 10 minuti a persona.'], ['Leggiamo il tuo POS', 'Tyll legge le vendite di ieri sera dal sistema che usi già.'], ['Il tuo brief del mattino', 'Ogni mattina alle 7, via email: cosa hai perso ieri e quanto è costato, le tre cose da fare oggi e il mese fino a oggi. 30 giorni gratis.']],
+    steps: <[string, string][]>[['Prenota una chiamata di 15 minuti', 'Guardiamo insieme i tuoi punti vendita e verifichiamo che Tyll faccia per te.'], ['Report acquisti gratuito', 'Invia un mese di vendite POS, ricevi il report entro 48 ore.'], ['Leggiamo il tuo POS', 'Tyll legge le vendite di ieri sera dal sistema che usi già.'], ['Il tuo brief del mattino', 'Ogni mattina alle 7, via email: cosa hai perso ieri e quanto è costato, le tre cose da fare oggi e il mese fino a oggi. 30 giorni gratis.']],
     call: { title: 'Introduzione a Tyll · 15 min', day: 'Martedì', slots: ['09:30', '11:00', '14:30'] },
     readOnly: 'Sola lettura',
     strip: ['Sola lettura', 'Niente da sostituire', 'Nessun costo se il pilota non trova soldi veri'],
     final: 'Guardalo sui tuoi numeri.',
-    count: { title: 'Controllo totale, cella frigo', items: <[string, string][]>[['Filetto di manzo', '15,4'], ['Petto di pollo', '15,9'], ['Filetto di salmone', '20,4']], unit: 'kg', note: 'Previsto, cambialo solo se diverso', less: 'Uno in meno', more: 'Uno in più' },
   },
   solutionPage: {
     seeTitle: 'Cosa stai per vedere',
@@ -223,8 +221,8 @@ const it: Dict = {
           { id: 'test', q: 'Possiamo provare Tyll nel nostro hotel?', a: 'Sì. Iniziamo con un pilota gratuito di 30 giorni sui tuoi dati. Se il pilota non trova soldi veri, non paghi nulla.', link: 'book' },
           { id: 'replace', q: 'Dobbiamo sostituire il nostro POS o il software dell’hotel?', a: 'No. Tyll lavora accanto ai sistemi che usi già. Niente da installare e niente da sostituire.', link: 'how' },
           { id: 'systems', q: 'Con quali sistemi lavorate?', a: 'Tyll funziona con i sistemi indicati nella {home:nostra home page}, tra cui Oracle OPERA, MICROS Simphony, Mews, apaleo, Lightspeed e SumUp. Usi altro? {book:Chiedicelo} e verifichiamo il tuo sistema.' },
-          { id: 'setup', q: 'Quanto tempo richiede l’avvio?', a: 'Una breve chiamata, poi un conteggio della merce con il tuo team, circa 10 minuti a persona. Il tuo primo brief del mattino arriva entro 48 ore.', link: 'how' },
-          { id: 'staff', q: 'Quanto lavoro è per il nostro personale?', a: 'Pochissimo. Dopo il primo conteggio, il personale registra sprechi e rotture con due tocchi: l’articolo, poi la quantità. Il motivo è facoltativo. Ogni giorno conta cinque articoli prioritari, in pochi minuti. Ai controlli pensa Tyll, ogni notte, e alle 7 invia un brief del mattino.', link: 'how' },
+          { id: 'setup', q: 'Quanto tempo richiede l’avvio?', a: 'Una breve chiamata. Il tuo primo brief del mattino arriva entro 48 ore.', link: 'how' },
+          { id: 'staff', q: 'Quanto lavoro è per il nostro personale?', a: 'Pochissimo. Il personale registra sprechi e rotture con due tocchi: l’articolo, poi la quantità. Il motivo è facoltativo. Ai controlli pensa Tyll, ogni notte, e alle 7 invia un brief del mattino.', link: 'how' },
         ],
       },
       {
@@ -288,7 +286,7 @@ const it: Dict = {
   },
   meta: {
     howTitle: 'Come funziona | Tyll',
-    howDescription: 'Come funziona Tyll in quattro passi: una breve chiamata, un conteggio di magazzino gratuito, accesso in sola lettura al tuo POS e poi alle 7 un brief del mattino con cosa è andato perso e quanto è costato.',
+    howDescription: 'Come funziona Tyll in quattro passi: una breve chiamata, un report acquisti gratuito, accesso in sola lettura al tuo POS e poi alle 7 un brief del mattino con cosa è andato perso e quanto è costato.',
     solutionsTitle: 'Soluzioni | Tyll',
     solutionsDescription: 'Sei aree in cui Tyll aiuta i team alberghieri: magazzino e sprechi, finanza, previsioni e acquisti, eventi e personale, camere e ospiti, vendite.',
     bookTitle: 'Prenota una demo | Tyll',

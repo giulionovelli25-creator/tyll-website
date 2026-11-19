@@ -36,10 +36,6 @@ export const explore: Record<SolutionKey, Explore> = {
         label: t('Critical items', 'Kritische Artikel', 'الأصناف الحرجة', 'Articoli critici'),
         text: t('What runs out before a new order arrives.', 'Was ausgeht, bevor eine neue Bestellung ankommt.', 'ما ينفد قبل وصول طلب جديد.', 'Cosa finisce prima che arrivi un nuovo ordine.'),
       },
-      {
-        label: t('Stock count', 'Zählung', 'الجرد', 'Conteggio'),
-        text: t('The expected amount is filled in. Just confirm.', 'Die erwartete Menge ist eingetragen. Nur bestätigen.', 'الكمية المتوقعة مُدخلة. ما عليك إلا التأكيد.', 'La quantità prevista è già inserita. Basta confermare.'),
-      },
     ],
   },
   forecasting: {

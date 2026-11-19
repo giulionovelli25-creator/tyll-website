@@ -20,14 +20,12 @@ export const pages = {
   faq: { en: '/en/faq/', de: '/de/faq/', ar: '/ar/faq/', it: '/it/faq/' },
   legal: { en: '/en/legal-notice/', de: '/de/impressum/', ar: '/ar/legal-notice/', it: '/it/note-legali/' },
   privacy: { en: '/en/privacy/', de: '/de/datenschutz/', ar: '/ar/privacy/', it: '/it/privacy/' },
-  // The stock count guide (15 Nov 2026) exists in English and German only; Arabic and Italian lead to their homepage
-  guide: { en: '/en/guides/restaurant-stock-count/', de: '/de/ratgeber/inventur-gastronomie/', ar: '/ar/', it: '/it/' },
 } as const satisfies Record<string, Record<Locale, string>>;
 
 export type PageKey = keyof typeof pages;
 
 /** Pages that exist in only some languages. Every other page exists in all four. */
-const partial: Partial<Record<PageKey, readonly Locale[]>> = { guide: ['en', 'de'] };
+const partial: Partial<Record<PageKey, readonly Locale[]>> = {};
 export const langsOf = (page: PageKey): readonly Locale[] => partial[page] ?? locales;
 
 export const href = (page: PageKey, lang: Locale, hash = '') => pages[page][lang] + hash;

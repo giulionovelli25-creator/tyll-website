@@ -17,12 +17,12 @@ export const solutionSeo: Record<SolutionKey, Partial<Record<Locale, Meta>>> = {
   },
   stock: {
     en: {
-      title: 'Restaurant Stock Count & Stocktake App | Tyll',
-      description: 'Count stock on your phone and know what is left between stocktakes, from your last count, deliveries and sales. See what runs out next. Try the demo.',
+      title: 'Hotel Stock Levels From Sales, Deliveries & Waste | Tyll',
+      description: 'Stock levels worked out from your sales, deliveries and logged waste. See what runs out first, before a guest asks for it. Try the demo.',
     },
     de: {
-      title: 'Bestand & Inventur per Handy für die Gastronomie | Tyll',
-      description: 'Inventur per Handy und wissen, was zwischen zwei Zählungen noch da ist: aus letzter Zählung, Lieferungen und Verkäufen. Testen Sie die Demo.',
+      title: 'Lagerbestand aus Verkäufen und Lieferungen | Tyll',
+      description: 'Lagerbestand aus Ihren Verkäufen, Lieferungen und erfasstem Abfall berechnet. Sehen Sie, was zuerst ausgeht, bevor ein Gast danach fragt.',
     },
   },
   forecasting: {

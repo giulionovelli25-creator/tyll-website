@@ -91,7 +91,7 @@ const say =
       <DemoFilm lang={lang} solutionKey={solution} name={name} spots={ex.spots}>
         <section class="see" aria-labelledby="see-title">
           <h2 id="see-title" class="see__title">{p.seeTitle}</h2>
-          <ol class="see__list" role="list">
+          <ol class="see__list" role="list" style={`--n:${s.see.length}`}>
             {
               s.see.map((item, i) => (
                 <li class="see__item">
@@ -346,7 +346,7 @@ const say =
 
   .see__list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
     margin: 0;
     padding: 0;
     list-style: none;

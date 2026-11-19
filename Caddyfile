@@ -1,0 +1,60 @@
+# How Railway serves the built site. Railpack (Railway's builder) uses this file instead of its default, filling in
+# {{.DIST_DIR}} and {{.IndexFallback}} as it does for its own. Everything below is Railpack's default Caddyfile for Node
+# sites (core/providers/node/Caddyfile.template), unchanged, plus the permanent redirects at the top of the site block.
+
+# global options
+{
+	admin off
+	persist_config off
+	auto_https off
+
+	log {
+		format json
+	}
+
+	servers {
+		trusted_proxies static private_ranges 100.0.0.0/8 # trust railway's proxy
+	}
+}
+
+# site block, listens on the $PORT environment variable, automatically assigned by railway
+:{$PORT:80} {
+	log {
+		format json
+	}
+
+	# The stock count guide and its templates were withdrawn on 19 Nov 2026 (Tyll no longer sells a manual count).
+	# Their addresses lead to the home page of the same language, with a 301.
+	redir /en/guides/restaurant-stock-count* /en/ permanent
+	redir /de/ratgeber/inventur-gastronomie* /de/ permanent
+	redir /downloads/tyll-stocktake-template-en* /en/ permanent
+	redir /downloads/tyll-inventurliste-gastronomie* /de/ permanent
+
+	respond /health 200
+
+	# Security headers
+	header {
+		# Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+		X-Content-Type-Options "nosniff"
+		# Remove Server header
+		-Server
+	}
+
+	# serve from the build folder
+	root * {{.DIST_DIR}}
+
+	# Handle static files
+	file_server {
+		hide .git
+		hide .env*
+	}
+
+	# Compression with more formats
+	encode {
+		gzip
+		zstd
+	}
+
+	# match against direct against HTML file matches, folder-level index.html, and optionally fallback to root index.html
+	try_files {path} {path}.html {path}/index.html{{if .IndexFallback}} /index.html{{end}}
+}

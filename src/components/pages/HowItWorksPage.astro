@@ -1,8 +1,8 @@
 ---
 // How it works (9 Nov 2026; black, white and greys only since 10 Nov 2026, never beige): four steps, then
 // every morning a report of what the hotel lost. The Solutions page's frame (header, silver wave banner), then four steps that alternate sides
-// of one line, each numbered on the line itself: the call (a booking card with three times, one chosen), the free count
-// (a phone on the demo's total check of the walk-in fridge, the expected amount filled in), reading the POS (the makers'
+// of one line, each numbered on the line itself: the call (a booking card with three times, one chosen), the free
+// purchasing report (its three points on a card), reading the POS (the makers'
 // own logos of three POS makers, in grey, joined to Tyll, read only) and the morning brief (the
 // example card, `MorningCard.astro`). The pictures are HTML and
 // CSS, decorative, with fictional data. Then three reassurances and a black closing band. Copy: `howPage`.
@@ -28,7 +28,7 @@ import { demoHref } from '../../config/demo';
 import { logos } from '../../config/integrations';
 import heroPhoto from '../../assets/photos/events-banquet.jpg';
 import callPhoto from '../../assets/photos/book-lobby.jpg';
-import countPhoto from '../../assets/photos/how-count-jars.jpg';
+import shelfPhoto from '../../assets/photos/how-count-jars.jpg';
 import passPhoto from '../../assets/photos/problem/problem-stock.jpg';
 import deskPhoto from '../../assets/photos/problem/problem-finance.jpg';
 
@@ -45,7 +45,7 @@ const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => 
 // The photograph behind each step's picture, and the part of it to keep in view
 const stepPhotos: { src: ImageMetadata; focus: string }[] = [
   { src: callPhoto, focus: '45% 55%' },
-  { src: countPhoto, focus: '60% 55%' },
+  { src: shelfPhoto, focus: '60% 55%' },
   { src: passPhoto, focus: '60% 30%' },
   { src: deskPhoto, focus: '62% 40%' },
 ];
@@ -103,25 +103,19 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
                 </div>
               )}
               {i === 1 && (
-                <div class="phone">
-                  <div class="phone__screen">
-                    <p class="phone__title">{p.count.title}</p>
-                    <p class="phone__note">{p.count.note}</p>
-                    <ul class="phone__rows">
-                      {p.count.items.map(([name, qty], k) => (
-                        <li class:list={[k === 1 && 'is-on']}>
-                          <span class="phone__name">{name}</span>
-                          <span class="phone__ctl" dir="ltr">
-                            <span class="phone__btn">−</span>
-                            <b>
-                              {qty} <small>{p.count.unit}</small>
-                            </b>
-                            <span class="phone__btn">+</span>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                <div class="cal rep">
+                  <p class="cal__head">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20Z" />
+                      <path d="M14 3.5V8h4M9.5 12.5h5M9.5 16h5" />
+                    </svg>
+                    {title}
+                  </p>
+                  <ul class="rep__points">
+                    {d.home.report.points.map((point) => (
+                      <li>{point}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
               {i === 2 && (
@@ -526,102 +520,34 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     color: var(--paper);
   }
 
-  /* 2. The phone counting a shelf */
-  .phone {
-    width: min(100%, 16rem);
-    padding: 0.55rem;
-    border-radius: 2.25rem;
-    background: var(--ink);
-    box-shadow: var(--shadow-2);
-  }
-
-  .phone__screen {
-    position: relative;
-    min-height: 19rem;
-    padding: 2.25rem 1rem 1.25rem;
-    border-radius: 1.8rem;
-    background: var(--paper);
-    color: var(--ink);
-  }
-
-  /* the camera */
-  .phone__screen::before {
-    position: absolute;
-    top: 0.65rem;
-    left: 50%;
-    width: 3.5rem;
-    height: 0.6rem;
-    border-radius: 999px;
-    background: var(--ink);
-    transform: translateX(-50%);
-    content: '';
-  }
-
-  .phone__title {
-    margin: 0;
-    font-weight: 600;
-  }
-
-  .phone__note {
-    max-width: none;
-    margin: 0.3rem 0 0;
-    color: var(--steel);
-    font-size: 0.75rem;
-    line-height: 1.35;
-  }
-
-  .phone__ctl small {
-    color: var(--steel);
-    font-size: 0.75rem;
-  }
-
-  .phone__rows {
+  /* 2. The free purchasing report: its three points, each ticked */
+  .rep__points {
     display: grid;
-    gap: 0.5rem;
-    margin: 1rem 0 0;
+    gap: 0.7rem;
+    margin: 1.1rem 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .phone__rows li {
-    display: grid;
-    gap: 0.5rem;
-    padding: 0.7rem 0.75rem;
-    border: 1px solid var(--sand-300);
-    border-radius: 12px;
+  .rep__points li {
+    position: relative;
+    padding-inline-start: 1.6rem;
+    color: var(--graphite);
+    font-size: 0.9375rem;
+    line-height: 1.4;
   }
 
-  .phone__rows li.is-on {
-    border-color: var(--ink);
-  }
-
-  .phone__name {
-    font-size: 0.875rem;
-  }
-
-  .phone__ctl {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .phone__ctl b {
-    font: 500 1rem/1 var(--mono);
-  }
-
-  .phone__btn {
-    display: grid;
-    place-items: center;
-    width: 1.9rem;
-    height: 1.9rem;
-    border: 1px solid var(--sand-600);
-    border-radius: 50%;
-    line-height: 1;
-  }
-
-  .phone__rows li.is-on .phone__btn {
-    border-color: var(--ink);
+  .rep__points li::before {
+    position: absolute;
+    top: 0.3em;
+    inset-inline-start: 0;
+    width: 0.95rem;
+    height: 0.55rem;
+    /* a tick reads the same in Arabic, so its strokes stay physical; only its place follows the reading direction */
+    border-bottom: 2px solid var(--ink);
+    border-left: 2px solid var(--ink);
+    transform: rotate(-45deg);
+    content: '';
   }
 
   /* 3. Three systems joined to Tyll, read only */

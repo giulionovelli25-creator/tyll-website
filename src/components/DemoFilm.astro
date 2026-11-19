@@ -298,7 +298,8 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
     const label = toggle.querySelector('.visually-hidden')!;
     const chapters = [...film.querySelectorAll<HTMLElement>('[data-chapter]')];
     const small = matchMedia(film.dataset.media!);
-    const timing = () => JSON.parse(small.matches ? film.dataset.phone! : film.dataset.desk!) as { marks: number[]; dur: number };
+    // `end`, where set, cuts a film short: it loops back to the start there (the stock film stops before its count)
+    const timing = () => JSON.parse(small.matches ? film.dataset.phone! : film.dataset.desk!) as { marks: number[]; dur: number; end?: number };
     // With reduced motion the film waits to be played
     let userPaused = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let onScreen = false;
@@ -344,6 +345,11 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
       requestAnimationFrame(tick);
     });
     video.addEventListener('pause', sync);
+    video.addEventListener('timeupdate', () => {
+      const { end } = timing();
+      // timeupdate arrives about every quarter second, so turn back a little early and never show the cut part
+      if (end && video.currentTime >= end - 0.3) video.currentTime = 0;
+    });
     video.addEventListener('seeked', paint);
     toggle.addEventListener('click', () => {
       userPaused = !video.paused;

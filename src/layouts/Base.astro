@@ -22,7 +22,7 @@ const d = t(lang);
 const abs = (path: string) => new URL(path, site.url).href;
 const canonical = abs(pages[page][lang]);
 const ogImage = abs(`/media/og-${lang}.jpg`);
-// The languages this page exists in (all four, except the guide)
+// The languages this page exists in (all four for every page today)
 const locales = langsOf(page);
 ---
 

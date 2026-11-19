@@ -32,7 +32,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | predictions-delivery.jpg | https://www.pexels.com/photo/a-person-carrying-a-basket-with-vegetables-7844010/ (beside the question on the Predictions page, added 11 Nov 2026; 2000 × 1335) | Pexels License (free commercial use, no attribution required) |
 | reconciliation-tickets.jpg | https://www.pexels.com/photo/restaurant-kitchen-order-tickets-management-37539842/ (beside the question on the Reconciliation page, added 11 Nov 2026; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
 | drinks-cola.jpg | https://www.pexels.com/photo/refreshing-glass-of-iced-cola-beverage-37925075/ (beside the question on the Over pouring page, added 11 Nov 2026; a soft drink, no label, no alcohol; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
-| how-count-jars.jpg | https://www.pexels.com/photo/close-up-of-jars-with-dry-food-on-a-rack-10560073/ (How it works, behind the stock count, added 11 Nov 2026; 2000 × 2500) | Pexels License (free commercial use, no attribution required) |
+| how-count-jars.jpg | https://www.pexels.com/photo/close-up-of-jars-with-dry-food-on-a-rack-10560073/ (How it works, behind the free purchasing report step, added 11 Nov 2026; 2000 × 2500) | Pexels License (free commercial use, no attribution required) |
 | tyll-problem-1.jpg | Tyll's own asset from the current website (tyll.ai/bilder/problem-1.jpg) | Tyll |
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
