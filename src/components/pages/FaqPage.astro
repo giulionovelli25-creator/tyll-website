@@ -13,7 +13,8 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
-const f = d.faq;
+// The systems answer opens with the homepage band's one line: Tyll starts from a sales export
+const f = { ...d.faq, groups: d.faq.groups.map((g) => ({ ...g, items: g.items.map((i) => ({ ...i, a: i.a.replace('{systems}', d.home.works.text) })) })) };
 
 // An answer may link inside its own text: {home:words} goes to the homepage's systems band, {book:words} to booking.
 const INLINE = /\{(home|book):([^}]+)\}/g;

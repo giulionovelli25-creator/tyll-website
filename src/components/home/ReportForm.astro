@@ -57,7 +57,7 @@ const posChoices = reportPos;
                     <input name="phone" type="tel" autocomplete="tel" dir="ltr" />
                   </label>
                 </div>
-                <p class="report__error" role="alert" hidden>{v.error}</p>
+                <p class="report__error" role="alert" data-check-error hidden>{v.errorYou}</p>
                 <button type="button" class="btn btn--solid step__next" data-next hidden>{v.next}</button>
               </div>
             </div>
@@ -86,7 +86,7 @@ const posChoices = reportPos;
                     <input name="country" autocomplete="country-name" data-sum />
                   </label>
                 </div>
-                <p class="report__error" role="alert" hidden>{v.error}</p>
+                <p class="report__error" role="alert" data-check-error hidden>{v.errorVenue}</p>
                 <button type="button" class="btn btn--solid step__next" data-next hidden>{v.next}</button>
               </div>
             </div>
@@ -623,7 +623,8 @@ const posChoices = reportPos;
         el.setAttribute('aria-invalid', String(bad));
         if (bad && !firstBad) firstBad = el;
       });
-      const error = step.querySelector<HTMLElement>('.report__error');
+      // Only the step's own message, never the one that reports a failed send
+      const error = step.querySelector<HTMLElement>('[data-check-error]');
       if (error) error.hidden = !firstBad;
       return firstBad as HTMLInputElement | null;
     };

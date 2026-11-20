@@ -1,14 +1,16 @@
 ---
-// The solutions overview: what is on sale as large photo tiles, what is coming below them, smaller and quieter. Reached from "All solutions" in the menu and from every
-// "Explore Solutions" button; the Solutions dropdown in the header stays the quick way to one solution.
+// The Solutions page (round 3, 20 Nov 2026): the live site's photo tiles, three per row, one row per section (Stock and
+// waste, Purchasing, Revenue and reconciliation), each section with its anchor (#stock-waste, #purchasing,
+// #revenue-reconciliation), heading and one sentence. A tile is a button: it opens in place to three points and a link
+// to its page; one open at a time, closed again by a second click, another tile or Escape. Then the In development
+// line, Also in Tyll (collapsed) and the closing Book a demo band.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
-import { solutions } from '../../content/solutions';
 import SilverWave from '../SilverWave.astro';
-import { t, href, type Locale, type SolutionKey } from '../../i18n';
-import { available, comingSoon } from '../../config/products';
+import { solutions, sections } from '../../content/solutions';
+import { t, href, type Locale } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -16,6 +18,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const d = t(lang);
+const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
 ---
 
 <Base lang={lang} page="solutions" title={d.meta.solutionsTitle} description={d.meta.solutionsDescription}>
@@ -23,16 +26,21 @@ const d = t(lang);
     <SilverWave phase={0.7} />
     <PageIntro title={d.solutionPage.indexTitle} />
   </div>
-  <section class="wrap tiles-wrap" aria-label={d.nav.solutions}>
+  <div class="wrap index">
     {
-      ([[available, false], [comingSoon, true]] as [readonly SolutionKey[], boolean][]).filter(([keys]) => keys.length).map(([keys, soon]) => (
-        <Fragment>
-          <ul class:list={['tiles', soon && 'tiles--soon']}>
-            {keys.map((k) => {
+      sections.map((sec) => (
+        <section class="sec" id={sec.id} aria-labelledby={`${sec.id}-title`}>
+          <div class="sec__head">
+            <h2 id={`${sec.id}-title`}>{sec.name[lang]}</h2>
+            <p>{sec.text[lang]}</p>
+          </div>
+          <ul class="tiles" role="list">
+            {sec.keys.map((k) => {
               const s = solutions[k];
+              const panel = `tile-${k}`;
               return (
                 <li>
-                  <a class="tile on-dark" href={href(k, lang)} data-accent={s.tone}>
+                  <div class="tile on-dark" data-tile data-accent={s.tone}>
                     <Picture
                       src={s.photo}
                       alt=""
@@ -45,26 +53,37 @@ const d = t(lang);
                       style={`object-position:${s.photoFocus}`}
                     />
                     <span class="tile__shade" aria-hidden="true" />
-                    {soon && <span class="badge-soon tile__soon">{d.cta.comingSoon}</span>}
-                    <span class="tile__body">
+                    <button type="button" class="tile__btn" aria-expanded="false" aria-controls={panel}>
                       <span class="tile__chip">
                         <SolutionIcon name={s.icon} />
                       </span>
                       <span class="tile__name">{s.name[lang]}</span>
                       <span class="tile__desc">{s.menu[lang]}</span>
-                    </span>
-                  </a>
+                    </button>
+                    <div class="tile__reveal">
+                      <div class="tile__panel" id={panel} inert>
+                        <ul role="list">
+                          {s.tilePoints.map((pt) => (
+                            <li>{pt[lang]}</li>
+                          ))}
+                        </ul>
+                        <a class="tile__link" href={href(k, lang)}>
+                          {see(s.name[lang])}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </li>
               );
             })}
           </ul>
-        </Fragment>
+        </section>
       ))
     }
-    <p class="tiles__soonline">{d.home.parts.soon}</p>
 
-    <section class="also" aria-labelledby="also-title">
-      <h2 id="also-title" class="also__title">{d.solutionPage.also.title}</h2>
+    <p class="index__soon">{d.home.parts.soon}</p>
+    <details class="also">
+      <summary>{d.solutionPage.also.title}</summary>
       <ul class="also__list" role="list">
         {
           d.solutionPage.also.items.map(([name, text]) => (
@@ -75,7 +94,15 @@ const d = t(lang);
           ))
         }
       </ul>
-    </section>
+    </details>
+  </div>
+
+  <section class="close on-dark" data-dark aria-labelledby="index-final">
+    <SilverWave phase={0.4} move tone="dark" />
+    <div class="wrap close__inner">
+      <h2 id="index-final" class="display">{d.home.invite.title}</h2>
+      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="solutions-final">{d.cta.book}</a>
+    </div>
   </section>
 </Base>
 
@@ -90,104 +117,63 @@ const d = t(lang);
     z-index: 1;
   }
 
-  /* Products in development carry the badge in the photo's top corner */
-  .tile__soon {
-    position: absolute;
-    top: 1rem;
-    inset-inline-start: 1rem;
-    z-index: 2;
-  }
-
-  .tiles-wrap {
+  .index {
     padding-bottom: var(--section-y);
   }
 
-  .tiles__soonline {
-    margin-top: var(--s-4);
-    color: var(--text-2);
-    font-size: var(--fs-small);
+  .sec {
+    padding-bottom: var(--s-6);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
   }
 
-  /* Also in Tyll: the demo's features beyond the six, as a quiet list of names and lines under the tiles */
-  .also {
-    margin-top: var(--intro-gap);
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--line);
+  .sec__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    align-items: baseline;
+    margin-bottom: var(--s-3);
   }
 
-  .also__title {
-    margin: 0 0 var(--s-3);
-    font-size: var(--fs-h3, 1.5rem);
-  }
-
-  .also__list {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--s-3) var(--s-4);
+  .sec h2 {
     margin: 0;
-    padding: 0;
-    list-style: none;
+    font-size: var(--fs-h2);
   }
 
-  .also h3 {
-    margin: 0;
-    font-family: var(--font);
-    font-size: 1.0625rem;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: 0;
-  }
-
-  .also p {
+  .sec__head p {
     max-width: none;
-    margin: 0.3rem 0 0;
-    color: var(--text-2);
-    font-size: 0.9375rem;
-    line-height: 1.45;
+    margin: 0;
+    color: var(--steel);
+    font-size: var(--fs-lead);
   }
 
-  @media (max-width: 1100px) {
-    .also__list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 560px) {
-    .also__list {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  .tiles--soon .tile {
-    aspect-ratio: 16 / 11;
-  }
-
-  .tiles--soon .tile :global(img) {
-    filter: saturate(0.5) brightness(0.86);
-  }
-
-  .tiles--soon .tile__name {
-    font-size: 1.25rem;
-  }
-
+  /* The live site's photo tiles, three per row */
   .tiles {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
+    align-items: start;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  /* A tile keeps a 4:5 shape and grows taller when it opens */
   .tile {
     position: relative;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     aspect-ratio: 4 / 5;
     border-radius: var(--radius-lg);
-    overflow: hidden;
     color: var(--on-dark);
-    text-decoration: none;
     isolation: isolate;
+  }
+
+  /* the photo layer is clipped to the rounded corners, so the tile itself can grow past its shape when it opens */
+  .tile :global(picture),
+  .tile__shade {
+    overflow: hidden;
+    border-radius: inherit;
   }
 
   .tile :global(picture),
@@ -210,24 +196,48 @@ const d = t(lang);
     transition: transform 0.8s var(--ease);
   }
 
-  .tile:hover :global(img) {
-    transform: scale(1.04);
-  }
-
   .tile__shade {
     z-index: -1;
     background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.88) 0%, rgb(var(--shade-rgb) / 0.35) 55%, rgb(var(--shade-rgb) / 0.15) 100%);
+    transition: background-color 0.25s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .tile__body {
-    position: absolute;
-    inset: auto 0 0;
+  .tile.is-open .tile__shade {
+    background-color: rgb(var(--shade-rgb) / 0.45);
+  }
+
+  .tile__btn {
     display: grid;
     gap: 0.4rem;
-    padding: 1.5rem;
+    width: 100%;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
   }
 
-  /* the solution's icon in its own colour, on a white square */
+  /* the whole tile answers the click */
+  .tile__btn::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+  }
+
+  .tile__btn:focus-visible {
+    outline: 2px solid var(--on-dark);
+    outline-offset: -6px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tile:hover :global(img) {
+      transform: scale(1.04);
+    }
+  }
+
   .tile__chip {
     display: grid;
     place-items: center;
@@ -255,14 +265,160 @@ const d = t(lang);
     line-height: 1.45;
   }
 
+  /* The panel unfolds under the title: grid rows from 0 to its height, 250 ms ease-out */
+  .tile__reveal {
+    position: relative;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .tile.is-open .tile__reveal {
+    grid-template-rows: 1fr;
+  }
+
+  .tile__panel {
+    overflow: hidden;
+  }
+
+  .tile__panel ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0 1.5rem;
+    list-style: none;
+  }
+
+  .tile__panel li {
+    position: relative;
+    padding-inline-start: 1rem;
+    color: var(--on-dark);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .tile__panel li::before {
+    position: absolute;
+    top: 0.6em;
+    inset-inline-start: 0;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--on-dark);
+    content: '';
+  }
+
+  .tile__link {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0.75rem 1.5rem 1.25rem;
+    color: var(--on-dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  .index__soon {
+    margin: 0;
+    color: var(--text-2);
+    font-size: var(--fs-small);
+  }
+
+  /* Also in Tyll: collapsed by default */
+  .also {
+    margin-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+
+  .also summary {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .also summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .also summary::after {
+    margin-inline-start: 0.75rem;
+    font-family: var(--font);
+    font-size: 1.25rem;
+    content: '+';
+  }
+
+  .also[open] summary::after {
+    content: '−';
+  }
+
+  .also__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-3) var(--s-4);
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .also h3 {
+    margin: 0;
+    font-family: var(--font);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  .also p {
+    max-width: none;
+    margin: 0.3rem 0 0;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .close {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--band-y);
+    background: var(--night-1);
+    color: var(--text-1);
+  }
+
+  .close__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-4);
+    text-align: center;
+  }
+
+  .close h2 {
+    font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
+  }
+
   @media (max-width: 1100px) {
     .tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .also__list {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 700px) {
-    .tiles {
+    .tiles,
+    .also__list {
       grid-template-columns: minmax(0, 1fr);
     }
 
@@ -270,4 +426,36 @@ const d = t(lang);
       aspect-ratio: 16 / 11;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile__reveal,
+    .tile__shade,
+    .tile :global(img) {
+      transition: none;
+    }
+  }
 </style>
+
+<script>
+  // One tile open at a time: a second click, another tile or Escape closes it. The panel is inert while closed, so
+  // its link is never reached by Tab or a screen reader until the tile opens.
+  const tiles = [...document.querySelectorAll<HTMLElement>('[data-tile]')];
+  const setTile = (tile: HTMLElement, open: boolean) => {
+    tile.classList.toggle('is-open', open);
+    tile.querySelector('.tile__btn')!.setAttribute('aria-expanded', String(open));
+    tile.querySelector<HTMLElement>('.tile__panel')!.inert = !open;
+  };
+  tiles.forEach((tile) =>
+    tile.querySelector('.tile__btn')!.addEventListener('click', () => {
+      const open = !tile.classList.contains('is-open');
+      tiles.forEach((x) => setTile(x, x === tile && open));
+    }),
+  );
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const open = tiles.find((x) => x.classList.contains('is-open'));
+    if (!open) return;
+    setTile(open, false);
+    open.querySelector<HTMLElement>('.tile__btn')!.focus();
+  });
+</script>

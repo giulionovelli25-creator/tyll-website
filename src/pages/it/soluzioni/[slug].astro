@@ -1,12 +1,19 @@
 ---
 import SolutionPage from '../../../components/pages/SolutionPage.astro';
-import { solutionKeys, slugOf, type SolutionKey } from '../../../i18n/routes';
+import LegacyRedirect from '../../../components/LegacyRedirect.astro';
+import { solutionKeys, slugOf, legacy, pages, type SolutionKey } from '../../../i18n/routes';
 
 export function getStaticPaths() {
-  return solutionKeys.map((key) => ({ params: { slug: slugOf(key, 'it') }, props: { key } }));
+  const live = solutionKeys.map((key) => ({ params: { slug: slugOf(key, 'it') }, props: { key, to: undefined } }));
+  // The pages folded into others in round 3: a small redirect page each, to the row that holds them
+  const old = Object.values(legacy).map((x) => ({
+    params: { slug: x.from.it.split('/').filter(Boolean).pop()! },
+    props: { key: undefined, to: `${pages[x.to].it}#${x.anchor}` },
+  }));
+  return [...live, ...old];
 }
 
-const { key } = Astro.props as { key: SolutionKey };
+const { key, to } = Astro.props as { key?: SolutionKey; to?: string };
 ---
 
-<SolutionPage lang="it" solution={key} />
+{to ? <LegacyRedirect to={to} /> : <SolutionPage lang="it" solution={key!} />}

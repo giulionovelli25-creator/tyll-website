@@ -206,7 +206,11 @@ const grounds = ['white', 'grey', 'last'];
     // Pinned: the section is taller than the screen; its share of the way through picks the card
     const range = () => Math.max(1, root.offsetHeight - innerHeight);
     const top = () => root.getBoundingClientRect().top + scrollY;
+    // After a click on a number, the scroll on its way there must not pick the cards it passes
+    let lockUntil = 0;
+    const locked = () => performance.now() < lockUntil;
     const fromScroll = () => {
+      if (locked()) return;
       const p = Math.min(1, Math.max(0, (scrollY - top()) / range()));
       const i = Math.min(n - 1, Math.floor(p * n));
       if (i !== index || !track.style.transform) show(i);
@@ -215,6 +219,7 @@ const grounds = ['white', 'grey', 'last'];
 
     // Swipe: the card nearest the start of the strip
     const fromSwipe = () => {
+      if (locked()) return;
       const i = Math.min(n - 1, Math.max(0, Math.round(Math.abs(viewport.scrollLeft) / Math.abs(step()))));
       if (i !== index) show(i);
     };
@@ -234,10 +239,15 @@ const grounds = ['white', 'grey', 'last'];
     viewport.addEventListener('scroll', () => swipeQ.matches && fromSwipe(), { passive: true });
     addEventListener('resize', () => (pinQ.matches ? show(index) : (track.style.transform = '')));
 
+    // A number button goes to its card on the first click, wherever autoplay, a swipe or the scroll left the strip:
+    // the card shows at once and the page or strip follows
     dots.forEach((dot, i) =>
       dot.addEventListener('click', () => {
+        lockUntil = performance.now() + 1000;
+        show(i);
         if (pinQ.matches) scrollToCard(i, true);
         else if (swipeQ.matches) viewport.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior: 'smooth' });
+        setTimeout(() => (pinQ.matches ? fromScroll() : swipeQ.matches && fromSwipe()), 1050);
       }),
     );
 
@@ -505,6 +515,9 @@ const grounds = ['white', 'grey', 'last'];
   }
 
   .why__source a {
+    display: inline-block;
+    padding-block: 0.6rem;
+    margin-block: -0.6rem;
     color: var(--card-link);
     text-decoration: underline;
     text-decoration-thickness: 1px;

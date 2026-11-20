@@ -1,24 +1,11 @@
-// Where each solution page's "Try … in the Demo" button leads inside the interactive demo.
-// These are real routes in the demo (github.com/giulionovelli25-creator/Demo-Tyll, checked 17 Nov 2026).
-// The public demo opens any address directly, as a role that may see it, with no sign-in.
-// Change a path here if the demo's routes change. The base address comes from PUBLIC_DEMO_URL.
+// The way into the interactive demo. Since 20 Nov 2026 the only demo link on the site is the homepage hero's
+// "Watch it work", which opens the demo in the visitor's language (`?lang=`). The base address comes from
+// PUBLIC_DEMO_URL (default https://demo.tyll.ai, `src/config/site.ts`).
 
 import { site } from './site';
-import type { Locale, SolutionKey } from '../i18n/routes';
+import type { Locale } from '../i18n/routes';
 
-export const demoPaths: Record<SolutionKey, string> = {
-  waste: '/tasks', // the staff view, which logs waste (the manager's /waste only reads it)
-  stock: '/stock',
-  forecasting: '/forecast',
-  revenue: '/money',
-  finance: '/finance?tab=invoices',
-  pour: '/drinks',
-};
-
-/** Full demo link for a solution, or undefined while no public demo address is configured. */
-export const demoLink = (key: SolutionKey, lang: Locale) => demoHref(lang, demoPaths[key]);
-
-/** The demo in the visitor's language. The demo is English only for now; `lang` takes effect once it reads it. */
+/** The demo in the visitor's language, or undefined while no public demo address is configured. */
 export const demoHref = (lang: Locale, path = '/') => {
   if (!site.demoUrl) return undefined;
   const url = new URL(path, site.demoUrl);

@@ -7,12 +7,9 @@ import Base from '../../layouts/Base.astro';
 import DemoFilm from '../DemoFilm.astro';
 import SilverWave from '../SilverWave.astro';
 import SolutionIcon from '../SolutionIcon.astro';
-import SustainabilityBand from '../SustainabilityBand.astro';
-import { solutions } from '../../content/solutions';
-import { explore } from '../../content/explore';
+import { solutions, sectionOf } from '../../content/solutions';
 import { solutionSeo } from '../../content/seo';
-import { demoLink } from '../../config/demo';
-import { t, href, solutionKeys, type Locale, type SolutionKey } from '../../i18n';
+import { t, href, type Locale, type SolutionKey } from '../../i18n';
 
 interface Props {
   lang: Locale;
@@ -23,13 +20,15 @@ const { lang, solution } = Astro.props;
 const d = t(lang);
 const p = d.solutionPage;
 const s = solutions[solution];
-const ex = explore[solution];
 const name = s.name[lang];
-const demo = demoLink(solution, lang);
-const others = solutionKeys.filter((k) => k !== solution);
+// The film's chapters are the three steps of "What you are about to see"
+const spots = s.see.map((x) => ({ label: x.title }));
+// At the foot, the other pages of the same section
+const section = sectionOf(solution);
+const others = section.keys.filter((k) => k !== solution);
 
 // Search title and description: from seo.ts where the language has one, otherwise the page's own name and lines
-const seo = solutionSeo[solution][lang];
+const seo = solutionSeo[solution]?.[lang];
 const metaTitle = seo?.title ?? `${name} | Tyll`;
 const metaDescription = seo?.description ?? `${s.headline[lang]} ${s.intro[lang]}`;
 
@@ -42,10 +41,10 @@ const [before, marked, after] = at < 0 ? [headline, '', ''] : [headline.slice(0,
 // The number or statement after the film. Never new text: a homepage number, a line of the hotel story or a FAQ answer.
 const why = d.home.why;
 const pr = s.proof;
-const number = pr.kind === 'number' ? why.cards[pr.card] : undefined;
-const faqItem = pr.kind === 'faq' ? d.faq.groups.flatMap((g) => g.items).find((i) => i.id === pr.id) : undefined;
+const number = pr?.kind === 'number' ? why.cards[pr.card] : undefined;
+const faqItem = pr?.kind === 'faq' ? d.faq.groups.flatMap((g) => g.items).find((i) => i.id === pr.id) : undefined;
 const say =
-  pr.kind === 'story'
+  pr?.kind === 'story'
     ? { ask: d.home.tour.steps[pr.step].headline, answer: d.home.tour.steps[pr.step].problem }
     : faqItem
       ? { ask: faqItem.q, answer: faqItem.a.replace(/\{(?:home|book):([^}]+)\}/g, '$1') }
@@ -64,14 +63,6 @@ const say =
           <a class="btn btn--solid btn--lg sol__book" href={href('book', lang)} data-track="book_demo_click" data-track-from={`${solution}-hero`}>
             {d.cta.book}
           </a>
-          {
-            demo && (
-              <a class="btn btn--line btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from={`${solution}-hero`}>
-                {t(lang).hero.try}
-                <span class="visually-hidden"> {d.cta.newTab}</span>
-              </a>
-            )
-          }
         </div>
       </div>
       <div class="sol__photo">
@@ -89,7 +80,7 @@ const say =
       </div>
     </div>
     <div class="wrap sol__film" id="film">
-      <DemoFilm lang={lang} solutionKey={solution} name={name} spots={ex.spots}>
+      <DemoFilm lang={lang} solutionKey={solution} name={name} spots={spots}>
         <section class="see" aria-labelledby="see-title">
           <h2 id="see-title" class="see__title">{p.seeTitle}</h2>
           <ol class="see__list" role="list" style={`--n:${s.see.length}`}>
@@ -109,30 +100,97 @@ const say =
       </DemoFilm>
       {(s.note || p.demoEnglish) && <p class="sol__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
       {
-        s.more && (
+        (s.more.length > 0 || s.rows?.length) && (
           <section class:list={['more', s.more.length > 1 && 'more--two']} aria-labelledby="more-title">
             <h2 id="more-title" class="more__title">{p.moreTitle.replace('{name}', name)}</h2>
-            <div class="more__groups">
-              {s.more.map((g) => (
-                <div class="more__group">
-                  {g.title && <h3>{g.title[lang]}</h3>}
-                  {g.lead && <p class="more__lead">{g.lead[lang]}</p>}
-                  <ul role="list">
-                    {g.points.map((pt) => (
-                      <li>{pt[lang]}</li>
-                    ))}
-                  </ul>
-                  {g.foot && <p class="more__foot">{g.foot[lang]}</p>}
-                </div>
-              ))}
-            </div>
+            {s.more.length > 0 && (
+              <div class="more__groups">
+                {s.more.map((g) => (
+                  <div class="more__group">
+                    {g.title && <h3>{g.title[lang]}</h3>}
+                    {g.lead && <p class="more__lead">{g.lead[lang]}</p>}
+                    <ul role="list">
+                      {g.points.map((pt) => (
+                        <li>{pt[lang]}</li>
+                      ))}
+                    </ul>
+                    {g.foot && <p class="more__foot">{g.foot[lang]}</p>}
+                    {g.next && <p class="more__next">{g.next[lang]}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+            {s.rows?.length && (
+              <div class="rows" data-rows>
+                {s.rows.map((r) => (
+                  <div class="xrow" id={r.id} data-row>
+                    <h3 class="xrow__h">
+                      <button type="button" class="xrow__head" aria-expanded="false" aria-controls={`${r.id}-panel`}>
+                        <span class="xrow__icon">
+                          <SolutionIcon name={r.icon} />
+                        </span>
+                        <span class="xrow__text">
+                          <span class="xrow__name">{r.name[lang]}</span>
+                          <span class="xrow__line">{r.line[lang]}</span>
+                        </span>
+                        <svg class="xrow__chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                      </button>
+                    </h3>
+                    <div class="xrow__panel" id={`${r.id}-panel`} role="region" aria-label={r.name[lang]} hidden>
+                      <div class:list={['xrow__body', r.film && 'xrow__body--film']}>
+                        <div>
+                          <ul role="list">
+                            {r.points.map((pt) => (
+                              <li>{pt[lang]}</li>
+                            ))}
+                          </ul>
+                          {r.next && <p class="more__next">{r.next[lang]}</p>}
+                        </div>
+                        {r.film && (
+                          <video
+                            class="xrow__clip"
+                            muted
+                            loop
+                            playsinline
+                            controls
+                            preload="none"
+                            aria-label={r.name[lang]}
+                            data-desk={`/media/film/${lang}/${r.film}-desk.mp4`}
+                            data-phone={`/media/film/${lang}/${r.film}-phone.mp4`}
+                            data-desk-poster={`/media/film/${lang}/${r.film}-desk.jpg`}
+                            data-phone-poster={`/media/film/${lang}/${r.film}-phone.jpg`}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
+        )
+      }
+      {
+        s.soon && (
+          <section class="soon" aria-label={s.soon.lead[lang]}>
+            <p class="soon__lead">{s.soon.lead[lang]}</p>
+            <ul role="list">
+              {s.soon.items.map((x) => (
+                <li>{x[lang]}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        solution === 'waste' && (
+          <p class="why-waste">
+            <a href={href('sustainability', lang)}>{p.whyWaste}</a>
+          </p>
         )
       }
     </div>
   </section>
-
-  {solution === 'waste' && <SustainabilityBand lang={lang} onWastePage />}
 
   {
     (number || say) && (
@@ -193,7 +251,8 @@ const say =
     </div>
   </section>
 
-  <nav class="wrap others" aria-label={p.others}>
+  <nav class="wrap others" aria-label={p.inSection.replace('{name}', section.name[lang])}>
+    <p class="others__head"><a href={href('solutions', lang, `#${section.id}`)}>{p.inSection.replace('{name}', section.name[lang])}</a></p>
     <ul>
       {others.map((k) => <li><a href={href(k, lang)}>{solutions[k].name[lang]}</a></li>)}
       <li><a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a></li>
@@ -489,6 +548,60 @@ const say =
     margin: 0.8rem 0 0;
   }
 
+  .more__next {
+    max-width: none;
+    margin: 0.6rem 0 0;
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  /* Coming next: checks still being built, small and muted like the In development line, no buttons */
+  .soon {
+    max-width: var(--film-w, 68rem);
+    margin: var(--s-4) auto 0;
+    color: var(--steel);
+    font-size: 0.9063rem;
+    line-height: 1.5;
+  }
+
+  .soon__lead {
+    max-width: none;
+    margin: 0 0 0.4rem;
+    font-weight: 600;
+  }
+
+  .soon ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.3rem 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .soon li {
+    padding-inline-start: 1rem;
+    text-indent: -1rem;
+  }
+
+  .soon li::before {
+    content: '– ';
+  }
+
+  .why-waste {
+    max-width: var(--film-w, 68rem);
+    margin: var(--s-4) auto 0;
+  }
+
+  .why-waste a {
+    color: var(--acc);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
   /* One number or statement the site already makes, on a light grey band: the number or the question at the start,
      what it means at the end */
   .proof {
@@ -571,6 +684,9 @@ const say =
   }
 
   .proof__source a {
+    display: inline-block;
+    padding-block: 0.6rem;
+    margin-block: -0.6rem;
     color: var(--ink);
     text-decoration: underline;
     text-decoration-thickness: 1px;
@@ -602,35 +718,54 @@ const say =
     font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
   }
 
-  /* Six links: one row on desktop, three and three on tablets, two by two on phones, so none is left alone on a row */
+  /* The other four pages of the section and All solutions: one row on desktop, three columns on tablets, two on phones */
+  .others__head {
+    max-width: none;
+    margin: 0;
+    padding-top: var(--intro-gap);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .others__head a {
+    min-height: 0;
+    color: var(--steel);
+    font-size: inherit;
+  }
+
   .others ul {
     display: grid;
-    grid-template-columns: repeat(6, auto);
+    grid-template-columns: repeat(5, auto);
     justify-content: center;
     justify-items: center;
     gap: 0.5rem var(--s-4);
     margin: 0;
-    padding: var(--intro-gap) 0;
+    padding: var(--s-2) 0 var(--intro-gap);
     list-style: none;
     text-align: center;
   }
 
   @media (max-width: 1100px) {
     .others ul {
-      grid-template-columns: repeat(3, minmax(0, 13rem));
+      grid-template-columns: repeat(3, minmax(0, 14rem));
     }
   }
 
   @media (max-width: 760px) {
     .others ul {
-      grid-template-columns: repeat(2, minmax(0, 13rem));
+      grid-template-columns: repeat(2, minmax(0, 14rem));
+    }
+
+    .soon ul {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
   .others a {
     display: inline-flex;
     align-items: center;
-    min-height: 2.25rem;
+    min-height: 44px;
     color: var(--ink);
     font-size: var(--fs-body);
     text-decoration: none;
@@ -698,4 +833,164 @@ const say =
       flex: 1 1 100%;
     }
   }
+
+  /* "Also in …": each feature this page took in is a collapsed row; one open at a time */
+  .rows {
+    margin-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+
+  .more__groups + .rows {
+    margin-top: var(--s-5);
+  }
+
+  .xrow {
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  .xrow__h {
+    margin: 0;
+    font: inherit;
+  }
+
+  .xrow__head {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+    min-height: 64px;
+    padding: 0.9rem 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .xrow__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgb(var(--acc-rgb) / 0.16);
+    border-radius: 11px;
+    background: var(--acc-wash);
+    color: var(--acc);
+  }
+
+  .xrow__icon :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .xrow__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .xrow__name {
+    display: block;
+    font-weight: 600;
+  }
+
+  .xrow__line {
+    display: block;
+    margin-top: 0.1rem;
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .xrow__chev {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    color: var(--steel);
+    transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .xrow__head[aria-expanded='true'] .xrow__chev {
+    transform: rotate(180deg);
+  }
+
+  .xrow__body {
+    display: grid;
+    gap: var(--s-3) var(--s-5);
+    padding: 0 0 var(--s-4) calc(40px + 1rem);
+  }
+
+  .xrow__body--film {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+
+  .xrow__body ul {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .xrow__clip {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1440 / 900;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--page-deep);
+  }
+
+  @media (max-width: 760px) {
+    .xrow__body,
+    .xrow__body--film {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline-start: 0;
+    }
+
+    .xrow__clip {
+      width: auto;
+      max-width: 100%;
+      height: min(56svh, 30rem);
+      aspect-ratio: 390 / 844;
+    }
+  }
 </style>
+
+<script>
+  // The rows under "Also in …": one open at a time; a row's film loads only when it opens; an address that ends in a
+  // row's #id (the old pages redirect here) opens that row.
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-row]')];
+  const phone = matchMedia('(max-width: 700px)');
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const setRow = (row: HTMLElement, open: boolean) => {
+    const head = row.querySelector<HTMLButtonElement>('.xrow__head')!;
+    const panel = row.querySelector<HTMLElement>('.xrow__panel')!;
+    const clip = row.querySelector<HTMLVideoElement>('video');
+    head.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+    if (!clip) return;
+    if (open) {
+      if (!clip.getAttribute('src')) {
+        clip.poster = (phone.matches ? clip.dataset.phonePoster : clip.dataset.deskPoster)!;
+        clip.src = (phone.matches ? clip.dataset.phone : clip.dataset.desk)!;
+      }
+      if (!still.matches) clip.play().catch(() => {});
+    } else clip.pause();
+  };
+  const openOnly = (row: HTMLElement | undefined) => rows.forEach((r) => setRow(r, r === row));
+  rows.forEach((row) =>
+    row.querySelector('.xrow__head')!.addEventListener('click', () => {
+      const isOpen = row.querySelector('.xrow__head')!.getAttribute('aria-expanded') === 'true';
+      openOnly(isOpen ? undefined : row);
+    }),
+  );
+  const fromHash = () => {
+    const row = rows.find((r) => `#${r.id}` === location.hash);
+    if (!row) return;
+    openOnly(row);
+    requestAnimationFrame(() => row.scrollIntoView({ block: 'start' }));
+  };
+  fromHash();
+  addEventListener('hashchange', fromHash);
+</script>

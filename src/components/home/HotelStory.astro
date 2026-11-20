@@ -30,9 +30,11 @@ const d = t(lang);
 const v = d.home.tour;
 const film = walkthrough;
 const last = v.steps.length - 1;
-const pagesOf = [href('finance', lang), href('stock', lang), href('forecasting', lang)];
+// Each step leads to its section of the Solutions page (20 Nov 2026: "Watch it work" is the hero's alone)
+const pagesOf = [href('solutions', lang, '#stock-waste'), href('solutions', lang, '#purchasing'), href('solutions', lang, '#revenue-reconciliation')];
 // A callout's words and icon: one of the three parts (part0 to part2) or one of the products
-const partIcons = [solutions.finance.icon, solutions.stock.icon, solutions.forecasting.icon];
+// Round 3 (20 Nov 2026): stock and purchasing lead, reconciliation comes third
+const partIcons = [solutions.stock.icon, solutions.forecasting.icon, solutions.finance.icon];
 const words = (key: string) => (key.startsWith('part') ? v.steps[Number(key.slice(4))].label : solutions[key as SolutionKey].name[lang]);
 const icon = (key: string) => (key.startsWith('part') ? partIcons[Number(key.slice(4))] : solutions[key as SolutionKey].icon);
 const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i + 1}-${cut}.webp`;
@@ -133,7 +135,7 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
             </ul>
             {i < last ? (
               <a class="hs__more" href={pagesOf[i]}>
-                {v.more} <span class="flip-rtl" aria-hidden="true">→</span>
+                {v.see[i]} <span class="flip-rtl" aria-hidden="true">→</span>
               </a>
             ) : (
               <div class="hs__end">

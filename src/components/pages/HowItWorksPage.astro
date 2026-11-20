@@ -24,7 +24,6 @@ import SilverWave from '../SilverWave.astro';
 import Logo from '../Logo.astro';
 import MorningCard from '../MorningCard.astro';
 import { t, href, type Locale } from '../../i18n';
-import { demoHref } from '../../config/demo';
 import { logos } from '../../config/integrations';
 import heroPhoto from '../../assets/photos/events-banquet.jpg';
 import callPhoto from '../../assets/photos/book-lobby.jpg';
@@ -39,7 +38,6 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const p = d.howPage;
-const demo = demoHref(lang);
 const chosen = 1; // the booked time
 const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => logos.find((l) => l.name === name)!);
 // The photograph behind each step's picture, and the part of it to keep in view
@@ -196,14 +194,6 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
       <h2 id="final-title">{p.final}</h2>
       <div class="final__actions">
         <a class="btn btn--lg final__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="how-final">{d.cta.book}</a>
-        {
-          demo && (
-            <a class="btn btn--lg final__try" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="how-final">
-              {d.cta.demo}
-              <span class="visually-hidden"> {d.cta.newTab}</span>
-            </a>
-          )
-        }
       </div>
     </div>
   </section>
@@ -768,15 +758,7 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     background: var(--mist);
   }
 
-  .final__try {
-    border-color: rgb(var(--on-dark-rgb) / 0.4);
-    background: transparent;
-    color: var(--on-dark);
-  }
 
-  .final__try:hover {
-    border-color: var(--on-dark);
-  }
 
   /* Tablets and phones: one column, the line and the numbers down the start edge */
   /* The title over the photograph */

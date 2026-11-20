@@ -433,6 +433,14 @@ p {
   text-wrap: pretty;
 }
 
+/* list items and the short lines inside cards and menus: no single word alone on the last line */
+li,
+.card__line,
+.panel__desc,
+.mobile-menu__line {
+  text-wrap: pretty;
+}
+
 a {
   color: inherit;
 }
@@ -543,7 +551,7 @@ a {
 }
 
 .on-dark .btn--line {
-  border-color: rgb(var(--on-dark-rgb) / 0.4);
+  border-color: rgb(var(--on-dark-rgb) / 0.7);
   color: var(--on-dark);
 }
 

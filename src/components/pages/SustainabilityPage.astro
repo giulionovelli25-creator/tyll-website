@@ -1,0 +1,544 @@
+---
+// The Sustainability page (round 3, 20 Nov 2026, the owner's brief). A photo hero like the homepage's; then the numbers
+// as a sticky story in two parts: on desktop the chart column stays in place (position: sticky) while the stats scroll
+// past, and as each stat's text reaches the middle of the screen the chart crossfades to its own and plays once. The
+// scroll itself is never touched. On phones and with reduced motion each chart sits above its text instead, static
+// under reduced motion. Two full-width photo bands between the parts; how Tyll helps; the dark closing band. Arabic shows
+// the UAE's 50% target in place of the EU's 30%. No figure here is a Tyll result. Copy: src/content/sustainability.ts.
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SilverWave from '../SilverWave.astro';
+import SusChart from '../SusChart.astro';
+import { sustainability } from '../../content/sustainability';
+import { solutions } from '../../content/solutions';
+import { t, href, type Locale } from '../../i18n';
+import heroPhoto from '../../assets/photos/sales-buffet.jpg';
+import bandWaste from '../../assets/photos/waste-bin.jpg';
+import bandProduce from '../../assets/photos/predictions-delivery.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const c = sustainability[lang];
+const waste = d.home.why.cards[0];
+const tab = d.cta.newTab;
+const [seven, less, back] = c.measure.stats;
+const fwd = lang === 'ar' ? '←' : '→';
+
+type Stat = { kind: 'bars' | 'grid' | 'target' | 'seven' | 'less' | 'dots'; figure: string; text: string; sub?: string; source?: { name: string; url: string } };
+const partA: Stat[] = [
+  { kind: 'bars', figure: c.bars.times[0], text: c.bars.caption, sub: c.bars.foodValue, source: c.bars.source },
+  { kind: 'grid', figure: waste.figure, text: waste.title, source: { name: waste.sourceName, url: waste.sourceUrl } },
+  { kind: 'target', figure: c.target.figure, text: c.target.text, source: c.target.source },
+];
+const partB: Stat[] = [
+  { kind: 'seven', figure: seven.figure, text: seven.text },
+  { kind: 'less', figure: less.figure, text: less.text },
+  { kind: 'dots', figure: back.figure, text: back.text },
+];
+const parts = [
+  { id: 'sus-a', stats: partA, title: undefined, wash: false },
+  { id: 'sus-b', stats: partB, title: c.measure.title, wash: true },
+];
+// How Tyll helps: a page, or the row on a page that now holds a feature
+const act = c.act.items.map((it) => {
+  const s = solutions[it.page];
+  const row = it.row ? s.rows?.find((r) => r.id === it.row) : undefined;
+  return { href: href(it.page, lang, row ? `#${row.id}` : ''), name: (row ?? s).name[lang], text: it.text };
+});
+---
+
+<Base lang={lang} page="sustainability" title={c.metaTitle} description={c.metaDescription} overHero>
+  <section class="hero on-dark" data-dark aria-labelledby="sus-title">
+    <Picture class="hero__photo" src={heroPhoto} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="eager" decoding="async" />
+    <div class="hero__shade" aria-hidden="true"></div>
+    <div class="wrap hero__inner">
+      <h1 id="sus-title" class="display">{c.title}</h1>
+      <p class="hero__text">{c.text}</p>
+    </div>
+  </section>
+
+  <div class="sus" data-sus>
+    {
+      parts.map((part, pi) => (
+        <Fragment>
+          <section class:list={['story', part.wash && 'story--wash']} aria-labelledby={part.title ? `${part.id}-title` : undefined} aria-label={part.title ? undefined : c.title} data-story>
+            <div class="wrap">
+              {part.title && (
+                <h2 id={`${part.id}-title`} class="story__title display">
+                  {part.title}
+                </h2>
+              )}
+              <div class="story__grid">
+                <div class="story__stage" aria-hidden="true">
+                  {part.stats.map((st, i) => (
+                    <SusChart kind={st.kind} c={c} i={i} class={i === 0 ? 'stage__chart is-active' : 'stage__chart'} />
+                  ))}
+                </div>
+                <ol class="story__steps" role="list">
+                  {part.stats.map((st, i) => (
+                    <li class="step" data-step={i}>
+                      <SusChart kind={st.kind} c={c} class="step__chart" />
+                      <p class="figure" data-count data-final={st.figure} dir="auto">
+                        {st.figure}
+                      </p>
+                      <h3 class="step__text">{st.text}</h3>
+                      {st.sub && <p class="step__sub">{st.sub}</p>}
+                      {st.source && (
+                        <p class="source">
+                          <a href={st.source.url} target="_blank" rel="noopener">
+                            {st.source.name}
+                            <span class="visually-hidden"> {tab}</span>
+                          </a>
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              {pi === 1 && (
+                <div class="story__foot">
+                  <p class="source">
+                    <a href={c.measure.source.url} target="_blank" rel="noopener">
+                      {c.measure.source.name}
+                      <span class="visually-hidden"> {tab}</span>
+                    </a>
+                  </p>
+                  <p class="note">{c.note}</p>
+                </div>
+              )}
+            </div>
+          </section>
+          <figure class="band" aria-hidden="true">
+            <Picture src={pi === 0 ? bandWaste : bandProduce} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" decoding="async" style={`object-position: ${pi === 0 ? '50% 28%' : '50% 45%'}`} />
+          </figure>
+        </Fragment>
+      ))
+    }
+
+    <section class="act" aria-labelledby="sus-act">
+      <div class="wrap act__grid">
+        <div class="act__head">
+          <h2 id="sus-act" class="display">{c.act.title}</h2>
+          <p class="act__lead">{c.act.lead}</p>
+          <p class="act__offer">{c.act.offer}</p>
+        </div>
+        <ul class="act__list" role="list">
+          {
+            act.map((it) => (
+              <li>
+                <a class="act__item" href={it.href}>
+                  <span class="act__name">
+                    {it.name} <span class="act__go" aria-hidden="true">{fwd}</span>
+                  </span>
+                  <span class="act__text">{it.text}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <section class="close on-dark" data-dark aria-labelledby="sus-final">
+    <SilverWave phase={0.4} move tone="dark" />
+    <div class="wrap close__inner">
+      <h2 id="sus-final" class="display">{c.close.title}</h2>
+      <div class="close__actions">
+        <a class="btn btn--line btn--lg" href={href('waste', lang)}>{c.close.waste}</a>
+        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="sustainability-final">{d.cta.book}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sus {
+    --g: var(--demo-teal);
+    --pad: clamp(96px, 14vh, 180px);
+  }
+
+  /* Hero: a full-width photograph under a dark shade, the headline in white, as on the homepage */
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: min(88svh, 52rem);
+    padding-block: calc(var(--header-h) + var(--s-6)) var(--s-7);
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .hero :global(.hero__photo),
+  .hero :global(.hero__photo img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: var(--photo-grade);
+  }
+
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.86) 0%, rgb(var(--shade-rgb) / 0.55) 50%, rgb(var(--shade-rgb) / 0.45) 100%);
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 {
+    max-width: 14ch;
+    font-size: clamp(2.75rem, 1.8rem + 4vw, 5.25rem);
+    line-height: 1.04;
+    text-shadow: 0 1px 16px rgb(var(--night-rgb) / 0.4);
+  }
+
+  .hero__text {
+    max-width: 34rem;
+    margin: var(--s-3) 0 0;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+
+  /* The sticky story. Stacked by default (phones, reduced motion, no JavaScript); two columns once `.sus-story` is set */
+  .story {
+    padding-block: var(--pad);
+  }
+
+  .story--wash {
+    background: var(--demo-teal-wash);
+  }
+
+  .story__title {
+    max-width: 18ch;
+    margin: 0 0 var(--s-6);
+    font-size: var(--fs-h2);
+  }
+
+  .story__stage {
+    display: none;
+  }
+
+  .story__steps {
+    display: grid;
+    gap: var(--pad);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step :global(.step__chart) {
+    margin-bottom: var(--s-4);
+  }
+
+  .figure {
+    max-width: none;
+    margin: 0;
+    color: var(--g);
+    font-family: var(--font-display);
+    font-size: clamp(3.25rem, 2.2rem + 3.6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .step__text {
+    max-width: 30ch;
+    margin: var(--s-3) 0 0;
+    font-family: var(--font);
+    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  .step__sub {
+    max-width: 60ch;
+    margin: var(--s-2) 0 0;
+    color: var(--graphite);
+  }
+
+  .source {
+    max-width: 60ch;
+    margin: var(--s-3) 0 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  /* a taller tap area than the small text shows, without moving the text */
+  .source a {
+    display: inline-block;
+    padding-block: 0.6rem;
+    margin-block: -0.6rem;
+    color: var(--steel);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .source a:hover {
+    color: var(--ink);
+  }
+
+  .story__foot {
+    margin-top: var(--s-6);
+    padding-top: var(--s-3);
+    border-top: 1px solid rgb(var(--demo-teal-rgb) / 0.18);
+  }
+
+  .story__foot .source {
+    margin: 0;
+  }
+
+  .note {
+    max-width: 60ch;
+    margin: 0.5rem 0 0;
+    color: var(--graphite);
+    font-size: var(--fs-small);
+  }
+
+  /* Desktop with motion: the chart column sticks under the header; the stats scroll past it */
+  :global(.sus-story) .story__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 5vw, 6rem);
+  }
+
+  :global(.sus-story) .story__stage {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    display: grid;
+    align-items: center;
+    height: calc(100svh - var(--header-h) - 4rem);
+  }
+
+  :global(.sus-story) .story__stage :global(.stage__chart) {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  :global(.sus-story) .story__stage :global(.stage__chart.is-active) {
+    opacity: 1;
+  }
+
+  :global(.sus-story) .step :global(.step__chart) {
+    display: none;
+  }
+
+  :global(.sus-story) .story__steps {
+    gap: 0;
+  }
+
+  :global(.sus-story) .step {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 72svh;
+  }
+
+  /* Photo bands between the parts: just the photograph */
+  .band {
+    height: clamp(16rem, 42vw, 34rem);
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .band :global(picture),
+  .band :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: var(--photo-grade);
+  }
+
+  /* How Tyll helps */
+  .act {
+    padding-block: var(--pad);
+  }
+
+  .act__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-5) clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+
+  .act h2 {
+    max-width: 16ch;
+    font-size: var(--fs-h2);
+  }
+
+  .act__lead {
+    max-width: 60ch;
+    margin: var(--s-3) 0 0;
+    color: var(--graphite);
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+
+  .act__offer {
+    max-width: 60ch;
+    margin: var(--s-3) 0 0;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .act__list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .act__item {
+    display: block;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .act__list li:last-child .act__item {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .act__name {
+    display: block;
+    color: var(--g);
+    font-weight: 600;
+  }
+
+  .act__go {
+    display: inline-block;
+    transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .act__item:focus-visible .act__go {
+    transform: translateX(4px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .act__item:hover .act__go {
+      transform: translateX(4px);
+    }
+
+    :global([dir='rtl']) .act__item:hover .act__go {
+      transform: translateX(-4px);
+    }
+  }
+
+  :global([dir='rtl']) .act__item:focus-visible .act__go {
+    transform: translateX(-4px);
+  }
+
+  .act__text {
+    display: block;
+    max-width: 60ch;
+    margin-top: 0.3rem;
+    color: var(--graphite);
+    line-height: 1.5;
+  }
+
+  .close {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--band-y);
+    background: var(--night-1);
+    color: var(--text-1);
+  }
+
+  .close__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-4);
+    text-align: center;
+  }
+
+  .close h2 {
+    font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
+  }
+
+  .close__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    justify-content: center;
+  }
+
+  @media (max-width: 900px) {
+    .act__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .close__actions :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  // The sticky story. From 768 px with motion allowed, `.sus-story` turns on the two columns; every part's stage then
+  // shows the chart of the stat whose text crosses the middle of the screen. Each chart plays once (`.is-in`), and its
+  // stat's number counts up from 0 at the same moment. The page scrolls as it always does: nothing listens to the wheel.
+  const root = document.querySelector<HTMLElement>('[data-sus]');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (root && !still && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('sus-motion');
+    if (matchMedia('(min-width: 768px)').matches) document.documentElement.classList.add('sus-story');
+    const count = (el: HTMLElement) => {
+      if (el.dataset.counted) return;
+      el.dataset.counted = '1';
+      const final = el.dataset.final ?? el.textContent ?? '';
+      const nums = [...final.matchAll(/\d+/g)].map((m) => Number(m[0]));
+      if (!nums.length) return;
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / 1000);
+        const e = 1 - Math.pow(1 - p, 3);
+        let k = 0;
+        el.textContent = p < 1 ? final.replace(/\d+/g, () => String(Math.round(nums[k++] * e))) : final;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    // numbers wait at 0 until their stat arrives
+    root.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => (el.textContent = (el.dataset.final ?? '').replace(/\d+/g, '0')));
+    root.querySelectorAll<HTMLElement>('[data-story]').forEach((story) => {
+      const stage = [...story.querySelectorAll<HTMLElement>('.stage__chart')];
+      const steps = [...story.querySelectorAll<HTMLElement>('[data-step]')];
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const step = e.target as HTMLElement;
+            const i = Number(step.dataset.step);
+            stage.forEach((ch, k) => ch.classList.toggle('is-active', k === i));
+            // every chart up to this one counts as played: a fast scroll may pass one by
+            stage.slice(0, i + 1).forEach((ch) => ch.classList.add('is-in'));
+            step.querySelector('.step__chart')?.classList.add('is-in');
+            const fig = step.querySelector<HTMLElement>('[data-count]');
+            if (fig) count(fig);
+          }),
+        // a line across the middle of the screen
+        { rootMargin: '-50% 0px -50% 0px' },
+      );
+      steps.forEach((s) => io.observe(s));
+    });
+  }
+</script>

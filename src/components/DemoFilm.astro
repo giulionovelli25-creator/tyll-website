@@ -6,9 +6,12 @@
 // a block tinted in the solution's own colour. Whatever the page puts in the slot sits on that block, above the screen.
 import film from '../content/film.json';
 import { site } from '../config/site';
-import type { Spot } from '../content/explore';
 import { t, type Locale } from '../i18n';
 import type { SolutionKey } from '../i18n/routes';
+
+/** A chapter of the film: what is on screen from that moment (since 20 Nov 2026 the page's three "What you are about
+    to see" steps, so the two always agree) */
+type Spot = { label: Record<Locale, string>; text?: Record<Locale, string> };
 
 interface Props {
   lang: Locale;
@@ -19,7 +22,10 @@ interface Props {
 
 const { lang, solutionKey, name, spots } = Astro.props;
 const d = t(lang);
-const { desk, phone } = (film as Record<Locale, typeof film.en>)[lang][solutionKey];
+// Chapter times from the recording (film.json, written by the recorder); even thirds until a film is recorded
+const fallback = { marks: [0, 5, 10], dur: 15 };
+const times = (film as Record<string, Record<string, { desk: typeof fallback; phone: typeof fallback }>>)[lang]?.[solutionKey];
+const { desk, phone } = times ?? { desk: fallback, phone: fallback };
 const base = `/media/film/${lang}/${solutionKey}`;
 const PHONE = '(max-width: 700px)';
 // the address shown in the frame is the demo's real one
@@ -51,7 +57,7 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
               <span class="film__bar" aria-hidden="true"><i></i></span>
               <span class="film__label">{s.label[lang]}</span>
             </button>
-            <p class="film__text">{s.text[lang]}</p>
+            {s.text && <p class="film__text">{s.text[lang]}</p>}
           </li>
         ))
       }
@@ -279,10 +285,11 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
       display: none;
     }
 
+    /* a set height, so the frame and the tinted block around it keep their shape before the film has loaded */
     .film video {
-      aspect-ratio: 390 / 760;
+      aspect-ratio: 390 / 844;
       width: auto;
-      max-height: 62svh;
+      height: min(62svh, 36rem);
     }
 
     .film__chapters {

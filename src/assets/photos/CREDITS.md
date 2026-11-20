@@ -37,6 +37,10 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
 
+Round 3 (20 Nov 2026), where the existing photos are now used. No new photos were downloaded; each is listed above with its source and licence.
+- Solutions page cards: stock-chef.jpg (Stock levels), how-count-jars.jpg (Stock takes), why-chef.jpg (Log waste), forecast-produce.jpg (Predictions), problem/problem-stock.jpg (Automatic ordering), predictions-delivery.jpg (Suppliers), revenue-payment.jpg (Revenue), reconciliation-reception.jpg (Bill and cash checks), tyll-problem-1.jpg (Invoices and deliveries, Tyll's own asset).
+- Sustainability page: sales-buffet.jpg (hero), waste-bin.jpg and predictions-delivery.jpg (the two photo bands).
+
 Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg, why-kitchen.jpg (replaced by the brighter why-chef.jpg).
 
 tyll-stats-3.jpg is kept in the folder but not used on the site (a dark bar counter; the owner rejected it for Revenue on 6 Nov 2026, and the reception photo before it).

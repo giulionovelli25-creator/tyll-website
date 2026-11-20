@@ -1,13 +1,11 @@
 ---
 // For hotel groups (19 Nov 2026): the solution pages' layout for a group buyer. One question beside a photograph,
-// Book a demo and Try the demo, then six short sections on what changes with several hotels (roles, approval limits,
+// Book a demo, then six short sections on what changes with several hotels (roles, approval limits,
 // countries and currencies, systems and exports, the audit trail, trust), and the closing Book a demo band.
 // Every line is something the demo shows. Copy: `groupsPage` and `meta.groupsTitle` in the language files.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
-import SustainabilityBand from '../SustainabilityBand.astro';
-import { demoHref } from '../../config/demo';
 import { t, href, type Locale } from '../../i18n';
 import photo from '../../assets/photos/book-lobby.jpg';
 
@@ -18,7 +16,6 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const g = d.groupsPage;
-const demo = demoHref(lang);
 ---
 
 <Base lang={lang} page="groups" title={d.meta.groupsTitle} description={d.meta.groupsDescription}>
@@ -31,14 +28,6 @@ const demo = demoHref(lang);
         <p class="grp__intro">{g.sub}</p>
         <div class="grp__actions">
           <a class="btn btn--solid btn--lg grp__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="groups-hero">{d.cta.book}</a>
-          {
-            demo && (
-              <a class="btn btn--line btn--lg" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="groups-hero">
-                {d.hero.try}
-                <span class="visually-hidden"> {d.cta.newTab}</span>
-              </a>
-            )
-          }
         </div>
       </div>
       <div class="grp__photo">
@@ -54,14 +43,12 @@ const demo = demoHref(lang);
           <li class="part">
             <span class="part__num" aria-hidden="true">{i + 1}</span>
             <h2>{title}</h2>
-            <p>{text}</p>
+            <p>{text.replace('{systems}', d.home.works.text)}</p>
           </li>
         ))
       }
     </ol>
   </section>
-
-  <SustainabilityBand lang={lang} />
 
   <section class="close on-dark" data-dark aria-labelledby="grp-final">
     <SilverWave phase={0.4} move tone="dark" />

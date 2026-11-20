@@ -110,3 +110,7 @@ export const integrations: Integration[] = [
   { name: 'NCR Aloha', type: 'pos' },
   { name: 'RoomRaccoon', type: 'pms' },
 ];
+
+// TODO(Fynn): confirm live integrations. Every data source in the demo is simulated (founder's review, 20 Nov 2026),
+// so the site says Tyll starts from a sales export and calls no system connected (`home.works.text`). Once a system is
+// live, it can be named as connected.
