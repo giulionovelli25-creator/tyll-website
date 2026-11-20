@@ -115,7 +115,8 @@ for (const lang of locales) {
         const order = await menu.locator('nav > :visible').evaluateAll((els) => els.map((e) => e.className.split(' ')[0]));
         expect(order).toEqual(['mobile-menu__group', 'mobile-menu__how', 'mobile-menu__how', 'lang', 'mobile-menu__actions']);
       }
-      const all = await header.innerText();
+      // FAQ lives in the Solutions menu and the footer, never in the bar itself
+      const all = await bar.innerText();
       for (const no of [d.nav.faqShort, d.nav.report, ...tryLabels]) expect(all).not.toContain(no);
       expect(await header.locator('a[href*="#report"], a[href*="#sustainability"], a[href*="demo.tyll.ai"]').count()).toBe(0);
     });
@@ -148,7 +149,8 @@ for (const lang of locales) {
           await expect(col.locator('[data-solution]')).toHaveCount(3);
           await expect(col.locator('[data-solution] .panel__icon svg')).toHaveCount(3);
         }
-        await expect(panel.locator('a')).toHaveCount(10);
+        await expect(panel.locator('a')).toHaveCount(11);
+        await expect(panel.locator('.panel__faq')).toHaveAttribute('href', pages.faq[lang]);
         for (const href of await panel.locator('a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) expect((await request.get(href)).status(), href).toBe(200);
         await panel.locator('.panel__all').click();
         await expect(page).toHaveURL(new RegExp(`${pages.solutions[lang]}$`));

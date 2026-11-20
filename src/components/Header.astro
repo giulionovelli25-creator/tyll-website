@@ -1,7 +1,8 @@
 ---
 // The bar (20 Nov 2026, the owner's brief): logo, Solutions (three columns of three, in the live site's style: a quiet
 // section name, then each page with its tinted icon, title and one grey line), How it works,
-// Sustainability, the language dropdown and one Book a demo button. FAQ lives in the footer; the only way into the
+// Sustainability, the language dropdown and one Book a demo button. FAQ is in the Solutions menu's foot row and the
+// footer, not in the bar itself; the only way into the
 // demo is the homepage hero's Watch it work. The same items, in the same order, in the phone menu.
 import Logo from './Logo.astro';
 import SolutionIcon from './SolutionIcon.astro';
@@ -109,6 +110,7 @@ const groups = sections.map((sec) => ({
       </div>
       <div class="panel__foot">
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions} {fwd}</a>
+        <a href={href('faq', lang)} class="panel__faq" aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
       </div>
     </div>
   </div>
@@ -139,6 +141,9 @@ const groups = sections.map((sec) => ({
           }
           <li class="mobile-menu__all">
             <a href={href('solutions', lang)}>{d.nav.allSolutions} {fwd}</a>
+          </li>
+          <li class="mobile-menu__all mobile-menu__faq">
+            <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
           </li>
         </ul>
       </details>
@@ -243,15 +248,15 @@ const groups = sections.map((sec) => ({
     align-items: center;
     gap: 0.4rem;
     min-height: 42px;
-    padding: 0 1rem;
-    /* A visible button, so nobody misses the menu */
-    border: 1.5px solid currentColor;
-    border-radius: var(--pill);
+    padding: 0 0.6rem;
+    /* plain like the links beside it (20 Nov 2026, the owner: no outline); the arrow says it opens */
+    border: 0;
+    border-radius: 6px;
     background: transparent;
     color: inherit;
     font: inherit;
-    font-size: 1rem;
     font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
     transition: background-color 0.2s var(--ease);
   }
@@ -278,7 +283,9 @@ const groups = sections.map((sec) => ({
 
   .header__trigger:hover,
   .header__trigger[aria-expanded='true'] {
-    background: rgb(var(--steel-mid-rgb) / 0.14);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 6px;
   }
 
   .header__trigger svg {
@@ -678,6 +685,12 @@ const groups = sections.map((sec) => ({
     font-size: 0.9375rem;
     text-decoration: underline;
     text-underline-offset: 4px;
+  }
+
+  .mobile-menu__all.mobile-menu__faq {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
   }
 
   .mobile-menu__all {
