@@ -1,14 +1,30 @@
-// The site's browser tests (20 Nov 2026). Run against the dev server: `npx playwright test` (config in
-// playwright.config.ts: Chromium and WebKit at 375, 768 and 1280 px). Whole-site sweeps that do not depend on the
-// window (every link, every page's language switch) run once per browser at 1280 px; everything that a visitor sees or
-// clicks runs in all six. Strings come from the site's own language files, so a changed word never breaks a test.
+// The site's browser tests (20 Nov 2026; round 4, 24 Nov 2026). Run against the dev server: `npx playwright test`
+// (config in playwright.config.ts: Chromium and WebKit at 375, 768, 1280 × 720, 1440 × 900 and 1920 × 1080). Whole-site
+// sweeps that do not depend on the window (every link, every page's language switch) run once per browser at 1280 px;
+// everything that a visitor sees or clicks runs in all ten. Strings come from the site's own language files and
+// content, so a changed word never breaks a test.
+import fs from 'node:fs';
 import { test, expect, type Page, type ConsoleMessage } from '@playwright/test';
 import { pages, locales, solutionKeys, legacy, type Locale, type PageKey } from '../src/i18n/routes';
 import { dict } from '../src/i18n';
+import type { Solution } from '../src/content/solutions';
+import type { SustainabilityCopy } from '../src/content/sustainability';
+
+// The content as data, written by tests/global-setup.ts (the content files import photographs)
+const content = JSON.parse(fs.readFileSync('tests/tmp/content.json', 'utf8')) as {
+  solutions: Record<(typeof solutionKeys)[number], Solution>;
+  sections: { id: string; keys: (typeof solutionKeys)[number][] }[];
+  moreKeys: (typeof solutionKeys)[number][];
+  sustainability: Record<Locale, SustainabilityCopy>;
+};
+const { solutions, sections, moreKeys, sustainability } = content;
 
 const width = (p: { project: { metadata: { width?: number } } }) => p.project.metadata.width ?? 1280;
 const desktop = (info: Parameters<Parameters<typeof test>[1]>[1]) => width(info) >= 1100;
 const sweep = (info: Parameters<Parameters<typeof test>[1]>[1]) => width(info) === 1280;
+const height = (p: { project: { metadata: { height?: number } } }) => p.project.metadata.height ?? 900;
+/** Words that must not appear anywhere any more (round 4): renamed or rewritten */
+const gone = ['Money Back List', 'Bill and cash checks', 'Coming next', 'Tyll never sends', 'Usually nobody stands out', 'Rückholliste', 'Lista recuperi', 'قائمة استرداد الأموال', 'Rechnungs- und Bargeldprüfung', 'Controlli su conti e contanti', 'تدقيق الفواتير والنقد'];
 const allPages = Object.keys(pages) as PageKey[];
 const DEMO = 'https://demo.tyll.ai/';
 const tryLabels = locales.map((l) => dict[l].cta.demo.replace(/\s*[→←]$/, ''));
@@ -82,6 +98,7 @@ test.describe('every page', () => {
         expect(dir, pages[key][lang]).toBe(lang === 'ar' ? 'rtl' : 'ltr');
         const text = await visibleText(page);
         for (const t of tryLabels) expect(text, `${pages[key][lang]} has "${t}"`).not.toContain(t);
+        for (const g of gone) expect(text, `${pages[key][lang]} still says "${g}"`).not.toContain(g);
         if (lang !== 'en') for (const w of english) expect(text, `${pages[key][lang]} shows English "${w}"`).not.toContain(w);
       }
   });
@@ -150,6 +167,11 @@ for (const lang of locales) {
           await expect(col.locator('[data-solution] .panel__icon svg')).toHaveCount(3);
         }
         await expect(panel.locator('a')).toHaveCount(11);
+        // the nine names, column by column, as in the demo's menu
+        const names = await panel.locator('[data-solution]').evaluateAll((as) => as.map((a) => (a.querySelector('.panel__name') ?? a).textContent!.trim()));
+        const want = sections.flatMap((sec) => sec.keys.map((k) => solutions[k].name[lang]));
+        for (const n of want) expect(names.some((x) => x.startsWith(n)), n).toBe(true);
+        for (const k of moreKeys) expect(names.some((x) => x.startsWith(solutions[k].name[lang])), `${k} not in the menu`).toBe(false);
         await expect(panel.locator('.panel__faq')).toHaveAttribute('href', pages.faq[lang]);
         for (const href of await panel.locator('a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) expect((await request.get(href)).status(), href).toBe(200);
         await panel.locator('.panel__all').click();
@@ -218,7 +240,8 @@ for (const lang of locales)
         await video.scrollIntoViewIfNeeded();
         await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.readyState), { timeout: 20_000 }).toBeGreaterThanOrEqual(2);
         const src = await video.evaluate((v: HTMLVideoElement) => v.currentSrc);
-        expect(src).toContain(`/media/film/${lang}/${key}-${width(info) <= 700 ? 'phone' : 'desk'}.mp4`);
+        // the demo is desktop only: phones get the desktop recording too
+        expect(src).toContain(`/media/film/${lang}/${key}-desk.mp4`);
         await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime), { timeout: 10_000 }).toBeGreaterThan(0.3);
         const toggle = page.locator('[data-film] .film__toggle');
         await toggle.click();
@@ -237,57 +260,61 @@ test.describe('films with reduced motion', () => {
       await page.waitForTimeout(1500);
       expect(await video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
       const poster = await video.getAttribute('poster');
-      expect(poster).toContain(`/media/film/${lang}/finance-${width(info) <= 700 ? 'phone' : 'desk'}.jpg`);
+      expect(poster).toContain(`/media/film/${lang}/finance-desk.jpg`);
     });
 });
 
-// ── 7. The sustainability page ──
+// ── 7. The sustainability page (round 4): numbers wall, where we work, timeline ──
 for (const lang of locales)
   test.describe(`sustainability ${lang}`, () => {
-    const figures = (page: Page) => page.locator('[data-sus] .figure').allInnerTexts();
-    test('every chart ends in its final state after scrolling; the right target for the language', async ({ page }) => {
+    test('the numbers count up to their figures; the right countries for the language; every source opens in a new tab', async ({ page }) => {
+      const c = sustainability[lang];
       await page.goto(pages.sustainability[lang]);
-      const final = await page.locator('[data-sus] .figure').evaluateAll((els) => els.map((e) => e.getAttribute('data-final')));
-      await page.evaluate(async () => {
-        for (let y = 0; y < document.body.scrollHeight; y += 300) {
-          scrollTo(0, y);
-          await new Promise((r) => setTimeout(r, 150));
-        }
-      });
+      const figs = page.locator('[data-wall] [data-count]');
+      await expect(figs).toHaveCount(4);
+      const final = await figs.evaluateAll((els) => els.map((e) => e.getAttribute('data-final')));
+      await page.locator('[data-wall]').scrollIntoViewIfNeeded();
       await page.waitForTimeout(1800);
-      // the charts a visitor sees: the sticky stage's on desktop, the stacked ones on phones
-      const sticky = await page.evaluate(() => document.documentElement.classList.contains('sus-story'));
-      const charts = page.locator(sticky ? '[data-sus] .stage__chart' : '[data-sus] .step__chart');
-      const n = await charts.count();
-      expect(n).toBe(6);
-      for (let i = 0; i < n; i++) await expect(charts.nth(i)).toHaveClass(/is-in/);
-      expect(await figures(page)).toEqual(final);
-      const text = await visibleText(page);
+      expect(await figs.allInnerTexts()).toEqual(final);
+      const places = await page.locator('.place').evaluateAll((els) => els.map((e) => e.id));
+      expect(places).toEqual(c.local.cards.map((x) => `place-${x.id}`));
       if (lang === 'ar') {
-        expect(text).toContain('50%');
-        expect(await page.locator('a[href*="wam.ae"]').count()).toBe(1);
-      } else {
-        expect(await page.locator('a[href*="food.ec.europa.eu"]').count()).toBe(1);
-        expect(await page.locator('[data-sus] .target__cut').first().innerText()).toContain('30');
-      }
+        expect(places[0]).toBe('place-ae');
+        expect(places).not.toContain('place-eu');
+      } else expect(places).toContain('place-eu');
+      await expect(page.locator('.timeline__step')).toHaveCount(3);
+      const text = await visibleText(page);
+      expect(text).toContain(c.note);
+      expect(text).not.toMatch(/CO2|CO₂/);
       for (const a of await page.locator('[data-sus] .source a').all()) {
         await expect(a).toHaveAttribute('target', '_blank');
         await expect(a.locator('.visually-hidden')).toHaveText(dict[lang].cta.newTab);
       }
     });
 
+    test('the where-we-work column stays put while the cards pass', async ({ page }, info) => {
+      test.skip(width(info) < 861, 'phones and tablets get the stacked version');
+      await page.goto(pages.sustainability[lang]);
+      const head = page.locator('.local__head');
+      // a little into the section, so the column is already stuck under the header
+      await page.locator('.local').evaluate((el) => scrollTo(0, el.getBoundingClientRect().top + scrollY + 260));
+      await page.waitForTimeout(400);
+      const top1 = await head.evaluate((e) => Math.round(e.getBoundingClientRect().top));
+      await page.mouse.move(400, 400);
+      await page.mouse.wheel(0, 300);
+      await page.waitForTimeout(700);
+      const top2 = await head.evaluate((e) => Math.round(e.getBoundingClientRect().top));
+      expect(top2).toBe(top1);
+    });
+
     test.describe('reduced motion', () => {
       test.use({ reducedMotion: 'reduce' });
-      test('shows every chart in its final state at once', async ({ page }) => {
+      test('figures show at once and the headline does not move', async ({ page }) => {
         await page.goto(pages.sustainability[lang]);
-        expect(await page.evaluate(() => document.documentElement.classList.contains('sus-motion'))).toBe(false);
-        expect(await page.evaluate(() => document.documentElement.classList.contains('sus-story'))).toBe(false);
-        await expect(page.locator('.step__chart').first()).toBeVisible();
-        const fill = page.locator('.step__chart .bars__fill--air');
-        const scale = await fill.evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).a);
-        expect(scale).toBeCloseTo(0.2, 2);
-        const on = page.locator('.step__chart .squares li.on').first();
-        await expect(on).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+        const figs = page.locator('[data-wall] [data-count]');
+        const final = await figs.evaluateAll((els) => els.map((e) => e.getAttribute('data-final')));
+        expect(await figs.allInnerTexts()).toEqual(final);
+        expect(await page.locator('.hero__inner').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
       });
     });
   });
@@ -350,11 +377,12 @@ for (const lang of locales)
     });
   });
 
-// ── Round 3 (20 Nov 2026) ──
+// ── Round 4 (24 Nov 2026) ──
 
-// The six folded pages redirect to the page that took them in, and open the row that holds them
+// Pages folded into others redirect to the page that holds them, and open its row; Expiring soon and Over pouring are
+// pages again
 for (const lang of locales)
-  test(`old addresses open the right row (${lang})`, async ({ page }, info) => {
+  test(`old addresses open the right row; Expiring soon and Over pouring are pages (${lang})`, async ({ page, request }, info) => {
     test.skip(!sweep(info), 'runs once per browser');
     for (const x of Object.values(legacy)) {
       await page.goto(x.from[lang]);
@@ -362,31 +390,83 @@ for (const lang of locales)
       await expect(page.locator(`#${x.anchor} .xrow__head`)).toHaveAttribute('aria-expanded', 'true');
       await expect(page.locator(`#${x.anchor} .xrow__panel`)).toBeVisible();
     }
+    for (const k of ['expiry', 'pour'] as const) {
+      const html = await (await request.get(pages[k][lang])).text();
+      expect(html).toContain('id="sol-title"');
+      expect(html).not.toContain('http-equiv="refresh"');
+    }
   });
 
-// The rows under "Also in …": one open at a time, and a row's clip loads only when it opens
+// Every film and clip exists in every language, with its poster
+test('every film and row clip exists in all four languages, with a poster', async ({}, info) => {
+  test.skip(!sweep(info), 'runs once per browser');
+  const clips = [...solutionKeys, ...solutionKeys.flatMap((k) => (solutions[k].rows ?? []).map((r) => r.film).filter(Boolean) as string[])];
+  for (const lang of locales)
+    for (const c of new Set(clips))
+      for (const mode of ['desk'])
+        for (const ext of ['mp4', 'jpg']) {
+          const f = `public/media/film/${lang}/${c}-${mode}.${ext}`;
+          expect(fs.existsSync(f), f).toBe(true);
+          if (ext === 'mp4') expect(fs.statSync(f).size, `${f} under about 3 MB`).toBeLessThan(3.2 * 1024 * 1024);
+        }
+});
+
+// The demo is desktop only (the owner, 24 Nov 2026): no page ever shows or loads it in a phone layout
+test('no page shows the demo in a phone layout', async ({ request }, info) => {
+  test.skip(!sweep(info), 'runs once per browser');
+  for (const key of allPages)
+    for (const lang of locales) {
+      const html = await (await request.get(pages[key][lang])).text();
+      expect(html, pages[key][lang]).not.toMatch(/\/media\/film\/[^"']*-phone\./);
+    }
+  expect(fs.readdirSync('public/media/film', { recursive: true }).filter((f) => String(f).includes('-phone.'))).toEqual([]);
+});
+
+// On desktops the film and its three steps fit under the header without scrolling
+for (const lang of locales)
+  test(`solution pages: film and steps fit the first screen (${lang})`, async ({ page }, info) => {
+    test.skip(width(info) < 1280, 'tablets and phones stack the page');
+    for (const k of solutionKeys) {
+      await page.goto(pages[k][lang]);
+      const bottom = await page.locator('.film__bar-row').evaluate((e) => e.getBoundingClientRect().bottom);
+      const frame = await page.locator('.film__frame').evaluate((e) => e.getBoundingClientRect().top);
+      expect(bottom, `${k} at ${width(info)} × ${height(info)}`).toBeLessThanOrEqual(height(info));
+      expect(frame, k).toBeGreaterThanOrEqual(72);
+      await expect(page.locator('.film__chapter')).toHaveCount(3);
+    }
+  });
+
+// The rows: one open at a time, a row's clip loads only when it opens, and an address with a row's #id opens it
 for (const lang of locales)
   test(`rows open one at a time and load their clip on opening (${lang})`, async ({ page }) => {
     const clips: string[] = [];
     page.on('request', (r) => r.url().includes('/media/film/') && r.url().endsWith('.mp4') && clips.push(r.url()));
+    const rowsOf = solutions.finance.rows!;
     await page.goto(pages.finance[lang]);
     const rows = page.locator('[data-row]');
-    await expect(rows).toHaveCount(2);
+    await expect(rows).toHaveCount(rowsOf.length);
     await page.waitForTimeout(500);
-    expect(clips.filter((u) => /\/(cash|cases)-/.test(u))).toEqual([]);
+    for (const r of rowsOf) expect(clips.filter((u) => u.includes(`/${r.film}-`))).toEqual([]);
     await rows.nth(0).locator('.xrow__head').click();
     await expect(rows.nth(0).locator('.xrow__panel')).toBeVisible();
-    await expect.poll(() => clips.filter((u) => /\/cash-/.test(u)).length).toBeGreaterThan(0);
+    await expect.poll(() => clips.filter((u) => u.includes(`/${rowsOf[0].film}-`)).length).toBeGreaterThan(0);
     await rows.nth(1).locator('.xrow__head').click();
     await expect(rows.nth(0).locator('.xrow__head')).toHaveAttribute('aria-expanded', 'false');
     await expect(rows.nth(1).locator('.xrow__head')).toHaveAttribute('aria-expanded', 'true');
     const clip = rows.nth(1).locator('video');
     await expect.poll(() => clip.evaluate((v: HTMLVideoElement) => v.readyState), { timeout: 20_000 }).toBeGreaterThanOrEqual(2);
+    // every row on every page has its own clip
+    for (const k of solutionKeys) for (const r of solutions[k].rows ?? []) expect(r.film, `${k}#${r.id}`).toBeTruthy();
+    await page.goto(pages.stock[lang] + '#margin');
+    await expect(page.locator('#margin .xrow__head')).toHaveAttribute('aria-expanded', 'true');
   });
 
-// /solutions/: nine photo cards, three per row on desktop, one open at a time
+// /solutions/: nine photo cards, three per row on desktop, one open at a time, each with a clip loaded on opening;
+// then More in Tyll and the In development line
 for (const lang of locales)
-  test(`solution cards open and close (${lang})`, async ({ page }, info) => {
+  test(`solution cards open and close, with their clip; More in Tyll (${lang})`, async ({ page, request }, info) => {
+    const clips: string[] = [];
+    page.on('request', (r) => r.url().includes('/media/film/') && r.url().endsWith('.mp4') && clips.push(r.url()));
     await page.goto(pages.solutions[lang]);
     const btns = page.locator('.tile__btn');
     await expect(btns).toHaveCount(9);
@@ -394,14 +474,18 @@ for (const lang of locales)
       const tops = await page.locator('.tiles').first().locator('.tile').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
       expect(new Set(tops).size).toBe(1);
     }
-    const panel = async (i: number) => page.locator(`#${await btns.nth(i).getAttribute("aria-controls")}`);
+    await page.waitForTimeout(400);
+    expect(clips).toEqual([]);
+    const panel = async (i: number) => page.locator(`#${await btns.nth(i).getAttribute('aria-controls')}`);
     await btns.nth(0).click();
     await expect(btns.nth(0)).toHaveAttribute('aria-expanded', 'true');
     await expect((await panel(0)).locator('li')).toHaveCount(3);
     await expect((await panel(0)).locator('a')).toBeVisible();
+    await expect.poll(() => clips.filter((u) => u.includes(`/${lang}/stock-desk.mp4`)).length).toBeGreaterThan(0);
     await btns.nth(1).click();
     await expect(btns.nth(0)).toHaveAttribute('aria-expanded', 'false');
     await expect(btns.nth(1)).toHaveAttribute('aria-expanded', 'true');
+    expect(await (await panel(0)).locator('video').evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
     await btns.nth(1).click();
     await expect(btns.nth(1)).toHaveAttribute('aria-expanded', 'false');
     await btns.nth(2).focus();
@@ -411,43 +495,31 @@ for (const lang of locales)
     await expect(btns.nth(2)).toHaveAttribute('aria-expanded', 'false');
     await expect(btns.nth(2)).toBeFocused();
     await expect(page.locator('.tile.is-open')).toHaveCount(0);
+    const more = page.locator('#more-in-tyll a');
+    await expect(more).toHaveCount(4);
+    for (const href of await more.evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) expect((await request.get(href.split('#')[0])).status(), href).toBe(200);
+    await expect(page.locator('.index__soon')).toHaveText(dict[lang].home.parts.soon);
   });
 
-// The sticky story: on desktop the chart column stays put, the chart changes per stat, and the wheel still scrolls
+// The homepage: the hero line, the steps' order and links, and the Scan strip
 for (const lang of locales)
-  test(`sustainability story sticks and never blocks the scroll (${lang})`, async ({ page }, info) => {
-    test.skip(width(info) < 768, 'phones get the stacked version');
-    await page.goto(pages.sustainability[lang]);
-    expect(await page.evaluate(() => document.documentElement.classList.contains('sus-story'))).toBe(true);
-    const steps = page.locator('[data-story]').first().locator('[data-step]');
-    const stage = page.locator('[data-story]').first().locator('.story__stage');
-    // the first stat's middle a little past the middle of the screen: the column is stuck, with two stats still to come
-    await steps.nth(0).evaluate((el) => scrollTo(0, el.getBoundingClientRect().top + scrollY + el.offsetHeight / 2 - innerHeight / 2 + 100));
-    await page.waitForTimeout(700);
-    const top1 = await stage.evaluate((e) => Math.round(e.getBoundingClientRect().top));
-    const active1 = await stage.locator('.stage__chart.is-active').getAttribute('data-i');
-    const y1 = await page.evaluate(() => scrollY);
-    await page.mouse.move(400, 400);
-    await page.mouse.wheel(0, 600);
-    await page.waitForTimeout(900);
-    const y2 = await page.evaluate(() => scrollY);
-    expect(y2).toBeGreaterThan(y1 + 400);
-    const top2 = await stage.evaluate((e) => Math.round(e.getBoundingClientRect().top));
-    const active2 = await stage.locator('.stage__chart.is-active').getAttribute('data-i');
-    expect(top2).toBe(top1);
-    expect(active2).not.toBe(active1);
-  });
-
-// The homepage leads with stock and purchasing
-for (const lang of locales)
-  test(`homepage hero line and step order (${lang})`, async ({ page }) => {
+  test(`homepage hero line, steps and the Scan strip (${lang})`, async ({ page, request }) => {
     const d = dict[lang];
     await page.goto(pages.home[lang]);
     await expect(page.locator('.hero__sub')).toHaveText(d.hero.sub);
     if (lang === 'en') expect(d.hero.sub.split(/\s+/).length).toBe(25);
     const labels = await page.locator('[data-hs-go] .hs__l').allInnerTexts();
-    expect(labels.slice(0, 3)).toEqual(d.home.parts.cards.map((c) => c.title).length ? [d.home.tour.steps[0].label, d.home.tour.steps[1].label, d.home.tour.steps[2].label] : []);
-    expect(d.home.tour.steps[0].label.toLowerCase()).toContain(lang === 'en' ? 'stock' : '');
+    expect(labels.slice(0, 3)).toEqual([d.home.tour.steps[0].label, d.home.tour.steps[1].label, d.home.tour.steps[2].label]);
     const hrefs = await page.locator('.hs__more').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
-    expect(hrefs.slice(0, 3)).toEqual([`${pages.solutions[lang]}#stock-waste`, `${pages.solutions[lang]}#purchasing`, `${pages.solutions[lang]}#revenue-reconciliation`]);
+    expect(hrefs.slice(0, 3)).toEqual([`${pages.solutions[lang]}#stock-waste`, `${pages.solutions[lang]}#purchasing`, `${pages.solutions[lang]}#reconciliation`]);
+    const scan = page.locator('#scan');
+    await expect(scan.locator('h2')).toHaveText(d.solutionPage.scan.title);
+    const items = scan.locator('.scan__item');
+    await expect(items).toHaveCount(5);
+    await expect(scan.locator('.scan__honest')).toHaveText(d.solutionPage.scan.honest);
+    for (const href of await items.evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
+      const [path, id] = href.split('#');
+      const html = await (await request.get(path)).text();
+      expect(html, href).toContain(`id="${id}"`);
+    }
   });

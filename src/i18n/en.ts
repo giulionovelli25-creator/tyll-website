@@ -36,12 +36,14 @@ const en = {
     sub: 'Every night Tyll updates your stock from sales, deliveries and waste, builds the order and sends routine orders itself. Then it checks bills and invoices.',
     try: 'Try the demo →',
     watch: 'Watch it work →',
+    // Shown on phones under Watch it work (24 Nov 2026, the owner): Tyll is desktop only for now
+    device: 'Tyll runs on a computer. There is no phone app yet.',
     report: 'Get your free report →',
     pause: 'Pause background video',
     play: 'Play background video',
     // The flagged receipt lines' labels, and the example morning brief (the demo's fictional data, as the footer says)
     flags: ['Removed, no reason', 'Unbilled pour', 'Not on room folio', 'Billed twice', 'No delivery note'],
-    card: { title: 'Morning brief · Grand Hotel Lumière', lost: 'Lost yesterday', total: '€113', split: '€38 waste, €0 breakage, €75 drinks not billed', yesterday: ['Revenue €8,342 from 229 guests', '8 flagged bills still open, €320 until checked'], todo: 'Three things to do today', rows: <[string, string, string][]>[['Fresh fish delivery due 15:00 has not arrived', 'Mercado', ''], ['Wagyu beef mince 1.8 kg above the recipes', 'Mercado, at risk', '€86'], ['Check pouring, Friday late shift', 'Bar Azulejo, not billed', '€351']], month: 'Last 30 days: €10,488 lost, €3,914 saved, 37.3% of the loss', cta: 'Open the morning brief →' },
+    card: { title: 'Morning brief · Grand Hotel Lumière', lost: 'Lost yesterday', total: '€52', split: '€38 waste, €0 breakage, €14 drinks not billed', yesterday: ['Revenue €7,342 from 205 guests', '12 flagged bills still open, €1,245 until checked'], todo: 'Three things to do today', rows: <[string, string, string][]>[['Wagyu beef mince short before lunch tomorrow', 'Mercado, at risk', '€159'], ['Coca-Cola, 238 cans not accounted for', '30 day check, an estimate', '€321'], ['Check pouring at Bar Azulejo, Friday late shift', 'Bar Azulejo, not billed', '€333']], month: 'Last 30 days: €11,228 lost, €4,634 saved, 41.3% of the loss', cta: 'Open the morning brief →' },
   },
   home: {
     tour: {
@@ -50,7 +52,7 @@ const en = {
       scene: 'A grand hotel, at first only a drawing surrounded by loose invoices, a storeroom in disorder and too much stock outside. Tyll deals with each problem in turn, each part of the building is completed, and the finished hotel opens in the evening with guests coming and going.',
       play: 'Play',
       pause: 'Pause',
-      see: ['See stock and waste', 'See purchasing', 'See revenue and reconciliation'],
+      see: ['See stock and waste', 'See purchasing', 'See reconciliation'],
       before: 'The problem',
       after: 'With Tyll',
       stepOf: 'Step {n} of {t}',
@@ -60,8 +62,8 @@ const en = {
       cards: { pos: 'POS', pms: 'PMS', stock: 'Stock', payments: 'Payments' },
       steps: [
         { label: 'Stock and Waste', headline: 'Where is our stock going?', problem: 'Stock goes missing, and nobody can say where.', bullets: ['Stock worked out every night from sales, deliveries and logged waste.', 'What runs out and what expires, before it does.', 'Waste logged in two taps.'] },
-        { label: 'Purchasing', headline: 'Do we know what we have before we order?', problem: 'Counts happen on paper, if at all, so orders are guesses.', bullets: ['An order list built from bookings, events and the last 4 weeks of use.', 'Routine orders sent at 06:00 within your limits. The rest wait for a manager.'] },
-        { label: 'Revenue and Reconciliation', headline: 'Do our bills, tickets and invoices match?', problem: 'Bills, tickets and invoices sit in separate places. Nobody can check them all.', bullets: ['Bills against kitchen and bar tickets.', 'Supplier invoices against what was delivered.'] },
+        { label: 'Purchasing', headline: 'Do we know what we have before we order?', problem: 'Counts happen on paper, if at all, so orders are guesses.', bullets: ['An order list built from bookings, events and the last 4 weeks of use.', 'Orders sent at 06:00 by email or WhatsApp, within your limits.'] },
+        { label: 'Reconciliation', headline: 'Do our bills, tickets and invoices match?', problem: 'Bills, tickets and invoices sit in separate places. Nobody can check them all.', bullets: ['Bills, room charges and covers checked against tickets and bookings.', 'Supplier invoices against what was delivered.'] },
         { label: 'The result', headline: 'One hotel or a whole group. One clear answer.', problem: '', bullets: ['Every system connected', 'Lost money found before it is gone'] },
       ],
     },
@@ -101,9 +103,9 @@ const en = {
       cards: [
         { title: 'Stock and Waste', text: 'See what is left and log waste in two taps.' },
         { title: 'Purchasing', text: 'Know what to order and how much.' },
-        { title: 'Revenue and Reconciliation', text: 'Nightly checks of bills against tickets, and invoices against deliveries.' },
+        { title: 'Reconciliation', text: 'Every night: bills, room charges and covers against tickets and bookings, invoices against deliveries.' },
       ],
-      soon: 'In development: Events and Staffing, Rooms and Guest Experience, Sales and Performance.',
+      soon: 'In development: Events and Staffing, Rooms and Guest Experience, Sales and Performance, Tyll Flow and the staff view.',
     },
     works: {
       title: 'Built for the systems hotels run',
@@ -157,7 +159,7 @@ const en = {
     sub: 'A group view across every hotel, each with its own currency, suppliers and approval rules.',
     link: 'For hotel groups →',
     sections: <[string, string][]>[
-      ['Every role sees what it needs.', 'Owner, general manager, financial controller, F&B director, restaurant and bar managers, events manager, purchasing, storekeeper, head chef, front office, housekeeping, concierge, bell captain and staff. Each sees only their hotels, outlets and figures. A head chef sees their kitchen; a financial controller sees the whole group.'],
+      ['Every role sees what it needs.', 'Owner, general manager, financial controller, F&B director, restaurant manager, purchasing, head chef and operational employee; the storekeeper confirms deliveries. Front office, housekeeping, concierge, bell captain and events manager come with the Rooms and Events modules, in development. Each sees only their hotels, outlets and figures. A head chef sees their kitchen; a financial controller sees the whole group.'],
       ['Approval limits per hotel.', 'Each hotel sets its own approval chain, with limits before VAT. For example: purchasing reviews every order, accounting approves every order, the F&B director approves orders over €2,000 and the general manager also approves orders over €5,000. Nobody approves an order they raised. The storekeeper receives.'],
       ['Several hotels, several countries.', 'Each hotel reports in its own currency, for example EUR, AED or SAR, and amounts in different currencies are never added together. VAT per country is shown on every purchase order and invoice. Each hotel chooses its stock valuation method and keeps its own suppliers and terms.'],
       ['Fits your group’s systems.', '{systems} Approved purchase orders, goods receipts and supplier invoices can be exported for the group’s procurement or accounting system, as CSV (one row per line) or JSON (one record per document).'],
@@ -184,14 +186,14 @@ const en = {
     seeLink: 'See {name} →',
     whyWaste: 'Why waste matters beyond cost →',
     inSection: 'More in {name}',
+    // "More in Tyll" (round 4): Revenue and reports and Suppliers keep their pages; the morning brief and Scan
+    moreInTyll: { title: 'More in Tyll', items: <[string, string][]>[['Morning brief and alerts', 'Yesterday’s losses and today’s three actions, at 7 AM.'], ['Scan', 'Photograph a slip, a delivery note, empty bottles, a recipe card or a menu.']] },
+    // The Scan strip on the homepage (round 4): five photo flows, each linking to the row that holds it
+    scan: { title: 'Photograph it. Tyll reads it, you confirm.', items: ['Requisition slips', 'Delivery notes', 'Empty bottles', 'Recipe cards', 'Menus'], lines: ['Becomes a requisition to the main store.', 'Differences become credit requests.', 'Counted by label against the till.', 'Yields, sub-recipes and cost per plate.', 'Only the differences with the till.'], honest: 'In the demo, photo reading uses sample photos. A person checks every field before it is saved.' },
     also: {
       title: 'Also in Tyll',
       items: <[string, string][]>[
-        ['Overview and alerts', 'Money lost and saved, and what needs you today.'],
         ['Search and notifications', 'Find any item, outlet or action. A bell for requests.'],
-        ['Tyll Flow', 'Every open kitchen and bar order, and whether it will be late.'],
-        ['Morning brief', 'Yesterday’s losses and today’s three actions, at 7 AM.'],
-        ['Staff view', 'A simple screen for staff, with no sales or cost figures.'],
         ['Roles and access', 'Each role sees what it needs.'],
         ['Settings', 'Access, email, data sources and a record of every change.'],
         ['Several hotels', 'A group view, each hotel in its own currency.'],
@@ -241,7 +243,7 @@ const en = {
     moreText: 'A 15 minute call, no commitment. We reply within 24 hours.',
     call: 'Book a call →',
     final: 'Still deciding? See it on your own numbers.',
-    // Eleven questions in three groups (10 Nov 2026, the owner's brief; answers matched to demo.tyll.ai on 17 Nov 2026).
+    // Fifteen questions in three groups (10 Nov 2026; four added on 24 Nov 2026 for scanning, WhatsApp, credit requests and price rises).
     // Most answers end with one link: `book` (Book a demo) or `how` (See how it works).
     groups: <FaqGroup[]>[
       {
@@ -254,6 +256,10 @@ const en = {
           { id: 'setup', q: 'How long does setup take?', a: 'One short call. Your first morning brief follows within 48 hours. No visit and no IT project: read-only access or a sales export is enough.', link: 'how' },
           { id: 'staff', q: 'How much work is it for our staff?', a: 'Very little. Staff log waste and breakage in two taps: the item, then the amount. Adding a reason is optional. Tyll does the checking every night and sends a morning brief at 7 AM.', link: 'how' },
           { id: 'auto', q: 'Can Tyll order automatically?', a: 'Yes, if you switch it on. Every morning at 06:00 it places the orders that are due, within limits you set. Anything above your limits waits for a manager. You can also keep every order manual.', link: 'book' },
+          { id: 'scan', q: 'Can Tyll read our paper slips and delivery notes?', a: 'Yes. Photograph a requisition slip, a delivery note, empty bottles, a recipe card or a menu, and Tyll reads it. A person checks every field before it is saved. In the demo, photo reading uses sample photos.', link: 'book' },
+          { id: 'whatsapp', q: 'Can suppliers reply on WhatsApp?', a: 'Yes. Orders can go out by email or WhatsApp with the PDF, or through the supplier’s ordering system. A reply like “only 8 kg salmon tomorrow, price now €38.50/kg” becomes two proposed changes for purchasing to accept or not. Fixed rules, no AI, in English, Portuguese and Arabic. A live connection needs the WhatsApp Business API.', link: 'book' },
+          { id: 'credits', q: 'Does Tyll send credit requests to suppliers?', a: 'Yes. When a delivery is short, damaged or invoiced above the agreed price, Tyll sends the credit request by email or WhatsApp with its photos, sends reminders and records the outcome.', link: 'book' },
+          { id: 'price', q: 'What happens when a supplier raises a price?', a: 'Tyll works the new price through every recipe that uses it. If a dish’s margin falls by 3 points or more, the F&B director and the head chef get an alert with four options: raise the price, switch supplier, adjust the portion or accept.', link: 'book' },
           { id: 'ai', q: 'Does an AI decide what we order?', a: 'No. Tyll’s own forecasting model works out every quantity from sales history, bookings, events, occupancy and current stock, and shows how it was calculated.', link: 'how' },
           { id: 'limits', q: 'Can we set our own approval limits?', a: 'Yes, per hotel. For example: purchasing reviews every order, accounting approves every order, the F&B director approves orders over €2,000 and the general manager also approves orders over €5,000. Nobody approves an order they raised.', link: 'book' },
         ],
@@ -263,7 +269,7 @@ const en = {
         title: 'Data and trust',
         items: [
           { id: 'readonly', q: 'Can Tyll change anything in our systems?', a: 'No. Tyll is read only. It reads your sales and invoices and never changes, deletes or posts anything.', link: 'book' },
-          { id: 'storage', q: 'Where is our data stored, and who can see it?', a: 'Your data is hosted in Europe and handled under the GDPR. Each role sees only its own hotels, outlets and figures: owner, general manager, financial controller, F&B director, restaurant and bar managers, events manager, purchasing, storekeeper, head chef, front office, housekeeping, concierge, bell captain and staff. A head chef sees their kitchen; a financial controller sees the whole group. Besides your team, only the Tyll staff supporting your pilot can see your data.', link: 'book' },
+          { id: 'storage', q: 'Where is our data stored, and who can see it?', a: 'Your data is hosted in Europe and handled under the GDPR. Each role sees only its own hotels, outlets and figures: owner, general manager, financial controller, F&B director, restaurant manager, purchasing, head chef and operational employee; the storekeeper confirms deliveries. Front office, housekeeping, concierge, bell captain and events manager come with the Rooms and Events modules, in development. A head chef sees their kitchen; a financial controller sees the whole group. Besides your team, only the Tyll staff supporting your pilot can see your data.', link: 'book' },
           { id: 'security', q: 'How is our data protected?', a: 'Tyll reads your systems read only and changes nothing in them. Your data is encrypted at rest and in transit and hosted in the EU, on AWS via Supabase. No card numbers or guest personal data are stored, and your data is never sold or shared.', link: 'book' },
           { id: 'cash', q: 'Does Tyll check cash?', a: 'Yes: the cash counted at the end of each shift against the cash sales on the till. Card payments are reconciled by your payment provider; matching the till against card company and bank statements runs as a separate Tyll product.', link: 'book' },
           { id: 'export', q: 'Can we export to our procurement or accounting system?', a: 'Yes: purchase orders, goods receipts and supplier invoices, as CSV or JSON.', link: 'book' },

@@ -1,8 +1,9 @@
 ---
 // A short film of the real demo doing the job, recorded from the demo itself. It plays by itself while on screen, and
-// the chapter beside it says what is happening. A chapter can be chosen to jump to that moment. Phones get their own
-// recording of the demo's phone layout, and each language its own recording.
-// It is shown as a screen, not as a page of the demo: in a browser frame (a phone frame on phones) that hangs out of
+// the chapter beside it says what is happening. A chapter can be chosen to jump to that moment. Each language has its
+// own recording. The demo is desktop only (the owner, 24 Nov 2026), so phones get the same desktop recording, never
+// the demo in a phone layout.
+// It is shown as a screen, not as a page of the demo: in a browser frame that hangs out of
 // a block tinted in the solution's own colour. Whatever the page puts in the slot sits on that block, above the screen.
 import film from '../content/film.json';
 import { site } from '../config/site';
@@ -18,21 +19,22 @@ interface Props {
   solutionKey: SolutionKey;
   name: string;
   spots: Spot[];
+  /** Fit mode (solution pages, round 4): no tinted block, and on desktops the screen takes its width from the
+      window's height, so the film and its three steps fit under the header without scrolling */
+  fit?: boolean;
 }
 
-const { lang, solutionKey, name, spots } = Astro.props;
+const { lang, solutionKey, name, spots, fit = false } = Astro.props;
 const d = t(lang);
 // Chapter times from the recording (film.json, written by the recorder); even thirds until a film is recorded
 const fallback = { marks: [0, 5, 10], dur: 15 };
-const times = (film as Record<string, Record<string, { desk: typeof fallback; phone: typeof fallback }>>)[lang]?.[solutionKey];
-const { desk, phone } = times ?? { desk: fallback, phone: fallback };
+const desk = (film as Record<string, Record<string, { desk: typeof fallback }>>)[lang]?.[solutionKey]?.desk ?? fallback;
 const base = `/media/film/${lang}/${solutionKey}`;
-const PHONE = '(max-width: 700px)';
 // the address shown in the frame is the demo's real one
 const host = site.demoUrl ? new URL(site.demoUrl).host : '';
 ---
 
-<div class="film" data-film data-desk={JSON.stringify(desk)} data-phone={JSON.stringify(phone)} data-phone-poster={`${base}-phone.jpg`} data-media={PHONE}>
+<div class:list={['film', fit && 'film--fit']} data-film data-desk={JSON.stringify(desk)}>
   <div class="film__stage">
     <slot />
     <figure class="film__frame">
@@ -42,7 +44,6 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
       </div>
       <div class="film__screen" dir="ltr">
         <video muted loop playsinline controls preload="none" poster={`${base}-desk.jpg`} aria-label={name}>
-          <source src={`${base}-phone.mp4`} type="video/mp4" media={PHONE} />
           <source src={`${base}-desk.mp4`} type="video/mp4" />
         </video>
       </div>
@@ -269,31 +270,58 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
     display: block;
   }
 
-  /* Phones: the upright recording in a phone's frame, small enough that its words stay on screen */
+  /* Fit mode: the screen's height is the window's height under the header, less the steps under it (--labels-h) and
+     32 px of air; the width follows from the recording's 16:10 and the browser bar above it (--chrome-h) */
+  .film--fit {
+    --labels-h: 6rem;
+    --chrome-h: 2.25rem;
+    --film-w: min(100%, calc((100svh - var(--header-h) - var(--labels-h) - 32px - var(--chrome-h)) * 1.6));
+    gap: 0.75rem;
+  }
+
+  .film--fit .film__stage {
+    padding: 0;
+  }
+
+  .film--fit .film__stage::before {
+    display: none;
+  }
+
+  .film--fit .film__frame {
+    width: var(--film-w);
+  }
+
+  .film--fit .film__chapters {
+    padding-bottom: 2.5rem;
+  }
+
+  .film--fit.is-ready .film__text {
+    color: var(--steel);
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  /* Phones: the same desktop recording in its browser frame, full width, with a shorter bar above it */
   @media (max-width: 700px) {
     .film {
-      --hang: 5rem;
-    }
-
-    .film__frame {
-      width: fit-content;
-      border: 6px solid var(--ink);
-      border-radius: 2rem;
+      --hang: 2.5rem;
     }
 
     .film__chrome {
-      display: none;
+      padding: 0.4rem 0.6rem;
     }
 
-    /* a set height, so the frame and the tinted block around it keep their shape before the film has loaded */
-    .film video {
-      aspect-ratio: 390 / 844;
-      width: auto;
-      height: min(62svh, 36rem);
+    .film__url {
+      min-width: 0;
+      font-size: 0.75rem;
     }
 
     .film__chapters {
       padding-bottom: 4rem;
+    }
+
+    .film--fit {
+      --film-w: 100%;
     }
   }
 </style>
@@ -304,15 +332,13 @@ const host = site.demoUrl ? new URL(site.demoUrl).host : '';
     const toggle = film.querySelector<HTMLButtonElement>('.film__toggle')!;
     const label = toggle.querySelector('.visually-hidden')!;
     const chapters = [...film.querySelectorAll<HTMLElement>('[data-chapter]')];
-    const small = matchMedia(film.dataset.media!);
     // `end`, where set, cuts a film short: it loops back to the start there (the stock film stops before its count)
-    const timing = () => JSON.parse(small.matches ? film.dataset.phone! : film.dataset.desk!) as { marks: number[]; dur: number; end?: number };
+    const timing = () => JSON.parse(film.dataset.desk!) as { marks: number[]; dur: number; end?: number };
     // With reduced motion the film waits to be played
     let userPaused = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let onScreen = false;
 
     video.controls = false;
-    if (small.matches) video.poster = film.dataset.phonePoster!;
     film.classList.add('is-ready');
     toggle.hidden = false;
 

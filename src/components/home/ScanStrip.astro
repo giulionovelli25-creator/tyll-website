@@ -1,0 +1,141 @@
+---
+// "Scan it" (round 4, 24 Nov 2026): the five things Tyll reads from a photo, each linking to the part of a solution
+// page that shows it, with the demo's honesty line under them. Sits after the hotel story.
+import SolutionIcon from '../SolutionIcon.astro';
+import { t, href, type Locale } from '../../i18n';
+import type { Solution } from '../../content/solutions';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const s = t(lang).solutionPage.scan;
+const where: { icon: Solution['icon']; url: string }[] = [
+  { icon: 'orders', url: href('stock', lang, '#requisitions') },
+  { icon: 'deliveries', url: href('deliveries', lang, '#film') },
+  { icon: 'pour', url: href('pour', lang, '#film') },
+  { icon: 'stock', url: href('stock', lang, '#recipes') },
+  { icon: 'revenue', url: href('stock', lang, '#menu-photo') },
+];
+---
+
+<section class="scan" id="scan" aria-labelledby="scan-title">
+  <div class="wrap">
+    <h2 id="scan-title" class="display">{s.title}</h2>
+    <ul class="scan__list" role="list">
+      {
+        s.items.map((name, i) => (
+          <li>
+            <a class="scan__item" href={where[i].url}>
+              <span class="scan__icon">
+                <SolutionIcon name={where[i].icon} />
+              </span>
+              <span class="scan__name">{name}</span>
+              <span class="scan__line">{s.lines[i]}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="scan__honest">{s.honest}</p>
+  </div>
+</section>
+
+<style>
+  .scan {
+    padding-block: var(--section-y);
+    background: var(--page-deep);
+    scroll-margin-top: var(--header-h);
+  }
+
+  .scan h2 {
+    max-width: 22ch;
+    margin: 0 0 var(--s-5);
+    font-size: var(--fs-h2);
+  }
+
+  .scan__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .scan__item {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+    height: 100%;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .scan__item:hover {
+    border-color: var(--hair);
+  }
+
+  .scan__icon {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 11px;
+    background: var(--sand-100);
+    color: var(--ink);
+  }
+
+  .scan__icon :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .scan__name {
+    font-weight: 600;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
+
+  .scan__line {
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .scan__honest {
+    max-width: 48rem;
+    margin: var(--s-4) 0 0;
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  @media (max-width: 1100px) {
+    .scan__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .scan__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .scan__item {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 1rem;
+    }
+
+    .scan__icon {
+      grid-row: span 2;
+      margin: 0;
+    }
+  }
+</style>

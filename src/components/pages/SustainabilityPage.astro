@@ -1,20 +1,22 @@
 ---
-// The Sustainability page (round 3, 20 Nov 2026, the owner's brief). A photo hero like the homepage's; then the numbers
-// as a sticky story in two parts: on desktop the chart column stays in place (position: sticky) while the stats scroll
-// past, and as each stat's text reaches the middle of the screen the chart crossfades to its own and plays once. The
-// scroll itself is never touched. On phones and with reduced motion each chart sits above its text instead, static
-// under reduced motion. Two full-width photo bands between the parts; how Tyll helps; the dark closing band. Arabic shows
-// the UAE's 50% target in place of the EU's 30%. No figure here is a Tyll result. Copy: src/content/sustainability.ts.
+// The Sustainability page (round 4, 24 Nov 2026, the owner's brief).
+// 1. A photo hero at about half the screen, the headline over it, dropping in from slightly above once (600 ms; still
+//    with reduced motion).
+// 2. The numbers wall: the global figures count up together when the wall comes into view, each with its source.
+// 3. "What this means where we work": a sticky column at the start, the country cards passing at the end (Arabic puts
+//    the UAE first and has no EU card). Stacked on phones.
+// 4. "What hotels got back": a horizontal timeline, year one, year two, overall (stacked on phones).
+// 5. Two photo bands, produce arriving and kitchen trimmings, then how Tyll helps and the dark closing band.
+// No figure here is a Tyll result. Copy: src/content/sustainability.ts.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
-import SusChart from '../SusChart.astro';
 import { sustainability } from '../../content/sustainability';
 import { solutions } from '../../content/solutions';
 import { t, href, type Locale } from '../../i18n';
 import heroPhoto from '../../assets/photos/sales-buffet.jpg';
-import bandWaste from '../../assets/photos/waste-bin.jpg';
 import bandProduce from '../../assets/photos/predictions-delivery.jpg';
+import bandWaste from '../../assets/photos/waste-bin.jpg';
 
 interface Props {
   lang: Locale;
@@ -25,25 +27,10 @@ const d = t(lang);
 const c = sustainability[lang];
 const waste = d.home.why.cards[0];
 const tab = d.cta.newTab;
-const [seven, less, back] = c.measure.stats;
 const fwd = lang === 'ar' ? '←' : '→';
-
-type Stat = { kind: 'bars' | 'grid' | 'target' | 'seven' | 'less' | 'dots'; figure: string; text: string; sub?: string; source?: { name: string; url: string } };
-const partA: Stat[] = [
-  { kind: 'bars', figure: c.bars.times[0], text: c.bars.caption, sub: c.bars.foodValue, source: c.bars.source },
-  { kind: 'grid', figure: waste.figure, text: waste.title, source: { name: waste.sourceName, url: waste.sourceUrl } },
-  { kind: 'target', figure: c.target.figure, text: c.target.text, source: c.target.source },
-];
-const partB: Stat[] = [
-  { kind: 'seven', figure: seven.figure, text: seven.text },
-  { kind: 'less', figure: less.figure, text: less.text },
-  { kind: 'dots', figure: back.figure, text: back.text },
-];
-const parts = [
-  { id: 'sus-a', stats: partA, title: undefined, wash: false },
-  { id: 'sus-b', stats: partB, title: c.measure.title, wash: true },
-];
-// How Tyll helps: a page, or the row on a page that now holds a feature
+// The wall: the three global figures, then the homepage's 18%
+const wall = [...c.wall.stats, { figure: waste.figure, text: waste.title, source: { name: waste.sourceName, url: waste.sourceUrl } }];
+// How Tyll helps: a page, or the row on a page that holds a feature
 const act = c.act.items.map((it) => {
   const s = solutions[it.page];
   const row = it.row ? s.rows?.find((r) => r.id === it.row) : undefined;
@@ -62,62 +49,103 @@ const act = c.act.items.map((it) => {
   </section>
 
   <div class="sus" data-sus>
-    {
-      parts.map((part, pi) => (
-        <Fragment>
-          <section class:list={['story', part.wash && 'story--wash']} aria-labelledby={part.title ? `${part.id}-title` : undefined} aria-label={part.title ? undefined : c.title} data-story>
-            <div class="wrap">
-              {part.title && (
-                <h2 id={`${part.id}-title`} class="story__title display">
-                  {part.title}
-                </h2>
-              )}
-              <div class="story__grid">
-                <div class="story__stage" aria-hidden="true">
-                  {part.stats.map((st, i) => (
-                    <SusChart kind={st.kind} c={c} i={i} class={i === 0 ? 'stage__chart is-active' : 'stage__chart'} />
-                  ))}
-                </div>
-                <ol class="story__steps" role="list">
-                  {part.stats.map((st, i) => (
-                    <li class="step" data-step={i}>
-                      <SusChart kind={st.kind} c={c} class="step__chart" />
-                      <p class="figure" data-count data-final={st.figure} dir="auto">
-                        {st.figure}
-                      </p>
-                      <h3 class="step__text">{st.text}</h3>
-                      {st.sub && <p class="step__sub">{st.sub}</p>}
-                      {st.source && (
-                        <p class="source">
-                          <a href={st.source.url} target="_blank" rel="noopener">
-                            {st.source.name}
-                            <span class="visually-hidden"> {tab}</span>
-                          </a>
-                        </p>
-                      )}
+    <section class="wall" aria-labelledby="sus-wall" data-wall>
+      <div class="wrap">
+        <h2 id="sus-wall" class="display sus__title">{c.wall.title}</h2>
+        <ul class="wall__grid" role="list">
+          {
+            wall.map((st) => (
+              <li class="wall__stat">
+                <p class="figure" data-count data-final={st.figure} dir="auto">
+                  {st.figure}
+                </p>
+                <p class="wall__text">{st.text}</p>
+                <p class="source">
+                  <a href={st.source.url} target="_blank" rel="noopener">
+                    {st.source.name}
+                    <span class="visually-hidden"> {tab}</span>
+                  </a>
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <figure class="band" aria-hidden="true">
+      <Picture src={bandProduce} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" decoding="async" style="object-position: 50% 45%" />
+    </figure>
+
+    <section class="local" aria-labelledby="sus-local">
+      <div class="wrap local__grid">
+        <div class="local__head">
+          <h2 id="sus-local" class="display sus__title">{c.local.title}</h2>
+          <p class="local__lead">{c.local.lead}</p>
+        </div>
+        <div class="local__cards">
+          {
+            c.local.cards.map((card) => (
+              <article class="place" id={`place-${card.id}`} aria-labelledby={`place-${card.id}-name`}>
+                <h3 id={`place-${card.id}-name`} class="place__name">{card.place}</h3>
+                <ul class="place__stats" role="list">
+                  {card.stats.map((st) => (
+                    <li>
+                      <p class="place__figure" dir="auto">{st.figure}</p>
+                      <p class="place__text">{st.text}</p>
                     </li>
                   ))}
-                </ol>
-              </div>
-              {pi === 1 && (
-                <div class="story__foot">
-                  <p class="source">
-                    <a href={c.measure.source.url} target="_blank" rel="noopener">
-                      {c.measure.source.name}
-                      <span class="visually-hidden"> {tab}</span>
-                    </a>
-                  </p>
-                  <p class="note">{c.note}</p>
-                </div>
-              )}
-            </div>
-          </section>
-          <figure class="band" aria-hidden="true">
-            <Picture src={pi === 0 ? bandWaste : bandProduce} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" decoding="async" style={`object-position: ${pi === 0 ? '50% 28%' : '50% 45%'}`} />
-          </figure>
-        </Fragment>
-      ))
-    }
+                </ul>
+                <ul class="place__sources" role="list">
+                  {card.sources.map((src) => (
+                    <li class="source">
+                      <a href={src.url} target="_blank" rel="noopener">
+                        {src.name}
+                        <span class="visually-hidden"> {tab}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="back" aria-labelledby="sus-back">
+      <div class="wrap">
+        <h2 id="sus-back" class="display sus__title">{c.back.title}</h2>
+        <ol class="timeline" role="list">
+          {
+            c.back.steps.map((step) => (
+              <li class="timeline__step">
+                <p class="timeline__when">{step.when}</p>
+                {step.stats.map((st) => (
+                  <div class="timeline__stat">
+                    <p class="timeline__figure" dir="auto">{st.figure}</p>
+                    <p class="timeline__text">{st.text}</p>
+                  </div>
+                ))}
+              </li>
+            ))
+          }
+        </ol>
+        <div class="back__foot">
+          <p class="source">
+            <a href={c.back.source.url} target="_blank" rel="noopener">
+              {c.back.source.name}
+              <span class="visually-hidden"> {tab}</span>
+            </a>
+          </p>
+          <p class="note">{c.note}</p>
+        </div>
+      </div>
+    </section>
+
+    <figure class="band" aria-hidden="true">
+      <Picture src={bandWaste} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" decoding="async" style="object-position: 50% 28%" />
+    </figure>
 
     <section class="act" aria-labelledby="sus-act">
       <div class="wrap act__grid">
@@ -159,16 +187,16 @@ const act = c.act.items.map((it) => {
 <style>
   .sus {
     --g: var(--demo-teal);
-    --pad: clamp(96px, 14vh, 180px);
+    --pad: clamp(112px, 16vh, 200px);
   }
 
-  /* Hero: a full-width photograph under a dark shade, the headline in white, as on the homepage */
+  /* Hero: a photograph at about half the screen under a dark shade, the headline in white over it */
   .hero {
     position: relative;
     display: grid;
     align-items: end;
-    min-height: min(88svh, 52rem);
-    padding-block: calc(var(--header-h) + var(--s-6)) var(--s-7);
+    min-height: clamp(26rem, 53svh, 42rem);
+    padding-block: calc(var(--header-h) + var(--s-5)) var(--s-6);
     overflow: hidden;
     background: var(--ink);
     color: var(--on-dark);
@@ -187,7 +215,7 @@ const act = c.act.items.map((it) => {
   .hero__shade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.86) 0%, rgb(var(--shade-rgb) / 0.55) 50%, rgb(var(--shade-rgb) / 0.45) 100%);
+    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.86) 0%, rgb(var(--shade-rgb) / 0.55) 55%, rgb(var(--shade-rgb) / 0.45) 100%);
   }
 
   .hero__inner {
@@ -195,9 +223,23 @@ const act = c.act.items.map((it) => {
     z-index: 1;
   }
 
+  /* The headline drops in from slightly above, once, as the page opens */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__inner {
+      animation: sus-drop 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    }
+  }
+
+  @keyframes sus-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-18px);
+    }
+  }
+
   .hero h1 {
-    max-width: 14ch;
-    font-size: clamp(2.75rem, 1.8rem + 4vw, 5.25rem);
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 1.7rem + 3.4vw, 4.75rem);
     line-height: 1.04;
     text-shadow: 0 1px 16px rgb(var(--night-rgb) / 0.4);
   }
@@ -210,35 +252,10 @@ const act = c.act.items.map((it) => {
     line-height: 1.5;
   }
 
-  /* The sticky story. Stacked by default (phones, reduced motion, no JavaScript); two columns once `.sus-story` is set */
-  .story {
-    padding-block: var(--pad);
-  }
-
-  .story--wash {
-    background: var(--demo-teal-wash);
-  }
-
-  .story__title {
-    max-width: 18ch;
-    margin: 0 0 var(--s-6);
-    font-size: var(--fs-h2);
-  }
-
-  .story__stage {
-    display: none;
-  }
-
-  .story__steps {
-    display: grid;
-    gap: var(--pad);
+  .sus__title {
+    max-width: 20ch;
     margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .step :global(.step__chart) {
-    margin-bottom: var(--s-4);
+    font-size: var(--fs-h2);
   }
 
   .figure {
@@ -246,26 +263,11 @@ const act = c.act.items.map((it) => {
     margin: 0;
     color: var(--g);
     font-family: var(--font-display);
-    font-size: clamp(3.25rem, 2.2rem + 3.6vw, 5.5rem);
+    font-size: clamp(2.75rem, 1.9rem + 2.6vw, 4.5rem);
     font-weight: 300;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-  }
-
-  .step__text {
-    max-width: 30ch;
-    margin: var(--s-3) 0 0;
-    font-family: var(--font);
-    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
-    font-weight: 400;
-    line-height: 1.4;
-    letter-spacing: 0;
-  }
-
-  .step__sub {
-    max-width: 60ch;
-    margin: var(--s-2) 0 0;
-    color: var(--graphite);
+    white-space: nowrap;
   }
 
   .source {
@@ -275,7 +277,6 @@ const act = c.act.items.map((it) => {
     line-height: 1.45;
   }
 
-  /* a taller tap area than the small text shows, without moving the text */
   .source a {
     display: inline-block;
     padding-block: 0.6rem;
@@ -290,16 +291,6 @@ const act = c.act.items.map((it) => {
     color: var(--ink);
   }
 
-  .story__foot {
-    margin-top: var(--s-6);
-    padding-top: var(--s-3);
-    border-top: 1px solid rgb(var(--demo-teal-rgb) / 0.18);
-  }
-
-  .story__foot .source {
-    margin: 0;
-  }
-
   .note {
     max-width: 60ch;
     margin: 0.5rem 0 0;
@@ -307,49 +298,216 @@ const act = c.act.items.map((it) => {
     font-size: var(--fs-small);
   }
 
-  /* Desktop with motion: the chart column sticks under the header; the stats scroll past it */
-  :global(.sus-story) .story__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(2rem, 1rem + 5vw, 6rem);
+  /* The numbers wall: four figures in a row, two by two on tablets, one under another on phones */
+  .wall {
+    padding-block: var(--pad);
   }
 
-  :global(.sus-story) .story__stage {
+  .wall__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-5) clamp(1.5rem, 0.5rem + 2vw, 3rem);
+    margin: var(--s-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wall__stat {
+    padding-top: var(--s-3);
+    border-top: 2px solid var(--g);
+  }
+
+  .wall__text {
+    max-width: 26ch;
+    margin: var(--s-2) 0 0;
+    color: var(--ink);
+    font-size: var(--fs-lead);
+    line-height: 1.4;
+  }
+
+  /* Where we work: the title stays put at the start while the country cards pass at the end */
+  .local {
+    padding-block: var(--pad);
+    background: var(--page-deep);
+  }
+
+  .local__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-5) clamp(2rem, 1rem + 4vw, 6rem);
+    align-items: start;
+  }
+
+  .local__head {
     position: sticky;
-    top: calc(var(--header-h) + 2rem);
+    top: calc(var(--header-h) + var(--s-5));
+  }
+
+  .local__lead {
+    max-width: 30rem;
+    margin: var(--s-3) 0 0;
+    color: var(--steel);
+    font-size: var(--fs-lead);
+    line-height: 1.45;
+  }
+
+  .local__cards {
     display: grid;
-    align-items: center;
-    height: calc(100svh - var(--header-h) - 4rem);
+    gap: var(--s-4);
   }
 
-  :global(.sus-story) .story__stage :global(.stage__chart) {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  .place {
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
   }
 
-  :global(.sus-story) .story__stage :global(.stage__chart.is-active) {
-    opacity: 1;
+  .place__name {
+    margin: 0 0 var(--s-3);
+    font-family: var(--font);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: 0;
   }
 
-  :global(.sus-story) .step :global(.step__chart) {
-    display: none;
+  .place__stats {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  :global(.sus-story) .story__steps {
-    gap: 0;
+  .place__figure {
+    margin: 0;
+    color: var(--g);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 1.6rem + 1.4vw, 3rem);
+    font-weight: 300;
+    line-height: 1.05;
   }
 
-  :global(.sus-story) .step {
+  .place__text {
+    max-width: 40ch;
+    margin: 0.3rem 0 0;
+    color: var(--graphite);
+    line-height: 1.45;
+  }
+
+  .place__sources {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 72svh;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+    margin: var(--s-3) 0 0;
+    padding: 0;
+    list-style: none;
   }
 
-  /* Photo bands between the parts: just the photograph */
+  .place__sources .source {
+    margin: 0;
+  }
+
+  /* What hotels got back: three steps on one line, joined by a rule */
+  .back {
+    padding-block: var(--pad);
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: var(--s-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .timeline__step {
+    position: relative;
+    padding-block-start: var(--s-4);
+    padding-inline-end: clamp(1rem, 0.5rem + 2vw, 3rem);
+    border-top: 2px solid var(--hair);
+  }
+
+  /* each step's dot on the line */
+  .timeline__step::before {
+    position: absolute;
+    top: -7px;
+    inset-inline-start: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--g);
+    content: '';
+  }
+
+  .timeline__when {
+    margin: 0 0 var(--s-3);
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+
+  .timeline__stat + .timeline__stat {
+    margin-top: var(--s-3);
+  }
+
+  .timeline__figure {
+    margin: 0;
+    color: var(--g);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.8rem + 2.4vw, 4rem);
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .timeline__text {
+    max-width: 28ch;
+    margin: 0.4rem 0 0;
+    color: var(--graphite);
+    line-height: 1.45;
+  }
+
+  .back__foot {
+    margin-top: var(--s-5);
+  }
+
+  @media (max-width: 1100px) {
+    .wall__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 860px) {
+    .local__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .local__head {
+      position: static;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .wall__grid,
+    .timeline {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .timeline__step {
+      padding-block: 0 var(--s-5);
+      padding-inline: var(--s-4) 0;
+      border-top: 0;
+      border-inline-start: 2px solid var(--hair);
+    }
+
+    .timeline__step::before {
+      top: 0.2rem;
+      inset-inline-start: -7px;
+    }
+  }
+
   .band {
-    height: clamp(16rem, 42vw, 34rem);
+    height: clamp(16rem, 40vw, 32rem);
     margin: 0;
     overflow: hidden;
   }
@@ -493,52 +651,37 @@ const act = c.act.items.map((it) => {
 </style>
 
 <script>
-  // The sticky story. From 768 px with motion allowed, `.sus-story` turns on the two columns; every part's stage then
-  // shows the chart of the stat whose text crosses the middle of the screen. Each chart plays once (`.is-in`), and its
-  // stat's number counts up from 0 at the same moment. The page scrolls as it always does: nothing listens to the wheel.
-  const root = document.querySelector<HTMLElement>('[data-sus]');
+  // The numbers wall counts up once, all four figures together, when it comes into view. Each number in a figure
+  // keeps its decimals and its separator (1.05, 1,05). With reduced motion, or without JavaScript, the figures simply
+  // show. The page scrolls as it always does.
+  const wall = document.querySelector<HTMLElement>('[data-wall]');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (root && !still && 'IntersectionObserver' in window) {
-    document.documentElement.classList.add('sus-motion');
-    if (matchMedia('(min-width: 768px)').matches) document.documentElement.classList.add('sus-story');
-    const count = (el: HTMLElement) => {
-      if (el.dataset.counted) return;
-      el.dataset.counted = '1';
-      const final = el.dataset.final ?? el.textContent ?? '';
-      const nums = [...final.matchAll(/\d+/g)].map((m) => Number(m[0]));
-      if (!nums.length) return;
-      const start = performance.now();
-      const step = (now: number) => {
-        const p = Math.min(1, (now - start) / 1000);
-        const e = 1 - Math.pow(1 - p, 3);
-        let k = 0;
-        el.textContent = p < 1 ? final.replace(/\d+/g, () => String(Math.round(nums[k++] * e))) : final;
-        if (p < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    };
-    // numbers wait at 0 until their stat arrives
-    root.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => (el.textContent = (el.dataset.final ?? '').replace(/\d+/g, '0')));
-    root.querySelectorAll<HTMLElement>('[data-story]').forEach((story) => {
-      const stage = [...story.querySelectorAll<HTMLElement>('.stage__chart')];
-      const steps = [...story.querySelectorAll<HTMLElement>('[data-step]')];
-      const io = new IntersectionObserver(
-        (entries) =>
-          entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            const step = e.target as HTMLElement;
-            const i = Number(step.dataset.step);
-            stage.forEach((ch, k) => ch.classList.toggle('is-active', k === i));
-            // every chart up to this one counts as played: a fast scroll may pass one by
-            stage.slice(0, i + 1).forEach((ch) => ch.classList.add('is-in'));
-            step.querySelector('.step__chart')?.classList.add('is-in');
-            const fig = step.querySelector<HTMLElement>('[data-count]');
-            if (fig) count(fig);
-          }),
-        // a line across the middle of the screen
-        { rootMargin: '-50% 0px -50% 0px' },
-      );
-      steps.forEach((s) => io.observe(s));
-    });
+  if (wall && !still && 'IntersectionObserver' in window) {
+    const NUM = /\d+(?:[.,]\d+)?/g;
+    const figures = [...wall.querySelectorAll<HTMLElement>('[data-count]')];
+    const at = (final: string, e: number) =>
+      final.replace(NUM, (m) => {
+        const sep = m.match(/[.,]/)?.[0];
+        const places = sep ? m.split(sep)[1].length : 0;
+        const v = (Number(m.replace(',', '.')) * e).toFixed(places);
+        return sep ? v.replace('.', sep) : v;
+      });
+    figures.forEach((el) => (el.textContent = at(el.dataset.final ?? '', 0)));
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        const start = performance.now();
+        const step = (now: number) => {
+          const p = Math.min(1, (now - start) / 1200);
+          const e = 1 - Math.pow(1 - p, 3);
+          figures.forEach((el) => (el.textContent = p < 1 ? at(el.dataset.final ?? '', e) : (el.dataset.final ?? '')));
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(wall.querySelector('.wall__grid')!);
   }
 </script>

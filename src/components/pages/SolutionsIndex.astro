@@ -1,15 +1,16 @@
 ---
-// The Solutions page (round 3, 20 Nov 2026): the live site's photo tiles, three per row, one row per section (Stock and
-// waste, Purchasing, Revenue and reconciliation), each section with its anchor (#stock-waste, #purchasing,
-// #revenue-reconciliation), heading and one sentence. A tile is a button: it opens in place to three points and a link
-// to its page; one open at a time, closed again by a second click, another tile or Escape. Then the In development
-// line, Also in Tyll (collapsed) and the closing Book a demo band.
+// The Solutions page (round 4, 24 Nov 2026): the live site's photo tiles, three per row, one row per section (Stock and
+// waste, Purchasing, Reconciliation), each section with its anchor (#stock-waste, #purchasing, #reconciliation),
+// heading and one sentence. A tile is a button: it opens in place to a short muted clip of its film (loaded only then),
+// three points and a link to its page; one open at a time, closed again by a second click, another tile or Escape.
+// Then More in Tyll (Revenue and reports, Suppliers, the morning brief, Scan), the In development line, Also in Tyll
+// (collapsed) and the closing Book a demo band.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../PageIntro.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import SilverWave from '../SilverWave.astro';
-import { solutions, sections } from '../../content/solutions';
+import { solutions, sections, moreKeys } from '../../content/solutions';
 import { t, href, type Locale } from '../../i18n';
 
 interface Props {
@@ -19,6 +20,12 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
+// More in Tyll: the two pages outside the nine, then the morning brief (How it works) and Scan (the homepage strip)
+const more = [
+  ...moreKeys.map((k) => ({ name: solutions[k].name[lang], text: solutions[k].menu[lang], url: href(k, lang) })),
+  { name: d.solutionPage.moreInTyll.items[0][0], text: d.solutionPage.moreInTyll.items[0][1], url: href('how', lang) },
+  { name: d.solutionPage.moreInTyll.items[1][0], text: d.solutionPage.moreInTyll.items[1][1], url: href('home', lang, '#scan') },
+];
 ---
 
 <Base lang={lang} page="solutions" title={d.meta.solutionsTitle} description={d.meta.solutionsDescription}>
@@ -62,6 +69,17 @@ const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
                     </button>
                     <div class="tile__reveal">
                       <div class="tile__panel" id={panel} inert>
+                        <video
+                          class="tile__clip"
+                          muted
+                          loop
+                          playsinline
+                          preload="none"
+                          aria-hidden="true"
+                          tabindex="-1"
+                          data-src={`/media/film/${lang}/${k}-desk.mp4`}
+                          data-poster={`/media/film/${lang}/${k}-desk.jpg`}
+                        />
                         <ul role="list">
                           {s.tilePoints.map((pt) => (
                             <li>{pt[lang]}</li>
@@ -81,6 +99,21 @@ const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
       ))
     }
 
+    <section class="more-in" id="more-in-tyll" aria-labelledby="more-in-title">
+      <h2 id="more-in-title">{d.solutionPage.moreInTyll.title}</h2>
+      <ul role="list">
+        {
+          more.map((m) => (
+            <li>
+              <a href={m.url}>
+                <span class="more-in__name">{m.name}</span>
+                <span class="more-in__text">{m.text}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
     <p class="index__soon">{d.home.parts.soon}</p>
     <details class="also">
       <summary>{d.solutionPage.also.title}</summary>
@@ -322,6 +355,76 @@ const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
     text-underline-offset: 4px;
   }
 
+  /* The tile's clip: a muted loop of its film, loaded the first time the tile opens */
+  .tile__clip {
+    display: block;
+    width: calc(100% - 3rem);
+    margin: 0 1.5rem 0.9rem;
+    aspect-ratio: 1440 / 900;
+    border-radius: var(--radius-md);
+    background: rgb(var(--shade-rgb) / 0.5);
+    object-fit: cover;
+  }
+
+  /* More in Tyll: four plain links in one row, two on tablets, one on phones */
+  .more-in {
+    padding-bottom: var(--s-5);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  .more-in h2 {
+    margin: 0 0 var(--s-3);
+    font-size: var(--fs-h3, 1.5rem);
+  }
+
+  .more-in ul {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .more-in a {
+    display: grid;
+    gap: 0.3rem;
+    height: 100%;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .more-in a:hover {
+    border-color: var(--hair);
+  }
+
+  .more-in__name {
+    font-weight: 600;
+  }
+
+  .more-in__text {
+    color: var(--steel);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 1000px) {
+    .more-in ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .more-in ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
   .index__soon {
     margin: 0;
     color: var(--text-2);
@@ -440,10 +543,21 @@ const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
   // One tile open at a time: a second click, another tile or Escape closes it. The panel is inert while closed, so
   // its link is never reached by Tab or a screen reader until the tile opens.
   const tiles = [...document.querySelectorAll<HTMLElement>('[data-tile]')];
+  // Each tile's clip is fetched the first time it opens, plays while open (not with reduced motion) and pauses on close
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
   const setTile = (tile: HTMLElement, open: boolean) => {
     tile.classList.toggle('is-open', open);
     tile.querySelector('.tile__btn')!.setAttribute('aria-expanded', String(open));
     tile.querySelector<HTMLElement>('.tile__panel')!.inert = !open;
+    const clip = tile.querySelector<HTMLVideoElement>('.tile__clip');
+    if (!clip) return;
+    if (open) {
+      if (!clip.getAttribute('src')) {
+        clip.poster = clip.dataset.poster!;
+        clip.src = clip.dataset.src!;
+      }
+      if (!still.matches) clip.play().catch(() => {});
+    } else if (!clip.paused) clip.pause();
   };
   tiles.forEach((tile) =>
     tile.querySelector('.tile__btn')!.addEventListener('click', () => {

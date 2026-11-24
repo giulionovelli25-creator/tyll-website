@@ -1,15 +1,16 @@
-// Stock and waste: three pages (round 3, 20 Nov 2026). Expiring soon and Recipes are rows on Stock levels; Missing stock and Over pouring on Stock takes.
+// Stock and waste (round 4, 24 Nov 2026): Stock levels, Expiring soon and Waste and breakage, as in the demo.
+// Every feature is a row with its own clip (public/media/film/<lang>/<key>-<row>-{desk,phone}.mp4).
 import type { Solution } from './solutions';
 import pageStock from '../assets/photos/stock-shelf.jpg';
-import pageTakes from '../assets/photos/how-count-jars.jpg';
+import pageExpiry from '../assets/photos/forecast-produce.jpg';
 import pageWaste from '../assets/photos/waste-bin.jpg';
 import tileStock from '../assets/photos/stock-chef.jpg';
-import tileTakes from '../assets/photos/how-count-jars.jpg';
+import tileExpiry from '../assets/photos/sales-buffet.jpg';
 import tileWaste from '../assets/photos/why-chef.jpg';
 
 const t = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it });
 
-export const stockWaste: Record<'stock' | 'takes' | 'waste', Solution> = {
+export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
   stock: {
     key: 'stock',
     icon: 'stock',
@@ -18,122 +19,160 @@ export const stockWaste: Record<'stock' | 'takes' | 'waste', Solution> = {
     pagePhoto: pageStock,
     pagePhotoFocus: '50% 60%',
     proof: { kind: 'story', step: 0 },
-    name: t('Stock levels', 'Lagerbestand', 'مستويات المخزون', 'Livelli di scorta'),
-    menu: t('Know what runs out, and what expires.', 'Wissen, was ausgeht und was abläuft.', 'اعرف ما ينفد وما تنتهي صلاحيته.', 'Sai cosa finisce e cosa scade.'),
+    name: t('Stock levels', 'Bestand', 'مستويات المخزون', 'Livelli di scorta'),
+    menu: t('Know what runs out first.', 'Wissen, was zuerst ausgeht.', 'اعرف ما ينفد أولًا.', 'Sai cosa finisce per primo.'),
     headline: t('What’s really on your shelf?', 'Was steht wirklich im Regal?', 'ما الموجود فعلًا على رفوفك؟', 'Cosa c’è davvero sullo scaffale?'),
-    intro: t('See what runs out and what expires, before a guest asks for it.', 'Sehen Sie, was ausgeht und was abläuft, bevor ein Gast danach fragt.', 'اعرف ما ينفد وما تنتهي صلاحيته، قبل أن يطلبه ضيف.', 'Vedi cosa finisce e cosa scade, prima che un ospite lo chieda.'),
+    intro: t('See what runs out before the next delivery, and order it from the same screen.', 'Sehen Sie, was vor der nächsten Lieferung ausgeht, und bestellen Sie es auf demselben Bildschirm.', 'اعرف ما ينفد قبل التوريد التالي، واطلبه من الشاشة نفسها.', 'Vedi cosa finisce prima della prossima consegna e ordinalo dalla stessa schermata.'),
     see: [
-      { title: t('Critical, low or fine', 'Kritisch, niedrig oder in Ordnung', 'حرج أو منخفض أو جيد', 'Critico, basso o a posto'), text: t('Your whole stock at a glance.', 'Ihr ganzer Bestand auf einen Blick.', 'مخزونك كله بنظرة واحدة.', 'Tutta la merce a colpo d’occhio.') },
-      { title: t('What runs out before the next delivery', 'Was vor der nächsten Lieferung ausgeht', 'ما ينفد قبل التوريد التالي', 'Cosa finisce prima della prossima consegna'), text: t('Act on it before a guest asks for it.', 'Handeln Sie, bevor ein Gast danach fragt.', 'تصرّف قبل أن يطلبه ضيف.', 'Intervieni prima che un ospite lo chieda.') },
-      { title: t('What expires next, and what to do with it', 'Was als Nächstes abläuft, und was damit zu tun ist', 'ما تنتهي صلاحيته تاليًا، وماذا تفعل به', 'Cosa scade per primo, e cosa farne'), text: t('Use it first, move it to another outlet, a special or the staff meal.', 'Zuerst verbrauchen, an ein anderes Outlet umbuchen, ein Tagesangebot oder das Personalessen.', 'استخدمها أولًا، أو انقلها إلى منفذ آخر، أو اجعلها طبقًا خاصًا أو وجبة للموظفين.', 'Usarlo per primo, spostarlo in un altro punto vendita, un piatto del giorno o il pasto del personale.') },
+      { title: t('Critical, low or fine', 'Kritisch, niedrig oder in Ordnung', 'حرج أو منخفض أو جيد', 'Critico, basso o a posto'), text: t('Your whole stock at a glance, worked out every night.', 'Ihr ganzer Bestand auf einen Blick, jede Nacht neu berechnet.', 'مخزونك كله بنظرة واحدة، يُحسب كل ليلة.', 'Tutte le scorte a colpo d’occhio, calcolate ogni notte.') },
+      { title: t('Critical items', 'Kritische Artikel', 'الأصناف الحرجة', 'Articoli critici'), text: t('An order placed today would arrive too late.', 'Eine heute aufgegebene Bestellung käme zu spät.', 'طلب يُرسل اليوم سيصل متأخرًا.', 'Un ordine fatto oggi arriverebbe troppo tardi.') },
+      { title: t('Order now', 'Jetzt bestellen', 'اطلب الآن', 'Ordina ora'), text: t('The suggested quantity from the usual supplier, sent for approval.', 'Die vorgeschlagene Menge beim üblichen Lieferanten, zur Freigabe geschickt.', 'الكمية المقترحة من المورّد المعتاد، تُرسل للموافقة.', 'La quantità suggerita dal fornitore abituale, inviata per l’approvazione.') },
     ],
     more: [
       {
         points: [
           t('Stock worked out every night from sales, deliveries and logged waste.', 'Der Bestand wird jede Nacht aus Verkäufen, Lieferungen und erfasstem Abfall berechnet.', 'يُحسب المخزون كل ليلة من المبيعات والتوريدات والهدر المسجّل.', 'Le scorte calcolate ogni notte da vendite, consegne e sprechi registrati.'),
           t('Food, beverage and inventory, each item with what is left and when it runs out.', 'Speisen, Getränke und Inventar, jeder Artikel mit Restmenge und wann er ausgeht.', 'الأطعمة والمشروبات والمستلزمات، كل صنف مع المتبقي منه وموعد نفاده.', 'Cibo, bevande e inventario, ogni articolo con quanto resta e quando finisce.'),
-          t('Stock valued at the hotel’s chosen method, weighted average cost by default.', 'Der Bestand wird nach der Methode des Hotels bewertet, standardmäßig zum gewichteten Durchschnittspreis.', 'يُقيَّم المخزون بالطريقة التي يختارها الفندق، وبمتوسط التكلفة المرجّح افتراضيًا.', 'Le scorte valorizzate con il metodo scelto dall’hotel, di norma al costo medio ponderato.'),
+          t('Stock valued at the hotel’s chosen method, weighted average cost by default.', 'Bewertet nach der Methode des Hotels, standardmäßig zum gewichteten Durchschnittspreis.', 'يُقيَّم المخزون بالطريقة التي يختارها الفندق، وبمتوسط التكلفة المرجّح افتراضيًا.', 'Scorte valorizzate con il metodo scelto dall’hotel, di norma al costo medio ponderato.'),
+          t('A quick spot check counts a few items between full counts.', 'Eine kurze Stichprobe zählt einige Artikel zwischen zwei Inventuren.', 'فحص سريع يعدّ بضعة أصناف بين جردين كاملين.', 'Un controllo rapido conta alcuni articoli tra due inventari.'),
         ],
       },
     ],
     photo: tileStock,
     photoFocus: '50% 40%',
     tilePoints: [
-      t('Stock worked out every night from sales, deliveries and waste.', 'Bestand jede Nacht aus Verkäufen, Lieferungen und Abfall berechnet.', 'مخزون يُحسب كل ليلة من المبيعات والتوريدات والهدر.', 'Scorte calcolate ogni notte da vendite, consegne e sprechi.'),
       t('What runs out before the next delivery.', 'Was vor der nächsten Lieferung ausgeht.', 'ما ينفد قبل التوريد التالي.', 'Cosa finisce prima della prossima consegna.'),
-      t('Expiring batches, with what to do with each.', 'Ablaufende Chargen, und was mit jeder zu tun ist.', 'دفعات تقترب من انتهاء صلاحيتها، مع ما يجب فعله بكل منها.', 'Lotti in scadenza, con cosa fare di ognuno.'),
+      t('Requisitions from outlets, read from a paper slip.', 'Anforderungen der Outlets, auch vom Papierzettel gelesen.', 'طلبات المنافذ، تُقرأ من ورقة الطلب.', 'Richieste dei punti vendita, lette dal foglio di carta.'),
+      t('Recipe costs, and an alert when a price cuts a margin.', 'Rezeptkosten, und ein Hinweis, wenn ein Preis die Marge senkt.', 'تكاليف الوصفات، وتنبيه عندما يخفض سعر هامشًا.', 'Costi delle ricette, e un avviso quando un prezzo taglia un margine.'),
     ],
     rows: [
       {
-        id: 'expiring',
-        icon: 'expiry',
-        film: 'expiry',
-        name: t('Expiring soon', 'Läuft bald ab', 'ينتهي قريباً', 'In scadenza'),
-        line: t('Use it before it expires.', 'Verbrauchen, bevor es abläuft.', 'استخدمه قبل أن تنتهي صلاحيته.', 'Usalo prima che scada.'),
+        id: 'requisitions',
+        icon: 'orders',
+        film: 'stock-requisitions',
+        name: t('Requisitions and transfers', 'Anforderungen und Umbuchungen', 'طلبات الصرف والتحويلات', 'Richieste e trasferimenti'),
+        line: t('Outlets ask the main store, and pay for what it issues.', 'Outlets fordern beim Hauptlager an und zahlen, was es ausgibt.', 'تطلب المنافذ من المخزن الرئيسي، وتدفع ثمن ما يصرفه.', 'I punti vendita chiedono al magazzino centrale e pagano ciò che emette.'),
         points: [
-          t('Batches come from deliveries, with their use-by date.', 'Chargen kommen aus den Lieferungen, mit ihrem Verbrauchsdatum.', 'تأتي الدفعات من التوريدات مع تاريخ انتهاء صلاحيتها.', 'I lotti arrivano dalle consegne, con la loro data di scadenza.'),
-          t('It suggests what to do with each batch by fixed rules: normal use first, then a transfer to the outlet that uses it most, then a special, then the staff meal.', 'Für jede Charge schlägt es nach festen Regeln vor, was zu tun ist: zuerst normal verbrauchen, dann an das Outlet umbuchen, das am meisten davon braucht, dann ein Tagesangebot, dann das Personalessen.', 'ويقترح ما يُفعل بكل دفعة وفق قواعد ثابتة: الاستخدام العادي أولًا، ثم التحويل إلى المنفذ الأكثر استخدامًا لها، ثم طبق خاص، ثم وجبة الموظفين.', 'Per ogni lotto suggerisce cosa fare con regole fisse: prima l’uso normale, poi un trasferimento al punto vendita che lo usa di più, poi un piatto del giorno, poi il pasto del personale.'),
-          t('At risk: what normal use will not finish in time, with its value.', 'Gefährdet: was der normale Verbrauch nicht rechtzeitig aufbraucht, mit seinem Wert.', 'المعرّض للخطر: ما لن يكفي الاستخدام العادي لإنهائه في الوقت المناسب، مع قيمته.', 'A rischio: ciò che l’uso normale non finirà in tempo, con il suo valore.'),
-          t('Expired on the shelf, counted apart.', 'Auf dem Regal abgelaufen, getrennt gezählt.', 'ما انتهت صلاحيته على الرف يُحسب منفصلًا.', 'Scaduto sullo scaffale, contato a parte.'),
+          t('An outlet asks in Tyll, or photographs its paper slip. Tyll reads it, the storekeeper confirms.', 'Ein Outlet fordert in Tyll an oder fotografiert seinen Papierzettel. Tyll liest ihn, der Lagerist bestätigt.', 'يطلب المنفذ عبر Tyll، أو يصوّر ورقة الطلب. يقرأها Tyll، ويؤكدها أمين المخزن.', 'Un punto vendita chiede in Tyll o fotografa il foglio di carta. Tyll lo legge, il magazziniere conferma.'),
+          t('Fixed rules turn the slip into stock units, for example 1 kg of lemons is about 8 lemons and a bottle of gin is 70 cl.', 'Feste Regeln rechnen den Zettel in Lagereinheiten um, zum Beispiel 1 kg Zitronen sind etwa 8 Zitronen und eine Flasche Gin 70 cl.', 'تحوّل قواعد ثابتة الورقة إلى وحدات المخزون، فمثلًا 1 كغ من الليمون يساوي نحو 8 ليمونات.', 'Regole fisse convertono il foglio in unità di magazzino, per esempio 1 kg di limoni sono circa 8 limoni e una bottiglia di gin è 70 cl.'),
+          t('It becomes a requisition to the main store, and the outlet is charged when the store issues it.', 'Daraus wird eine Anforderung an das Hauptlager, und das Outlet wird belastet, wenn das Lager ausgibt.', 'تصبح طلب صرف إلى المخزن الرئيسي، ويُحمَّل المنفذ التكلفة عند الصرف.', 'Diventa una richiesta al magazzino centrale, e il punto vendita paga quando il magazzino emette.'),
+          t('Stock issued without a request, or above it, is flagged to check. It is not proof of anything.', 'Ware, die ohne oder über eine Anforderung hinaus ausgegeben wird, wird zur Prüfung markiert. Ein Beweis ist das nicht.', 'ما يُصرف دون طلب أو بأكثر منه يُعلَّم للتحقق، وليس دليلًا على شيء.', 'La merce emessa senza richiesta, o oltre, viene segnalata da controllare. Non è una prova.'),
+        ],
+      },
+      {
+        id: 'expected',
+        icon: 'takes',
+        film: 'stock-expected',
+        name: t('Expected against actual', 'Soll gegen Ist', 'المتوقع مقابل الفعلي', 'Atteso contro reale'),
+        line: t('What should be left, against what was counted.', 'Was übrig sein sollte, gegen das, was gezählt wurde.', 'ما يجب أن يتبقى، مقابل ما تم عدّه.', 'Cosa dovrebbe restare, contro cosa è stato contato.'),
+        points: [
+          t('Stock used per day comes from the recipes of what sold, plus logged waste.', 'Der Verbrauch pro Tag ergibt sich aus den Rezepten des Verkauften plus erfasstem Abfall.', 'الاستهلاك اليومي يأتي من وصفات ما بيع، مضافًا إليه الهدر المسجّل.', 'Il consumo al giorno viene dalle ricette di ciò che è stato venduto, più gli sprechi registrati.'),
+          t('Gaps over 5% and over €5 are highlighted.', 'Abweichungen über 5 % und über 5 € werden hervorgehoben.', 'تُبرَز الفروق التي تتجاوز 5% و5 يورو.', 'Gli scarti oltre il 5% e oltre 5 € sono evidenziati.'),
         ],
       },
       {
         id: 'recipes',
         icon: 'stock',
+        film: 'stock-recipes',
         name: t('Recipes and costs', 'Rezepte und Kosten', 'الوصفات والتكاليف', 'Ricette e costi'),
-        line: t('What each dish costs to make, at today’s prices.', 'Was jedes Gericht in der Herstellung kostet, zu heutigen Preisen.', 'كم يكلّف تحضير كل طبق، بأسعار اليوم.', 'Quanto costa preparare ogni piatto, ai prezzi di oggi.'),
+        line: t('What each dish costs to make, at today’s prices.', 'Was jedes Gericht kostet, zu heutigen Preisen.', 'كم يكلّف تحضير كل طبق، بأسعار اليوم.', 'Quanto costa ogni piatto, ai prezzi di oggi.'),
         points: [
-          t('Cost per portion at today’s ingredient prices, every ingredient line with its price, against the selling price, with gross profit, margin and cost change.', 'Kosten pro Portion zu heutigen Zutatenpreisen, jede Zutat mit ihrem Preis, gegen den Verkaufspreis, mit Rohertrag, Marge und Kostenänderung.', 'تكلفة الحصة بأسعار المكونات اليوم، وكل مكوّن بسعره، مقابل سعر البيع، مع إجمالي الربح والهامش وتغير التكلفة.', 'Costo per porzione ai prezzi di oggi degli ingredienti, ogni ingrediente con il suo prezzo, contro il prezzo di vendita, con utile lordo, margine e variazione del costo.'),
+          t('Cost per portion at today’s prices, every ingredient with its price, against the selling price, with gross profit, margin and cost change.', 'Kosten pro Portion zu heutigen Preisen, jede Zutat mit Preis, gegen den Verkaufspreis, mit Rohertrag, Marge und Kostenänderung.', 'تكلفة الحصة بأسعار اليوم، وكل مكوّن بسعره، مقابل سعر البيع، مع إجمالي الربح والهامش وتغير التكلفة.', 'Costo per porzione ai prezzi di oggi, ogni ingrediente con il suo prezzo, contro il prezzo di vendita, con utile lordo, margine e variazione del costo.'),
+          t('Photograph a recipe card to add it. A whole sea bass gives about 45% fillet, house sub-recipes are linked, and “a handful of parsley” is flagged as a rule of thumb.', 'Fotografieren Sie eine Rezeptkarte, um sie anzulegen. Ein ganzer Wolfsbarsch ergibt etwa 45 % Filet, Grundrezepte des Hauses werden verknüpft, und „eine Handvoll Petersilie“ wird als Faustregel markiert.', 'صوّر بطاقة الوصفة لإضافتها. سمكة قاروص كاملة تعطي نحو 45% فيليه، وتُربط الوصفات الفرعية للمطبخ، و«حفنة من البقدونس» تُعلَّم كتقدير تقريبي.', 'Fotografa una scheda ricetta per aggiungerla. Un branzino intero dà circa il 45% di filetto, le basi della casa vengono collegate e “una manciata di prezzemolo” è segnalata come regola a occhio.'),
+          t('Then cost per plate and margin. A person checks every field before it is saved.', 'Danach Kosten pro Teller und Marge. Ein Mensch prüft jedes Feld, bevor es gespeichert wird.', 'ثم تكلفة الطبق والهامش. يراجع شخص كل حقل قبل حفظه.', 'Poi costo per piatto e margine. Una persona controlla ogni campo prima che venga salvato.'),
+        ],
+      },
+      {
+        id: 'menu-photo',
+        icon: 'revenue',
+        film: 'stock-menu-photo',
+        name: t('Menu photo', 'Foto der Speisekarte', 'صورة قائمة الطعام', 'Foto del menù'),
+        line: t('Photograph the menu. Only the differences show.', 'Speisekarte fotografieren. Nur die Unterschiede erscheinen.', 'صوّر القائمة. تظهر الفروق فقط.', 'Fotografa il menù. Compaiono solo le differenze.'),
+        points: [
+          t('Tyll reads dishes and prices and compares them with the till, for example “the till says €9.00, which is right?”', 'Tyll liest Gerichte und Preise und vergleicht sie mit der Kasse, zum Beispiel „Die Kasse sagt 9,00 €, was stimmt?“', 'يقرأ Tyll الأطباق والأسعار ويقارنها بنظام نقاط البيع، مثل «نظام نقاط البيع يقول 9.00 يورو، أيّهما الصحيح؟»', 'Tyll legge piatti e prezzi e li confronta con la cassa, per esempio “la cassa dice 9,00 €, quale è giusto?”'),
+        ],
+      },
+      {
+        id: 'menu-sync',
+        icon: 'reports',
+        film: 'stock-menu-sync',
+        name: t('Menu sync', 'Abgleich der Speisekarte', 'مزامنة القائمة', 'Sincronizzazione del menù'),
+        line: t('The till’s menu, read each morning.', 'Die Speisekarte der Kasse, jeden Morgen gelesen.', 'قائمة نظام نقاط البيع، تُقرأ كل صباح.', 'Il menù della cassa, letto ogni mattina.'),
+        points: [
+          t('Each morning Tyll reads the menu from the till: new dishes, price changes and dishes removed.', 'Jeden Morgen liest Tyll die Speisekarte aus der Kasse: neue Gerichte, Preisänderungen und entfernte Gerichte.', 'كل صباح يقرأ Tyll القائمة من نظام نقاط البيع: أطباق جديدة، وتغييرات الأسعار، وأطباق أُزيلت.', 'Ogni mattina Tyll legge il menù dalla cassa: piatti nuovi, prezzi cambiati e piatti tolti.'),
+          t('New dishes are listed until they have a recipe. Margins use the new price.', 'Neue Gerichte bleiben gelistet, bis sie ein Rezept haben. Margen rechnen mit dem neuen Preis.', 'تبقى الأطباق الجديدة في القائمة حتى تُضاف وصفتها. وتُحسب الهوامش بالسعر الجديد.', 'I piatti nuovi restano in elenco finché non hanno una ricetta. I margini usano il nuovo prezzo.'),
+        ],
+      },
+      {
+        id: 'margin',
+        icon: 'finance',
+        film: 'stock-margin',
+        name: t('Margin alerts', 'Margen-Hinweise', 'تنبيهات الهامش', 'Avvisi sul margine'),
+        line: t('A price rise, worked through the recipe.', 'Eine Preiserhöhung, durch das Rezept gerechnet.', 'ارتفاع في السعر، محسوب عبر الوصفة.', 'Un aumento di prezzo, calcolato sulla ricetta.'),
+        points: [
+          t('When a supplier price cuts a dish’s margin by 3 points or more, the F&B director and the head chef get an alert.', 'Senkt ein Lieferantenpreis die Marge eines Gerichts um 3 Punkte oder mehr, erhalten F&B-Direktor und Küchenchef einen Hinweis.', 'عندما يخفض سعر مورّد هامش طبق بـ 3 نقاط أو أكثر، يصل تنبيه إلى مدير الأغذية والمشروبات ورئيس الطهاة.', 'Quando un prezzo del fornitore taglia il margine di un piatto di 3 punti o più, il direttore F&B e lo chef ricevono un avviso.'),
+          t('For example lobster tail from €85 to €98 per kg takes lobster linguine down 5 points, about €238 a month at current sales.', 'Zum Beispiel Hummerschwanz von 85 € auf 98 € pro kg: Hummer-Linguine verlieren 5 Punkte, etwa 238 € im Monat bei heutigen Verkäufen.', 'مثلًا ذيل الكركند من 85 إلى 98 يورو للكيلو يخفض هامش لينغويني الكركند 5 نقاط، نحو 238 يورو شهريًا بالمبيعات الحالية.', 'Per esempio la coda di aragosta da 85 € a 98 € al kg porta le linguine all’aragosta giù di 5 punti, circa 238 € al mese alle vendite attuali.'),
+          t('Four options, each with the margin it gives: raise the price, switch supplier, adjust the portion or accept. The decision is recorded with a name and the time.', 'Vier Möglichkeiten, jede mit der Marge, die sie ergibt: Preis erhöhen, Lieferant wechseln, Portion anpassen oder akzeptieren. Die Entscheidung wird mit Name und Uhrzeit gespeichert.', 'أربعة خيارات، لكل منها الهامش الذي يعطيه: رفع السعر، أو تغيير المورّد، أو تعديل الحصة، أو القبول. ويُسجَّل القرار مع الاسم والوقت.', 'Quattro opzioni, ognuna con il margine che dà: alzare il prezzo, cambiare fornitore, ridurre la porzione o accettare. La decisione è registrata con nome e ora.'),
         ],
       },
     ],
   },
 
-  takes: {
-    key: 'takes',
-    icon: 'takes',
+  expiry: {
+    key: 'expiry',
+    icon: 'expiry',
     tone: 'teal',
-    mark: t('more than we sold', 'mehr verbraucht', 'أكثر مما بعنا', 'più di quanto venduto'),
-    pagePhoto: pageTakes,
-    pagePhotoFocus: '50% 45%',
-    name: t('Stock takes', 'Inventuren', 'الجرد', 'Inventari'),
-    menu: t('Count on a phone, see what went missing.', 'Auf dem Handy zählen, sehen, was fehlt.', 'اجرد على الهاتف، واعرف ما فُقد.', 'Conta sul telefono, vedi cosa manca.'),
-    headline: t('Why did we use more than we sold?', 'Warum haben wir mehr verbraucht als verkauft?', 'لماذا استخدمنا أكثر مما بعنا؟', 'Perché abbiamo usato più di quanto venduto?'),
-    intro: t('Count on a phone. Tyll explains every gap, in the kitchen and at the bar.', 'Auf dem Handy zählen. Tyll erklärt jede Lücke, in der Küche und an der Bar.', 'اجرد على الهاتف. ويشرح Tyll كل فرق، في المطبخ وفي البار.', 'Conta sul telefono. Tyll spiega ogni differenza, in cucina e al bar.'),
+    mark: t('expires', 'läuft ab', 'تنتهي صلاحيته', 'scade'),
+    pagePhoto: pageExpiry,
+    pagePhotoFocus: '50% 50%',
+    name: t('Expiring soon', 'Läuft bald ab', 'ينتهي قريباً', 'In scadenza'),
+    menu: t('Use it before it expires.', 'Verbrauchen, bevor es abläuft.', 'استخدمه قبل أن تنتهي صلاحيته.', 'Usalo prima che scada.'),
+    headline: t('What expires before you use it?', 'Was läuft ab, bevor Sie es verbrauchen?', 'ما الذي تنتهي صلاحيته قبل أن تستخدمه؟', 'Cosa scade prima che tu lo usi?'),
+    intro: t('Every batch with its use-by date, and what to do with it before it reaches the bin.', 'Jede Charge mit ihrem Verbrauchsdatum, und was damit zu tun ist, bevor sie im Müll landet.', 'كل دفعة مع تاريخ انتهاء صلاحيتها، وما يجب فعله بها قبل أن تصل إلى سلة المهملات.', 'Ogni lotto con la sua data di scadenza, e cosa farne prima che finisca nel bidone.'),
     see: [
-      { title: t('Count on a phone', 'Auf dem Handy zählen', 'الجرد على الهاتف', 'Conta sul telefono'), text: t('Walk the storeroom in order, tap “Looks right” or change it. Scan a barcode or type.', 'Gehen Sie das Lager der Reihe nach ab, tippen Sie „Stimmt, weiter“ oder ändern Sie die Menge. Barcode scannen oder eintippen.', 'تجوّل في المخزن بالترتيب، وانقر «صحيح، التالي» أو غيّر الكمية. امسح الباركود أو اكتب.', 'Percorri il magazzino in ordine, tocca “Corretto, avanti” o cambia la quantità. Scansiona un codice a barre o digita.') },
-      { title: t('Approve the count', 'Zählung freigeben', 'اعتماد الجرد', 'Approva il conteggio'), text: t('Stock only changes once the count is approved.', 'Der Bestand ändert sich erst, wenn die Zählung freigegeben ist.', 'لا يتغير المخزون إلا بعد اعتماد الجرد.', 'Le scorte cambiano solo quando il conteggio è approvato.') },
-      { title: t('Every gap explained', 'Jede Lücke erklärt', 'تفسير كل فرق', 'Ogni differenza spiegata'), text: t('Use against what sales and recipes explain, the possible causes, then a recount or a correction.', 'Verbrauch gegen das, was Verkäufe und Rezepte erklären, die möglichen Ursachen, dann eine Nachzählung oder Korrektur.', 'الاستخدام مقابل ما تفسّره المبيعات والوصفات، والأسباب المحتملة، ثم إعادة جرد أو تصحيح.', 'Il consumo contro ciò che spiegano vendite e ricette, le cause possibili, poi un riconteggio o una correzione.') },
+      { title: t('Use today', 'Heute verbrauchen', 'استخدمه اليوم', 'Da usare oggi'), text: t('What expires by tomorrow, and what has already expired.', 'Was bis morgen abläuft, und was schon abgelaufen ist.', 'ما تنتهي صلاحيته بحلول الغد، وما انتهت صلاحيته بالفعل.', 'Cosa scade entro domani, e cosa è già scaduto.') },
+      { title: t('What normal use won’t finish', 'Was der normale Verbrauch nicht schafft', 'ما لن يكفي الاستخدام العادي لإنهائه', 'Cosa l’uso normale non finirà'), text: t('With its value, and the quantity to use another way.', 'Mit seinem Wert und der Menge, die anders verwendet werden muss.', 'مع قيمته، والكمية التي يجب استخدامها بطريقة أخرى.', 'Con il suo valore, e la quantità da usare in altro modo.') },
+      { title: t('Tonight’s special', 'Das Tagesgericht heute Abend', 'طبق الليلة الخاص', 'Il piatto del giorno di stasera'), text: t('For example sea bass fillet that won’t be used in time becomes tonight’s special.', 'Zum Beispiel Wolfsbarschfilet, das nicht rechtzeitig verbraucht wird, wird zum Tagesgericht.', 'مثلًا فيليه القاروص الذي لن يُستخدم في وقته يصبح طبق الليلة الخاص.', 'Per esempio il filetto di branzino che non verrà usato in tempo diventa il piatto di stasera.') },
     ],
     more: [
       {
         points: [
-          t('A month-end report lists approved stock takes and the variance for accounting.', 'Ein Monatsabschlussbericht listet die freigegebenen Inventuren und die Abweichungen für die Buchhaltung.', 'يسرد تقرير نهاية الشهر عمليات الجرد المعتمدة والفروق لقسم المحاسبة.', 'Un report di fine mese elenca gli inventari approvati e gli scostamenti per la contabilità.'),
-          t('Blind counts for audits hide what is expected.', 'Blindzählungen für Prüfungen verbergen den Sollbestand.', 'الجرد الأعمى للتدقيق يخفي الكمية المتوقعة.', 'I conteggi alla cieca per le verifiche nascondono le quantità attese.'),
+          t('At risk: what normal use will not finish in time, with its value.', 'Gefährdet: was der normale Verbrauch nicht rechtzeitig aufbraucht, mit seinem Wert.', 'المعرّض للخطر: ما لن يكفي الاستخدام العادي لإنهائه في الوقت المناسب، مع قيمته.', 'A rischio: ciò che l’uso normale non finirà in tempo, con il suo valore.'),
+          t('Expired on the shelf is counted apart, to remove and log as waste.', 'Auf dem Regal Abgelaufenes wird getrennt gezählt, zum Entfernen und Erfassen als Abfall.', 'ما انتهت صلاحيته على الرف يُحسب منفصلًا، لإزالته وتسجيله هدرًا.', 'Lo scaduto sullo scaffale è contato a parte, da togliere e registrare come spreco.'),
         ],
-        foot: t('The case explanation is assembled by rules from the recorded facts, not by a language model.', 'Die Erklärung des Falls wird nach Regeln aus den erfassten Fakten zusammengesetzt, nicht von einem Sprachmodell.', 'يُجمع شرح الحالة وفق قواعد من الوقائع المسجّلة، وليس بواسطة نموذج لغوي.', 'La spiegazione del caso è composta con regole dai fatti registrati, non da un modello linguistico.'),
       },
     ],
-    photo: tileTakes,
+    photo: tileExpiry,
     photoFocus: '50% 50%',
     tilePoints: [
-      t('Count on a phone, by barcode or by typing.', 'Auf dem Handy zählen, per Barcode oder Eingabe.', 'اجرد على الهاتف، بالباركود أو بالكتابة.', 'Conta sul telefono, con il codice a barre o digitando.'),
-      t('Used against sold, with the possible causes.', 'Verbrauch gegen Verkauf, mit den möglichen Ursachen.', 'المستخدم مقابل المباع، مع الأسباب المحتملة.', 'Usato contro venduto, con le cause possibili.'),
-      t('Drinks poured but never billed, by outlet and shift.', 'Ausgeschenkte, nie berechnete Getränke, je Outlet und Schicht.', 'مشروبات سُكبت ولم تُفوتر، حسب المنفذ والوردية.', 'Bevande versate ma mai fatturate, per punto vendita e turno.'),
+      t('Every batch with its use-by date.', 'Jede Charge mit Verbrauchsdatum.', 'كل دفعة مع تاريخ انتهاء صلاحيتها.', 'Ogni lotto con la sua data di scadenza.'),
+      t('What normal use won’t finish, with its value.', 'Was der normale Verbrauch nicht schafft, mit Wert.', 'ما لن يكفي الاستخدام العادي لإنهائه، مع قيمته.', 'Cosa l’uso normale non finirà, con il suo valore.'),
+      t('Tonight’s special, another outlet or the staff meal.', 'Tagesgericht, ein anderes Outlet oder das Personalessen.', 'طبق الليلة الخاص، أو منفذ آخر، أو وجبة الموظفين.', 'Piatto del giorno, un altro punto vendita o il pasto del personale.'),
     ],
     rows: [
       {
-        id: 'missing-stock',
-        icon: 'takes',
-        name: t('Missing stock', 'Fehlender Bestand', 'المخزون المفقود', 'Scorte mancanti'),
-        line: t('Used against sold, with the possible causes.', 'Verbrauch gegen Verkauf, mit den möglichen Ursachen.', 'المستخدم مقابل المباع، مع الأسباب المحتملة.', 'Usato contro venduto, con le cause possibili.'),
+        id: 'batches',
+        icon: 'expiry',
+        film: 'expiry-batches',
+        name: t('Batches and use-by dates', 'Chargen und Verbrauchsdaten', 'الدفعات وتواريخ انتهاء الصلاحية', 'Lotti e date di scadenza'),
+        line: t('Within 1, 2, 3 or 7 days, each with what to do.', 'In 1, 2, 3 oder 7 Tagen, jede mit dem, was zu tun ist.', 'خلال يوم أو يومين أو 3 أو 7 أيام، ولكل منها ما يجب فعله.', 'Entro 1, 2, 3 o 7 giorni, ognuno con cosa fare.'),
         points: [
-          t('Between two counts, Tyll compares what was actually used with what the recipes of what was sold explain, after logged waste and transfers. For example: wagyu beef mince use at Mercado is 1.8 kg above the recipes, €86.', 'Zwischen zwei Zählungen vergleicht Tyll den tatsächlichen Verbrauch mit dem, was die Rezepte des Verkauften erklären, nach erfasstem Abfall und Umbuchungen. Zum Beispiel: Der Verbrauch von Wagyu-Rinderhack im Mercado liegt 1,8 kg über den Rezepten, 86 €.', 'بين عمليتي جرد، يقارن Tyll ما استُخدم فعلًا بما تفسّره وصفات ما بيع، بعد الهدر المسجّل والتحويلات. مثلًا: استخدام لحم واغيو المفروم في Mercado أعلى من الوصفات بـ 1.8 كغ، أي €86.', 'Tra due conteggi, Tyll confronta quanto si è usato davvero con quanto spiegano le ricette di ciò che è stato venduto, dopo sprechi registrati e trasferimenti. Per esempio: il consumo di macinato di manzo wagyu al Mercado è 1,8 kg oltre le ricette, 86 €.'),
-          t('The case shows the counts, deliveries and sales in order, and the possible causes with what the records show for each: dishes not charged, comps, portions larger than the recipe, prep waste not logged, wrong recipe, staff meals, spoilage, wrong count, transfers not recorded, stock taken without authorisation.', 'Der Fall zeigt Zählungen, Lieferungen und Verkäufe der Reihe nach und die möglichen Ursachen mit dem, was die Daten zu jeder zeigen: nicht berechnete Gerichte, Gratisartikel, größere Portionen als im Rezept, nicht erfasster Vorbereitungsabfall, falsches Rezept, Personalessen, Verderb, falsche Zählung, nicht erfasste Umbuchungen, ohne Genehmigung entnommener Bestand.', 'تعرض الحالة الجرد والتوريدات والمبيعات بالترتيب، والأسباب المحتملة مع ما تُظهره السجلات لكل منها: أطباق لم تُحتسب، وأصناف مجانية، وحصص أكبر من الوصفة، وهدر تحضير غير مسجّل، ووصفة خاطئة، ووجبات الموظفين، والتلف، وجرد خاطئ، وتحويلات غير مسجّلة، ومخزون أُخذ دون تصريح.', 'Il caso mostra in ordine conteggi, consegne e vendite, e le cause possibili con ciò che i dati dicono di ciascuna: piatti non addebitati, omaggi, porzioni più grandi della ricetta, scarti di preparazione non registrati, ricetta sbagliata, pasti del personale, deterioramento, conteggio sbagliato, trasferimenti non registrati, scorte prelevate senza autorizzazione.'),
-          t('The manager can record a recount, log missed waste or correct the recipe. Corrections are added and never replace the records.', 'Die Führungskraft kann eine Nachzählung erfassen, vergessenen Abfall nachtragen oder das Rezept korrigieren. Korrekturen kommen hinzu und ersetzen nie die Daten.', 'يمكن للمدير تسجيل إعادة جرد، أو تسجيل هدر فائت، أو تصحيح الوصفة. وتُضاف التصحيحات ولا تحل أبدًا محل السجلات.', 'Il responsabile può registrare un riconteggio, aggiungere sprechi dimenticati o correggere la ricetta. Le correzioni si aggiungono e non sostituiscono mai i dati.'),
+          t('Batches come from deliveries, with their use-by date.', 'Chargen kommen aus den Lieferungen, mit ihrem Verbrauchsdatum.', 'تأتي الدفعات من التوريدات مع تاريخ انتهاء صلاحيتها.', 'I lotti arrivano dalle consegne, con la loro data di scadenza.'),
+          t('Fixed rules suggest what to do with each: normal use first, then a transfer to the outlet that uses it most, then a special, then the staff meal.', 'Feste Regeln schlagen für jede vor, was zu tun ist: zuerst normal verbrauchen, dann an das Outlet umbuchen, das am meisten braucht, dann ein Tagesgericht, dann das Personalessen.', 'تقترح قواعد ثابتة ما يُفعل بكل دفعة: الاستخدام العادي أولًا، ثم التحويل إلى المنفذ الأكثر استخدامًا لها، ثم طبق خاص، ثم وجبة الموظفين.', 'Regole fisse suggeriscono cosa fare di ognuno: prima l’uso normale, poi un trasferimento al punto vendita che lo usa di più, poi un piatto del giorno, poi il pasto del personale.'),
         ],
       },
       {
-        id: 'over-pouring',
-        icon: 'pour',
-        film: 'pour',
-        name: t('Over pouring', 'Überschenken', 'الإفراط في السكب', 'Versamento eccessivo'),
-        line: t('Find drinks never billed.', 'Nie berechnete Getränke finden.', 'اكتشف المشروبات غير المفوترة.', 'Trova le bevande mai fatturate.'),
+        id: 'use-by',
+        icon: 'deliveries',
+        film: 'expiry-use-by',
+        name: t('Use-by dates from delivery notes', 'Verbrauchsdaten vom Lieferschein', 'تواريخ الصلاحية من إشعارات التسليم', 'Scadenze dalle bolle di consegna'),
+        line: t('The date on the label goes straight to Expiring soon.', 'Das Datum auf dem Etikett geht direkt zu Läuft bald ab.', 'التاريخ على الملصق ينتقل مباشرة إلى «ينتهي قريباً».', 'La data sull’etichetta va direttamente a In scadenza.'),
         points: [
-          t('How many glasses each bottle gave, once bottles opened are recorded.', 'Wie viele Gläser jede Flasche ergab, sobald geöffnete Flaschen erfasst sind.', 'كم كأسًا أعطت كل زجاجة، بمجرد تسجيل الزجاجات المفتوحة.', 'Quanti bicchieri ha dato ogni bottiglia, una volta registrate le bottiglie aperte.'),
-          t('Wine by the glass and spirits by the measure.', 'Wein im Glas und Spirituosen nach Maß.', 'المشروبات بالكأس وبالمعيار.', 'Vino al calice e distillati a misura.'),
-          t('Missing drinks between counts.', 'Fehlende Getränke zwischen zwei Zählungen.', 'المشروبات المفقودة بين عمليتي جرد.', 'Bevande mancanti tra due conteggi.'),
-          t('Where and when: by outlet and shift, with no names.', 'Wo und wann: nach Outlet und Schicht, ohne Namen.', 'أين ومتى: حسب المنفذ والوردية، دون أسماء.', 'Dove e quando: per punto vendita e turno, senza nomi.'),
+          t('When the storekeeper confirms a photographed delivery note, each batch’s use-by date is saved with it.', 'Bestätigt der Lagerist einen fotografierten Lieferschein, wird das Verbrauchsdatum jeder Charge gespeichert.', 'عندما يؤكد أمين المخزن إشعار تسليم مصوّرًا، يُحفظ تاريخ صلاحية كل دفعة معها.', 'Quando il magazziniere conferma una bolla fotografata, la scadenza di ogni lotto viene salvata.'),
+          t('A label photo on the line keeps the proof.', 'Ein Foto des Etiketts an der Position hält den Nachweis fest.', 'صورة الملصق على البند تحفظ الدليل.', 'Una foto dell’etichetta sulla riga conserva la prova.'),
         ],
-        next: t('Today the bottles opened come from your counts. Next: a quick scan of each empty bottle before it is binned, and later smart pourers and flow meters.', 'Heute kommen die geöffneten Flaschen aus Ihren Zählungen. Als Nächstes: ein kurzer Scan jeder leeren Flasche, bevor sie entsorgt wird, und später intelligente Ausgießer und Durchflussmesser.', 'اليوم تأتي الزجاجات المفتوحة من عمليات الجرد لديك. والخطوة التالية: مسح سريع لكل زجاجة فارغة قبل رميها، ثم لاحقًا سكّابات ذكية وعدّادات تدفق.', 'Oggi le bottiglie aperte arrivano dai tuoi conteggi. Prossimo passo: una rapida scansione di ogni bottiglia vuota prima di buttarla, e più avanti dosatori intelligenti e misuratori di flusso.'),
       },
     ],
-    soon: {
-      lead: t('Coming next.', 'Als Nächstes.', 'قريبًا.', 'In arrivo.'),
-      items: [
-        t('Stock per item that starts from that item’s first count, so you don’t need a full opening count.', 'Bestand je Artikel ab seiner ersten Zählung, damit Sie keine vollständige Eröffnungsinventur brauchen.', 'مخزون لكل صنف يبدأ من أول جرد له، فلا تحتاج إلى جرد افتتاحي كامل.', 'Scorte per articolo a partire dal primo conteggio di quell’articolo, così non serve un inventario iniziale completo.'),
-      ],
-    },
   },
 
   waste: {
@@ -144,33 +183,66 @@ export const stockWaste: Record<'stock' | 'takes' | 'waste', Solution> = {
     pagePhoto: pageWaste,
     pagePhotoFocus: '50% 62%',
     proof: { kind: 'number', card: 0 },
-    name: t('Log waste', 'Abfall erfassen', 'تسجيل الهدر', 'Registra sprechi'),
-    menu: t('See what waste costs you.', 'Sehen, was Abfall kostet.', 'اعرف كم يكلفك الهدر.', 'Scopri quanto ti costa lo spreco.'),
+    name: t('Waste and breakage', 'Abfall und Bruch', 'الهدر والكسر', 'Scarti e rotture'),
+    menu: t('See what waste costs you.', 'Sehen, was Abfall Sie kostet.', 'اعرف كم يكلّفك الهدر.', 'Vedi quanto ti costano gli sprechi.'),
     headline: t('What did you throw away today?', 'Was haben Sie heute weggeworfen?', 'ماذا رميت اليوم؟', 'Cosa hai buttato oggi?'),
-    intro: t('Two taps: the item, then the amount. Add a reason if you want.', 'Zwei Tipps: Artikel, dann Menge. Ein Grund ist optional.', 'نقرتان: الصنف ثم الكمية. وأضف السبب إن أردت.', 'Due tocchi: l’articolo, poi la quantità. Il motivo, se vuoi.'),
+    intro: t('Two taps: the item, then the amount. Add a reason if you want.', 'Zwei Fingertipps: der Artikel, dann die Menge. Ein Grund, wenn Sie möchten.', 'نقرتان: الصنف ثم الكمية. وأضف السبب إن أردت.', 'Due tocchi: l’articolo, poi la quantità. Aggiungi un motivo se vuoi.'),
     see: [
-      { title: t('What gets thrown away', 'Was weggeworfen wird', 'ما الذي يُرمى', 'Cosa viene buttato via'), text: t('Tap the item, tap the amount. Two taps, with Undo.', 'Artikel tippen, Menge tippen. Zwei Tipps, mit Rückgängig.', 'انقر الصنف ثم الكمية. نقرتان، مع إمكانية التراجع.', 'Tocca l’articolo, tocca la quantità. Due tocchi, con Annulla.') },
-      { title: t('What each entry cost', 'Was jeder Eintrag kostet', 'تكلفة كل إدخال', 'Quanto costa ogni voce'), text: t('Today’s loss at a glance, and every entry with its cost.', 'Der heutige Verlust auf einen Blick, jeder Eintrag mit seinen Kosten.', 'خسارة اليوم بنظرة واحدة، وكل إدخال مع تكلفته.', 'La perdita di oggi a colpo d’occhio, ogni voce con il suo costo.') },
-      { title: t('A daily log to check', 'Ein Tagesprotokoll zum Prüfen', 'سجل يومي للمراجعة', 'Un registro giornaliero da controllare'), text: t('Read it and see what waste costs you.', 'Lesen Sie es und sehen Sie, was Abfall kostet.', 'اقرأه واعرف كم يكلفك الهدر.', 'Leggilo e scopri quanto ti costa lo spreco.') },
+      { title: t('What gets thrown away', 'Was weggeworfen wird', 'ما يُرمى', 'Cosa si butta'), text: t('Tap the item, tap the amount. Two taps, with Undo.', 'Artikel antippen, Menge antippen. Zwei Fingertipps, mit Rückgängig.', 'انقر الصنف، ثم الكمية. نقرتان، مع إمكانية التراجع.', 'Tocca l’articolo, tocca la quantità. Due tocchi, con Annulla.') },
+      { title: t('What each entry cost', 'Was jeder Eintrag kostet', 'كم كلّف كل إدخال', 'Quanto è costata ogni voce'), text: t('Today’s loss at a glance, and every entry with its cost.', 'Der heutige Verlust auf einen Blick, und jeder Eintrag mit seinen Kosten.', 'خسارة اليوم بنظرة واحدة، وكل إدخال بتكلفته.', 'La perdita di oggi a colpo d’occhio, e ogni voce con il suo costo.') },
+      { title: t('Empty bottles', 'Leere Flaschen', 'الزجاجات الفارغة', 'Bottiglie vuote'), text: t('Scan or tap each empty. It counts as used, not as waste.', 'Jede leere Flasche scannen oder antippen. Sie zählt als verbraucht, nicht als Abfall.', 'امسح كل زجاجة فارغة أو انقرها. تُحسب مستخدمة، لا هدرًا.', 'Scansiona o tocca ogni vuoto. Conta come usato, non come spreco.') },
     ],
     more: [
       {
         points: [
-          t('Food, beverage and inventory (glassware, plates, linen) are logged separately.', 'Speisen, Getränke und Inventar (Gläser, Teller, Wäsche) werden getrennt erfasst.', 'تُسجَّل الأطعمة والمشروبات والمستلزمات (الأواني الزجاجية والأطباق والبياضات) كلٌّ على حدة.', 'Cibo, bevande e inventario (bicchieri, piatti, biancheria) si registrano separatamente.'),
-          t('Waste and breakage are tracked separately, per outlet.', 'Abfall und Bruch werden getrennt verfolgt, je Outlet.', 'يُتابَع الهدر والكسر كلٌّ على حدة، لكل منفذ.', 'Sprechi e rotture sono tracciati separatamente, per punto vendita.'),
-          t('Expired is its own reason, so food that passed its date shows apart from spoilage.', 'Abgelaufen ist ein eigener Grund, so erscheint Ware nach ihrem Datum getrennt vom Verderb.', '«منتهي الصلاحية» سبب مستقل، فيظهر ما تجاوز تاريخه منفصلًا عن التلف.', 'Scaduto è un motivo a sé, così ciò che ha superato la data appare separato dal deterioramento.'),
-          t('Late entries are marked, and a correction is added without overwriting the original.', 'Späte Einträge werden markiert, und eine Korrektur kommt hinzu, ohne das Original zu überschreiben.', 'تُميَّز الإدخالات المتأخرة، ويُضاف التصحيح دون استبدال الأصل.', 'Le voci tardive sono segnate, e una correzione si aggiunge senza sovrascrivere l’originale.'),
-          t('Waste and breakage this week against last week, and the last 30 days day by day.', 'Abfall und Bruch dieser Woche gegen die Vorwoche, und die letzten 30 Tage Tag für Tag.', 'الهدر والكسر هذا الأسبوع مقابل الأسبوع الماضي، وآخر 30 يومًا يومًا بيوم.', 'Sprechi e rotture di questa settimana contro la precedente, e gli ultimi 30 giorni giorno per giorno.'),
-          t('Possible reasons and how to help, by outlet and reason, worked out by fixed rules. To check, not proven.', 'Mögliche Ursachen und was hilft, je Outlet und Grund, nach festen Regeln ermittelt. Zum Prüfen, nicht bewiesen.', 'الأسباب المحتملة وكيفية المساعدة، لكل منفذ وسبب، وفق قواعد ثابتة. للتحقق، وليست مثبتة.', 'Cause possibili e come aiutare, per punto vendita e motivo, calcolate con regole fisse. Da verificare, non provate.'),
+          t('Food, beverage and inventory (glassware, plates, linen) are logged separately.', 'Speisen, Getränke und Inventar (Gläser, Teller, Wäsche) werden getrennt erfasst.', 'تُسجَّل الأطعمة والمشروبات والمستلزمات (الأكواب والأطباق والبياضات) كلٌّ على حدة.', 'Cibo, bevande e inventario (bicchieri, piatti, biancheria) si registrano separatamente.'),
+          t('Waste and breakage are tracked separately, per outlet.', 'Abfall und Bruch werden getrennt erfasst, pro Outlet.', 'يُتابَع الهدر والكسر بشكل منفصل، لكل منفذ.', 'Sprechi e rotture sono seguiti separatamente, per punto vendita.'),
+          t('Expired is its own reason, so food that passed its date shows apart from spoilage.', 'Abgelaufen ist ein eigener Grund, so erscheint Ware nach dem Datum getrennt von Verderb.', '«منتهي الصلاحية» سبب مستقل، فيظهر الطعام الذي تجاوز تاريخه بمعزل عن التلف.', 'Scaduto è un motivo a sé, così il cibo oltre la data si vede separato dal deterioramento.'),
+          t('Late entries are marked, and a correction is added without overwriting the original.', 'Späte Einträge werden markiert, und eine Korrektur wird ergänzt, ohne das Original zu überschreiben.', 'تُعلَّم الإدخالات المتأخرة، ويُضاف التصحيح دون استبدال الأصل.', 'Le voci tardive sono segnate, e una correzione si aggiunge senza sovrascrivere l’originale.'),
         ],
       },
     ],
     photo: tileWaste,
     photoFocus: '50% 50%',
     tilePoints: [
-      t('Two taps: the item, then the amount.', 'Zwei Tipps: Artikel, dann Menge.', 'نقرتان: الصنف ثم الكمية.', 'Due tocchi: l’articolo, poi la quantità.'),
-      t('Food, beverage and inventory kept apart.', 'Speisen, Getränke und Inventar getrennt.', 'الأطعمة والمشروبات والمستلزمات كلٌّ على حدة.', 'Cibo, bevande e inventario separati.'),
-      t('What waste cost you today and this month.', 'Was Abfall Sie heute und diesen Monat gekostet hat.', 'كم كلّفك الهدر اليوم وهذا الشهر.', 'Quanto ti è costato lo spreco oggi e questo mese.'),
+      t('Two taps: the item, then the amount.', 'Zwei Fingertipps: Artikel, dann Menge.', 'نقرتان: الصنف ثم الكمية.', 'Due tocchi: l’articolo, poi la quantità.'),
+      t('Empty bottles count as used, not waste.', 'Leere Flaschen zählen als verbraucht, nicht als Abfall.', 'الزجاجات الفارغة تُحسب مستخدمة، لا هدرًا.', 'Le bottiglie vuote contano come usate, non come spreco.'),
+      t('What waste cost you today and this month.', 'Was Abfall heute und diesen Monat gekostet hat.', 'كم كلّفك الهدر اليوم وهذا الشهر.', 'Quanto ti sono costati gli sprechi oggi e questo mese.'),
+    ],
+    rows: [
+      {
+        id: 'prepared',
+        icon: 'waste',
+        film: 'waste-prepared',
+        name: t('Prepared dishes and notes', 'Zubereitete Gerichte und Notizen', 'الأطباق المحضّرة والملاحظات', 'Piatti preparati e note'),
+        line: t('A whole dish, or a note on any entry.', 'Ein ganzes Gericht, oder eine Notiz zu jedem Eintrag.', 'طبق كامل، أو ملاحظة على أي إدخال.', 'Un piatto intero, o una nota su qualsiasi voce.'),
+        points: [
+          t('Log a prepared dish, for example a banquet menu that was not served, and its ingredients are costed for you.', 'Erfassen Sie ein zubereitetes Gericht, zum Beispiel ein nicht serviertes Bankettmenü, und seine Zutaten werden für Sie bewertet.', 'سجّل طبقًا محضّرًا، مثل قائمة مأدبة لم تُقدَّم، وتُحسب تكلفة مكوناته تلقائيًا.', 'Registra un piatto preparato, per esempio un menù di banchetto non servito, e i suoi ingredienti vengono valorizzati per te.'),
+          t('Add a note to explain an entry.', 'Eine Notiz erklärt einen Eintrag.', 'أضف ملاحظة لتوضيح أي إدخال.', 'Aggiungi una nota per spiegare una voce.'),
+        ],
+      },
+      {
+        id: 'empties',
+        icon: 'pour',
+        film: 'waste-empties',
+        name: t('Empty bottles', 'Leere Flaschen', 'الزجاجات الفارغة', 'Bottiglie vuote'),
+        line: t('Scanned or tapped, counted as used.', 'Gescannt oder angetippt, als verbraucht gezählt.', 'تُمسح أو تُنقر، وتُحسب مستخدمة.', 'Scansionate o toccate, contate come usate.'),
+        points: [
+          t('Scan the barcode, or tap the bottle. Tapping saves it.', 'Barcode scannen oder die Flasche antippen. Antippen speichert sie.', 'امسح الرمز الشريطي، أو انقر الزجاجة. النقر يحفظها.', 'Scansiona il codice a barre, o tocca la bottiglia. Toccarla la salva.'),
+          t('It counts as a bottle used, not waste, and Over pouring uses it to find drinks never billed.', 'Sie zählt als verbrauchte Flasche, nicht als Abfall, und Überausschank nutzt sie, um nie abgerechnete Getränke zu finden.', 'تُحسب زجاجة مستخدمة لا هدرًا، ويستخدمها «السكب الزائد» لإيجاد المشروبات التي لم تُحتسب.', 'Conta come bottiglia usata, non spreco, e Mescita eccessiva la usa per trovare le bevande mai battute.'),
+        ],
+      },
+      {
+        id: 'trend',
+        icon: 'reports',
+        film: 'waste-trend',
+        name: t('Reasons and the 30-day trend', 'Gründe und der 30-Tage-Verlauf', 'الأسباب واتجاه 30 يومًا', 'Motivi e andamento di 30 giorni'),
+        line: t('Where waste comes from, and whether it is falling.', 'Woher der Abfall kommt, und ob er sinkt.', 'من أين يأتي الهدر، وهل ينخفض.', 'Da dove vengono gli sprechi, e se calano.'),
+        points: [
+          t('Waste and breakage this week against last week, and the last 30 days day by day.', 'Abfall und Bruch dieser Woche gegen die letzte, und die letzten 30 Tage Tag für Tag.', 'الهدر والكسر هذا الأسبوع مقابل الماضي، وآخر 30 يومًا يومًا بيوم.', 'Sprechi e rotture di questa settimana contro la scorsa, e gli ultimi 30 giorni giorno per giorno.'),
+          t('The top reason and top item, and possible reasons by outlet, worked out by fixed rules. To check, not proven.', 'Häufigster Grund und Artikel, und mögliche Gründe pro Outlet, nach festen Regeln ermittelt. Zum Prüfen, nicht bewiesen.', 'السبب الأول والصنف الأول، والأسباب المحتملة لكل منفذ وفق قواعد ثابتة. للتحقق، وليست مثبتة.', 'Il motivo e l’articolo principali, e i motivi possibili per punto vendita, con regole fisse. Da verificare, non provati.'),
+        ],
+      },
     ],
   },
 };

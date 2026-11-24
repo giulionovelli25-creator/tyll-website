@@ -31,7 +31,7 @@ const v = d.home.tour;
 const film = walkthrough;
 const last = v.steps.length - 1;
 // Each step leads to its section of the Solutions page (20 Nov 2026: "Watch it work" is the hero's alone)
-const pagesOf = [href('solutions', lang, '#stock-waste'), href('solutions', lang, '#purchasing'), href('solutions', lang, '#revenue-reconciliation')];
+const pagesOf = [href('solutions', lang, '#stock-waste'), href('solutions', lang, '#purchasing'), href('solutions', lang, '#reconciliation')];
 // A callout's words and icon: one of the three parts (part0 to part2) or one of the products
 // Round 3 (20 Nov 2026): stock and purchasing lead, reconciliation comes third
 const partIcons = [solutions.stock.icon, solutions.forecasting.icon, solutions.finance.icon];
@@ -977,8 +977,14 @@ const still = (i: number, cut: 'desktop' | 'mobile') => `${film.base}/hold-${i +
       if (!queued) queued = requestAnimationFrame(() => ((queued = 0), render()));
     };
     addEventListener('scroll', onScroll, { passive: true });
+    // A resize changes the run's length: keep the reader at the same point of the same hold or move, not at the same
+    // pixel, which would land them somewhere else in the story
     addEventListener('resize', () => {
+      const y = offset();
+      const seg = keys.findIndex((k, i) => i < keys.length - 1 && y >= k && y < keys[i + 1]);
+      const part = seg < 0 ? 0 : (y - keys[seg]) / (keys[seg + 1] - keys[seg]);
       measure();
+      if (seg >= 0) scrollTo({ top: scrollY + root.getBoundingClientRect().top - headerH + keys[seg] + part * (keys[seg + 1] - keys[seg]), behavior: 'instant' });
       render();
     });
     new ResizeObserver(() => {

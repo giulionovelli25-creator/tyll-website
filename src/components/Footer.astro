@@ -1,7 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../config/site';
-import { sections } from '../content/solutions';
+import { sections, solutions, moreKeys } from '../content/solutions';
 import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
 
 interface Props {
@@ -62,6 +62,8 @@ const socials = [
         <h2>{d.footer.solutions}</h2>
         <ul>
           {sections.map((sec) => <li><a href={href('solutions', lang, `#${sec.id}`)}>{sec.name[lang]}</a></li>)}
+          {/* More in Tyll (round 4): the two pages outside the nine */}
+          {moreKeys.map((k) => <li><a href={href(k, lang)} aria-current={page === k ? 'page' : undefined}>{solutions[k].name[lang]}</a></li>)}
           <li><a href={href('solutions', lang)}>{d.nav.allSolutions}</a></li>
           <li><a href={href('sustainability', lang)} aria-current={page === 'sustainability' ? 'page' : undefined}>{d.nav.sustainability}</a></li>
         </ul>

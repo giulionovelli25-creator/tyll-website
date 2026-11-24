@@ -51,6 +51,7 @@ const demo = demoHref(lang);
           )
         }
       </div>
+      {demo && <p class="hero__device">{d.hero.device}</p>}
     </div>
   </div>
 </section>
@@ -142,5 +143,22 @@ const demo = demoHref(lang);
   /* the outline twin of Book a demo, the same height */
   .hero__watch {
     text-shadow: none;
+  }
+
+  /* Tyll is desktop only for now: phones are told, under the button that opens the demo */
+  .hero__device {
+    display: none;
+    max-width: 30ch;
+    margin: var(--s-2) auto 0;
+    color: var(--on-dark-muted);
+    font-size: var(--fs-small);
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  @media (max-width: 760px) {
+    .hero__device {
+      display: block;
+    }
   }
 </style>

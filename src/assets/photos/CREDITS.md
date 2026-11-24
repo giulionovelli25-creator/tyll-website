@@ -37,6 +37,11 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
 
+Round 4 (24 Nov 2026), where the existing photos are now used. No new photos were downloaded; each is listed above with its source and licence.
+- Solution pages (the photo beside "Also in …"): stock-shelf.jpg (Stock levels), forecast-produce.jpg (Expiring soon), waste-bin.jpg (Waste and breakage), problem/problem-forecasting.jpg (Predictions), problem/problem-stock.jpg (Automatic ordering), predictions-delivery.jpg (Deliveries and invoices), how-count-jars.jpg (Stock takes and missing stock), drinks-cola.jpg (Over pouring), reconciliation-tickets.jpg (Flagged transactions), revenue-payment.jpg (Revenue and reports), stock-chef.jpg (Suppliers).
+- Solutions page cards: stock-chef.jpg, sales-buffet.jpg (Expiring soon), why-chef.jpg, forecast-produce.jpg, problem/problem-stock.jpg, tyll-problem-1.jpg (Deliveries and invoices), how-count-jars.jpg, events-banquet.jpg (Over pouring), reconciliation-reception.jpg (Flagged transactions).
+- Sustainability page: sales-buffet.jpg (hero), predictions-delivery.jpg (produce arriving) and waste-bin.jpg (kitchen trimmings going in the bin) as the two photo bands.
+
 Round 3 (20 Nov 2026), where the existing photos are now used. No new photos were downloaded; each is listed above with its source and licence.
 - Solutions page cards: stock-chef.jpg (Stock levels), how-count-jars.jpg (Stock takes), why-chef.jpg (Log waste), forecast-produce.jpg (Predictions), problem/problem-stock.jpg (Automatic ordering), predictions-delivery.jpg (Suppliers), revenue-payment.jpg (Revenue), reconciliation-reception.jpg (Bill and cash checks), tyll-problem-1.jpg (Invoices and deliveries, Tyll's own asset).
 - Sustainability page: sales-buffet.jpg (hero), waste-bin.jpg and predictions-delivery.jpg (the two photo bands).

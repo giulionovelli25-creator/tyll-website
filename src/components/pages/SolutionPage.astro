@@ -7,7 +7,7 @@ import Base from '../../layouts/Base.astro';
 import DemoFilm from '../DemoFilm.astro';
 import SilverWave from '../SilverWave.astro';
 import SolutionIcon from '../SolutionIcon.astro';
-import { solutions, sectionOf } from '../../content/solutions';
+import { solutions, sectionOf, moreKeys } from '../../content/solutions';
 import { solutionSeo } from '../../content/seo';
 import { t, href, type Locale, type SolutionKey } from '../../i18n';
 
@@ -22,10 +22,12 @@ const p = d.solutionPage;
 const s = solutions[solution];
 const name = s.name[lang];
 // The film's chapters are the three steps of "What you are about to see"
-const spots = s.see.map((x) => ({ label: x.title }));
-// At the foot, the other pages of the same section
+const spots = s.see.map((x) => ({ label: x.title, text: x.text }));
+// At the foot, the other pages of the same section; Revenue and reports and Suppliers show each other ("More in Tyll")
 const section = sectionOf(solution);
-const others = section.keys.filter((k) => k !== solution);
+const others = (section ? section.keys : moreKeys).filter((k) => k !== solution);
+const othersHead = section ? p.inSection.replace('{name}', section.name[lang]) : p.moreInTyll.title;
+const othersHref = href('solutions', lang, section ? `#${section.id}` : '#more-in-tyll');
 
 // Search title and description: from seo.ts where the language has one, otherwise the page's own name and lines
 const seo = solutionSeo[solution]?.[lang];
@@ -54,7 +56,9 @@ const say =
 <Base lang={lang} page={solution} title={metaTitle} description={metaDescription}>
   <section class="sol" data-accent={s.tone} aria-labelledby="sol-title">
     <SilverWave phase={0.2} class="sol__wave" />
-    <div class="wrap sol__head">
+    <!-- The first screen: the question beside the film, with the film's three steps under it. On desktops (1280 × 720
+         and up) all of it fits under the header without scrolling; tablets and phones stack it. -->
+    <div class="wrap sol__top">
       <div class="sol__copy">
         <p class="sol__name"><span class="sol__chip"><SolutionIcon name={s.icon} class="sol__icon" /></span>{name}</p>
         <h1 id="sol-title" class="display">{before}{marked && <span class="sol__mark">{marked}</span>}{after}</h1>
@@ -65,44 +69,31 @@ const say =
           </a>
         </div>
       </div>
-      <div class="sol__photo">
-        <Picture
-          src={s.pagePhoto}
-          formats={['avif', 'webp']}
-          fallbackFormat="jpg"
-          widths={[480, 720, 960, 1280]}
-          sizes="(max-width: 900px) 92vw, 560px"
-          alt=""
-          loading="eager"
-          decoding="async"
-          style={`object-position: ${s.pagePhotoFocus}`}
-        />
+      <div class="sol__film" id="film">
+        <h2 class="visually-hidden">{p.seeTitle}</h2>
+        <DemoFilm lang={lang} solutionKey={solution} name={name} spots={spots} fit />
       </div>
     </div>
-    <div class="wrap sol__film" id="film">
-      <DemoFilm lang={lang} solutionKey={solution} name={name} spots={spots}>
-        <section class="see" aria-labelledby="see-title">
-          <h2 id="see-title" class="see__title">{p.seeTitle}</h2>
-          <ol class="see__list" role="list" style={`--n:${s.see.length}`}>
-            {
-              s.see.map((item, i) => (
-                <li class="see__item">
-                  <span class="see__num" aria-hidden="true">{i + 1}</span>
-                  <div>
-                    <h3>{item.title[lang]}</h3>
-                    <p>{item.text[lang]}</p>
-                  </div>
-                </li>
-              ))
-            }
-          </ol>
-        </section>
-      </DemoFilm>
-      {(s.note || p.demoEnglish) && <p class="sol__note">{[s.note?.[lang], p.demoEnglish].filter(Boolean).join(' ')}</p>}
+    <div class="wrap sol__rest">
+      {p.demoEnglish && <p class="sol__note">{p.demoEnglish}</p>}
       {
         (s.more.length > 0 || s.rows?.length) && (
           <section class:list={['more', s.more.length > 1 && 'more--two']} aria-labelledby="more-title">
             <h2 id="more-title" class="more__title">{p.moreTitle.replace('{name}', name)}</h2>
+            <div class="more__top">
+              <div class="more__photo">
+                <Picture
+                  src={s.pagePhoto}
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  widths={[400, 640, 960]}
+                  sizes="(max-width: 760px) 92vw, 420px"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  style={`object-position: ${s.pagePhotoFocus}`}
+                />
+              </div>
             {s.more.length > 0 && (
               <div class="more__groups">
                 {s.more.map((g) => (
@@ -120,6 +111,7 @@ const say =
                 ))}
               </div>
             )}
+            </div>
             {s.rows?.length && (
               <div class="rows" data-rows>
                 {s.rows.map((r) => (
@@ -156,9 +148,7 @@ const say =
                             preload="none"
                             aria-label={r.name[lang]}
                             data-desk={`/media/film/${lang}/${r.film}-desk.mp4`}
-                            data-phone={`/media/film/${lang}/${r.film}-phone.mp4`}
                             data-desk-poster={`/media/film/${lang}/${r.film}-desk.jpg`}
-                            data-phone-poster={`/media/film/${lang}/${r.film}-phone.jpg`}
                           />
                         )}
                       </div>
@@ -251,8 +241,8 @@ const say =
     </div>
   </section>
 
-  <nav class="wrap others" aria-label={p.inSection.replace('{name}', section.name[lang])}>
-    <p class="others__head"><a href={href('solutions', lang, `#${section.id}`)}>{p.inSection.replace('{name}', section.name[lang])}</a></p>
+  <nav class="wrap others" aria-label={othersHead}>
+    <p class="others__head"><a href={othersHref}>{othersHead}</a></p>
     <ul>
       {others.map((k) => <li><a href={href(k, lang)}>{solutions[k].name[lang]}</a></li>)}
       <li><a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a></li>
@@ -262,24 +252,28 @@ const say =
 
 <style>
   .sol {
+    --page-top: 16px;
     position: relative;
     overflow: hidden;
     padding-top: calc(var(--header-h) + var(--page-top));
     padding-bottom: var(--section-y);
   }
 
-  .sol__head,
-  .sol__film {
+  .sol__top,
+  .sol__rest {
     position: relative;
     z-index: 1;
   }
 
-  /* The question at the start, a photograph of the work at the end */
-  .sol__head {
+  /* The first screen: the question at the start, the film at the end, sized so the film and its three steps fit
+     under the header (the film sets its own width from the screen's height, see DemoFilm's fit mode) */
+  .sol__top {
+    --wrap: 1440px;
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    grid-template-columns: minmax(19rem, 25rem) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 2.5vw, 4rem);
     align-items: center;
+    min-height: calc(100svh - var(--header-h) - var(--page-top));
   }
 
   /* A faint still wave behind the question, fading out before the film */
@@ -320,7 +314,7 @@ const say =
   }
 
   .sol h1 {
-    font-size: clamp(2.375rem, 1.6rem + 2.6vw, 4rem);
+    font-size: clamp(2.25rem, 1.6rem + 1.6vw, 3.375rem);
     line-height: 1.08;
   }
 
@@ -349,34 +343,23 @@ const say =
     font-size: 1.1875rem;
   }
 
-  /* The photograph, with a block of the solution's colour set a little behind it */
-  .sol__photo {
-    --off: clamp(0.75rem, 0.4rem + 1vw, 1.25rem);
-    position: relative;
-    margin-block-end: var(--off);
-    margin-inline-end: var(--off);
+  /* The photograph of the work, beside the page's few general points under "Also in …" */
+  .more__top {
+    display: grid;
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: var(--s-4) clamp(2rem, 1rem + 3vw, 4rem);
+    align-items: center;
   }
 
-  .sol__photo::before {
-    position: absolute;
-    inset-block: var(--off) calc(var(--off) * -1);
-    inset-inline: var(--off) calc(var(--off) * -1);
-    border-radius: var(--radius-lg);
-    background: var(--acc-soft);
-    content: '';
-  }
-
-  .sol__photo :global(picture) {
-    position: relative;
+  .more__photo :global(picture) {
     display: block;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     background: var(--cloud);
-    box-shadow: var(--shadow-2);
   }
 
-  .sol__photo :global(img) {
+  .more__photo :global(img) {
     display: block;
     width: 100%;
     height: auto;
@@ -386,78 +369,7 @@ const say =
   }
 
   .sol__film {
-    margin-top: var(--band-y);
-  }
-
-  /* What you are about to see: what comes in, what Tyll shows, what you do with it. One row on the tinted block,
-     above the screen and as wide as it, so their edges line up. */
-  .see {
-    position: relative;
-    max-width: var(--film-w, 68rem);
-    margin: 0 auto var(--s-4);
-  }
-
-  .see__title {
-    margin: 0 0 var(--s-3);
-    color: var(--acc);
-    font-family: var(--font);
-    font-size: var(--fs-small);
-    font-weight: 600;
-    letter-spacing: 0;
-  }
-
-  .see__list {
-    display: grid;
-    grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .see__item {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.875rem;
-    align-items: start;
-    padding: 0.25rem 1.5rem;
-  }
-
-  .see__item:first-child {
-    padding-inline-start: 0;
-  }
-
-  .see__item + .see__item {
-    border-inline-start: 1px solid rgb(var(--acc-rgb) / 0.2);
-  }
-
-  .see__num {
-    display: grid;
-    place-items: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 50%;
-    background: var(--acc);
-    color: var(--paper);
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1;
-  }
-
-  .see h3 {
-    margin: 0;
-    font-family: var(--font);
-    font-size: 1.0625rem;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: 0;
-  }
-
-  .see p {
-    max-width: none;
-    margin: 0.25rem 0 0;
-    color: var(--steel);
-    font-size: 0.9375rem;
-    line-height: 1.45;
+    min-width: 0;
   }
 
   .sol__note {
@@ -510,10 +422,6 @@ const say =
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .more:not(.more--two) ul {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .more li {
@@ -780,19 +688,19 @@ const say =
     color: var(--steel);
   }
 
-  /* Tablets and phones: the question, then the photograph under it */
-  @media (max-width: 900px) {
-    .sol__head {
+  /* Tablets and phones: the question, then the film under it */
+  @media (max-width: 1023px) {
+    .sol__top {
       grid-template-columns: minmax(0, 1fr);
+      min-height: 0;
     }
 
     .sol h1 {
       max-width: 20ch;
     }
+  }
 
-    .sol__photo :global(img) {
-      aspect-ratio: 3 / 2;
-    }
+  @media (max-width: 900px) {
 
     .proof__grid {
       grid-template-columns: minmax(0, 1fr);
@@ -805,26 +713,12 @@ const say =
 
   @media (max-width: 820px) {
     .more--two .more__groups,
-    .more:not(.more--two) ul {
+    .more__top {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .see__list {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .see__item,
-    .see__item:first-child {
-      padding: 0.9rem 0;
-    }
-
-    .see__item:first-child {
-      padding-top: 0;
-    }
-
-    .see__item + .see__item {
-      border-inline-start: 0;
-      border-top: 1px solid rgb(var(--acc-rgb) / 0.2);
+    .more__photo {
+      max-width: 28rem;
     }
   }
 
@@ -948,20 +842,14 @@ const say =
       padding-inline-start: 0;
     }
 
-    .xrow__clip {
-      width: auto;
-      max-width: 100%;
-      height: min(56svh, 30rem);
-      aspect-ratio: 390 / 844;
-    }
   }
 </style>
 
 <script>
-  // The rows under "Also in …": one open at a time; a row's film loads only when it opens; an address that ends in a
+  // The rows under "Also in …": one open at a time; a row's clip (the desktop recording, on phones too: the demo is
+  // desktop only) loads only when it opens; an address that ends in a
   // row's #id (the old pages redirect here) opens that row.
   const rows = [...document.querySelectorAll<HTMLElement>('[data-row]')];
-  const phone = matchMedia('(max-width: 700px)');
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   const setRow = (row: HTMLElement, open: boolean) => {
     const head = row.querySelector<HTMLButtonElement>('.xrow__head')!;
@@ -972,8 +860,8 @@ const say =
     if (!clip) return;
     if (open) {
       if (!clip.getAttribute('src')) {
-        clip.poster = (phone.matches ? clip.dataset.phonePoster : clip.dataset.deskPoster)!;
-        clip.src = (phone.matches ? clip.dataset.phone : clip.dataset.desk)!;
+        clip.poster = clip.dataset.deskPoster!;
+        clip.src = clip.dataset.desk!;
       }
       if (!still.matches) clip.play().catch(() => {});
     } else clip.pause();
