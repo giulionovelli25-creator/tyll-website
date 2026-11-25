@@ -9,7 +9,7 @@ const DEFAULTS = {
   linkedin: 'https://www.linkedin.com/company/tyll.ai/',
   instagram: 'https://www.instagram.com/official_tyll.ai/',
   tiktok: 'https://www.tiktok.com/@tyll.ai',
-  reportEndpoint: 'https://formspree.io/f/mpppovdg',
+  reportEndpoint: 'https://formspree.io/f/xbgoqngd',
 };
 
 const env = import.meta.env;
