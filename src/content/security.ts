@@ -18,6 +18,8 @@ export type SecurityCopy = {
   pillars: { title: string; items: { icon: SecurityIcon; title: string; text: string }[] };
   connect: { title: string; text: string; all: string; pms: string; pos: string; payments: string; more: string; exports: string; start: string };
   close: string;
+  /** One line under the homepage's logo band, linking here */
+  teaser: { text: string; link: string };
 };
 
 export const security: Record<Locale, SecurityCopy> = {
@@ -51,6 +53,7 @@ export const security: Record<Locale, SecurityCopy> = {
       start: 'No connection yet? A sales export is enough to start.',
     },
     close: 'Questions about your data? Ask us on a call.',
+    teaser: { text: 'Read only, encrypted, hosted in the EU.', link: 'How we keep your data safe →' },
   },
   de: {
     metaTitle: 'Sicherheit und Datenschutz: nur lesend, in der EU | Tyll',
@@ -82,6 +85,7 @@ export const security: Record<Locale, SecurityCopy> = {
       start: 'Noch keine Anbindung? Ein Verkaufsexport genügt für den Start.',
     },
     close: 'Fragen zu Ihren Daten? Fragen Sie uns im Gespräch.',
+    teaser: { text: 'Nur lesend, verschlüsselt, in der EU gehostet.', link: 'So schützen wir Ihre Daten →' },
   },
   it: {
     metaTitle: 'Sicurezza e protezione dei dati: sola lettura, nell’UE | Tyll',
@@ -113,6 +117,7 @@ export const security: Record<Locale, SecurityCopy> = {
       start: 'Nessun collegamento ancora? Per iniziare basta un export delle vendite.',
     },
     close: 'Domande sui tuoi dati? Chiedicelo in una chiamata.',
+    teaser: { text: 'Sola lettura, dati cifrati, ospitati nell’UE.', link: 'Come proteggiamo i tuoi dati →' },
   },
   ar: {
     metaTitle: 'الأمان وحماية البيانات: للقراءة فقط، في الاتحاد الأوروبي | Tyll',
@@ -144,5 +149,6 @@ export const security: Record<Locale, SecurityCopy> = {
       start: 'لا يوجد ربط بعد؟ يكفي تصدير للمبيعات للبدء.',
     },
     close: 'أسئلة عن بياناتك؟ اسألنا في مكالمة.',
+    teaser: { text: 'للقراءة فقط، مشفّرة، ومستضافة في الاتحاد الأوروبي.', link: 'كيف نحمي بياناتك ←' },
   },
 };

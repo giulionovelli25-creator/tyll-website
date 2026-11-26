@@ -2,7 +2,7 @@
 // The bar (25 Nov 2026, the owner, after round 5: "back like before"): logo, Solutions (three columns of three: a quiet
 // section name, then each page with its tinted icon, title and one grey line), How it works, Sustainability, the
 // language dropdown and one Book a demo button (About us added later the same day, at the owner's request). No Hotel groups and no Try the demo in the bar: Hotel groups is in the
-// footer. FAQ is only in the footer. The same items, in the same order, in the phone menu.
+// footer. FAQ is in the Solutions menu's foot row, bottom right (back on 26 Nov 2026), and the footer. The same items, in the same order, in the phone menu.
 import Logo from './Logo.astro';
 import SolutionIcon from './SolutionIcon.astro';
 import { solutions, sections } from '../content/solutions';
@@ -110,6 +110,7 @@ const groups = sections.map((sec) => ({
       </div>
       <div class="panel__foot">
         <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions} {fwd}</a>
+        <a href={href('faq', lang)} class="panel__faq" aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
       </div>
     </div>
   </div>
@@ -140,6 +141,9 @@ const groups = sections.map((sec) => ({
           }
           <li class="mobile-menu__all">
             <a href={href('solutions', lang)}>{d.nav.allSolutions} {fwd}</a>
+          </li>
+          <li class="mobile-menu__all mobile-menu__faq">
+            <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
           </li>
         </ul>
       </details>

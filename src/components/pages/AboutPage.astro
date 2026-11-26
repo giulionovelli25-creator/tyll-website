@@ -47,24 +47,35 @@ const cityPhoto: Record<CityId, { src: typeof berlin; focus: string }> = {
     </div>
   </div>
 
-  <section class="story" aria-labelledby="story-title" data-story>
+  <!-- Where Tyll comes from, told as a short editorial piece: the minutes, the story around one pull line, the route -->
+  <section class="story on-dark" data-dark aria-labelledby="story-title" data-story>
     <div class="wrap">
       <h2 id="story-title" class="display">{c.story.title}</h2>
-      <div class="story__line">
-      <span class="story__track" aria-hidden="true"><span class="story__fill"></span></span>
-      <ol class="story__steps" role="list">
+      <div class="story__grid">
+        <p class="story__figure" data-reveal>
+          <span class="story__num" dir="ltr">
+            <span class="visually-hidden">{c.story.figure}</span>
+            <span aria-hidden="true" data-count>{c.story.figure}</span>
+          </span>
+          <span class="story__caption">{c.story.caption}</span>
+        </p>
+        <div class="story__words">
+          <p class="story__text" data-reveal>{c.story.before}</p>
+          <p class="story__pull display" data-reveal>{c.story.pull}</p>
+          <p class="story__text" data-reveal>{c.story.after}</p>
+        </div>
+      </div>
+      <ol class="route" role="list" data-route>
         {
-          c.story.steps.map((st, i) => (
-            <li class="story__step" style={`--at:${i / (c.story.steps.length - 1)}`}>
-              <span class="story__dot" aria-hidden="true" />
-              <p class="story__label">{st.label}</p>
-              <h3>{st.title}</h3>
-              <p class="story__text">{st.text}</p>
+          c.story.route.map((r, i) => (
+            <li class="route__stop" style={`--i:${i}`}>
+              <span class="route__dot" aria-hidden="true" />
+              <span class="route__city">{r.city}</span>
+              <span class="route__note">{r.note}</span>
             </li>
           ))
         }
       </ol>
-      </div>
     </div>
   </section>
 
@@ -173,10 +184,10 @@ const cityPhoto: Record<CityId, { src: typeof berlin; focus: string }> = {
     box-shadow: var(--shadow-2);
   }
 
-  /* The story: four steps along a line that draws from the start edge as you scroll; a step lights as the line
-     reaches it. --p is the drawn share: 1 by default (no JavaScript, reduced motion), set from the scroll otherwise. */
+  /* The story: the minutes as one large figure beside the words, one pull line between two short paragraphs, then
+     the route. Things rise in once as they come into view ([data-reveal] gets .is-in from the script); without the
+     script, or under reduced motion, everything simply shows. */
   .story {
-    --p: 1;
     padding-block: var(--section-y);
     background: var(--night-1);
     color: rgb(var(--on-dark-rgb));
@@ -188,76 +199,160 @@ const cityPhoto: Record<CityId, { src: typeof berlin; focus: string }> = {
     font-size: var(--fs-h2);
   }
 
-  .story__line {
-    position: relative;
+  .story__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-4) var(--s-6);
+    align-items: start;
     margin-top: var(--s-5);
   }
 
-  .story__steps {
+  .story__figure {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--s-4);
+    gap: 0.75rem;
     margin: 0;
-    padding: 0;
+  }
+
+  .story__num {
+    color: rgb(var(--on-dark-rgb));
+    font-family: var(--font-display);
+    font-size: clamp(4.5rem, 2.5rem + 7vw, 9.5rem);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+  }
+
+  :global([dir='rtl']) .story__num {
+    text-align: right;
+  }
+
+  .story__caption {
+    max-width: 18ch;
+    color: var(--silver);
+    font-size: var(--fs-lead);
+    line-height: 1.4;
+  }
+
+  .story__words {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .story__text {
+    max-width: 36rem;
+    margin: 0;
+    color: rgb(var(--on-dark-rgb) / 0.82);
+    font-size: var(--fs-lead);
+    line-height: 1.6;
+  }
+
+  .story__pull {
+    max-width: 22ch;
+    margin: 0;
+    padding-inline-start: var(--s-3);
+    border-inline-start: 1px solid var(--silver-deep);
+    color: rgb(var(--on-dark-rgb));
+    font-size: clamp(1.75rem, 1.2rem + 1.8vw, 2.75rem);
+    line-height: 1.15;
+  }
+
+  /* The route: three places on one line, drawn from the start edge, each stop arriving as the line reaches it */
+  .route {
+    --p: 1;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: var(--s-6) 0 0;
+    padding: var(--s-4) 0 0;
     list-style: none;
   }
 
-  .story__track {
+  .route::before,
+  .route::after {
     position: absolute;
     top: 7px;
-    inset-inline: 0;
-    height: 2px;
-    background: rgb(var(--on-dark-rgb) / 0.18);
+    inset-inline-start: 0;
+    height: 1px;
+    content: '';
   }
 
-  .story__fill {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
+  .route::before {
+    inset-inline-end: 0;
+    background: rgb(var(--on-dark-rgb) / 0.16);
+  }
+
+  .route::after {
     width: calc(var(--p) * 100%);
-    background: linear-gradient(90deg, var(--silver-deep), var(--silver-light));
+    background: var(--silver-light);
   }
 
-  .story__step {
-    --on: clamp(0, (var(--p) - var(--at) * 0.92) * 12, 1);
+  .route__stop {
     position: relative;
-    padding-top: var(--s-4);
-    opacity: calc(0.2 + var(--on) * 0.8);
-    transform: translateY(calc((1 - var(--on)) * 12px));
+    display: grid;
+    gap: 0.35rem;
   }
 
-  .story__dot {
+  .route__dot {
     position: absolute;
-    top: 0;
+    top: calc(-1 * var(--s-4));
     inset-inline-start: 0;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--silver-light);
+    width: 15px;
+    height: 15px;
+    border: 1.5px solid var(--silver-light);
     border-radius: 50%;
     background: var(--night-1);
   }
 
-  .story__label {
-    margin: 0 0 0.5rem;
-    color: var(--silver);
-    font-size: var(--fs-small);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  .story h3 {
-    margin: 0;
+  .route__city {
     color: rgb(var(--on-dark-rgb));
-    font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.875rem);
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem);
     font-weight: 300;
-    line-height: 1.2;
-    text-wrap: balance;
+    line-height: 1.1;
   }
 
-  .story__text {
-    margin: 0.75rem 0 0;
-    color: rgb(var(--on-dark-rgb) / 0.78);
-    line-height: 1.55;
+  .route__note {
+    color: rgb(var(--on-dark-rgb) / 0.7);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* hidden at once; only the arrival is animated */
+    .story[data-anim] [data-reveal] {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .story[data-anim] [data-reveal].is-in {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity 0.7s var(--ease),
+        transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .story[data-anim] .route {
+      --p: 0;
+    }
+
+    .story[data-anim] .route__stop {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .story[data-anim] .route.is-in {
+      --p: 1;
+      transition: --p 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .story[data-anim] .route.is-in .route__stop {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity 0.5s var(--ease) calc(0.25s + var(--i) * 0.35s),
+        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1) calc(0.25s + var(--i) * 0.35s);
+    }
   }
 
   /* How we work: four short points with their icons */
@@ -443,29 +538,33 @@ const cityPhoto: Record<CityId, { src: typeof berlin; focus: string }> = {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    /* The story runs down the start edge on tablets and phones */
-    .story__steps {
+    /* Tablets and phones: the figure over the words, the route down the start edge */
+    .story__grid {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .story__track {
+    .route {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 0;
+      padding-inline-start: var(--s-4);
+    }
+
+    .route::before,
+    .route::after {
       top: 0;
       bottom: 0;
       inset-inline: 7px auto;
-      width: 2px;
+      width: 1px;
       height: auto;
     }
 
-    .story__fill {
-      inset-inline: 0;
-      width: auto;
+    .route::after {
       height: calc(var(--p) * 100%);
-      background: linear-gradient(180deg, var(--silver-deep), var(--silver-light));
     }
 
-    .story__step {
-      padding-top: 0;
-      padding-inline-start: var(--s-4);
+    .route__dot {
+      top: 0.55rem;
+      inset-inline-start: calc(-1 * var(--s-4));
     }
   }
 
@@ -487,31 +586,46 @@ const cityPhoto: Record<CityId, { src: typeof berlin; focus: string }> = {
 </style>
 
 <script>
-  // The story's line draws as it moves up the screen: 0 when the steps' top is near the bottom of the screen, 1 when it
-  // is a little above the middle. One passive scroll listener, one style write per frame; nothing under reduced motion.
+  // The story: its parts rise in once as they come into view; the figure counts up to 45–60 (only its aria-hidden copy
+  // changes); the route draws and its stops arrive one after another. Nothing under reduced motion, and a reader
+  // who lands with the section already on screen sees it as it is.
   const story = document.querySelector<HTMLElement>('[data-story]');
-  if (story && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const steps = story.querySelector<HTMLElement>('.story__line')!;
-    let queued = false;
-    const draw = () => {
-      queued = false;
-      const r = steps.getBoundingClientRect();
-      const vh = innerHeight;
-      const span = innerWidth > 900 ? vh * 0.45 : r.height + vh * 0.1;
-      const p = Math.min(Math.max((vh * 0.9 - r.top) / span, 0), 1);
-      story.style.setProperty('--p', p.toFixed(3));
+  if (story && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches && story.getBoundingClientRect().top > innerHeight * 0.6) {
+    // the route's line is drawn by animating --p, which needs the property registered
+    if ('registerProperty' in CSS) {
+      try {
+        CSS.registerProperty({ name: '--p', syntax: '<number>', inherits: true, initialValue: '1' });
+      } catch {}
+    }
+    story.dataset.anim = '';
+    const NUM = /\d+/g;
+    const count = (el: HTMLElement) => {
+      const final = el.textContent ?? '';
+      const start = performance.now();
+      const step = (now: number) => {
+        const k = Math.min((now - start) / 1200, 1);
+        const e = 1 - Math.pow(1 - k, 3);
+        el.textContent = final.replace(NUM, (m) => String(Math.round(+m * e)));
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
     };
-    draw();
-    addEventListener(
-      'scroll',
-      () => {
-        if (!queued) {
-          queued = true;
-          requestAnimationFrame(draw);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          const el = e.target as HTMLElement;
+          el.classList.add('is-in');
+          const c = el.querySelector<HTMLElement>('[data-count]');
+          if (c) count(c);
+          io.unobserve(el);
         }
       },
-      { passive: true },
+      { threshold: 0.35 },
     );
-    addEventListener('resize', draw);
+    story.querySelectorAll<HTMLElement>('[data-reveal], [data-route]').forEach((el, i) => {
+      el.style.transitionDelay = el.matches('[data-reveal]') ? `${(i % 4) * 0.12}s` : '';
+      io.observe(el);
+    });
   }
 </script>

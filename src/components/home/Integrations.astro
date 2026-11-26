@@ -5,7 +5,8 @@
 // transform only, keeps moving under the pointer, a finger and a click, pauses only for keyboard focus, and always reads left to right,
 // also in Arabic, on phones too. With reduced motion it stands still as a centred, wrapping grid. Logos are never links.
 import { logos, logoBox } from '../../config/integrations';
-import { t, type Locale } from '../../i18n';
+import { t, href, type Locale } from '../../i18n';
+import { security } from '../../content/security';
 
 interface Props {
   lang: Locale;
@@ -13,6 +14,8 @@ interface Props {
 
 const { lang } = Astro.props;
 const v = t(lang).home.works;
+// Under the band (26 Nov 2026, the owner): the way to the Security page
+const safe = security[lang].teaser;
 ---
 
 <section class="works" id="integrations" aria-labelledby="works-title">
@@ -49,6 +52,9 @@ const v = t(lang).home.works;
       }
     </div>
   </div>
+  <p class="wrap works__safe">
+    {safe.text} <a href={href('security', lang)}>{safe.link}</a>
+  </p>
 </section>
 
 <style>
@@ -221,5 +227,24 @@ const v = t(lang).home.works;
     .band__set[aria-hidden='true'] {
       display: none;
     }
+  }
+
+  .works__safe {
+    margin-top: var(--s-4);
+    color: var(--text-2);
+    font-size: var(--fs-small);
+    text-align: center;
+  }
+
+  .works__safe a {
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--sand-600);
+    text-underline-offset: 4px;
+  }
+
+  .works__safe a:hover {
+    text-decoration-color: currentColor;
   }
 </style>

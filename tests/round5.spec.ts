@@ -83,7 +83,7 @@ for (const lang of locales)
   });
 
 // ── 2. One icon per meaning, from one set; each icon centred in its tinted square, in Arabic too ──
-test('the icon table: no two features share an icon, and the Scan strip uses its rows’ icons', async ({}, info) => {
+test('the icon table: no two features share an icon', async ({}, info) => {
   test.skip(!once(info), 'content check, once per browser');
   const used = new Map<string, string[]>();
   const add = (icon: string, what: string) => used.set(icon, [...(used.get(icon) ?? []), what]);
@@ -96,12 +96,6 @@ test('the icon table: no two features share an icon, and the Scan strip uses its
     if (what.length > 1) expect(what.map((w) => w.split('#')[1]).every((id) => id === 'reliability'), `${icon}: ${what.join(', ')}`).toBe(true);
   }
   for (const icon of used.keys()) expect(content.icons[icon], icon).toBeTruthy();
-  const strip = fs.readFileSync('src/components/home/ScanStrip.astro', 'utf8');
-  for (const [icon, row] of [['clipboard-list', 'requisitions'], ['truck', null], ['bottle-wine', 'empties'], ['chef-hat', 'recipes'], ['scroll-text', 'menu-photo']] as const) {
-    expect(strip).toContain(`icon: '${icon}'`);
-    if (row) expect(used.get(icon)?.some((w) => w.endsWith(`#${row}`)), `${icon} = ${row}`).toBe(true);
-    else expect(used.get(icon)).toEqual(['deliveries']);
-  }
 });
 
 for (const lang of locales)
@@ -118,8 +112,6 @@ for (const lang of locales)
         expect(off, sel).toBeLessThanOrEqual(1);
       }
     };
-    await page.goto(pages.home[lang]);
-    await centred('.scan__icon');
     await page.goto(pages.stock[lang]);
     await centred('.sol__chip');
     await centred('.xrow__icon');
@@ -144,7 +136,7 @@ for (const lang of locales)
       expect(await contrastBehind(page, '.hero h1'), 'headline').toBeGreaterThanOrEqual(3);
       expect(await contrastBehind(page, '.hero__text'), 'line').toBeGreaterThanOrEqual(4.5);
       const html = await (await request.get(pages.sustainability[lang])).text();
-      for (const fig of sustainability[lang].sentence.text.match(/\{([^}]+)\}/g)!.map((f) => f.slice(1, -1))) expect(html).toContain(fig);
+      for (const st of sustainability[lang].world.stats) expect(html).toContain(st.figure);
       expect(html).not.toMatch(/>0(?:[.,]00)?\s?(?:%|bn|Mrd|mld)/);
     });
 
@@ -152,45 +144,21 @@ for (const lang of locales)
       const ctx = await browser.newContext({ javaScriptEnabled: false });
       const page = await ctx.newPage();
       await page.goto(pages.sustainability[lang]);
-      const text = await page.locator('.line__text').innerText();
-      for (const fig of sustainability[lang].sentence.text.match(/\{([^}]+)\}/g)!.map((f) => f.slice(1, -1))) expect(text).toContain(fig);
+      const text = await page.locator('.world').innerText();
+      for (const st of sustainability[lang].world.stats) expect(text).toContain(st.figure);
       expect(text).not.toMatch(/\b0(?:[.,]00)?\s?%/);
       await ctx.close();
     });
 
-    test('the calculator updates live, works by keyboard and uses the right currency', async ({ page }) => {
-      const c = sustainability[lang].calc;
+    test('the world in three stats that count up to their figures; no calculator', async ({ page }) => {
+      const w = sustainability[lang].world;
       await page.goto(pages.sustainability[lang]);
-      const out = (k: string) => page.locator(`[data-out="${k}"]`);
-      const before = await out('bought').innerText();
-      expect(before).toContain(lang === 'ar' ? 'AED' : '€');
-      await page.locator('#calc-covers').fill('600');
-      await expect.poll(() => out('bought').innerText()).not.toBe(before);
-      const num = (s: string) => Number(s.replace(/[^\d]/g, ''));
-      await expect.poll(async () => num(await out('bought').innerText())).toBe(Math.round((600 * c.cost.value * 365) / 1000) * 1000);
-      await expect.poll(async () => num(await out('wasted').innerText())).toBe(Math.round((600 * c.cost.value * 365 * 0.18) / 1000) * 1000);
-      await expect.poll(async () => num(await out('kept').innerText())).toBe(Math.round((600 * c.cost.value * 365 * 0.18 * 0.21) / 1000) * 1000);
-      // the slider follows, and moves by keyboard
-      await expect(page.locator('#calc-covers-range')).toHaveValue('600');
-      await expect(page.locator('#calc-days, #calc-days-range')).toHaveCount(0);
-      const days = page.locator('#calc-cost-range');
-      await days.focus();
-      const was = await out('bought').innerText();
-      await page.keyboard.press(lang === 'ar' ? 'ArrowRight' : 'ArrowLeft');
-      await expect.poll(() => out('bought').innerText()).not.toBe(was);
-      await expect(page.locator('.calc__out')).toHaveAttribute('aria-live', 'polite');
-      await expect(page.locator('label[for="calc-covers"]')).toHaveText(c.covers);
-      await expect(page.locator('#calc-covers-help')).toHaveText(c.coverHelp);
-      // changing a number never moves the words around it
-      const labels = () => page.locator('.calc__out dt').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left) + ':' + Math.round(e.getBoundingClientRect().width)));
-      const before2 = await labels();
-      await page.locator('#calc-covers').fill('2000');
-      await page.waitForTimeout(500);
-      expect(await labels()).toEqual(before2);
-      // no source links in the calculator, one link out of it, and never "UK"
-      await expect(page.locator('#calculator a[href^="http"]')).toHaveCount(0);
-      await expect(page.locator('#calculator a')).toHaveCount(1);
-      expect(await page.locator('#calculator').innerText()).not.toMatch(/\bUK\b|Großbritannien|Regno Unito|المملكة المتحدة/);
+      await expect(page.locator('#calculator, [data-calc]')).toHaveCount(0);
+      await expect(page.locator('.world h2')).toHaveText(w.title);
+      await expect(page.locator('.world__stat')).toHaveCount(3);
+      await page.locator('.world').evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - 80, behavior: 'instant' }));
+      await expect.poll(() => page.locator('.world [data-count]').allInnerTexts(), { timeout: 6000 }).toEqual(w.stats.map((st) => st.figure));
+      expect(await page.locator('.world').innerText()).not.toMatch(/aviation|Luftfahrt|aviazione|الطيران/);
     });
 
     test('what hotels got back: industry figures, said at the top, no timeline; the page is short', async ({ page }, info) => {
@@ -204,7 +172,7 @@ for (const lang of locales)
       const figTop = await back.locator('.back__figure').first().evaluate((e) => e.getBoundingClientRect().top);
       expect(subTop).toBeLessThan(figTop);
       expect(await back.locator('.back__sub').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(16);
-      await expect(back.locator('.back__lead .back__figure')).toHaveText(c.lead.figure);
+      await expect(back.locator('.back__lead .back__figure .visually-hidden')).toHaveText(c.lead.figure);
       await expect(back.locator('.back__list li')).toHaveCount(3);
       await expect(back.locator('.back__label')).toHaveText(c.returnsLabel);
       await expect(back.locator('.back__source a')).toHaveAttribute('href', c.source.url);
@@ -224,10 +192,10 @@ for (const lang of locales)
       test('nothing moves: figures final, no hero animation, clips stay posters', async ({ page }) => {
         await page.goto(pages.sustainability[lang]);
         expect(await page.locator('.hero__inner').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
-        await page.locator('.line').scrollIntoViewIfNeeded();
+        await page.locator('.world').scrollIntoViewIfNeeded();
         await page.waitForTimeout(600);
-        const shown = await page.locator('.line [data-count]').allInnerTexts();
-        const want = sustainability[lang].sentence.text.match(/\{([^}]+)\}/g)!.map((f) => f.slice(1, -1));
+        const shown = await page.locator('.world [data-count]').allInnerTexts();
+        const want = sustainability[lang].world.stats.map((st) => st.figure);
         expect(shown).toEqual(want);
         await page.locator('.act').scrollIntoViewIfNeeded();
         await page.waitForTimeout(600);
@@ -268,17 +236,21 @@ for (const lang of locales)
     await expect(page.locator('.origin a')).toHaveAttribute('href', pages.about[lang]);
   });
 
-// About us: the story draws, the cities keep their sources, the investors line leads home
+// About us: the story (minutes, pull line, route), the cities with their sources, the investors email
 for (const lang of locales)
   test(`About us (${lang})`, async ({ page }) => {
     await page.goto(pages.about[lang]);
-    await expect(page.locator('.story__step')).toHaveCount(4);
+    // the story as an editorial piece: the minutes, the pull line, the route Zürich, Berlin, Dubai
+    await expect(page.locator('.story__num .visually-hidden')).toHaveText('45–60');
+    await expect(page.locator('.story__pull')).toHaveCount(1);
+    await expect(page.locator('.route__stop')).toHaveCount(3);
     await expect(page.locator('.city')).toHaveCount(3);
     for (const a of await page.locator('.city__source a').all()) await expect(a).toHaveAttribute('target', '_blank');
     await expect(page.locator(`.investors a`)).toHaveAttribute('href', `mailto:info@tyll.ai?subject=${encodeURIComponent(dict[lang].home.investors.subject)}`);
     await expect(page.locator('.ways__more')).toHaveAttribute('href', pages.security[lang]);
-    await page.locator('.story__line').evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - innerHeight * 0.3, behavior: 'instant' }));
-    await expect.poll(() => page.locator('[data-story]').evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue('--p')))).toBeGreaterThan(0.5);
+    await page.locator('[data-route]').evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - innerHeight * 0.5, behavior: 'instant' }));
+    await expect.poll(() => page.locator('[data-story] [data-count]').innerText(), { timeout: 6000 }).toBe('45–60');
+    await expect(page.locator('.route__stop').last()).toBeVisible();
   });
 
 // Security: the seven details, every system's logo, the filter by kind

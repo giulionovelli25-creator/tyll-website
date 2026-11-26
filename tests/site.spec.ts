@@ -134,7 +134,7 @@ for (const lang of locales) {
       }
       // FAQ and Hotel groups live in the footer; the header never links to the demo
       expect(await bar.innerText()).not.toContain(d.nav.faqShort);
-      expect(await header.locator(`a[href="${pages.faq[lang]}"], a[href="${pages.groups[lang]}"]`).count()).toBe(0);
+      expect(await bar.locator(`a[href="${pages.faq[lang]}"], a[href="${pages.groups[lang]}"]`).count()).toBe(0);
       expect(await header.locator('a[href*="#report"], a[href*="#sustainability"], a[href*="demo.tyll.ai"]').count()).toBe(0);
       await expect(page.locator(`.footer a[href="${pages.groups[lang]}"]`)).toHaveCount(1);
     });
@@ -167,13 +167,14 @@ for (const lang of locales) {
           await expect(col.locator('[data-solution]')).toHaveCount(3);
           await expect(col.locator('[data-solution] .panel__icon svg')).toHaveCount(3);
         }
-        await expect(panel.locator('a')).toHaveCount(10);
+        await expect(panel.locator('a')).toHaveCount(11);
         // the nine names, column by column, as in the demo's menu
         const names = await panel.locator('[data-solution]').evaluateAll((as) => as.map((a) => (a.querySelector('.panel__name') ?? a).textContent!.trim()));
         const want = sections.flatMap((sec) => sec.keys.map((k) => solutions[k].name[lang]));
         for (const n of want) expect(names.some((x) => x.startsWith(n)), n).toBe(true);
         for (const k of moreKeys) expect(names.some((x) => x.startsWith(solutions[k].name[lang])), `${k} not in the menu`).toBe(false);
-        await expect(panel.locator('.panel__faq')).toHaveCount(0);
+        // FAQ at the bottom right of the menu (back on 26 Nov 2026)
+        await expect(panel.locator('.panel__faq')).toHaveAttribute('href', pages.faq[lang]);
         for (const href of await panel.locator('a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) expect((await request.get(href)).status(), href).toBe(200);
         await panel.locator('.panel__all').click();
         await expect(page).toHaveURL(new RegExp(`${pages.solutions[lang]}$`));
@@ -453,9 +454,9 @@ for (const lang of locales)
     await expect(page.locator('.index__soon')).toHaveText(dict[lang].home.parts.soon);
   });
 
-// The homepage: the hero line, the steps' order and links, and the Scan strip
+// The homepage: the hero line, the steps' order and links, and the link to Security
 for (const lang of locales)
-  test(`homepage hero line, steps and the Scan strip (${lang})`, async ({ page, request }) => {
+  test(`homepage hero line, steps and the link to Security (${lang})`, async ({ page, request }) => {
     const d = dict[lang];
     await page.goto(pages.home[lang]);
     await expect(page.locator('.hero__sub')).toHaveText(d.hero.sub);
@@ -464,14 +465,8 @@ for (const lang of locales)
     expect(labels.slice(0, 3)).toEqual([d.home.tour.steps[0].label, d.home.tour.steps[1].label, d.home.tour.steps[2].label]);
     const hrefs = await page.locator('.hs__more').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
     expect(hrefs.slice(0, 3)).toEqual([`${pages.solutions[lang]}#stock-waste`, `${pages.solutions[lang]}#purchasing`, `${pages.solutions[lang]}#reconciliation`]);
-    const scan = page.locator('#scan');
-    await expect(scan.locator('h2')).toHaveText(d.solutionPage.scan.title);
-    const items = scan.locator('.scan__item');
-    await expect(items).toHaveCount(5);
-    await expect(scan.locator('.scan__honest')).toHaveText(d.solutionPage.scan.honest);
-    for (const href of await items.evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
-      const [path, id] = href.split('#');
-      const html = await (await request.get(path)).text();
-      expect(html, href).toContain(`id="${id}"`);
-    }
+    // the Scan strip is gone (26 Nov 2026); the logo band links to the Security page
+    await expect(page.locator('#scan')).toHaveCount(0);
+    await expect(page.locator('.works__safe a')).toHaveAttribute('href', pages.security[lang]);
+    expect((await request.get(pages.security[lang])).status()).toBe(200);
   });

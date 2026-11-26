@@ -16,8 +16,10 @@ export type AboutCopy = {
   metaDescription: string;
   title: string;
   text: string;
-  /** The story, in four steps along a line that draws as you read */
-  story: { title: string; steps: { label: string; title: string; text: string }[] };
+  /** The story, told as an editorial piece (26 Nov 2026, the owner: the four-dot timeline read as AI): the minutes the
+      CEO spent every night as one large figure, two short paragraphs around one pull line, then the route Zürich,
+      Berlin, Dubai */
+  story: { title: string; figure: string; caption: string; before: string; pull: string; after: string; route: { city: string; note: string }[] };
   /** How we work: four things the product keeps to */
   ways: { title: string; items: { icon: 'eye' | 'plug' | 'sliders-horizontal' | 'shield-check'; title: string; text: string }[]; security: string };
   cities: { title: string; cards: { id: CityId; place: string; line: string; fact: string; source: Source }[] };
@@ -32,11 +34,15 @@ export const about: Record<Locale, AboutCopy> = {
     text: 'Tyll comes from a hotel night shift in Zürich. It is built in Berlin, live in hotels in Berlin and Zürich, and heading to Dubai.',
     story: {
       title: 'Where Tyll comes from',
-      steps: [
-        { label: 'Zürich', title: 'Every night, by hand', text: 'Our CEO closed the night by hand at a luxury hotel in Zürich for six months: 45 to 60 minutes every night, comparing totals.' },
-        { label: 'The gap', title: 'What leaks never shows in a total', text: 'The totals could match while a bill, a delivery or a bottle went missing in between. Nobody had the time to check every line.' },
-        { label: 'Berlin', title: 'So we built the check', text: 'Tyll reads the systems a hotel already uses and checks every bill, delivery and invoice, every night, then tells the team in one morning brief.' },
-        { label: 'Today', title: 'Live in hotels', text: 'Tyll is live in hotels in Berlin and Zürich. Dubai is next.' },
+      figure: '45–60',
+      caption: 'minutes, every night, for six months',
+      before: 'That is how long our CEO spent closing the night by hand at a luxury hotel in Zürich, comparing totals.',
+      pull: 'What leaks never shows in a total.',
+      after: 'A bill, a delivery or a bottle could go missing while the totals still matched. So we built the check: Tyll reads the systems a hotel already uses and checks every line, every night.',
+      route: [
+        { city: 'Zürich', note: 'Where it started. Live today.' },
+        { city: 'Berlin', note: 'Where it is built. Live today.' },
+        { city: 'Dubai', note: 'Next.' },
       ],
     },
     ways: {
@@ -66,11 +72,15 @@ export const about: Record<Locale, AboutCopy> = {
     text: 'Tyll kommt aus einer Hotel-Nachtschicht in Zürich. Gebaut wird es in Berlin, im Einsatz ist es in Hotels in Berlin und Zürich, als Nächstes geht es nach Dubai.',
     story: {
       title: 'Woher Tyll kommt',
-      steps: [
-        { label: 'Zürich', title: 'Jede Nacht, von Hand', text: 'Unser CEO hat sechs Monate lang in einem Luxushotel in Zürich die Nacht von Hand abgeschlossen: 45 bis 60 Minuten pro Nacht, Summen vergleichen.' },
-        { label: 'Die Lücke', title: 'Was verloren geht, zeigt sich nie in einer Summe', text: 'Die Summen konnten stimmen, während dazwischen eine Rechnung, eine Lieferung oder eine Flasche fehlte. Niemand hatte Zeit, jede Zeile zu prüfen.' },
-        { label: 'Berlin', title: 'Also haben wir die Prüfung gebaut', text: 'Tyll liest die Systeme, die ein Hotel schon nutzt, prüft jede Nacht jede Rechnung, Lieferung und Eingangsrechnung und sagt dem Team alles in einem Morgenbericht.' },
-        { label: 'Heute', title: 'Im Einsatz in Hotels', text: 'Tyll läuft in Hotels in Berlin und Zürich. Als Nächstes kommt Dubai.' },
+      figure: '45–60',
+      caption: 'Minuten, jede Nacht, sechs Monate lang',
+      before: 'So lange hat unser CEO in einem Luxushotel in Zürich die Nacht von Hand abgeschlossen und Summen verglichen.',
+      pull: 'Was verloren geht, zeigt sich nie in einer Summe.',
+      after: 'Eine Rechnung, eine Lieferung oder eine Flasche konnte fehlen, während die Summen stimmten. Also haben wir die Prüfung gebaut: Tyll liest die Systeme, die ein Hotel schon nutzt, und prüft jede Zeile, jede Nacht.',
+      route: [
+        { city: 'Zürich', note: 'Hier hat es angefangen. Heute im Einsatz.' },
+        { city: 'Berlin', note: 'Hier wird es gebaut. Heute im Einsatz.' },
+        { city: 'Dubai', note: 'Als Nächstes.' },
       ],
     },
     ways: {
@@ -100,11 +110,15 @@ export const about: Record<Locale, AboutCopy> = {
     text: 'Tyll nasce da un turno di notte in un hotel di Zurigo. Lo costruiamo a Berlino, è attivo in hotel a Berlino e Zurigo e la prossima tappa è Dubai.',
     story: {
       title: 'Da dove nasce Tyll',
-      steps: [
-        { label: 'Zurigo', title: 'Ogni notte, a mano', text: 'Il nostro CEO ha chiuso la notte a mano per sei mesi in un hotel di lusso a Zurigo: da 45 a 60 minuti ogni notte, a confrontare i totali.' },
-        { label: 'Il buco', title: 'Ciò che si perde non si vede mai in un totale', text: 'I totali potevano tornare mentre nel mezzo mancava un conto, una consegna o una bottiglia. Nessuno aveva il tempo di controllare ogni riga.' },
-        { label: 'Berlino', title: 'Così abbiamo costruito il controllo', text: 'Tyll legge i sistemi che l’hotel usa già, controlla ogni notte ogni conto, consegna e fattura, e lo dice al team in un solo brief del mattino.' },
-        { label: 'Oggi', title: 'Attivo in hotel', text: 'Tyll è attivo in hotel a Berlino e Zurigo. Dubai è la prossima.' },
+      figure: '45–60',
+      caption: 'minuti, ogni notte, per sei mesi',
+      before: 'Tanto impiegava il nostro CEO per chiudere a mano la notte in un hotel di lusso a Zurigo, confrontando i totali.',
+      pull: 'Ciò che si perde non si vede mai in un totale.',
+      after: 'Un conto, una consegna o una bottiglia potevano sparire mentre i totali tornavano. Così abbiamo costruito il controllo: Tyll legge i sistemi che l’hotel usa già e controlla ogni riga, ogni notte.',
+      route: [
+        { city: 'Zurigo', note: 'Dove tutto è iniziato. Attivo oggi.' },
+        { city: 'Berlino', note: 'Dove lo costruiamo. Attivo oggi.' },
+        { city: 'Dubai', note: 'La prossima.' },
       ],
     },
     ways: {
@@ -134,11 +148,15 @@ export const about: Record<Locale, AboutCopy> = {
     text: 'جاء Tyll من مناوبة ليلية في فندق في زيورخ. يُبنى في برلين، ويعمل في فنادق في برلين وزيورخ، ووجهته التالية دبي.',
     story: {
       title: 'من أين جاء Tyll',
-      steps: [
-        { label: 'زيورخ', title: 'كل ليلة، يدويًا', text: 'أغلق الرئيس التنفيذي لدينا الحسابات الليلية يدويًا لستة أشهر في فندق فاخر في زيورخ: من 45 إلى 60 دقيقة كل ليلة لمقارنة الإجماليات.' },
-        { label: 'الفجوة', title: 'ما يتسرّب لا يظهر أبدًا في الإجمالي', text: 'قد تتطابق الإجماليات بينما تختفي في الأثناء فاتورة أو توريد أو زجاجة. ولم يكن لدى أحد وقت لمراجعة كل سطر.' },
-        { label: 'برلين', title: 'فبنينا أداة المراجعة', text: 'يقرأ Tyll الأنظمة التي يستخدمها الفندق أصلًا، ويراجع كل ليلة كل فاتورة وتوريد وفاتورة مورد، ثم يخبر الفريق بكل ذلك في ملخص صباحي واحد.' },
-        { label: 'اليوم', title: 'يعمل في الفنادق', text: 'يعمل Tyll في فنادق في برلين وزيورخ. ودبي هي التالية.' },
+      figure: '45–60',
+      caption: 'دقيقة كل ليلة، لمدة ستة أشهر',
+      before: 'هذا ما كان يقضيه رئيسنا التنفيذي في إغلاق الحسابات الليلية يدويًا في فندق فاخر في زيورخ، يقارن الإجماليات.',
+      pull: 'ما يتسرّب لا يظهر أبدًا في الإجمالي.',
+      after: 'قد تختفي فاتورة أو توريد أو زجاجة بينما تتطابق الإجماليات. فبنينا أداة المراجعة: يقرأ Tyll الأنظمة التي يستخدمها الفندق أصلًا ويراجع كل سطر، كل ليلة.',
+      route: [
+        { city: 'زيورخ', note: 'هنا بدأت القصة. يعمل اليوم.' },
+        { city: 'برلين', note: 'هنا يُبنى. يعمل اليوم.' },
+        { city: 'دبي', note: 'التالية.' },
       ],
     },
     ways: {

@@ -1,25 +1,19 @@
 ---
-// The Sustainability page (round 5, 25 Nov 2026, the owner's brief). About four screens on a desktop, each section
-// shaped differently and each with one moment of motion at most:
+// The Sustainability page (round 5, 25 Nov 2026; trimmed and animated 26 Nov 2026, the owner):
 // 1. Hero: the photograph fills the screen under the header, the headline and its line in the lower third over a dark
 //    gradient (white text, AA contrast), rising into place once in 600 ms.
-// 2. One sentence of the world's numbers, set large on a dark band; it lights up word by word as it scrolls in, each
-//    figure counting up with a silver underline, and five plates under it lose the fifth to the bin. The real figures
-//    are in the HTML; only an aria-hidden copy counts, so search engines, previews and screen readers always get the
-//    final numbers.
-// 3. The calculator (SusCalculator.astro), with the EU's 2030 target under it (the UAE's on the Arabic page).
-// 4. What hotels got back from cutting food waste (25 Nov 2026, the owner's brief): industry research, said at the
-//    top; the 21% waste cut on its own, then the return on the hotels' own programs as three figures side by side,
-//    with no line or circles, since they are not a sequence. Stacked on phones.
-// 5. (The three cities moved to the About page on 25 Nov 2026, the owner: they belong with our story.)
+// 2. The world's numbers: three short stats on a dark band (UNEP), with five plates under "about one fifth".
+// 4. What hotels got back from cutting food waste: industry research, said at the top; the 21% waste cut on its own,
+//    then the return on the hotels' own programs as three figures side by side (no line: not a sequence).
 // 6. Where Tyll helps: three cards, each with its solution page's film, loaded only when it scrolls into view.
 // 7. The dark closing band.
-// Under reduced motion nothing moves; without JavaScript everything shows in its final state. Copy:
+// One motion for the page: parts rise in as they come into view and their figures count up; the real figures are
+// always in the HTML (only aria-hidden copies count). Nothing moves under reduced motion; without JavaScript
+// everything shows. The calculator was removed and the cities moved to About us (26 Nov 2026). Copy:
 // src/content/sustainability.ts. No figure here is a Tyll result.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
-import SusCalculator from './SusCalculator.astro';
 import { sustainability } from '../../content/sustainability';
 import { solutions } from '../../content/solutions';
 import { t, href, type Locale } from '../../i18n';
@@ -34,11 +28,6 @@ const d = t(lang);
 const c = sustainability[lang];
 const tab = d.cta.newTab;
 const fwd = lang === 'ar' ? '←' : '→';
-// The sentence, split into plain text and {figures}
-const parts = c.sentence.text.split(/(\{[^}]+\})/).filter(Boolean).map((p) => (p.startsWith('{') ? { fig: p.slice(1, -1) } : { text: p }));
-// Each figure's place in the sentence: the second one is "about one fifth", which sends the fifth plate to the bin
-const figs = parts.flatMap((p) => ('fig' in p ? [p.fig] : []));
-const figIndex = (f: string) => figs.indexOf(f);
 const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
 ---
 
@@ -52,61 +41,67 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
     </div>
   </section>
 
-  <section class="line on-dark" data-dark aria-label={c.sentence.source.name} data-line>
+  <!-- The world's numbers: three short stats on a dark band, counting up as they come into view; under the middle
+       one (about one fifth), five plates, the last of them going in the bin -->
+  <section class="world on-dark" data-dark aria-labelledby="sus-world" data-anim-scope>
     <div class="wrap">
-      <p class="line__text">
+      <h2 id="sus-world" class="display">{c.world.title}</h2>
+      <ul class="world__stats" role="list">
         {
-          parts.map((p) =>
-            'fig' in p ? (
-              <strong class="line__fig w" data-fig={figIndex(p.fig)}>
-                <span class="visually-hidden">{p.fig}</span>
-                <span aria-hidden="true" data-count>{p.fig}</span>
-              </strong>
-            ) : (
-              p.text.split(/(\s+)/).map((w) => (/^\s+$/.test(w) || !w ? w : <span class="w">{w}</span>))
-            ),
-          )
-        }
-      </p>
-      <!-- Five plates, one of them going in the bin: "about one fifth" as a picture -->
-      <svg class="line__plates" viewBox="0 0 400 72" aria-hidden="true">
-        {
-          [0, 1, 2, 3, 4].map((i) => (
-            <g class:list={['plate', i === 4 && 'plate--bin']} transform={`translate(${40 + i * 80} 36)`}>
-              <circle r="30" />
-              <circle class="plate__well" r="19" />
-            </g>
+          c.world.stats.map((st, i) => (
+            <li class="world__stat" style={`--d:${i}`} data-reveal>
+              <p class="world__figure" dir="ltr">
+                <span class="visually-hidden">{st.figure}</span>
+                <span aria-hidden="true" data-count>{st.figure}</span>
+              </p>
+              <p class="world__text">{st.text}</p>
+              {i === 1 && (
+                <svg class="plates" viewBox="0 0 400 72" aria-hidden="true">
+                  {[0, 1, 2, 3, 4].map((k) => (
+                    <g class:list={['plate', k === 4 && 'plate--bin']} transform={`translate(${40 + k * 80} 36)`}>
+                      <circle r="30" />
+                      <circle class="plate__well" r="19" />
+                    </g>
+                  ))}
+                </svg>
+              )}
+            </li>
           ))
         }
-      </svg>
-      <p class="source line__source">
-        <a href={c.sentence.source.url} target="_blank" rel="noopener">
-          {c.sentence.source.name}
+      </ul>
+      <p class="source world__source">
+        <a href={c.world.source.url} target="_blank" rel="noopener">
+          {c.world.source.name}
           <span class="visually-hidden"> {tab}</span>
         </a>
       </p>
     </div>
   </section>
 
-  <SusCalculator lang={lang} />
 
   <!-- What hotels got back: industry research, not Tyll's. The waste cut stands alone; the return on the hotels' own
        programs sits beside it as three figures, with nothing joining them, since they are not steps in a sequence. -->
-  <section class="back" aria-labelledby="sus-back">
+  <section class="back" aria-labelledby="sus-back" data-anim-scope>
     <div class="wrap">
       <h2 id="sus-back" class="display sus__title">{c.back.title}</h2>
       <p class="back__sub">{c.back.sub}</p>
-      <div class="back__lead">
-        <p class="back__figure back__figure--lead" dir="ltr">{c.back.lead.figure}</p>
+      <div class="back__lead" data-reveal>
+        <p class="back__figure back__figure--lead" dir="ltr">
+          <span class="visually-hidden">{c.back.lead.figure}</span>
+          <span aria-hidden="true" data-count>{c.back.lead.figure}</span>
+        </p>
         <p class="back__text">{c.back.lead.text}</p>
       </div>
       <div class="back__returns">
         <h3 class="back__label">{c.back.returnsLabel}</h3>
         <ul class="back__list" role="list">
           {
-            c.back.returns.map((r) => (
-              <li>
-                <p class="back__figure" dir="ltr">{r.figure}</p>
+            c.back.returns.map((r, i) => (
+              <li style={`--d:${i}`} data-reveal>
+                <p class="back__figure" dir="ltr">
+                  <span class="visually-hidden">{r.figure}</span>
+                  <span aria-hidden="true" data-count>{r.figure}</span>
+                </p>
                 <p class="back__text">{r.text}</p>
               </li>
             ))
@@ -122,13 +117,13 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
     </div>
   </section>
 
-  <section class="act" aria-labelledby="sus-act">
+  <section class="act" aria-labelledby="sus-act" data-anim-scope>
     <div class="wrap">
       <h2 id="sus-act" class="display sus__title">{c.act.title}</h2>
       <ul class="act__list" role="list">
         {
-          act.map((it) => (
-            <li>
+          act.map((it, i) => (
+            <li style={`--d:${i}`} data-reveal>
               <a class="act__card" href={href(it.page, lang)} data-accent={it.s.tone}>
                 <video
                   class="act__clip"
@@ -259,78 +254,81 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
     color: var(--ink);
   }
 
-  /* 2. One sentence on a dark band, set like a headline. As it scrolls up the screen its words light up one by one;
-     each figure counts up and is underlined in silver as it lights; at "one fifth" the last of five plates goes in
-     the bin. [data-reveal] is set by the script only when motion is allowed, so without it everything simply shows. */
-  .line {
-    padding-block: var(--band-y);
+  /* 2. The world's numbers: three stats on the dark band. Large serif figures, one short line each. */
+  .world {
+    padding-block: var(--section-y);
     background: var(--night-1);
     color: rgb(var(--on-dark-rgb));
   }
 
-  .line__text {
-    max-width: 34ch;
+  .world h2 {
     margin: 0;
+    color: rgb(var(--on-dark-rgb));
+    font-size: var(--fs-h2);
+  }
+
+  .world__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .world__stat {
+    padding-top: var(--s-3);
+    border-top: 1px solid rgb(var(--on-dark-rgb) / 0.2);
+  }
+
+  .world__figure {
+    margin: 0;
+    color: rgb(var(--on-dark-rgb));
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 1.1rem + 2.2vw, 3.25rem);
-    font-weight: 300;
-    line-height: 1.22;
-    text-wrap: pretty;
-  }
-
-  .line[data-reveal] .w {
-    opacity: 0.26;
-    transition: opacity 0.45s var(--ease);
-  }
-
-  .line[data-reveal] .w.is-on {
-    opacity: 1;
-  }
-
-  .line__fig {
-    position: relative;
-    font-weight: 400;
+    font-size: clamp(3.25rem, 2rem + 4vw, 6rem);
     font-variant-numeric: lining-nums tabular-nums;
-    white-space: nowrap;
+    font-weight: 300;
+    line-height: 1;
   }
 
-  /* The silver line under a figure: drawn from the start edge as the figure lights */
-  .line__fig::after {
-    position: absolute;
-    inset-inline: 0;
-    bottom: -0.06em;
-    height: 2px;
-    background: linear-gradient(90deg, var(--silver-deep), var(--silver-light), var(--silver));
-    transform-origin: left center;
-    content: '';
+  :global([dir='rtl']) .world__figure {
+    text-align: right;
   }
 
-  :global([dir='rtl']) .line__fig::after {
-    transform-origin: right center;
+  .world__text {
+    max-width: 26ch;
+    margin: var(--s-2) 0 0;
+    color: rgb(var(--on-dark-rgb) / 0.8);
+    font-size: var(--fs-lead);
+    line-height: 1.45;
   }
 
-  .line[data-reveal] .line__fig::after {
-    transform: scaleX(0);
-    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.1s;
-  }
-
-  .line[data-reveal] .line__fig.is-on::after {
-    transform: scaleX(1);
-  }
-
-  /* The plates, seen from above: silver rims; the fifth turns to a dashed outline and drops, as if cleared away */
-  .line__plates {
-    display: block;
-    width: clamp(15rem, 10rem + 18vw, 25rem);
-    height: auto;
+  .world__source {
     margin-top: var(--s-4);
+    color: rgb(var(--on-dark-rgb) / 0.7);
+  }
+
+  .world__source a {
+    text-decoration-color: rgb(var(--on-dark-rgb) / 0.35);
+  }
+
+  .world__source a:hover {
+    color: rgb(var(--on-dark-rgb));
+  }
+
+  /* Five plates seen from above, silver rims; the fifth turns to a dashed outline and drops, as if cleared away */
+  .plates {
+    display: block;
+    width: min(100%, 15rem);
+    height: auto;
+    margin-top: var(--s-3);
     overflow: visible;
     fill: none;
     stroke: var(--silver);
     stroke-width: 1.5;
   }
 
-  .line__plates :global(*) {
+  .plates :global(*) {
     vector-effect: non-scaling-stroke;
   }
 
@@ -342,33 +340,38 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
     stroke-dasharray: 3 5;
     opacity: 0.45;
     translate: 0 10px;
-    transition:
-      opacity 0.6s var(--ease),
-      translate 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .line[data-reveal]:not(.is-fifth) .plate--bin {
-    stroke-dasharray: none;
-    opacity: 1;
-    translate: 0 0;
-  }
+  /* One moment of motion for the whole page: things rise in once as they come into view, side by side ones one after
+     another (--d), and their figures count up. Hidden at once and only the arrival is animated. Set by the script
+     only, never under reduced motion, so without it everything simply shows. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-anim-scope][data-anim] [data-reveal] {
+      opacity: 0;
+      transform: translateY(28px);
+    }
 
-  .line__source {
-    margin-top: var(--s-3);
-    color: rgb(var(--on-dark-rgb) / 0.7);
-  }
+    [data-anim-scope][data-anim] [data-reveal].is-in {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity 0.7s var(--ease) calc(var(--d, 0) * 0.12s),
+        transform 0.8s cubic-bezier(0.23, 1, 0.32, 1) calc(var(--d, 0) * 0.12s);
+    }
 
-  .line__source a:hover {
-    color: rgb(var(--on-dark-rgb));
-  }
+    [data-anim-scope][data-anim] .plate--bin {
+      stroke-dasharray: none;
+      opacity: 1;
+      translate: 0 0;
+    }
 
-  .line__source a {
-    text-decoration-color: rgb(var(--on-dark-rgb) / 0.35);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .plate--bin {
-      transition: none;
+    [data-anim-scope][data-anim] .is-in .plate--bin {
+      stroke-dasharray: 3 5;
+      opacity: 0.45;
+      translate: 0 10px;
+      transition:
+        opacity 0.6s var(--ease) 0.9s,
+        translate 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.9s;
     }
   }
 
@@ -549,6 +552,11 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
       grid-template-columns: minmax(0, 1fr);
     }
 
+    .world__stats {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-4);
+    }
+
     /* Phones and tablets: the waste cut full width, then the three returns stacked */
     .back__list {
       grid-template-columns: minmax(0, 1fr);
@@ -571,67 +579,46 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
 
 <script>
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The page's one motion (26 Nov 2026, the owner: "animate this page"): in each [data-anim-scope] section, the
+  // [data-reveal] parts rise in once as they come into view, and the figures inside them count up (only the
+  // aria-hidden copy changes; decimals and separators kept: 1.05, 1,05, 8–10%, ~7:1). A section already on screen
+  // when the page opens just shows. Nothing under reduced motion.
   const NUM = /\d+(?:[.,]\d+)?/g;
-
-  // 2. The sentence lights up word by word as it moves up the screen (from when its top is near the bottom of the
-  //    screen until its end is a little below the middle). Lit words stay lit. A figure counts up once, when it lights;
-  //    only its aria-hidden copy changes, keeping decimals and separator (1.05, 1,05). At the second figure ("one
-  //    fifth") the fifth plate goes in the bin. A reader who lands with the line already passed sees it all at once.
-  const line = document.querySelector<HTMLElement>('[data-line]');
-  if (line && !still) {
-    const text = line.querySelector<HTMLElement>('.line__text')!;
-    const words = [...line.querySelectorAll<HTMLElement>('.w')];
-    const count = (el: HTMLElement) => {
-      const final = el.textContent ?? '';
-      if (!/\d/.test(final)) return;
-      const start = performance.now();
-      const step = (now: number) => {
-        const k = Math.min((now - start) / 900, 1);
-        const e = 1 - Math.pow(1 - k, 3);
-        el.textContent = final.replace(NUM, (m) => {
-          const sep = m.includes(',') ? ',' : '.';
-          const dec = (m.split(/[.,]/)[1] ?? '').length;
-          return (parseFloat(m.replace(',', '.')) * e).toFixed(dec).replace('.', sep);
-        });
-        if (k < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
+  const count = (el: HTMLElement) => {
+    const final = el.textContent ?? '';
+    if (!/\d/.test(final)) return;
+    const start = performance.now();
+    const step = (now: number) => {
+      const k = Math.min((now - start) / 1100, 1);
+      const e = 1 - Math.pow(1 - k, 3);
+      el.textContent = final.replace(NUM, (m) => {
+        const sep = m.includes(',') ? ',' : '.';
+        const dec = (m.split(/[.,]/)[1] ?? '').length;
+        return (parseFloat(m.replace(',', '.')) * e).toFixed(dec).replace('.', sep);
+      });
+      if (k < 1) requestAnimationFrame(step);
     };
-    let lit = 0;
-    const light = (n: number, animate: boolean) => {
-      for (; lit < n; lit++) {
-        const w = words[lit];
-        w.classList.add('is-on');
-        if (w.dataset.fig !== undefined) {
-          if (animate) count(w.querySelector<HTMLElement>('[data-count]')!);
-          if (Number(w.dataset.fig) >= 1) line.classList.add('is-fifth');
+    requestAnimationFrame(step);
+  };
+  if (!still && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          const el = e.target as HTMLElement;
+          el.classList.add('is-in');
+          el.querySelectorAll<HTMLElement>('[data-count]').forEach(count);
+          io.unobserve(el);
         }
-      }
-    };
-    const progress = () => {
-      const r = text.getBoundingClientRect();
-      const vh = innerHeight;
-      return Math.min(Math.max((vh * 0.88 - r.top) / (vh * 0.88 - vh * 0.5 + r.height), 0), 1);
-    };
-    const p0 = progress();
-    if (p0 < 1) {
-      line.dataset.reveal = '';
-      light(Math.round(p0 * words.length), false);
-      let queued = false;
-      const tick = () => {
-        queued = false;
-        light(Math.round(progress() * words.length), true);
-        if (lit >= words.length) removeEventListener('scroll', onScroll);
-      };
-      const onScroll = () => {
-        if (!queued) {
-          queued = true;
-          requestAnimationFrame(tick);
-        }
-      };
-      addEventListener('scroll', onScroll, { passive: true });
-    } else line.classList.add('is-fifth');
-  } else line?.classList.add('is-fifth');
+      },
+      { threshold: 0.3, rootMargin: '0px 0px -6% 0px' },
+    );
+    for (const scope of document.querySelectorAll<HTMLElement>('[data-anim-scope]')) {
+      if (scope.getBoundingClientRect().top < innerHeight * 0.85) continue;
+      scope.dataset.anim = '';
+      scope.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => io.observe(el));
+    }
+  }
 
   // 6. Each card's film loads only when it comes into view, and pauses when it leaves. Reduced motion keeps the poster.
   const clips = [...document.querySelectorAll<HTMLVideoElement>('[data-clip]')];
