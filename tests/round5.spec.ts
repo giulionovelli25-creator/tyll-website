@@ -193,28 +193,36 @@ for (const lang of locales)
       expect(await page.locator('#calculator').innerText()).not.toMatch(/\bUK\b|Großbritannien|Regno Unito|المملكة المتحدة/);
     });
 
-    test('the timeline draws on scroll, and the page is short', async ({ page }, info) => {
+    test('what hotels got back: industry figures, said at the top, no timeline; the page is short', async ({ page }, info) => {
+      const c = sustainability[lang].back;
       await page.goto(pages.sustainability[lang]);
-      const p = () => page.locator('[data-back]').evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue('--p')));
-      expect(await p()).toBeLessThan(0.05);
-      await page.locator('[data-back] .timeline').evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - innerHeight * 0.3, behavior: 'instant' }));
-      await expect.poll(p).toBeGreaterThan(0.95);
+      const back = page.locator('.back');
+      await expect(back.locator('h2')).toHaveText(c.title);
+      await expect(back.locator('.back__sub')).toHaveText(c.sub);
+      // the disclaimer sits under the heading, before any figure, at body size
+      const subTop = await back.locator('.back__sub').evaluate((e) => e.getBoundingClientRect().top);
+      const figTop = await back.locator('.back__figure').first().evaluate((e) => e.getBoundingClientRect().top);
+      expect(subTop).toBeLessThan(figTop);
+      expect(await back.locator('.back__sub').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(16);
+      await expect(back.locator('.back__lead .back__figure')).toHaveText(c.lead.figure);
+      await expect(back.locator('.back__list li')).toHaveCount(3);
+      await expect(back.locator('.back__label')).toHaveText(c.returnsLabel);
+      await expect(back.locator('.back__source a')).toHaveAttribute('href', c.source.url);
+      expect(await page.locator('.timeline, .timeline__step, .timeline__dot').count()).toBe(0);
+      // no Tyll claims in this section
+      expect(await back.innerText()).not.toMatch(/with Tyll|mit Tyll|con Tyll|مع Tyll/);
       if (width(info) >= 1440) {
         const screens = await page.evaluate(() => document.documentElement.scrollHeight / innerHeight);
         info.annotations.push({ type: 'screens', description: `${lang} sustainability ${screens.toFixed(2)} screens at ${width(info)} × ${height(info)}` });
         expect(screens).toBeLessThanOrEqual(6.6);
       }
-      // the cities moved to the About page; four milestones, one figure each
       expect(await page.locator('.city, .place, [data-wall]').count()).toBe(0);
-      await expect(page.locator('.timeline__step')).toHaveCount(4);
-      for (const st of await page.locator('.timeline__step').all()) await expect(st.locator('.timeline__figure')).toHaveCount(1);
     });
 
     test.describe('reduced motion', () => {
       test.use({ reducedMotion: 'reduce' });
-      test('nothing moves: timeline drawn, figures final, no hero animation, clips stay posters', async ({ page }) => {
+      test('nothing moves: figures final, no hero animation, clips stay posters', async ({ page }) => {
         await page.goto(pages.sustainability[lang]);
-        expect(await page.locator('[data-back]').evaluate((e) => getComputedStyle(e).getPropertyValue('--p').trim())).toBe('1');
         expect(await page.locator('.hero__inner').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
         await page.locator('.line').scrollIntoViewIfNeeded();
         await page.waitForTimeout(600);

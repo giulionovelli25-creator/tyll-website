@@ -9,9 +9,10 @@
 // - WRAP, UK Food Waste and Food Surplus Key Facts, July 2025: hospitality and food service waste is 18% "of the
 //   amounts of food purchased" (2021 data; WRAP's food waste includes inedible parts such as bones and peel). Used only
 //   in the calculator, labelled as that UK average.
-// - WRI and WRAP for Champions 12.3, 2018 (42 hotel sites in 15 countries): 21% less food waste by weight in the
-//   first year; over 70% of sites had their investment back within one year, 95% within two; a benefit-cost ratio of
-//   "nearly 7:1 over a three-year time frame" (in dollars, so no "per euro" wording).
+// - WRI and WRAP for Champions 12.3, 2018 (42 hotel sites in 15 countries): "21 percent reduction of food waste by
+//   weight over a 12-month time frame"; "within the first year ... over 70 percent of the sites recouped their
+//   investment. Within two years ... 95 percent"; an average benefit-cost ratio "nearly 7:1 over a three-year time
+//   frame" (shown as ~7:1). The investment is the hotels' own food-waste programmes, never Tyll.
 // - EU Waste Framework Directive, amended 2025: food waste in retail and consumption (restaurants, food services and
 //   households) down 30% per person by 2030, against the 2021–2023 average.
 // - The National, 8 Dec 2024: Ne'ma estimates AED 6 billion of food is wasted in the Emirates each year; the Ne'ma
@@ -66,8 +67,9 @@ export type SustainabilityCopy = {
     /** One line under the calculator: the EU's 2030 target (the UAE's on the Arabic page) */
     target: { text: string; source: Source };
   };
-  back: { title: string; steps: { when: string; stats: { figure: string; text: string }[] }[]; source: Source };
-  note: string;
+  /** What hotels got back: industry figures, never Tyll's. The waste cut on its own, then the return on the hotels' own
+      programs as three figures side by side (no timeline: they are not steps in a sequence). */
+  back: { title: string; sub: string; lead: { figure: string; text: string }; returnsLabel: string; returns: { figure: string; text: string }[]; source: Source };
   /** Three ways Tyll helps, each with its solution page's own film */
   act: { title: string; items: { page: 'waste' | 'expiry' | 'forecasting'; text: string }[]; offer: string };
   close: { title: string; waste: string };
@@ -111,16 +113,17 @@ export const sustainability: Record<Locale, SustainabilityCopy> = {
       },
     },
     back: {
-      title: 'What did hotels get back?',
-      steps: [
-        { when: 'First year', stats: [{ figure: '−21%', text: 'less kitchen food waste by weight, on average.' }] },
-        { when: 'Within a year', stats: [{ figure: '70%+', text: 'of the hotels had their investment back.' }] },
-        { when: 'Within two years', stats: [{ figure: '95%', text: 'of the hotels had their investment back.' }] },
-        { when: 'Over three years', stats: [{ figure: '7×', text: 'nearly: what came back for what they invested.' }] },
+      title: 'What hotels got back from cutting food waste',
+      sub: 'Results from 42 hotel sites that ran their own food-waste programs. Industry research, not Tyll data.',
+      lead: { figure: '−21%', text: 'kitchen food waste by weight in the first year, on average' },
+      returnsLabel: 'Return on their waste programs',
+      returns: [
+        { figure: '70%+', text: 'of sites recouped their investment within 1 year' },
+        { figure: '95%', text: 'within 2 years' },
+        { figure: '~7:1', text: 'average benefit for every 1 spent, over 3 years' },
       ],
-      source: { name: 'WRI and WRAP for Champions 12.3, 2018 (42 hotel sites in 15 countries)', url: WRI },
+      source: { name: 'Source: WRI & WRAP for Champions 12.3, 2018', url: WRI },
     },
-    note: 'Industry figures, not Tyll results.',
     act: {
       title: 'Where Tyll helps',
       items: [
@@ -169,16 +172,17 @@ export const sustainability: Record<Locale, SustainabilityCopy> = {
       },
     },
     back: {
-      title: 'Was haben Hotels zurückbekommen?',
-      steps: [
-        { when: 'Erstes Jahr', stats: [{ figure: '−21 %', text: 'weniger Küchenabfall nach Gewicht, im Durchschnitt.' }] },
-        { when: 'Innerhalb eines Jahres', stats: [{ figure: '70 %+', text: 'der Hotels hatten ihre Investition zurück.' }] },
-        { when: 'Innerhalb von zwei Jahren', stats: [{ figure: '95 %', text: 'der Hotels hatten ihre Investition zurück.' }] },
-        { when: 'Über drei Jahre', stats: [{ figure: '7×', text: 'fast: so viel kam für das Investierte zurück.' }] },
+      title: 'Was Hotels zurückbekamen, als sie Lebensmittelabfall senkten',
+      sub: 'Ergebnisse aus 42 Hotels, die eigene Programme gegen Lebensmittelabfall umsetzten. Branchenforschung, keine Tyll-Daten.',
+      lead: { figure: '−21 %', text: 'Küchenabfall nach Gewicht im ersten Jahr, im Durchschnitt' },
+      returnsLabel: 'Rendite ihrer Abfallprogramme',
+      returns: [
+        { figure: '70 %+', text: 'der Hotels hatten ihre Investition innerhalb eines Jahres zurück' },
+        { figure: '95 %', text: 'innerhalb von 2 Jahren' },
+        { figure: '~7:1', text: 'durchschnittlicher Nutzen für jeden eingesetzten Euro, über 3 Jahre' },
       ],
-      source: { name: 'WRI und WRAP für Champions 12.3, 2018 (42 Hotels in 15 Ländern)', url: WRI },
+      source: { name: 'Quelle: WRI & WRAP für Champions 12.3, 2018', url: WRI },
     },
-    note: 'Branchenzahlen, keine Tyll-Ergebnisse.',
     act: {
       title: 'Wo Tyll hilft',
       items: [
@@ -227,16 +231,17 @@ export const sustainability: Record<Locale, SustainabilityCopy> = {
       },
     },
     back: {
-      title: 'Cosa hanno recuperato gli hotel?',
-      steps: [
-        { when: 'Primo anno', stats: [{ figure: '−21%', text: 'di spreco in cucina, in peso, in media.' }] },
-        { when: 'Entro un anno', stats: [{ figure: '70%+', text: 'degli hotel ha recuperato l’investimento.' }] },
-        { when: 'Entro due anni', stats: [{ figure: '95%', text: 'degli hotel ha recuperato l’investimento.' }] },
-        { when: 'In tre anni', stats: [{ figure: '7×', text: 'quasi: quanto è tornato per ciò che hanno investito.' }] },
+      title: 'Cosa hanno ottenuto gli hotel riducendo lo spreco alimentare',
+      sub: 'Risultati di 42 hotel che hanno avviato i propri programmi contro lo spreco. Ricerca di settore, non dati Tyll.',
+      lead: { figure: '−21%', text: 'di spreco in cucina, in peso, nel primo anno, in media' },
+      returnsLabel: 'Ritorno dei loro programmi contro lo spreco',
+      returns: [
+        { figure: '70%+', text: 'degli hotel ha recuperato l’investimento entro 1 anno' },
+        { figure: '95%', text: 'entro 2 anni' },
+        { figure: '~7:1', text: 'beneficio medio per ogni 1 speso, in 3 anni' },
       ],
-      source: { name: 'WRI e WRAP per Champions 12.3, 2018 (42 hotel in 15 paesi)', url: WRI },
+      source: { name: 'Fonte: WRI e WRAP per Champions 12.3, 2018', url: WRI },
     },
-    note: 'Dati di settore, non risultati di Tyll.',
     act: {
       title: 'Dove aiuta Tyll',
       items: [
@@ -285,16 +290,17 @@ export const sustainability: Record<Locale, SustainabilityCopy> = {
       },
     },
     back: {
-      title: 'ماذا استعادت الفنادق؟',
-      steps: [
-        { when: 'السنة الأولى', stats: [{ figure: '−21%', text: 'هدر أقل في المطبخ وزنًا، في المتوسط.' }] },
-        { when: 'خلال عام', stats: [{ figure: '+70%', text: 'من الفنادق استعادت استثمارها.' }] },
-        { when: 'خلال عامين', stats: [{ figure: '95%', text: 'من الفنادق استعادت استثمارها.' }] },
-        { when: 'على مدى 3 سنوات', stats: [{ figure: '7×', text: 'تقريبًا: ما عاد مقابل ما استُثمر.' }] },
+      title: 'ماذا استعادت الفنادق من خفض هدر الطعام',
+      sub: 'نتائج من 42 فندقًا نفّذت برامجها الخاصة لخفض هدر الطعام. بحث من القطاع، وليست بيانات Tyll.',
+      lead: { figure: '−21%', text: 'من هدر المطبخ وزنًا في السنة الأولى، في المتوسط' },
+      returnsLabel: 'العائد على برامجها لخفض الهدر',
+      returns: [
+        { figure: '+70%', text: 'من الفنادق استعادت استثمارها خلال عام واحد' },
+        { figure: '95%', text: 'خلال عامين' },
+        { figure: '~7:1', text: 'متوسط العائد مقابل كل 1 يُنفق، على مدى 3 سنوات' },
       ],
-      source: { name: 'WRI وWRAP لصالح Champions 12.3، 2018 (42 فندقًا في 15 دولة)', url: WRI },
+      source: { name: 'المصدر: WRI وWRAP لصالح Champions 12.3، 2018', url: WRI },
     },
-    note: 'أرقام القطاع، وليست نتائج Tyll.',
     act: {
       title: 'أين يساعد Tyll',
       items: [

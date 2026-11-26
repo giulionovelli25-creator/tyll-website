@@ -8,8 +8,9 @@
 //    are in the HTML; only an aria-hidden copy counts, so search engines, previews and screen readers always get the
 //    final numbers.
 // 3. The calculator (SusCalculator.astro), with the EU's 2030 target under it (the UAE's on the Arabic page).
-// 4. What hotels got back: a timeline whose line draws from the start edge as you scroll, each milestone appearing as
-//    the line reaches it; four milestones, one figure each. Vertical on phones.
+// 4. What hotels got back from cutting food waste (25 Nov 2026, the owner's brief): industry research, said at the
+//    top; the 21% waste cut on its own, then the return on the hotels' own programs as three figures side by side,
+//    with no line or circles, since they are not a sequence. Stacked on phones.
 // 5. (The three cities moved to the About page on 25 Nov 2026, the owner: they belong with our story.)
 // 6. Where Tyll helps: three cards, each with its solution page's film, loaded only when it scrolls into view.
 // 7. The dark closing band.
@@ -89,37 +90,35 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
 
   <SusCalculator lang={lang} />
 
-  <section class="back" aria-labelledby="sus-back" data-back>
+  <!-- What hotels got back: industry research, not Tyll's. The waste cut stands alone; the return on the hotels' own
+       programs sits beside it as three figures, with nothing joining them, since they are not steps in a sequence. -->
+  <section class="back" aria-labelledby="sus-back">
     <div class="wrap">
       <h2 id="sus-back" class="display sus__title">{c.back.title}</h2>
-      <div class="timeline">
-        <span class="timeline__track" aria-hidden="true"><span class="timeline__fill"></span></span>
-        <ol class="timeline__steps" role="list">
+      <p class="back__sub">{c.back.sub}</p>
+      <div class="back__lead">
+        <p class="back__figure back__figure--lead" dir="ltr">{c.back.lead.figure}</p>
+        <p class="back__text">{c.back.lead.text}</p>
+      </div>
+      <div class="back__returns">
+        <h3 class="back__label">{c.back.returnsLabel}</h3>
+        <ul class="back__list" role="list">
           {
-            c.back.steps.map((step, i) => (
-              <li class="timeline__step" style={`--at:${i / (c.back.steps.length - 1)}`} data-step>
-                <span class="timeline__dot" aria-hidden="true" />
-                <p class="timeline__when">{step.when}</p>
-                {step.stats.map((st) => (
-                  <p class="timeline__stat">
-                    <span class="timeline__figure" dir="ltr">{st.figure}</span>
-                    <span class="timeline__text">{st.text}</span>
-                  </p>
-                ))}
+            c.back.returns.map((r) => (
+              <li>
+                <p class="back__figure" dir="ltr">{r.figure}</p>
+                <p class="back__text">{r.text}</p>
               </li>
             ))
           }
-        </ol>
+        </ul>
       </div>
-      <div class="back__foot">
-        <p class="source">
-          <a href={c.back.source.url} target="_blank" rel="noopener">
-            {c.back.source.name}
-            <span class="visually-hidden"> {tab}</span>
-          </a>
-        </p>
-        <p class="note">{c.note}</p>
-      </div>
+      <p class="source back__source">
+        <a href={c.back.source.url} target="_blank" rel="noopener">
+          {c.back.source.name}
+          <span class="visually-hidden"> {tab}</span>
+        </a>
+      </p>
     </div>
   </section>
 
@@ -373,104 +372,85 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
     }
   }
 
-  /* 4. The timeline: a line that fills from the start edge, the milestones arriving as it reaches them. --p is
-     the drawn share, 1 by default (no JavaScript, reduced motion) and set from the scroll otherwise. */
+  /* 4. What hotels got back: the waste cut on its own, then the return on their programs, three figures side by side */
   .back {
-    --p: 1;
     padding-block: var(--band-y);
   }
 
-  .timeline {
-    position: relative;
+  .back__sub {
+    max-width: 46rem;
+    margin: var(--s-2) 0 0;
+    color: var(--ink);
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+
+  .back__lead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem var(--s-4);
+    margin-top: var(--s-5);
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .back__figure {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.8rem + 2vw, 3.75rem);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .back__figure--lead {
+    font-size: clamp(3.5rem, 2.2rem + 4.4vw, 6.5rem);
+  }
+
+  .back__text {
+    margin: 0.5rem 0 0;
+    color: var(--graphite);
+    line-height: 1.45;
+  }
+
+  .back__lead .back__text {
+    max-width: 26ch;
+    margin: 0;
+    font-size: var(--fs-lead);
+  }
+
+  .back__returns {
     margin-top: var(--s-4);
   }
 
-  .timeline__track {
-    position: absolute;
-    top: 7px;
-    inset-inline: 0;
-    height: 2px;
-    background: var(--sand-300);
-  }
-
-  .timeline__fill {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    width: calc(var(--p) * 100%);
-    background: var(--ink);
-  }
-
-  .timeline__steps {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--s-4);
+  .back__label {
     margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .timeline__step {
-    --on: clamp(0, (var(--p) - var(--at) * 0.92) * 12, 1);
-    position: relative;
-    padding-top: var(--s-4);
-    opacity: calc(0.12 + var(--on) * 0.88);
-    transform: translateY(calc((1 - var(--on)) * 10px));
-  }
-
-  .timeline__dot {
-    position: absolute;
-    top: 0;
-    inset-inline-start: 0;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--ink);
-    border-radius: 50%;
-    background: var(--paper);
-  }
-
-  .timeline__when {
-    margin: 0 0 var(--s-2);
-    color: var(--steel);
+    color: var(--ink);
+    font-family: var(--font);
     font-size: var(--fs-small);
     font-weight: 600;
   }
 
-  .timeline__stat {
+  .back__list {
     display: grid;
-    gap: 0.25rem;
-    max-width: 26ch;
-    margin: 0 0 var(--s-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: var(--s-3) 0 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .timeline__figure {
-    font-family: var(--font-display);
-    font-size: clamp(2.25rem, 1.7rem + 1.8vw, 3.25rem);
-    font-variant-numeric: lining-nums tabular-nums;
-    font-weight: 300;
-    line-height: 1;
-    text-align: start;
+  .back__list .back__text {
+    max-width: 24ch;
   }
 
-  :global([dir='rtl']) .timeline__figure {
+  :global([dir='rtl']) .back__figure {
     text-align: right;
   }
 
-  .timeline__text {
-    color: var(--graphite);
-  }
-
-  .back__foot {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem var(--s-4);
-    margin-top: var(--s-3);
-  }
-
-  .note {
-    margin: 0;
-    color: var(--steel);
-    font-size: var(--fs-small);
+  .back__source {
+    margin-top: var(--s-4);
   }
 
   /* 6. Where Tyll helps: three cards with the solution pages' films */
@@ -569,28 +549,10 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
       grid-template-columns: minmax(0, 1fr);
     }
 
-    /* The timeline runs down the start edge on phones */
-    .timeline__track {
-      top: 0;
-      bottom: 0;
-      inset-inline: 7px auto;
-      width: 2px;
-      height: auto;
-    }
-
-    .timeline__fill {
-      inset-inline: 0;
-      width: auto;
-      height: calc(var(--p) * 100%);
-    }
-
-    .timeline__steps {
+    /* Phones and tablets: the waste cut full width, then the three returns stacked */
+    .back__list {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    .timeline__step {
-      padding-top: 0;
-      padding-inline-start: var(--s-4);
+      gap: var(--s-3);
     }
   }
 
@@ -670,33 +632,6 @@ const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
       addEventListener('scroll', onScroll, { passive: true });
     } else line.classList.add('is-fifth');
   } else line?.classList.add('is-fifth');
-
-  // 4. The timeline draws as it moves up the screen: 0 when its top is near the bottom of the screen, 1 when it is
-  //    a little above the middle. One passive scroll listener, one style write per frame.
-  const back = document.querySelector<HTMLElement>('[data-back]');
-  if (back && !still) {
-    const track = back.querySelector<HTMLElement>('.timeline')!;
-    let queued = false;
-    const draw = () => {
-      queued = false;
-      const r = track.getBoundingClientRect();
-      const vh = innerHeight;
-      const p = Math.min(Math.max((vh * 0.92 - r.top) / (vh * 0.5), 0), 1);
-      back.style.setProperty('--p', p.toFixed(3));
-    };
-    draw();
-    addEventListener(
-      'scroll',
-      () => {
-        if (!queued) {
-          queued = true;
-          requestAnimationFrame(draw);
-        }
-      },
-      { passive: true },
-    );
-    addEventListener('resize', draw);
-  }
 
   // 6. Each card's film loads only when it comes into view, and pauses when it leaves. Reduced motion keeps the poster.
   const clips = [...document.querySelectorAll<HTMLVideoElement>('[data-clip]')];
