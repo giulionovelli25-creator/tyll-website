@@ -13,7 +13,7 @@ const t = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it 
 export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution> = {
   forecasting: {
     key: 'forecasting',
-    icon: 'forecast',
+    icon: 'trending-up',
     tone: 'blue',
     mark: t('guessing', 'Raten', 'تخمّن', 'indovinando'),
     pagePhoto: pagePredictions,
@@ -32,7 +32,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       {
         points: [
           t('Tyll’s own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock. No AI chooses a quantity.', 'Tylls eigenes Prognosemodell berechnet jede Menge aus Verkaufshistorie, Reservierungen, Events, Hotelbelegung und aktuellem Bestand. Keine KI wählt eine Menge.', 'يحسب نموذج التوقعات الخاص بـ Tyll كل كمية من سجل المبيعات والحجوزات والفعاليات وإشغال الفندق والمخزون الحالي. لا يختار الذكاء الاصطناعي أي كمية.', 'Il modello di previsione di Tyll calcola ogni quantità da storico vendite, prenotazioni, eventi, occupazione dell’hotel e scorte attuali. Nessuna IA sceglie una quantità.'),
-          t('For example, a supplier late on 7 of the last 10 Wednesdays becomes the alert “Wagyu beef mince short before lunch tomorrow”, with two actions: order from the backup supplier, or call the supplier.', 'Zum Beispiel wird ein Lieferant, der an 7 der letzten 10 Mittwoche zu spät kam, zum Hinweis „Wagyu-Hackfleisch vor dem Mittagessen morgen knapp“, mit zwei Aktionen: beim Ersatzlieferanten bestellen oder den Lieferanten anrufen.', 'مثلًا، مورّد تأخر في 7 من آخر 10 أيام أربعاء يصبح تنبيه «لحم واغيو المفروم ينقص قبل غداء الغد»، مع إجراءين: الطلب من المورّد البديل، أو الاتصال بالمورّد.', 'Per esempio, un fornitore in ritardo 7 degli ultimi 10 mercoledì diventa l’avviso “Carne macinata di wagyu insufficiente prima del pranzo di domani”, con due azioni: ordinare dal fornitore di riserva o chiamare il fornitore.'),
+          t('For example, a supplier late on 7 of its last 10 deliveries on that weekday becomes the alert “Wagyu beef mince short before lunch tomorrow”, with two actions: order from the backup supplier, or call the supplier.', 'Zum Beispiel wird ein Lieferant, der bei 7 der letzten 10 Lieferungen an diesem Wochentag zu spät kam, zum Hinweis „Wagyu-Hackfleisch vor dem Mittagessen morgen knapp“, mit zwei Aktionen: beim Ersatzlieferanten bestellen oder den Lieferanten anrufen.', 'مثلًا، مورّد تأخر في 7 من آخر 10 توريدات في اليوم نفسه من الأسبوع يصبح تنبيه «لحم واغيو المفروم ينقص قبل غداء الغد»، مع إجراءين: الطلب من المورّد البديل، أو الاتصال بالمورّد.', 'Per esempio, un fornitore in ritardo in 7 delle ultime 10 consegne in quel giorno della settimana diventa l’avviso “Carne macinata di wagyu insufficiente prima del pranzo di domani”, con due azioni: ordinare dal fornitore di riserva o chiamare il fornitore.'),
         ],
       },
     ],
@@ -46,7 +46,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
     rows: [
       {
         id: 'to-order',
-        icon: 'stock',
+        icon: 'list-plus',
         film: 'forecasting-to-order',
         name: t('To order and par levels', 'Zu bestellen und Meldebestände', 'ما يجب طلبه ومستويات المخزون', 'Da ordinare e livelli di riordino'),
         line: t('A minimum and maximum per item, and what to order to get back there.', 'Ein Minimum und Maximum pro Artikel, und was zu bestellen ist, um dorthin zurückzukommen.', 'حد أدنى وأقصى لكل صنف، وما يجب طلبه للعودة إليه.', 'Un minimo e un massimo per articolo, e cosa ordinare per tornarci.'),
@@ -57,18 +57,18 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'top-ups',
-        icon: 'orders',
+        icon: 'arrow-left-right',
         film: 'forecasting-top-ups',
         name: t('Outlet top-ups', 'Auffüllungen der Outlets', 'تزويد المنافذ', 'Rifornimenti dei punti vendita'),
         line: t('Each outlet topped up from the main store.', 'Jedes Outlet aus dem Hauptlager aufgefüllt.', 'كل منفذ يُزوَّد من المخزن الرئيسي.', 'Ogni punto vendita rifornito dal magazzino centrale.'),
         points: [
           t('Outlet stock against each outlet’s own par level, from the last count at close.', 'Der Bestand im Outlet gegen seinen eigenen Meldebestand, aus der letzten Zählung bei Schichtende.', 'مخزون المنفذ مقابل مستواه الخاص، من آخر عدّ عند الإغلاق.', 'Le scorte del punto vendita contro il suo livello di riordino, dall’ultimo conteggio a fine servizio.'),
-          t('The top-up comes from the main store, and the outlet is charged for it.', 'Die Auffüllung kommt aus dem Hauptlager, und das Outlet wird dafür belastet.', 'يأتي التزويد من المخزن الرئيسي، ويُحمَّل المنفذ تكلفته.', 'Il rifornimento arriva dal magazzino centrale, e il punto vendita lo paga.'),
+          t('The top-up comes from the main store and is charged to the outlet when the store issues it, as a requisition.', 'Die Auffüllung kommt aus dem Hauptlager und wird dem Outlet belastet, sobald das Lager sie als Anforderung ausgibt.', 'يأتي التزويد من المخزن الرئيسي ويُحمَّل على المنفذ عندما يصرفه المخزن كطلب صرف.', 'Il rifornimento arriva dal magazzino centrale ed è addebitato al punto vendita quando il magazzino lo emette come richiesta.'),
         ],
       },
       {
         id: 'prep',
-        icon: 'forecast',
+        icon: 'list-todo',
         film: 'forecasting-prep',
         name: t('Plan the prep', 'Die Vorbereitung planen', 'خطط للتحضير', 'Pianifica la preparazione'),
         line: t('Portions per dish for tomorrow, 3 days or 7 days.', 'Portionen pro Gericht für morgen, 3 oder 7 Tage.', 'الحصص لكل طبق للغد أو 3 أيام أو 7 أيام.', 'Porzioni per piatto per domani, 3 o 7 giorni.'),
@@ -78,12 +78,12 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'next-7-days',
-        icon: 'forecast',
+        icon: 'calendar-days',
         film: 'forecasting-next-7-days',
         name: t('Next 7 days', 'Nächste 7 Tage', 'الأيام السبعة القادمة', 'Prossimi 7 giorni'),
         line: t('Expected guests, bookings and events for each day.', 'Erwartete Gäste, Reservierungen und Events für jeden Tag.', 'الضيوف المتوقعون والحجوزات والفعاليات لكل يوم.', 'Ospiti attesi, prenotazioni ed eventi per ogni giorno.'),
         points: [
-          t('Expected guests, the share already booked, occupancy, events and confidence for each day.', 'Erwartete Gäste, der schon reservierte Anteil, Belegung, Events und Sicherheit der Prognose für jeden Tag.', 'الضيوف المتوقعون، والنسبة المحجوزة بالفعل، والإشغال، والفعاليات، ودرجة الثقة لكل يوم.', 'Ospiti attesi, la quota già prenotata, occupazione, eventi e affidabilità per ogni giorno.'),
+          t('Expected guests, the share already booked, occupancy, events and confidence, for tomorrow or the next 7 days.', 'Erwartete Gäste, der schon reservierte Anteil, Belegung, Events und Sicherheit der Prognose, für morgen oder die nächsten 7 Tage.', 'الضيوف المتوقعون، والنسبة المحجوزة بالفعل، والإشغال، والفعاليات، ودرجة الثقة، للغد أو للأيام السبعة القادمة.', 'Ospiti attesi, la quota già prenotata, occupazione, eventi e affidabilità, per domani o per i prossimi 7 giorni.'),
           t('Guests per outlet, split into booked, walk-ins and events.', 'Gäste pro Outlet, aufgeteilt in Reservierungen, Laufkundschaft und Events.', 'الضيوف لكل منفذ، مقسّمين إلى حجوزات وزوار دون حجز وفعاليات.', 'Ospiti per punto vendita, divisi tra prenotati, clienti di passaggio ed eventi.'),
         ],
       },
@@ -92,7 +92,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
 
   auto: {
     key: 'auto',
-    icon: 'auto',
+    icon: 'send',
     tone: 'blue',
     mark: t('this morning', 'heute Morgen', 'هذا الصباح', 'stamattina'),
     pagePhoto: pageAuto,
@@ -125,7 +125,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
     rows: [
       {
         id: 'approvals',
-        icon: 'orders',
+        icon: 'stamp',
         film: 'auto-approvals',
         name: t('Orders and approvals', 'Bestellungen und Freigaben', 'الطلبات والموافقات', 'Ordini e approvazioni'),
         line: t('Every order, and who approves it.', 'Jede Bestellung, und wer sie freigibt.', 'كل طلب، ومن يوافق عليه.', 'Ogni ordine, e chi lo approva.'),
@@ -137,7 +137,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'channels',
-        icon: 'deliveries',
+        icon: 'mail',
         film: 'auto-channels',
         name: t('Each supplier’s channel', 'Der Kanal jedes Lieferanten', 'قناة كل مورّد', 'Il canale di ogni fornitore'),
         line: t('Email, WhatsApp or the supplier’s ordering system.', 'E-Mail, WhatsApp oder das Bestellsystem des Lieferanten.', 'البريد الإلكتروني أو واتساب أو نظام طلبات المورّد.', 'Email, WhatsApp o il sistema ordini del fornitore.'),
@@ -148,7 +148,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'replies',
-        icon: 'suppliers',
+        icon: 'message-square-reply',
         film: 'auto-replies',
         name: t('WhatsApp replies read', 'WhatsApp-Antworten gelesen', 'قراءة ردود واتساب', 'Risposte WhatsApp lette'),
         line: t('A supplier’s reply becomes proposed changes to the order.', 'Die Antwort eines Lieferanten wird zu vorgeschlagenen Änderungen der Bestellung.', 'رد المورّد يصبح تغييرات مقترحة على الطلب.', 'La risposta di un fornitore diventa modifiche proposte all’ordine.'),
@@ -160,7 +160,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'procurement-export',
-        icon: 'reports',
+        icon: 'file-up',
         film: 'auto-export',
         name: t('Procurement export', 'Beschaffungsexport', 'تصدير المشتريات', 'Esportazione acquisti'),
         line: t('Purchase orders, goods receipts and invoices, as CSV or JSON.', 'Bestellungen, Wareneingänge und Rechnungen, als CSV oder JSON.', 'أوامر الشراء وإيصالات الاستلام والفواتير، بصيغة CSV أو JSON.', 'Ordini, ricevimenti merce e fatture, in CSV o JSON.'),
@@ -173,7 +173,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
 
   deliveries: {
     key: 'deliveries',
-    icon: 'deliveries',
+    icon: 'truck',
     tone: 'blue',
     mark: t('never received', 'nie ankam', 'لم تستلمها', 'mai ricevuta'),
     pagePhoto: pageDeliveries,
@@ -205,7 +205,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
     rows: [
       {
         id: 'short-weight',
-        icon: 'stock',
+        icon: 'weight',
         film: 'deliveries-short-weight',
         name: t('Short weight', 'Untergewicht', 'نقص في الوزن', 'Peso inferiore'),
         line: t('More than 2% under the delivery note.', 'Mehr als 2 % unter dem Lieferschein.', 'أقل من إشعار التسليم بأكثر من 2%.', 'Oltre il 2% sotto la bolla.'),
@@ -215,7 +215,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'credits',
-        icon: 'cases',
+        icon: 'undo-2',
         film: 'deliveries-credits',
         name: t('Credit requests', 'Gutschriftsanfragen', 'طلبات الإشعار الدائن', 'Richieste di nota di credito'),
         line: t('Money suppliers owe back, asked for and chased.', 'Geld, das Lieferanten schulden, angefordert und nachverfolgt.', 'المال المستحق على المورّدين، يُطلب ويُتابَع.', 'Il denaro che i fornitori devono restituire, chiesto e sollecitato.'),
@@ -226,7 +226,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'invoice-approval',
-        icon: 'orders',
+        icon: 'file-check',
         film: 'deliveries-invoices',
         name: t('Invoice approval', 'Rechnungsfreigabe', 'اعتماد الفواتير', 'Approvazione fatture'),
         line: t('Invoice against delivery and agreed price.', 'Rechnung gegen Lieferung und vereinbarten Preis.', 'الفاتورة مقابل التوريد والسعر المتفق عليه.', 'Fattura contro consegna e prezzo concordato.'),
@@ -237,7 +237,7 @@ export const purchasing: Record<'forecasting' | 'auto' | 'deliveries', Solution>
       },
       {
         id: 'reliability',
-        icon: 'suppliers',
+        icon: 'clock-alert',
         film: 'deliveries-reliability',
         name: t('Supplier reliability', 'Lieferantenzuverlässigkeit', 'موثوقية الموردين', 'Affidabilità dei fornitori'),
         line: t('Who delivers on time, and on which days they don’t.', 'Wer pünktlich liefert, und an welchen Tagen nicht.', 'من يسلّم في الوقت، وفي أي أيام يتأخر.', 'Chi consegna in orario, e in quali giorni no.'),

@@ -1,12 +1,12 @@
 // The site's browser tests (tests/site.spec.ts), run against the dev server on http://localhost:4321.
-// Chromium and WebKit, each at 375 × 812, 768 × 1024, 1280 × 720, 1440 × 900 and 1920 × 1080 (round 4). The Chromium
+// Chromium and WebKit, each at 390 × 844, 768 × 1024, 1280 × 720, 1440 × 900 and 1920 × 1080 (round 4; 390 × 844 since round 5). The Chromium
 // runs use the installed Google Chrome (`channel: 'chrome'`), because Playwright's own Chromium cannot play H.264.
 //   npx playwright test                 all ten
 //   npx playwright test --project=chromium-1280
 import { defineConfig, devices } from '@playwright/test';
 
 const sizes = [
-  [375, 812],
+  [390, 844],
   [768, 1024],
   [1280, 720],
   [1440, 900],

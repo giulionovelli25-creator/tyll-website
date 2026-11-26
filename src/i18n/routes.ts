@@ -12,6 +12,9 @@ export const pages = {
   solutions: { en: '/en/solutions/', de: '/de/loesungen/', ar: '/ar/solutions/', it: '/it/soluzioni/' },
   how: { en: '/en/how-it-works/', de: '/de/so-funktionierts/', ar: '/ar/how-it-works/', it: '/it/come-funziona/' },
   sustainability: { en: '/en/sustainability/', de: '/de/nachhaltigkeit/', ar: '/ar/sustainability/', it: '/it/sostenibilita/' },
+  // Round 5 (25 Nov 2026): our story, and how Tyll treats your data
+  about: { en: '/en/about/', de: '/de/ueber-uns/', ar: '/ar/about/', it: '/it/chi-siamo/' },
+  security: { en: '/en/security/', de: '/de/sicherheit/', ar: '/ar/security/', it: '/it/sicurezza/' },
   groups: { en: '/en/hotel-groups/', de: '/de/hotelgruppen/', ar: '/ar/hotel-groups/', it: '/it/gruppi-alberghieri/' },
   waste: { en: '/en/solutions/log-waste/', de: '/de/loesungen/abfall-erfassen/', ar: '/ar/solutions/log-waste/', it: '/it/soluzioni/registra-sprechi/' },
   revenue: { en: '/en/solutions/revenue/', de: '/de/loesungen/umsatz/', ar: '/ar/solutions/revenue/', it: '/it/soluzioni/ricavi/' },

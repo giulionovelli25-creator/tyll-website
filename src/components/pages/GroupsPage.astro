@@ -7,6 +7,7 @@ import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
 import { t, href, type Locale } from '../../i18n';
+import { demoHref, demoRoutes } from '../../config/demo';
 import photo from '../../assets/photos/book-lobby.jpg';
 
 interface Props {
@@ -16,6 +17,8 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const g = d.groupsPage;
+// Try this in the demo: the demo's home, in the visitor's language, in a new tab (round 5)
+const tryHref = demoHref(lang, demoRoutes.groups);
 ---
 
 <Base lang={lang} page="groups" title={d.meta.groupsTitle} description={d.meta.groupsDescription}>
@@ -28,6 +31,14 @@ const g = d.groupsPage;
         <p class="grp__intro">{g.sub}</p>
         <div class="grp__actions">
           <a class="btn btn--solid btn--lg grp__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="groups-hero">{d.cta.book}</a>
+          {
+            tryHref && (
+              <a class="grp__try" href={tryHref} target="_blank" rel="noopener" data-track="demo_click" data-track-from="groups">
+                {d.solutionPage.tryHere}
+                <span class="visually-hidden"> {d.cta.newTab}</span>
+              </a>
+            )
+          }
         </div>
       </div>
       <div class="grp__photo">
@@ -36,11 +47,11 @@ const g = d.groupsPage;
     </div>
   </section>
 
-  <section class="wrap parts" aria-label={g.eyebrow}>
+  <section class="wrap parts" aria-label={g.eyebrow} data-parts>
     <ol class="parts__list" role="list">
       {
         g.sections.map(([title, text], i) => (
-          <li class="part">
+          <li class="part" style={`--i:${i}`} data-part>
             <span class="part__num" aria-hidden="true">{i + 1}</span>
             <h2>{title}</h2>
             <p>{text.replace('{systems}', d.home.works.text)}</p>
@@ -107,6 +118,7 @@ const g = d.groupsPage;
   .grp__actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--s-2);
     margin-top: var(--s-4);
   }
@@ -154,6 +166,59 @@ const g = d.groupsPage;
     border: 1px solid var(--sand-300);
     border-radius: 18px;
     background: var(--page-deep);
+    transition:
+      box-shadow 0.3s var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  .part:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-3px);
+  }
+
+  /* As the cards scroll into view they rise into place one after another, and each number fills in as its card
+     arrives (round 5, the owner). Set only by the script and never under reduced motion, so without it they simply
+     show. */
+  .parts[data-anim] .part {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    transition:
+      opacity 0.6s var(--ease) calc(var(--i) % 3 * 90ms),
+      transform 0.7s cubic-bezier(0.23, 1, 0.32, 1) calc(var(--i) % 3 * 90ms),
+      box-shadow 0.3s var(--ease);
+  }
+
+  .parts[data-anim] .part.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .parts[data-anim] .part.is-in:hover {
+    transform: translateY(-3px);
+  }
+
+  .parts[data-anim] .part__num {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+    transition:
+      background-color 0.4s var(--ease) calc(var(--i) % 3 * 90ms + 250ms),
+      color 0.4s var(--ease) calc(var(--i) % 3 * 90ms + 250ms);
+  }
+
+  .parts[data-anim] .part.is-in .part__num {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .part {
+      transition: none;
+    }
+
+    .part:hover {
+      transform: none;
+    }
   }
 
   .part__num {
@@ -172,7 +237,7 @@ const g = d.groupsPage;
 
   .part h2 {
     margin: 0;
-    font-size: 1.375rem;
+    font-size: 1.5rem;
     line-height: 1.25;
   }
 
@@ -234,4 +299,46 @@ const g = d.groupsPage;
       flex: 1 1 100%;
     }
   }
+
+  /* Try this in the demo: a quiet text link beside the button */
+  .grp__try {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--sand-600);
+    text-underline-offset: 4px;
+  }
+
+  .grp__try:hover {
+    text-decoration-color: currentColor;
+  }
 </style>
+
+<script>
+  // The six cards rise into place as they scroll into view, each row one after another; once in, they stay.
+  const parts = document.querySelector<HTMLElement>('[data-parts]');
+  if (parts && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const cards = [...parts.querySelectorAll<HTMLElement>('[data-part]')];
+    // cards already on screen when the page opens just show
+    const below = cards.filter((c) => c.getBoundingClientRect().top > innerHeight * 0.92);
+    if (below.length) {
+      parts.dataset.anim = '';
+      cards.filter((c) => !below.includes(c)).forEach((c) => c.classList.add('is-in'));
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries)
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+        },
+        { threshold: 0.2, rootMargin: '0px 0px -8% 0px' },
+      );
+      below.forEach((c) => io.observe(c));
+    }
+  }
+</script>

@@ -12,3 +12,17 @@ export const demoHref = (lang: Locale, path = '/') => {
   url.searchParams.set('lang', lang);
   return url.href;
 };
+
+/** Where each solution's "Try this in the demo →" opens (round 5, the owner's brief): the exact story in the demo. */
+export const demoRoutes: Partial<Record<string, string>> = {
+  stock: '/stock',
+  expiry: '/stock?tab=expiry',
+  waste: '/waste',
+  forecasting: '/forecast',
+  auto: '/forecast?tab=auto',
+  deliveries: '/deliveries#notes',
+  takes: '/stock?tab=takes',
+  pour: '/drinks?open=empties',
+  finance: '/money?tab=flags',
+  groups: '/',
+};

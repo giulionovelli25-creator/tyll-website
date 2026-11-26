@@ -4,6 +4,7 @@
 // in …", where the smaller features it took in are collapsed rows. The pages live in one file per section; this file
 // holds the shape and the sections.
 
+import type { IconName } from '../config/icons';
 import type { ImageMetadata } from 'astro';
 import type { Locale, SolutionKey } from '../i18n/routes';
 import { stockWaste } from './solutions-stock';
@@ -14,7 +15,7 @@ import { moreInTyll } from './solutions-more';
 type Text = Record<Locale, string>;
 export type Solution = {
   key: SolutionKey;
-  icon: 'waste' | 'stock' | 'forecast' | 'revenue' | 'finance' | 'pour' | 'expiry' | 'takes' | 'auto' | 'orders' | 'suppliers' | 'deliveries' | 'cash' | 'cases' | 'reports';
+  icon: IconName;
   /** The colour of the solution's section in the product: Stock and waste teal, Purchasing blue, Reconciliation violet */
   tone: 'teal' | 'violet' | 'blue' | 'rose';
   /** The one word or phrase of the headline shown in that colour: an exact part of the headline in each language */

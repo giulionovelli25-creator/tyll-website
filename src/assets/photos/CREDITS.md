@@ -37,6 +37,17 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
 
+Round 5 (25 Nov 2026): three new photographs for the Sustainability page's city cards, all from Pexels (Pexels License: free for commercial use, no attribution required; credited here anyway). Downloaded at 2000 px wide from images.pexels.com. Chosen without visible logos, signage text or alcohol.
+
+| File | Source | Licence |
+| --- | --- | --- |
+| sus-berlin.jpg | https://www.pexels.com/photo/museum-island-28376557/ (Mohammed Shaheen; the TV tower over the Spree, Berlin card) | Pexels License |
+| sus-zurich.jpg | https://www.pexels.com/photo/buildings-by-river-in-zurich-switzerland-4857651/ (Yovan Verma; St. Peter and the Limmat, Zürich card) | Pexels License |
+| sus-dubai.jpg | https://www.pexels.com/photo/skyline-of-dubai-with-burj-khalifa-at-golden-hour-19894545/ (Yassen Kounchev; the skyline at golden hour, Dubai card) | Pexels License |
+
+- Sustainability page since round 5: sales-buffet.jpg (hero, a hotel buffet under heat lamps) and the three city photographs above. The two stock bands (predictions-delivery.jpg, waste-bin.jpg) are gone from it; both stay in use on other pages.
+- Icons since round 5: Lucide (https://lucide.dev), ISC licence, the set the demo uses; copied into src/config/icons.ts.
+
 Round 4 (24 Nov 2026), where the existing photos are now used. No new photos were downloaded; each is listed above with its source and licence.
 - Solution pages (the photo beside "Also in …"): stock-shelf.jpg (Stock levels), forecast-produce.jpg (Expiring soon), waste-bin.jpg (Waste and breakage), problem/problem-forecasting.jpg (Predictions), problem/problem-stock.jpg (Automatic ordering), predictions-delivery.jpg (Deliveries and invoices), how-count-jars.jpg (Stock takes and missing stock), drinks-cola.jpg (Over pouring), reconciliation-tickets.jpg (Flagged transactions), revenue-payment.jpg (Revenue and reports), stock-chef.jpg (Suppliers).
 - Solutions page cards: stock-chef.jpg, sales-buffet.jpg (Expiring soon), why-chef.jpg, forecast-produce.jpg, problem/problem-stock.jpg, tyll-problem-1.jpg (Deliveries and invoices), how-count-jars.jpg, events-banquet.jpg (Over pouring), reconciliation-reception.jpg (Flagged transactions).

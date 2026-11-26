@@ -13,7 +13,7 @@ const t = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it 
 export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
   stock: {
     key: 'stock',
-    icon: 'stock',
+    icon: 'package',
     tone: 'teal',
     mark: t('really', 'wirklich', 'فعلًا', 'davvero'),
     pagePhoto: pageStock,
@@ -48,7 +48,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
     rows: [
       {
         id: 'requisitions',
-        icon: 'orders',
+        icon: 'clipboard-list',
         film: 'stock-requisitions',
         name: t('Requisitions and transfers', 'Anforderungen und Umbuchungen', 'طلبات الصرف والتحويلات', 'Richieste e trasferimenti'),
         line: t('Outlets ask the main store, and pay for what it issues.', 'Outlets fordern beim Hauptlager an und zahlen, was es ausgibt.', 'تطلب المنافذ من المخزن الرئيسي، وتدفع ثمن ما يصرفه.', 'I punti vendita chiedono al magazzino centrale e pagano ciò che emette.'),
@@ -61,7 +61,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'expected',
-        icon: 'takes',
+        icon: 'gauge',
         film: 'stock-expected',
         name: t('Expected against actual', 'Soll gegen Ist', 'المتوقع مقابل الفعلي', 'Atteso contro reale'),
         line: t('What should be left, against what was counted.', 'Was übrig sein sollte, gegen das, was gezählt wurde.', 'ما يجب أن يتبقى، مقابل ما تم عدّه.', 'Cosa dovrebbe restare, contro cosa è stato contato.'),
@@ -72,7 +72,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'recipes',
-        icon: 'stock',
+        icon: 'chef-hat',
         film: 'stock-recipes',
         name: t('Recipes and costs', 'Rezepte und Kosten', 'الوصفات والتكاليف', 'Ricette e costi'),
         line: t('What each dish costs to make, at today’s prices.', 'Was jedes Gericht kostet, zu heutigen Preisen.', 'كم يكلّف تحضير كل طبق، بأسعار اليوم.', 'Quanto costa ogni piatto, ai prezzi di oggi.'),
@@ -84,7 +84,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'menu-photo',
-        icon: 'revenue',
+        icon: 'scroll-text',
         film: 'stock-menu-photo',
         name: t('Menu photo', 'Foto der Speisekarte', 'صورة قائمة الطعام', 'Foto del menù'),
         line: t('Photograph the menu. Only the differences show.', 'Speisekarte fotografieren. Nur die Unterschiede erscheinen.', 'صوّر القائمة. تظهر الفروق فقط.', 'Fotografa il menù. Compaiono solo le differenze.'),
@@ -94,24 +94,24 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'menu-sync',
-        icon: 'reports',
+        icon: 'refresh-ccw',
         film: 'stock-menu-sync',
         name: t('Menu sync', 'Abgleich der Speisekarte', 'مزامنة القائمة', 'Sincronizzazione del menù'),
         line: t('The till’s menu, read each morning.', 'Die Speisekarte der Kasse, jeden Morgen gelesen.', 'قائمة نظام نقاط البيع، تُقرأ كل صباح.', 'Il menù della cassa, letto ogni mattina.'),
         points: [
-          t('Each morning Tyll reads the menu from the till: new dishes, price changes and dishes removed.', 'Jeden Morgen liest Tyll die Speisekarte aus der Kasse: neue Gerichte, Preisänderungen und entfernte Gerichte.', 'كل صباح يقرأ Tyll القائمة من نظام نقاط البيع: أطباق جديدة، وتغييرات الأسعار، وأطباق أُزيلت.', 'Ogni mattina Tyll legge il menù dalla cassa: piatti nuovi, prezzi cambiati e piatti tolti.'),
+          t('Each morning Tyll reads the menu from the till for each outlet connected to it: new dishes, price changes and dishes removed.', 'Jeden Morgen liest Tyll die Speisekarte jedes angebundenen Outlets aus der Kasse: neue Gerichte, Preisänderungen und entfernte Gerichte.', 'كل صباح يقرأ Tyll القائمة من نظام نقاط البيع لكل منفذ متصل به: أطباق جديدة، وتغييرات الأسعار، وأطباق أُزيلت.', 'Ogni mattina Tyll legge il menù dalla cassa per ogni punto vendita collegato: piatti nuovi, prezzi cambiati e piatti tolti.'),
           t('New dishes are listed until they have a recipe. Margins use the new price.', 'Neue Gerichte bleiben gelistet, bis sie ein Rezept haben. Margen rechnen mit dem neuen Preis.', 'تبقى الأطباق الجديدة في القائمة حتى تُضاف وصفتها. وتُحسب الهوامش بالسعر الجديد.', 'I piatti nuovi restano in elenco finché non hanno una ricetta. I margini usano il nuovo prezzo.'),
         ],
       },
       {
         id: 'margin',
-        icon: 'finance',
+        icon: 'percent',
         film: 'stock-margin',
         name: t('Margin alerts', 'Margen-Hinweise', 'تنبيهات الهامش', 'Avvisi sul margine'),
         line: t('A price rise, worked through the recipe.', 'Eine Preiserhöhung, durch das Rezept gerechnet.', 'ارتفاع في السعر، محسوب عبر الوصفة.', 'Un aumento di prezzo, calcolato sulla ricetta.'),
         points: [
           t('When a supplier price cuts a dish’s margin by 3 points or more, the F&B director and the head chef get an alert.', 'Senkt ein Lieferantenpreis die Marge eines Gerichts um 3 Punkte oder mehr, erhalten F&B-Direktor und Küchenchef einen Hinweis.', 'عندما يخفض سعر مورّد هامش طبق بـ 3 نقاط أو أكثر، يصل تنبيه إلى مدير الأغذية والمشروبات ورئيس الطهاة.', 'Quando un prezzo del fornitore taglia il margine di un piatto di 3 punti o più, il direttore F&B e lo chef ricevono un avviso.'),
-          t('For example lobster tail from €85 to €98 per kg takes lobster linguine down 5 points, about €238 a month at current sales.', 'Zum Beispiel Hummerschwanz von 85 € auf 98 € pro kg: Hummer-Linguine verlieren 5 Punkte, etwa 238 € im Monat bei heutigen Verkäufen.', 'مثلًا ذيل الكركند من 85 إلى 98 يورو للكيلو يخفض هامش لينغويني الكركند 5 نقاط، نحو 238 يورو شهريًا بالمبيعات الحالية.', 'Per esempio la coda di aragosta da 85 € a 98 € al kg porta le linguine all’aragosta giù di 5 punti, circa 238 € al mese alle vendite attuali.'),
+          t('For example lobster tail from €85 to €98 per kg takes lobster linguine down 5 points, a few hundred euros a month at current sales.', 'Zum Beispiel Hummerschwanz von 85 € auf 98 € pro kg: Hummer-Linguine verlieren 5 Punkte, einige hundert Euro im Monat bei heutigen Verkäufen.', 'مثلًا ذيل الكركند من 85 إلى 98 يورو للكيلو يخفض هامش لينغويني الكركند 5 نقاط، بضع مئات من اليوروهات شهريًا بالمبيعات الحالية.', 'Per esempio la coda di aragosta da 85 € a 98 € al kg porta le linguine all’aragosta giù di 5 punti, qualche centinaio di euro al mese alle vendite attuali.'),
           t('Four options, each with the margin it gives: raise the price, switch supplier, adjust the portion or accept. The decision is recorded with a name and the time.', 'Vier Möglichkeiten, jede mit der Marge, die sie ergibt: Preis erhöhen, Lieferant wechseln, Portion anpassen oder akzeptieren. Die Entscheidung wird mit Name und Uhrzeit gespeichert.', 'أربعة خيارات، لكل منها الهامش الذي يعطيه: رفع السعر، أو تغيير المورّد، أو تعديل الحصة، أو القبول. ويُسجَّل القرار مع الاسم والوقت.', 'Quattro opzioni, ognuna con il margine che dà: alzare il prezzo, cambiare fornitore, ridurre la porzione o accettare. La decisione è registrata con nome e ora.'),
         ],
       },
@@ -120,7 +120,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
 
   expiry: {
     key: 'expiry',
-    icon: 'expiry',
+    icon: 'calendar-clock',
     tone: 'teal',
     mark: t('expires', 'läuft ab', 'تنتهي صلاحيته', 'scade'),
     pagePhoto: pageExpiry,
@@ -152,7 +152,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
     rows: [
       {
         id: 'batches',
-        icon: 'expiry',
+        icon: 'layers',
         film: 'expiry-batches',
         name: t('Batches and use-by dates', 'Chargen und Verbrauchsdaten', 'الدفعات وتواريخ انتهاء الصلاحية', 'Lotti e date di scadenza'),
         line: t('Within 1, 2, 3 or 7 days, each with what to do.', 'In 1, 2, 3 oder 7 Tagen, jede mit dem, was zu tun ist.', 'خلال يوم أو يومين أو 3 أو 7 أيام، ولكل منها ما يجب فعله.', 'Entro 1, 2, 3 o 7 giorni, ognuno con cosa fare.'),
@@ -163,7 +163,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'use-by',
-        icon: 'deliveries',
+        icon: 'hourglass',
         film: 'expiry-use-by',
         name: t('Use-by dates from delivery notes', 'Verbrauchsdaten vom Lieferschein', 'تواريخ الصلاحية من إشعارات التسليم', 'Scadenze dalle bolle di consegna'),
         line: t('The date on the label goes straight to Expiring soon.', 'Das Datum auf dem Etikett geht direkt zu Läuft bald ab.', 'التاريخ على الملصق ينتقل مباشرة إلى «ينتهي قريباً».', 'La data sull’etichetta va direttamente a In scadenza.'),
@@ -177,7 +177,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
 
   waste: {
     key: 'waste',
-    icon: 'waste',
+    icon: 'trash-2',
     tone: 'teal',
     mark: t('throw away', 'weggeworfen', 'رميت', 'buttato'),
     pagePhoto: pageWaste,
@@ -212,7 +212,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
     rows: [
       {
         id: 'prepared',
-        icon: 'waste',
+        icon: 'cooking-pot',
         film: 'waste-prepared',
         name: t('Prepared dishes and notes', 'Zubereitete Gerichte und Notizen', 'الأطباق المحضّرة والملاحظات', 'Piatti preparati e note'),
         line: t('A whole dish, or a note on any entry.', 'Ein ganzes Gericht, oder eine Notiz zu jedem Eintrag.', 'طبق كامل، أو ملاحظة على أي إدخال.', 'Un piatto intero, o una nota su qualsiasi voce.'),
@@ -223,7 +223,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'empties',
-        icon: 'pour',
+        icon: 'bottle-wine',
         film: 'waste-empties',
         name: t('Empty bottles', 'Leere Flaschen', 'الزجاجات الفارغة', 'Bottiglie vuote'),
         line: t('Scanned or tapped, counted as used.', 'Gescannt oder angetippt, als verbraucht gezählt.', 'تُمسح أو تُنقر، وتُحسب مستخدمة.', 'Scansionate o toccate, contate come usate.'),
@@ -234,7 +234,7 @@ export const stockWaste: Record<'stock' | 'expiry' | 'waste', Solution> = {
       },
       {
         id: 'trend',
-        icon: 'reports',
+        icon: 'trending-down',
         film: 'waste-trend',
         name: t('Reasons and the 30-day trend', 'Gründe und der 30-Tage-Verlauf', 'الأسباب واتجاه 30 يومًا', 'Motivi e andamento di 30 giorni'),
         line: t('Where waste comes from, and whether it is falling.', 'Woher der Abfall kommt, und ob er sinkt.', 'من أين يأتي الهدر، وهل ينخفض.', 'Da dove vengono gli sprechi, e se calano.'),

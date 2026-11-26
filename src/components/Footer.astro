@@ -13,6 +13,7 @@ const { lang, page } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
 const year = new Date().getFullYear();
+const investorMail = `mailto:${site.email}?subject=${encodeURIComponent(d.home.investors.subject)}`;
 // "Book a Demo →": the arrow is set apart so it can move on hover
 const [, bookText = d.cta.book, bookArrow = ''] = d.cta.book.match(/^(.*?)\s*([→←])$/) ?? [];
 // The social accounts that are set, in this order, each with its monochrome mark (Simple Icons, CC0)
@@ -42,7 +43,7 @@ const socials = [
               {socials.map((x) => (
                 <li>
                   <a href={x.url} target="_blank" rel="noopener" data-track={`${x.key}_click`}>
-                    <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
                       <path fill="currentColor" d={x.icon} />
                     </svg>
                     <span class="visually-hidden">
@@ -77,6 +78,9 @@ const socials = [
             </a>
           </li>
           <li><a href={href('groups', lang)} aria-current={page === 'groups' ? 'page' : undefined}>{d.nav.groups}</a></li>
+          {/* Investor enquiries (the owner, 25 Nov 2026: a small link, not a section): an email with the subject filled in.
+              TODO(Fynn): a dedicated investor address, if you want one. */}
+          <li><a href={investorMail} data-track="investor_email_click">{d.footer.investors}</a></li>
           <li><a href={href('faq', lang)}>{d.nav.faqShort}</a></li>
           <li><a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>
         </ul>
@@ -84,6 +88,8 @@ const socials = [
       <div>
         <h2>{d.footer.company}</h2>
         <ul>
+          <li><a href={href('about', lang)} aria-current={page === 'about' ? 'page' : undefined}>{d.nav.about}</a></li>
+          <li><a href={href('security', lang)} aria-current={page === 'security' ? 'page' : undefined}>{d.nav.security}</a></li>
           <li><a href={href('legal', lang)}>{d.footer.legal}</a></li>
           <li><a href={href('privacy', lang)}>{d.footer.privacy}</a></li>
           <li><button type="button" class="footer__linkbtn" data-consent-open>{d.footer.cookies}</button></li>
@@ -172,9 +178,11 @@ const socials = [
     list-style: none;
   }
 
-  .footer__follow a {
+  /* The mark centred in its circle at every width (round 5: a phone rule used to push it to one side) */
+  .footer .footer__follow a {
     display: grid;
     place-items: center;
+    padding: 0;
     width: 2.75rem;
     height: 2.75rem;
     border: 1px solid var(--line);
@@ -183,6 +191,10 @@ const socials = [
     transition:
       border-color 0.2s var(--ease),
       background-color 0.2s var(--ease);
+  }
+
+  .footer__follow svg {
+    display: block;
   }
 
   .footer__follow a:hover {
@@ -327,7 +339,7 @@ const socials = [
       gap: 0;
     }
 
-    .footer li > a,
+    .footer__cols li > a,
     .footer a.footer__book,
     .footer__linkbtn,
     .footer__lang a {

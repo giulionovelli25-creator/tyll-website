@@ -3,7 +3,7 @@
 // page that shows it, with the demo's honesty line under them. Sits after the hotel story.
 import SolutionIcon from '../SolutionIcon.astro';
 import { t, href, type Locale } from '../../i18n';
-import type { Solution } from '../../content/solutions';
+import type { IconName } from '../../config/icons';
 
 interface Props {
   lang: Locale;
@@ -11,12 +11,13 @@ interface Props {
 
 const { lang } = Astro.props;
 const s = t(lang).solutionPage.scan;
-const where: { icon: Solution['icon']; url: string }[] = [
-  { icon: 'orders', url: href('stock', lang, '#requisitions') },
-  { icon: 'deliveries', url: href('deliveries', lang, '#film') },
-  { icon: 'pour', url: href('pour', lang, '#film') },
-  { icon: 'stock', url: href('stock', lang, '#recipes') },
-  { icon: 'revenue', url: href('stock', lang, '#menu-photo') },
+// Icons from the site's one set (round 5): the same icon as the feature row each item links to
+const where: { icon: IconName; url: string }[] = [
+  { icon: 'clipboard-list', url: href('stock', lang, '#requisitions') },
+  { icon: 'truck', url: href('deliveries', lang, '#film') },
+  { icon: 'bottle-wine', url: href('pour', lang, '#film') },
+  { icon: 'chef-hat', url: href('stock', lang, '#recipes') },
+  { icon: 'scroll-text', url: href('stock', lang, '#menu-photo') },
 ];
 ---
 

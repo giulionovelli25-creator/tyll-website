@@ -1,0 +1,517 @@
+---
+// About us (round 5, 25 Nov 2026, the owner: "where the tool comes from, our story; nice and interactive like every
+// other page"). In the site's own frame, as on How it works: the title beside a photograph on the light silver wave,
+// then the story in four steps along a line that draws itself as you scroll (each step lighting as the line reaches
+// it; vertical on phones), how we work in four short points (with the way to the Security page), the three cities we
+// work in (moved here from Sustainability, each with one sourced fact), a quiet line for investors, and the dark close.
+// Nothing moves under reduced motion; without JavaScript everything shows. Copy: src/content/about.ts.
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SilverWave from '../SilverWave.astro';
+import SolutionIcon from '../SolutionIcon.astro';
+import { about, type CityId } from '../../content/about';
+import { t, href, type Locale } from '../../i18n';
+import { site } from '../../config/site';
+import heroPhoto from '../../assets/photos/reconciliation-reception.jpg';
+import berlin from '../../assets/photos/sus-berlin.jpg';
+import zurich from '../../assets/photos/sus-zurich.jpg';
+import dubai from '../../assets/photos/sus-dubai.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const c = about[lang];
+const tab = d.cta.newTab;
+const cityPhoto: Record<CityId, { src: typeof berlin; focus: string }> = {
+  berlin: { src: berlin, focus: '50% 40%' },
+  zurich: { src: zurich, focus: '50% 62%' },
+  dubai: { src: dubai, focus: '50% 55%' },
+};
+---
+
+<Base lang={lang} page="about" title={c.metaTitle} description={c.metaDescription}>
+  <div class="ab-top">
+    <SilverWave phase={0.55} />
+    <div class="wrap ab-top__grid">
+      <header>
+        <h1>{c.title}</h1>
+        <p class="ab-top__text">{c.text}</p>
+        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="about">{d.cta.book}</a>
+      </header>
+      <div class="ab-top__photo">
+        <Picture src={heroPhoto} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 720, 960, 1280]} sizes="(max-width: 900px) 90vw, 560px" loading="eager" decoding="async" />
+      </div>
+    </div>
+  </div>
+
+  <section class="story" aria-labelledby="story-title" data-story>
+    <div class="wrap">
+      <h2 id="story-title" class="display">{c.story.title}</h2>
+      <div class="story__line">
+      <span class="story__track" aria-hidden="true"><span class="story__fill"></span></span>
+      <ol class="story__steps" role="list">
+        {
+          c.story.steps.map((st, i) => (
+            <li class="story__step" style={`--at:${i / (c.story.steps.length - 1)}`}>
+              <span class="story__dot" aria-hidden="true" />
+              <p class="story__label">{st.label}</p>
+              <h3>{st.title}</h3>
+              <p class="story__text">{st.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="ways" aria-labelledby="ways-title">
+    <div class="wrap">
+      <h2 id="ways-title" class="display">{c.ways.title}</h2>
+      <ul class="ways__list" role="list">
+        {
+          c.ways.items.map((w) => (
+            <li class="way">
+              <span class="way__icon">
+                <SolutionIcon name={w.icon} />
+              </span>
+              <h3>{w.title}</h3>
+              <p>{w.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="ways__more" href={href('security', lang)}>{c.ways.security}</a>
+    </div>
+  </section>
+
+  <section class="cities" aria-labelledby="cities-title">
+    <div class="wrap">
+      <h2 id="cities-title" class="display">{c.cities.title}</h2>
+      <ul class="cities__list" role="list">
+        {
+          c.cities.cards.map((card) => (
+            <li class="city" id={`city-${card.id}`}>
+              <Picture class="city__photo" src={cityPhoto[card.id].src} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 800, 1200]} sizes="(max-width: 900px) 92vw, 30vw" loading="lazy" decoding="async" style={`object-position: ${cityPhoto[card.id].focus}`} />
+              <div class="city__body">
+                <h3 class="city__place">{card.place}</h3>
+                <p class="city__line">{card.line}</p>
+                <p class="city__fact">{card.fact}</p>
+                <p class="city__source">
+                  <a href={card.source.url} target="_blank" rel="noopener">
+                    {card.source.name}
+                    <span class="visually-hidden"> {tab}</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="investors">
+        {c.investors.text} <a href={`mailto:${site.email}?subject=${encodeURIComponent(d.home.investors.subject)}`} data-track="investor_email_click">{c.investors.link}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="close on-dark" data-dark aria-labelledby="ab-final">
+    <SilverWave phase={0.4} move tone="dark" />
+    <div class="wrap close__inner">
+      <h2 id="ab-final" class="display">{d.home.invite.title}</h2>
+      <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="about-final">{d.cta.book}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The title beside one photograph, on the light silver wave (as on How it works) */
+  .ab-top {
+    position: relative;
+    overflow: hidden;
+    padding-block: calc(var(--header-h) + var(--page-top)) var(--intro-gap);
+  }
+
+  .ab-top > :global(*:not(.wave)) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ab-top__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--s-5);
+    align-items: center;
+  }
+
+  .ab-top h1 {
+    max-width: 18ch;
+    margin: 0;
+    font-size: var(--fs-display);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .ab-top__text {
+    max-width: 34rem;
+    margin: 1.1rem 0 var(--s-3);
+    color: var(--text-2);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+
+  .ab-top__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    filter: var(--photo-grade);
+    box-shadow: var(--shadow-2);
+  }
+
+  /* The story: four steps along a line that draws from the start edge as you scroll; a step lights as the line
+     reaches it. --p is the drawn share: 1 by default (no JavaScript, reduced motion), set from the scroll otherwise. */
+  .story {
+    --p: 1;
+    padding-block: var(--section-y);
+    background: var(--night-1);
+    color: rgb(var(--on-dark-rgb));
+  }
+
+  .story h2 {
+    margin: 0;
+    color: rgb(var(--on-dark-rgb));
+    font-size: var(--fs-h2);
+  }
+
+  .story__line {
+    position: relative;
+    margin-top: var(--s-5);
+  }
+
+  .story__steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .story__track {
+    position: absolute;
+    top: 7px;
+    inset-inline: 0;
+    height: 2px;
+    background: rgb(var(--on-dark-rgb) / 0.18);
+  }
+
+  .story__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: calc(var(--p) * 100%);
+    background: linear-gradient(90deg, var(--silver-deep), var(--silver-light));
+  }
+
+  .story__step {
+    --on: clamp(0, (var(--p) - var(--at) * 0.92) * 12, 1);
+    position: relative;
+    padding-top: var(--s-4);
+    opacity: calc(0.2 + var(--on) * 0.8);
+    transform: translateY(calc((1 - var(--on)) * 12px));
+  }
+
+  .story__dot {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--silver-light);
+    border-radius: 50%;
+    background: var(--night-1);
+  }
+
+  .story__label {
+    margin: 0 0 0.5rem;
+    color: var(--silver);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .story h3 {
+    margin: 0;
+    color: rgb(var(--on-dark-rgb));
+    font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.875rem);
+    font-weight: 300;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .story__text {
+    margin: 0.75rem 0 0;
+    color: rgb(var(--on-dark-rgb) / 0.78);
+    line-height: 1.55;
+  }
+
+  /* How we work: four short points with their icons */
+  .ways {
+    padding-block: var(--section-y) var(--band-y);
+  }
+
+  .ways h2,
+  .cities h2 {
+    margin: 0;
+    font-size: var(--fs-h2);
+  }
+
+  .ways__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .way__icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: var(--s-2);
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .way__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .way h3 {
+    margin: 0;
+    font-family: var(--font);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .way p {
+    margin: 0.4rem 0 0;
+    color: var(--text-2);
+  }
+
+  .ways__more,
+  .investors a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--s-3);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--sand-600);
+    text-underline-offset: 4px;
+  }
+
+  .ways__more:hover,
+  .investors a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* The cities: three wide photo cards, each with one sourced fact */
+  .cities {
+    padding-block: var(--band-y) var(--section-y);
+  }
+
+  .cities__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-3);
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .city {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    border: 1px solid var(--sand-300);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    transition:
+      transform 0.3s var(--ease),
+      box-shadow 0.3s var(--ease);
+  }
+
+  .city:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-3px);
+  }
+
+  .city :global(.city__photo),
+  .city :global(.city__photo img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    filter: var(--photo-grade);
+  }
+
+  .city__body {
+    display: grid;
+    align-content: start;
+    gap: var(--s-2);
+    padding: var(--s-3);
+  }
+
+  .city__place {
+    margin: 0;
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+    font-weight: 300;
+  }
+
+  .city__line {
+    margin: 0;
+  }
+
+  .city__fact {
+    margin: 0;
+    padding-top: var(--s-2);
+    border-top: 1px solid var(--line);
+    color: var(--graphite);
+    font-size: var(--fs-small);
+  }
+
+  .city__source {
+    margin: 0;
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  .city__source a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--sand-600);
+    text-underline-offset: 3px;
+  }
+
+  .investors {
+    margin: var(--s-4) 0 0;
+    color: var(--text-2);
+  }
+
+  .close {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--band-y);
+    background: var(--night-1);
+    color: var(--text-1);
+  }
+
+  .close__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-4);
+    text-align: center;
+  }
+
+  .close h2 {
+    font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
+  }
+
+  @media (max-width: 1023px) {
+    .ways__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .ab-top__grid,
+    .cities__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* The story runs down the start edge on tablets and phones */
+    .story__steps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .story__track {
+      top: 0;
+      bottom: 0;
+      inset-inline: 7px auto;
+      width: 2px;
+      height: auto;
+    }
+
+    .story__fill {
+      inset-inline: 0;
+      width: auto;
+      height: calc(var(--p) * 100%);
+      background: linear-gradient(180deg, var(--silver-deep), var(--silver-light));
+    }
+
+    .story__step {
+      padding-top: 0;
+      padding-inline-start: var(--s-4);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ways__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .city {
+      transition: none;
+    }
+
+    .city:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // The story's line draws as it moves up the screen: 0 when the steps' top is near the bottom of the screen, 1 when it
+  // is a little above the middle. One passive scroll listener, one style write per frame; nothing under reduced motion.
+  const story = document.querySelector<HTMLElement>('[data-story]');
+  if (story && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const steps = story.querySelector<HTMLElement>('.story__line')!;
+    let queued = false;
+    const draw = () => {
+      queued = false;
+      const r = steps.getBoundingClientRect();
+      const vh = innerHeight;
+      const span = innerWidth > 900 ? vh * 0.45 : r.height + vh * 0.1;
+      const p = Math.min(Math.max((vh * 0.9 - r.top) / span, 0), 1);
+      story.style.setProperty('--p', p.toFixed(3));
+    };
+    draw();
+    addEventListener(
+      'scroll',
+      () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(draw);
+        }
+      },
+      { passive: true },
+    );
+    addEventListener('resize', draw);
+  }
+</script>

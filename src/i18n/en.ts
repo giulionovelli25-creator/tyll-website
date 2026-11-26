@@ -11,6 +11,9 @@ const en = {
     solutions: 'Solutions',
     how: 'How it works',
     groups: 'Hotel groups',
+    about: 'About us',
+    security: 'Security',
+    tryDemo: 'Try the demo',
     solutionsMenu: 'Solutions menu',
     allSolutions: 'All solutions',
     allIn: 'All {name} →',
@@ -46,6 +49,10 @@ const en = {
     card: { title: 'Morning brief · Grand Hotel Lumière', lost: 'Lost yesterday', total: '€52', split: '€38 waste, €0 breakage, €14 drinks not billed', yesterday: ['Revenue €7,342 from 205 guests', '12 flagged bills still open, €1,245 until checked'], todo: 'Three things to do today', rows: <[string, string, string][]>[['Wagyu beef mince short before lunch tomorrow', 'Mercado, at risk', '€159'], ['Coca-Cola, 238 cans not accounted for', '30 day check, an estimate', '€321'], ['Check pouring at Bar Azulejo, Friday late shift', 'Bar Azulejo, not billed', '€333']], month: 'Last 30 days: €11,228 lost, €4,634 saved, 41.3% of the loss', cta: 'Open the morning brief →' },
   },
   home: {
+    // Round 5 (25 Nov 2026): the pilot result's own section, the founder's story in short, investor enquiries
+    pilot: { more: 'Why food waste matters →' },
+    founder: { title: 'Where Tyll comes from', text: 'Our CEO closed the night by hand for six months at a luxury hotel in Zürich, 45 to 60 minutes every night. What leaks never shows in a total. That became Tyll.', link: 'Read the whole story →' },
+    investors: { title: 'Investor enquiries', text: 'We are building Tyll in Berlin, with hotels in Berlin and Zürich. If you invest in hospitality or food-waste software, we would like to hear from you.', name: 'Name', email: 'Email', firm: 'Firm or fund', message: 'Message', required: 'required', send: 'Send enquiry', sending: 'Sending…', thanks: 'Thank you. We’ll reply within two working days.', errName: 'Please enter your name.', errEmail: 'Please enter your email address.', errEmailBad: 'Please enter a valid email address, for example name@fund.com.', failed: 'That did not send. Please try again, or email us at', subject: 'Investor enquiry' },
     tour: {
       title: 'Three places your hotel loses money.',
       text: 'Tyll reads the systems you already use and gives your team a clear answer.',
@@ -145,6 +152,8 @@ const en = {
     story: { title: 'Where Tyll comes from', text: 'Our CEO closed the night by hand for six months at a luxury hotel in Zürich: 45 to 60 minutes every night, comparing totals. What leaks never shows in a total. That became Tyll. Today Tyll is live in hotels in Berlin and Zürich.' },
     eyebrow: 'How it works',
     title: 'Four steps. Then every morning you see what your hotel lost.',
+    // The page's own heading (round 5); `title` stays the homepage teaser's heading
+    h1: 'From one call to your first morning brief.',
     sub: 'Read only. Nothing to install. Nothing to replace.',
     steps: <[string, string][]>[['Book a 15 minute call', 'We look at your outlets together and check that Tyll fits.'], ['Free purchasing report', 'Send one month of POS sales, get a report within 48 hours.'], ['We read your POS', 'Tyll reads last night’s sales from the system you already use.'], ['Your morning brief', 'Every morning at 7 AM, by email to the managers who choose it: yesterday’s loss split into waste, breakage and drinks not billed, yesterday’s revenue and guests, flagged bills still open, the three things to do today, and the last 30 days, lost against saved. Free for 30 days.']],
     call: { title: 'Tyll intro · 15 min', day: 'Tuesday', slots: ['09:30', '11:00', '14:30'] },
@@ -159,19 +168,19 @@ const en = {
     sub: 'A group view across every hotel, each with its own currency, suppliers and approval rules.',
     link: 'For hotel groups →',
     sections: <[string, string][]>[
-      ['Every role sees what it needs.', 'Owner, general manager, financial controller, F&B director, restaurant manager, purchasing, head chef and operational employee; the storekeeper confirms deliveries. Front office, housekeeping, concierge, bell captain and events manager come with the Rooms and Events modules, in development. Each sees only their hotels, outlets and figures. A head chef sees their kitchen; a financial controller sees the whole group.'],
-      ['Approval limits per hotel.', 'Each hotel sets its own approval chain, with limits before VAT. For example: purchasing reviews every order, accounting approves every order, the F&B director approves orders over €2,000 and the general manager also approves orders over €5,000. Nobody approves an order they raised. The storekeeper receives.'],
-      ['Several hotels, several countries.', 'Each hotel reports in its own currency, for example EUR, AED or SAR, and amounts in different currencies are never added together. VAT per country is shown on every purchase order and invoice. Each hotel chooses its stock valuation method and keeps its own suppliers and terms.'],
-      ['Fits your group’s systems.', '{systems} Approved purchase orders, goods receipts and supplier invoices can be exported for the group’s procurement or accounting system, as CSV (one row per line) or JSON (one record per document).'],
-      ['Every change on record.', 'An audit trail of every sign-in and every change, visible to owners, general managers and financial controllers. The detection limits are agreed with each hotel at the start.'],
-      ['Trust.', 'Tyll never changes, deletes or posts anything in your systems. Data hosted in Europe under the GDPR.'],
+      ['Every role sees what it needs.', 'From owner to head chef, each role sees only its own hotels, outlets and figures. Finance sees the whole group.'],
+      ['Approval limits per hotel.', 'Each hotel sets its own approval chain and limits. Nobody approves an order they raised.'],
+      ['Several hotels, several countries.', 'Each hotel in its own currency and VAT, never added together. The demo shows one hotel.'],
+      ['Fits your group’s systems.', '{systems} Orders, receipts and invoices export as CSV or JSON.'],
+      ['Every change on record.', 'Every sign-in and every change is logged, for owners and finance to see.'],
+      ['Trust.', 'Read only: Tyll never changes your systems. Data hosted in Europe under the GDPR.'],
     ],
   },
   solutionPage: {
     seeTitle: 'What you are about to see',
     demoEnglish: '',
     breadcrumb: 'Solutions',
-    tryHere: 'Try This in the Demo →',
+    tryHere: 'Try this in the demo →',
     problemLabel: 'The problem',
     helps: 'How Tyll helps',
     soonBanner: 'Coming soon.',
@@ -189,7 +198,7 @@ const en = {
     // "More in Tyll" (round 4): Revenue and reports and Suppliers keep their pages; the morning brief and Scan
     moreInTyll: { title: 'More in Tyll', items: <[string, string][]>[['Morning brief and alerts', 'Yesterday’s losses and today’s three actions, at 7 AM.'], ['Scan', 'Photograph a slip, a delivery note, empty bottles, a recipe card or a menu.']] },
     // The Scan strip on the homepage (round 4): five photo flows, each linking to the row that holds it
-    scan: { title: 'Photograph it. Tyll reads it, you confirm.', items: ['Requisition slips', 'Delivery notes', 'Empty bottles', 'Recipe cards', 'Menus'], lines: ['Becomes a requisition to the main store.', 'Differences become credit requests.', 'Counted by label against the till.', 'Yields, sub-recipes and cost per plate.', 'Only the differences with the till.'], honest: 'In the demo, photo reading uses sample photos. A person checks every field before it is saved.' },
+    scan: { title: 'Photograph it. Tyll reads it, you confirm.', lead: 'Five things your team already has on paper. Take a photo, check what Tyll read, save.', items: ['Requisition slips', 'Delivery notes', 'Empty bottles', 'Recipe cards', 'Menus'], lines: ['Becomes a requisition to the main store.', 'Differences become credit requests.', 'Counted by label against the till.', 'Yields, sub-recipes and cost per plate.', 'Only the differences with the till.'], honest: 'In the demo, photo reading uses sample photos. A person checks every field before it is saved.' },
     also: {
       title: 'Also in Tyll',
       items: <[string, string][]>[
@@ -315,6 +324,7 @@ const en = {
   footer: {
     solutions: 'Solutions',
     follow: 'Follow Tyll',
+    investors: 'Investors',
     tagline: 'Less complexity. More clarity. Better hospitality.',
     explore: 'Explore',
     company: 'Company',
@@ -327,22 +337,22 @@ const en = {
   },
   meta: {
     howTitle: 'How it works | Tyll',
-    howDescription: 'How Tyll works in four steps: a short call, a free purchasing report, read-only access to your POS, then a morning brief at 7 AM of what you lost and what it cost.',
+    howDescription: 'How Tyll works in four steps: a short call, a free purchasing report, read-only access to your POS, then a morning brief at 7 AM of what you lost.',
     groupsTitle: 'Stock and Loss Control for Hotel Groups | Tyll',
     groupsDescription: 'One view across every hotel: roles that see only their own figures, approval limits per hotel, each hotel in its own currency, exports and an audit trail.',
-    solutionsTitle: 'Stock, Waste & Invoice Tools for Restaurants & Hotels | Tyll',
-    solutionsDescription: 'Six tools that work with your POS: log waste, stock levels, purchasing forecasts, revenue, invoice matching and over pouring. Try the demo.',
+    solutionsTitle: 'Hotel Stock, Purchasing and Reconciliation Software | Tyll',
+    solutionsDescription: 'Nine tools in three parts: stock levels, expiry and waste; predictions, automatic ordering and deliveries; stock takes, over pouring and flagged bills.',
     bookTitle: 'Book a Free Call With Our Team | Tyll',
-    bookDescription: 'Book a short, free call with the Tyll team about your restaurant or hotel and where Tyll could help. Pick a time that suits you.',
+    bookDescription: 'Book a short, free call with the Tyll team about your hotel: what you buy, what you lose and where Tyll could help. Pick a time that suits you, in minutes.',
     faqTitle: 'FAQ: How Tyll Works With Your POS and Systems | Tyll',
-    faqDescription: 'Short answers about Tyll: the free 30 day pilot, the systems it works with, setup, your data and pricing.',
+    faqDescription: 'Short answers about Tyll: the free 30 day pilot, the systems it works with, how setup works, how your data is protected, and what Tyll costs after the pilot.',
     legalTitle: 'Legal notice | Tyll',
-    legalDescription: 'Legal notice for the Tyll website.',
+    legalDescription: 'Legal notice for the Tyll website: who runs it, how to reach us, who is responsible for the content, and the legal details required for a German website.',
     privacyTitle: 'Privacy policy | Tyll',
-    privacyDescription: 'How the Tyll website handles personal data, cookies and booking requests.',
-    homeTitle: 'Tyll | Food Cost Control Software for Restaurants & Hotels',
+    privacyDescription: 'How the Tyll website handles personal data: what is collected when you visit, book a call or send a form, which cookies are used, and your rights over it.',
+    homeTitle: 'Tyll | Hotel Stock, Purchasing and Loss Control',
     homeDescription:
-      'Find the money your hotel loses between systems: bills, stock, waste and supplier invoices, checked every night.',
+      'Tyll tells hotels what to order before stock runs out, builds and sends the orders, and shows every morning what was lost in waste, bills and invoices.',
   },
 };
 

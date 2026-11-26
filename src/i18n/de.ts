@@ -8,6 +8,9 @@ const de: Dict = {
     solutions: 'Lösungen',
     how: 'So funktioniert’s',
     groups: 'Hotelgruppen',
+    about: 'Über uns',
+    security: 'Sicherheit',
+    tryDemo: 'Demo testen',
     solutionsMenu: 'Menü Lösungen',
     allSolutions: 'Alle Lösungen',
     allIn: 'Alles zu {name} →',
@@ -43,6 +46,10 @@ const de: Dict = {
     card: { title: 'Morgenbericht · Grand Hotel Lumière', lost: 'Gestern verloren', total: '52 €', split: '38 € Abfall, 0 € Bruch, 14 € nicht berechnete Getränke', yesterday: ['Umsatz 7.342 € mit 205 Gästen', '12 markierte Rechnungen noch offen, 1.245 € bis zur Prüfung'], todo: 'Drei Dinge für heute', rows: <[string, string, string][]>[['Wagyu-Hackfleisch morgen vor dem Mittagessen knapp', 'Mercado, gefährdet', '159 €'], ['Coca-Cola, 238 Dosen nicht nachvollziehbar', '30-Tage-Prüfung, geschätzt', '321 €'], ['Ausschank prüfen in der Bar Azulejo, Freitag Spätschicht', 'Bar Azulejo, nicht berechnet', '333 €']], month: 'Letzte 30 Tage: 11.228 € verloren, 4.634 € gespart, 41,3 % des Verlusts', cta: 'Morgenbericht öffnen →' },
   },
   home: {
+    // Round 5 (25 Nov 2026): the pilot result's own section, the founder's story in short, investor enquiries
+    pilot: { more: 'Warum Lebensmittelabfall zählt →' },
+    founder: { title: 'Woher Tyll kommt', text: 'Unser CEO hat sechs Monate lang in einem Luxushotel in Zürich jede Nacht von Hand abgeschlossen, 45 bis 60 Minuten pro Nacht. Was verloren geht, zeigt sich nie in einer Summe. Daraus wurde Tyll.', link: 'Die ganze Geschichte lesen →' },
+    investors: { title: 'Anfragen von Investoren', text: 'Wir bauen Tyll in Berlin, mit Hotels in Berlin und Zürich. Wenn Sie in Software für Hotellerie oder gegen Lebensmittelabfall investieren, freuen wir uns, von Ihnen zu hören.', name: 'Name', email: 'E-Mail', firm: 'Firma oder Fonds', message: 'Nachricht', required: 'Pflichtfeld', send: 'Anfrage senden', sending: 'Wird gesendet…', thanks: 'Vielen Dank. Wir antworten innerhalb von zwei Werktagen.', errName: 'Bitte geben Sie Ihren Namen ein.', errEmail: 'Bitte geben Sie Ihre E-Mail-Adresse ein.', errEmailBad: 'Bitte geben Sie eine gültige E-Mail-Adresse ein, zum Beispiel name@fonds.de.', failed: 'Das hat nicht geklappt. Bitte versuchen Sie es noch einmal oder schreiben Sie an', subject: 'Anfrage eines Investors' },
     tour: {
       title: 'Drei Stellen, an denen Ihr Hotel Geld verliert.',
       text: 'Tyll liest die Systeme, die Sie bereits nutzen, und gibt Ihrem Team eine klare Antwort.',
@@ -142,6 +149,8 @@ const de: Dict = {
     story: { title: 'Woher Tyll kommt', text: 'Unser CEO hat sechs Monate lang in einem Luxushotel in Zürich jede Nacht von Hand abgeschlossen: 45 bis 60 Minuten pro Nacht, Summen vergleichen. Was verloren geht, zeigt sich nie in einer Summe. Daraus wurde Tyll. Heute läuft Tyll in Hotels in Berlin und Zürich.' },
     eyebrow: 'So funktioniert’s',
     title: 'Vier Schritte. Danach sehen Sie jeden Morgen, was Ihr Hotel verloren hat.',
+    // The page's own heading (round 5); `title` stays the homepage teaser's heading
+    h1: 'Vom ersten Gespräch zum ersten Morgenbericht.',
     sub: 'Nur lesend. Nichts zu installieren. Nichts zu ersetzen.',
     steps: <[string, string][]>[['Ein 15-Minuten-Gespräch buchen', 'Wir schauen uns gemeinsam Ihre Outlets an und prüfen, ob Tyll passt.'], ['Kostenloser Einkaufsbericht', 'Senden Sie einen Monat Kassenumsätze, Sie erhalten den Bericht innerhalb von 48 Stunden.'], ['Wir lesen Ihre Kasse', 'Tyll liest die Umsätze der letzten Nacht aus dem System, das Sie schon nutzen.'], ['Ihr Morgenbericht', 'Jeden Morgen um 7 Uhr per E-Mail an die Führungskräfte, die ihn wählen: der Verlust von gestern nach Abfall, Bruch und nicht berechneten Getränken, Umsatz und Gäste von gestern, offene markierte Rechnungen, die drei Dinge für heute und die letzten 30 Tage, verloren gegen gespart. 30 Tage kostenlos.']],
     call: { title: 'Tyll Einführung · 15 Min.', day: 'Dienstag', slots: ['09:30', '11:00', '14:30'] },
@@ -156,12 +165,12 @@ const de: Dict = {
     sub: 'Eine Gruppenansicht über alle Hotels, jedes mit eigener Währung, eigenen Lieferanten und eigenen Freigaberegeln.',
     link: 'Für Hotelgruppen →',
     sections: <[string, string][]>[
-      ['Jede Rolle sieht, was sie braucht.', 'Eigentümer, Hoteldirektion, Finanzcontrolling, F&B-Direktion, Restaurantleitung, Einkauf, Küchenchef und operative Mitarbeitende; der Lagerist bestätigt Lieferungen. Rezeption, Housekeeping, Concierge, Bell Captain und Eventleitung kommen mit den Modulen Zimmer und Events, die in Entwicklung sind. Jede Person sieht nur ihre Hotels, Outlets und Zahlen. Ein Küchenchef sieht seine Küche, eine Finanzcontrollerin die ganze Gruppe.'],
-      ['Freigabelimits je Hotel.', 'Jedes Hotel legt seine eigene Freigabekette fest, mit Limits vor Mehrwertsteuer. Zum Beispiel: Der Einkauf prüft jede Bestellung, die Buchhaltung gibt jede Bestellung frei, der F&B-Direktor gibt Bestellungen über 2.000 € frei und die Hoteldirektion zusätzlich Bestellungen über 5.000 €. Niemand gibt eine eigene Bestellung frei. Das Lager nimmt die Ware an.'],
-      ['Mehrere Hotels, mehrere Länder.', 'Jedes Hotel berichtet in seiner eigenen Währung, zum Beispiel EUR, AED oder SAR, und Beträge in verschiedenen Währungen werden nie addiert. Die Mehrwertsteuer des jeweiligen Landes steht auf jeder Bestellung und Rechnung. Jedes Hotel wählt seine Methode der Bestandsbewertung und hat eigene Lieferanten und Konditionen.'],
-      ['Passt zu den Systemen Ihrer Gruppe.', '{systems} Freigegebene Bestellungen, Wareneingänge und Lieferantenrechnungen lassen sich für das Einkaufs- oder Buchhaltungssystem der Gruppe exportieren, als CSV (eine Zeile pro Position) oder JSON (ein Datensatz pro Beleg).'],
-      ['Jede Änderung dokumentiert.', 'Ein Protokoll jeder Anmeldung und jeder Änderung, sichtbar für Eigentümer, Hoteldirektion und Finanzcontrolling. Die Prüfgrenzen werden zu Beginn mit jedem Hotel vereinbart.'],
-      ['Vertrauen.', 'Tyll ändert, löscht oder bucht nie etwas in Ihren Systemen. Daten in Europa gehostet, nach der DSGVO.'],
+      ['Jede Rolle sieht, was sie braucht.', 'Vom Eigentümer bis zum Küchenchef sieht jede Rolle nur ihre Hotels, Outlets und Zahlen. Das Controlling sieht die ganze Gruppe.'],
+      ['Freigabelimits je Hotel.', 'Jedes Hotel legt seine eigene Freigabekette und Limits fest. Niemand gibt eine Bestellung frei, die er selbst angelegt hat.'],
+      ['Mehrere Hotels, mehrere Länder.', 'Jedes Hotel in seiner Währung und Mehrwertsteuer, nie zusammengerechnet. Die Demo zeigt ein Hotel.'],
+      ['Passt zu den Systemen Ihrer Gruppe.', '{systems} Bestellungen, Wareneingänge und Rechnungen als CSV oder JSON exportieren.'],
+      ['Jede Änderung dokumentiert.', 'Jede Anmeldung und jede Änderung wird protokolliert, einsehbar für Eigentümer und Controlling.'],
+      ['Vertrauen.', 'Nur lesend: Tyll ändert nichts in Ihren Systemen. Daten in Europa gehostet, nach der DSGVO.'],
     ],
   },
   solutionPage: {
@@ -185,7 +194,7 @@ const de: Dict = {
     // "More in Tyll" (round 4): Revenue and reports and Suppliers keep their pages; the morning brief and Scan
     moreInTyll: { title: 'Mehr in Tyll', items: <[string, string][]>[['Morgenbericht und Warnungen', 'Die Verluste von gestern und drei Aufgaben für heute, um 7 Uhr.'], ['Scannen', 'Einen Zettel, einen Lieferschein, leere Flaschen, eine Rezeptkarte oder eine Speisekarte fotografieren.']] },
     // The Scan strip on the homepage (round 4): five photo flows, each linking to the row that holds it
-    scan: { title: 'Fotografieren. Tyll liest, Sie bestätigen.', items: ['Anforderungszettel', 'Lieferscheine', 'Leere Flaschen', 'Rezeptkarten', 'Speisekarten'], lines: ['Wird zur Anforderung an das Hauptlager.', 'Abweichungen werden Gutschriftsanfragen.', 'Nach Etikett gegen die Kasse gezählt.', 'Ausbeute, Grundrezepte und Kosten pro Teller.', 'Nur die Unterschiede zur Kasse.'], honest: 'In der Demo liest Tyll Beispielfotos. Ein Mensch prüft jedes Feld, bevor es gespeichert wird.' },
+    scan: { title: 'Fotografieren. Tyll liest, Sie bestätigen.', lead: 'Fünf Dinge, die Ihr Team ohnehin auf Papier hat. Foto machen, prüfen, was Tyll gelesen hat, speichern.', items: ['Anforderungszettel', 'Lieferscheine', 'Leere Flaschen', 'Rezeptkarten', 'Speisekarten'], lines: ['Wird zur Anforderung an das Hauptlager.', 'Abweichungen werden Gutschriftsanfragen.', 'Nach Etikett gegen die Kasse gezählt.', 'Ausbeute, Grundrezepte und Kosten pro Teller.', 'Nur die Unterschiede zur Kasse.'], honest: 'In der Demo liest Tyll Beispielfotos. Ein Mensch prüft jedes Feld, bevor es gespeichert wird.' },
     also: {
       title: 'Außerdem in Tyll',
       items: <[string, string][]>[
@@ -309,6 +318,7 @@ const de: Dict = {
   footer: {
     solutions: 'Lösungen',
     follow: 'Tyll folgen',
+    investors: 'Investoren',
     tagline: 'Weniger Komplexität. Mehr Klarheit. Bessere Gastfreundschaft.',
     explore: 'Entdecken',
     company: 'Unternehmen',
@@ -321,22 +331,22 @@ const de: Dict = {
   },
   meta: {
     howTitle: 'So funktioniert’s | Tyll',
-    howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, ein kostenloser Einkaufsbericht, nur lesender Zugriff auf Ihre Kasse und dann um 7 Uhr ein Morgenbericht darüber, was verloren ging und was es gekostet hat.',
+    howDescription: 'So funktioniert Tyll in vier Schritten: ein kurzes Gespräch, ein kostenloser Einkaufsbericht, Lesezugriff auf Ihre Kasse, dann um 7 Uhr ein Morgenbericht.',
     groupsTitle: 'Bestands- und Verlustkontrolle für Hotelgruppen | Tyll',
-    groupsDescription: 'Eine Ansicht über alle Hotels: Rollen, die nur ihre Zahlen sehen, Freigabelimits je Hotel, jedes Hotel in eigener Währung, Exporte und ein Änderungsprotokoll.',
-    solutionsTitle: 'Bestand, Abfall & Rechnungsabgleich für Gastronomie | Tyll',
-    solutionsDescription: 'Sechs Werkzeuge, die mit Ihrer Kasse arbeiten: Abfall erfassen, Lagerbestand, Einkaufsprognose, Umsatz, Rechnungsabgleich und Überschenken. Demo testen.',
+    groupsDescription: 'Ein Blick über alle Hotels: Rollen, die nur ihre eigenen Zahlen sehen, Freigabelimits je Hotel, jedes Hotel in seiner Währung, Exporte und ein Prüfprotokoll.',
+    solutionsTitle: 'Software für Bestand, Einkauf und Abgleich im Hotel | Tyll',
+    solutionsDescription: 'Neun Werkzeuge in drei Teilen: Bestand, Haltbarkeit und Abfall; Prognosen, automatische Bestellung und Lieferungen; Inventur, Überschenken und Rechnungen.',
     bookTitle: 'Kostenloses Gespräch buchen | Tyll',
-    bookDescription: 'Buchen Sie ein kurzes, kostenloses Gespräch mit dem Tyll-Team über Ihr Restaurant oder Hotel und darüber, wo Tyll helfen könnte.',
+    bookDescription: 'Buchen Sie ein kurzes, kostenloses Gespräch mit dem Tyll-Team über Ihr Hotel: was Sie einkaufen, was verloren geht und wo Tyll helfen kann. Termin frei wählbar.',
     faqTitle: 'FAQ: So arbeitet Tyll mit Ihren Systemen | Tyll',
-    faqDescription: 'Kurze Antworten zu Tyll: der kostenlose 30-Tage-Pilot, die unterstützten Systeme, die Einrichtung, Ihre Daten und die Preise.',
+    faqDescription: 'Kurze Antworten zu Tyll: der kostenlose 30-Tage-Pilot, die Systeme, mit denen Tyll arbeitet, die Einrichtung, der Schutz Ihrer Daten und die Kosten danach.',
     legalTitle: 'Impressum | Tyll',
-    legalDescription: 'Impressum der Tyll-Website.',
+    legalDescription: 'Impressum der Tyll-Website: wer sie betreibt, wie Sie uns erreichen, wer für den Inhalt verantwortlich ist, und die gesetzlichen Pflichtangaben.',
     privacyTitle: 'Datenschutzerklärung | Tyll',
-    privacyDescription: 'Wie die Tyll-Website mit personenbezogenen Daten, Cookies und Terminanfragen umgeht.',
-    homeTitle: 'Tyll | Wareneinsatz & Rechnungsabgleich für Hotels',
+    privacyDescription: 'Wie die Tyll-Website personenbezogene Daten behandelt: was beim Besuch, bei einer Buchung oder einem Formular erfasst wird, welche Cookies es gibt, Ihre Rechte.',
+    homeTitle: 'Tyll | Bestand, Einkauf und Verlustkontrolle für Hotels',
     homeDescription:
-      'Finden Sie das Geld, das Ihr Hotel zwischen den Systemen verliert: Rechnungen, Bestand, Abfall und Lieferantenrechnungen, jede Nacht geprüft.',
+      'Tyll zeigt Hotels, was sie bestellen müssen, bevor der Bestand ausgeht, erstellt und sendet die Bestellungen und zeigt jeden Morgen, was verloren ging.',
   },
 };
 

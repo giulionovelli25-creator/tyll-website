@@ -7,11 +7,12 @@ import { createRequire } from 'node:module';
 
 export default function globalSetup() {
   const out = buildSync({
-    stdin: { contents: "export { solutions, sections, moreKeys } from './src/content/solutions'; export { sustainability } from './src/content/sustainability';", resolveDir: process.cwd(), loader: 'ts' },
+    stdin: { contents: "export { solutions, sections, moreKeys } from './src/content/solutions'; export { sustainability } from './src/content/sustainability'; export { demoRoutes } from './src/config/demo'; export { icons } from './src/config/icons';", resolveDir: process.cwd(), loader: 'ts' },
     bundle: true,
     write: false,
     format: 'cjs',
     platform: 'node',
+    define: { 'import.meta.env': '{}' },
     loader: { '.jpg': 'empty', '.jpeg': 'empty', '.png': 'empty', '.webp': 'empty' },
     logLevel: 'error',
   });

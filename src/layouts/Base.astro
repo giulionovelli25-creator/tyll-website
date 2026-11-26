@@ -60,6 +60,14 @@ const locales = langsOf(page);
     <link rel="preload" href="/fonts/source-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
     {lang === 'ar' && <link rel="preload" href="/fonts/noto-naskh-arabic.woff2" as="font" type="font/woff2" crossorigin />}
     <slot name="head" />
+    <!-- Arriving at #section: jump there at once rather than with the site's smooth scrolling, which photographs still
+         loading above can cut short (round 5, the footer's Investors link). Smooth scrolling comes back after load. -->
+    <script is:inline>
+      if (location.hash.length > 1) {
+        document.documentElement.style.scrollBehavior = 'auto';
+        addEventListener('load', () => setTimeout(() => document.documentElement.style.removeProperty('scroll-behavior'), 1500), { once: true });
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">{d.skip}</a>
@@ -69,5 +77,23 @@ const locales = langsOf(page);
     </main>
     <Footer lang={lang} page={page} />
     <ConsentBanner lang={lang} />
+    <script>
+      // Arriving at an address with #section (round 5, the footer's Investors link from any page): the browser's own
+      // jump can land short, or not at all, while photographs above it are still loading under smooth scrolling. Once
+      // the page has loaded, the section is brought under the header again, at once and only if the reader has not
+      // scrolled in the meantime.
+      const target = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+      if (target) {
+        let moved = false;
+        addEventListener('wheel', () => (moved = true), { once: true, passive: true });
+        addEventListener('touchmove', () => (moved = true), { once: true, passive: true });
+        addEventListener('keydown', () => (moved = true), { once: true });
+        const settle = () => !moved && target.scrollIntoView({ block: 'start', behavior: 'instant' });
+        requestAnimationFrame(settle);
+        setTimeout(settle, 400);
+        if (document.readyState !== 'complete') addEventListener('load', () => requestAnimationFrame(settle), { once: true });
+        else setTimeout(settle, 1200);
+      }
+    </script>
   </body>
 </html>

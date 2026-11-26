@@ -9,6 +9,9 @@ const it: Dict = {
     solutions: 'Soluzioni',
     how: 'Come funziona',
     groups: 'Gruppi alberghieri',
+    about: 'Chi siamo',
+    security: 'Sicurezza',
+    tryDemo: 'Prova la demo',
     solutionsMenu: 'Menu soluzioni',
     allSolutions: 'Tutte le soluzioni',
     allIn: 'Tutto su {name} →',
@@ -44,6 +47,10 @@ const it: Dict = {
     card: { title: 'Brief del mattino · Grand Hotel Lumière', lost: 'Perso ieri', total: '52 €', split: '38 € sprechi, 0 € rotture, 14 € bevande non fatturate', yesterday: ['Ricavi 7.342 € da 205 ospiti', '12 conti segnalati ancora aperti, 1.245 € da controllare'], todo: 'Tre cose da fare oggi', rows: <[string, string, string][]>[['Carne macinata di wagyu insufficiente prima del pranzo di domani', 'Mercado, a rischio', '159 €'], ['Coca-Cola, 238 lattine non giustificate', 'Controllo a 30 giorni, una stima', '321 €'], ['Controlla la mescita al Bar Azulejo, venerdì turno serale', 'Bar Azulejo, non fatturato', '333 €']], month: 'Ultimi 30 giorni: 11.228 € persi, 4.634 € risparmiati, il 41,3% della perdita', cta: 'Apri il brief del mattino →' },
   },
   home: {
+    // Round 5 (25 Nov 2026): the pilot result's own section, the founder's story in short, investor enquiries
+    pilot: { more: 'Perché lo spreco alimentare conta →' },
+    founder: { title: 'Da dove nasce Tyll', text: 'Il nostro CEO ha chiuso la notte a mano per sei mesi in un hotel di lusso a Zurigo, da 45 a 60 minuti ogni notte. Ciò che si perde non si vede mai in un totale. Così è nato Tyll.', link: 'Leggi tutta la storia →' },
+    investors: { title: 'Richieste degli investitori', text: 'Stiamo costruendo Tyll a Berlino, con hotel a Berlino e Zurigo. Se investi in software per l’ospitalità o contro lo spreco alimentare, ci farebbe piacere sentirti.', name: 'Nome', email: 'Email', firm: 'Società o fondo', message: 'Messaggio', required: 'obbligatorio', send: 'Invia richiesta', sending: 'Invio…', thanks: 'Grazie. Ti rispondiamo entro due giorni lavorativi.', errName: 'Inserisci il tuo nome.', errEmail: 'Inserisci il tuo indirizzo email.', errEmailBad: 'Inserisci un indirizzo email valido, ad esempio nome@fondo.com.', failed: 'Invio non riuscito. Riprova o scrivici a', subject: 'Richiesta di un investitore' },
     tour: {
       title: 'Tre punti in cui il tuo hotel perde denaro.',
       text: 'Tyll legge i sistemi che usi già e dà al tuo team una risposta chiara.',
@@ -143,6 +150,8 @@ const it: Dict = {
     story: { title: 'Da dove nasce Tyll', text: 'Il nostro CEO ha chiuso la notte a mano per sei mesi in un hotel di lusso a Zurigo: da 45 a 60 minuti ogni notte, a confrontare i totali. Ciò che si perde non si vede mai in un totale. Così è nato Tyll. Oggi Tyll è attivo in hotel a Berlino e Zurigo.' },
     eyebrow: 'Come funziona',
     title: 'Quattro passi. Poi ogni mattina vedi cosa ha perso il tuo hotel.',
+    // The page's own heading (round 5); `title` stays the homepage teaser's heading
+    h1: 'Da una chiamata al tuo primo brief del mattino.',
     sub: 'Sola lettura. Niente da installare. Niente da sostituire.',
     steps: <[string, string][]>[['Prenota una chiamata di 15 minuti', 'Guardiamo insieme i tuoi punti vendita e verifichiamo che Tyll faccia per te.'], ['Report acquisti gratuito', 'Invia un mese di vendite POS, ricevi il report entro 48 ore.'], ['Leggiamo il tuo POS', 'Tyll legge le vendite di ieri sera dal sistema che usi già.'], ['Il tuo brief del mattino', 'Ogni mattina alle 7, via email ai responsabili che lo scelgono: la perdita di ieri divisa tra sprechi, rotture e bevande non fatturate, ricavi e ospiti di ieri, conti segnalati ancora aperti, le tre cose da fare oggi e gli ultimi 30 giorni, perso contro risparmiato. 30 giorni gratis.']],
     call: { title: 'Introduzione a Tyll · 15 min', day: 'Martedì', slots: ['09:30', '11:00', '14:30'] },
@@ -157,12 +166,12 @@ const it: Dict = {
     sub: 'Una vista di gruppo su tutti gli hotel, ognuno con la sua valuta, i suoi fornitori e le sue regole di approvazione.',
     link: 'Per gruppi alberghieri →',
     sections: <[string, string][]>[
-      ['Ogni ruolo vede ciò che gli serve.', 'Proprietario, direttore generale, controller finanziario, direttore F&B, responsabile di ristorante, acquisti, capo chef e personale operativo; il magazziniere conferma le consegne. Front office, housekeeping, concierge, bell captain e responsabile eventi arrivano con i moduli Camere ed Eventi, in sviluppo. Ognuno vede solo i suoi hotel, punti vendita e numeri. Un capo chef vede la sua cucina, un controller finanziario l’intero gruppo.'],
-      ['Limiti di approvazione per hotel.', 'Ogni hotel imposta la sua catena di approvazione, con limiti al netto dell’IVA. Per esempio: gli acquisti esaminano ogni ordine, la contabilità approva ogni ordine, il direttore F&B approva gli ordini oltre 2.000 € e il direttore generale anche quelli oltre 5.000 €. Nessuno approva un ordine che ha creato. Il magazziniere riceve la merce.'],
-      ['Più hotel, più paesi.', 'Ogni hotel riporta nella sua valuta, per esempio EUR, AED o SAR, e importi in valute diverse non vengono mai sommati. L’IVA di ogni paese compare su ogni ordine di acquisto e fattura. Ogni hotel sceglie il suo metodo di valorizzazione delle scorte e ha i suoi fornitori e le sue condizioni.'],
-      ['Si adatta ai sistemi del tuo gruppo.', '{systems} Ordini di acquisto approvati, entrate merci e fatture dei fornitori si possono esportare per il sistema di acquisti o di contabilità del gruppo, in CSV (una riga per voce) o JSON (un record per documento).'],
-      ['Ogni modifica registrata.', 'Un registro di ogni accesso e di ogni modifica, visibile a proprietari, direttori generali e controller finanziari. I limiti dei controlli si concordano con ogni hotel all’inizio.'],
-      ['Fiducia.', 'Tyll non modifica, cancella o registra mai nulla nei tuoi sistemi. Dati ospitati in Europa secondo il GDPR.'],
+      ['Ogni ruolo vede ciò che gli serve.', 'Dal proprietario allo chef, ogni ruolo vede solo i propri hotel, punti vendita e numeri. La finanza vede tutto il gruppo.'],
+      ['Limiti di approvazione per hotel.', 'Ogni hotel imposta la sua catena di approvazione e i suoi limiti. Nessuno approva un ordine che ha creato.'],
+      ['Più hotel, più paesi.', 'Ogni hotel nella sua valuta e IVA, mai sommati tra loro. La demo mostra un solo hotel.'],
+      ['Si adatta ai sistemi del tuo gruppo.', '{systems} Ordini, entrate merci e fatture si esportano in CSV o JSON.'],
+      ['Ogni modifica registrata.', 'Ogni accesso e ogni modifica vengono registrati, visibili a proprietari e finanza.'],
+      ['Fiducia.', 'Sola lettura: Tyll non cambia nulla nei tuoi sistemi. Dati ospitati in Europa secondo il GDPR.'],
     ],
   },
   solutionPage: {
@@ -186,7 +195,7 @@ const it: Dict = {
     // "More in Tyll" (round 4): Revenue and reports and Suppliers keep their pages; the morning brief and Scan
     moreInTyll: { title: 'Altro in Tyll', items: <[string, string][]>[['Briefing del mattino e avvisi', 'Le perdite di ieri e tre cose da fare oggi, alle 7.'], ['Scansiona', 'Fotografa un foglio, una bolla, bottiglie vuote, una scheda ricetta o un menù.']] },
     // The Scan strip on the homepage (round 4): five photo flows, each linking to the row that holds it
-    scan: { title: 'Fotografalo. Tyll lo legge, tu confermi.', items: ['Fogli di richiesta', 'Bolle di consegna', 'Bottiglie vuote', 'Schede ricetta', 'Menù'], lines: ['Diventa una richiesta al magazzino centrale.', 'Le differenze diventano richieste di nota di credito.', 'Contate per etichetta contro la cassa.', 'Rese, basi della casa e costo per piatto.', 'Solo le differenze con la cassa.'], honest: 'Nella demo la lettura usa foto di esempio. Una persona controlla ogni campo prima che venga salvato.' },
+    scan: { title: 'Fotografalo. Tyll lo legge, tu confermi.', lead: 'Cinque cose che il tuo team ha già su carta. Scatta una foto, controlla cosa ha letto Tyll, salva.', items: ['Fogli di richiesta', 'Bolle di consegna', 'Bottiglie vuote', 'Schede ricetta', 'Menù'], lines: ['Diventa una richiesta al magazzino centrale.', 'Le differenze diventano richieste di nota di credito.', 'Contate per etichetta contro la cassa.', 'Rese, basi della casa e costo per piatto.', 'Solo le differenze con la cassa.'], honest: 'Nella demo la lettura usa foto di esempio. Una persona controlla ogni campo prima che venga salvato.' },
     also: {
       title: 'Anche in Tyll',
       items: <[string, string][]>[
@@ -310,6 +319,7 @@ const it: Dict = {
   footer: {
     solutions: 'Soluzioni',
     follow: 'Segui Tyll',
+    investors: 'Investitori',
     tagline: 'Meno complessità. Più chiarezza. Ospitalità migliore.',
     explore: 'Esplora',
     company: 'Azienda',
@@ -322,22 +332,22 @@ const it: Dict = {
   },
   meta: {
     howTitle: 'Come funziona | Tyll',
-    howDescription: 'Come funziona Tyll in quattro passi: una breve chiamata, un report acquisti gratuito, accesso in sola lettura al tuo POS e poi alle 7 un brief del mattino con cosa è andato perso e quanto è costato.',
+    howDescription: 'Come funziona Tyll in quattro passi: una breve chiamata, un report d’acquisto gratuito, accesso in sola lettura alla cassa, poi ogni mattina alle 7 un brief.',
     groupsTitle: 'Controllo di scorte e perdite per gruppi alberghieri | Tyll',
-    groupsDescription: 'Una vista su tutti gli hotel: ruoli che vedono solo i propri numeri, limiti di approvazione per hotel, ogni hotel nella sua valuta, export e registro modifiche.',
-    solutionsTitle: 'Soluzioni | Tyll',
-    solutionsDescription: 'Sei aree in cui Tyll aiuta i team alberghieri: magazzino e sprechi, finanza, previsioni e acquisti, eventi e personale, camere e ospiti, vendite.',
+    groupsDescription: 'Una vista su ogni hotel: ruoli che vedono solo i propri numeri, limiti di approvazione per hotel, ogni hotel nella sua valuta ed esportazioni.',
+    solutionsTitle: 'Software per scorte, acquisti e riconciliazione in hotel | Tyll',
+    solutionsDescription: 'Nove strumenti in tre parti: scorte, scadenze e sprechi; previsioni, ordini automatici e consegne; inventari, versamento eccessivo e transazioni segnalate.',
     bookTitle: 'Prenota una demo | Tyll',
-    bookDescription: 'Prenota una demo di Tyll e scopri dove il tuo hotel perde denaro.',
+    bookDescription: 'Prenota una breve chiamata gratuita con il team Tyll sul tuo hotel: cosa compri, cosa perdi e dove Tyll può aiutarti. Scegli tu l’orario che ti è più comodo.',
     faqTitle: 'Domande frequenti | Tyll',
-    faqDescription: 'Risposte brevi su Tyll: il pilota gratuito di 30 giorni, i sistemi con cui lavora, l’avvio, i tuoi dati e i prezzi.',
+    faqDescription: 'Risposte brevi su Tyll: il pilota gratuito di 30 giorni, i sistemi con cui lavora, come si configura, come proteggiamo i tuoi dati e quanto costa dopo.',
     legalTitle: 'Note legali | Tyll',
-    legalDescription: 'Note legali del sito di Tyll.',
+    legalDescription: 'Note legali del sito di Tyll: chi lo gestisce, come contattarci, chi è responsabile dei contenuti e le informazioni legali richieste per un sito web tedesco.',
     privacyTitle: 'Informativa sulla privacy | Tyll',
-    privacyDescription: 'Come il sito di Tyll tratta i dati personali, i cookie e le richieste di prenotazione.',
-    homeTitle: 'Tyll | Scopri dove il tuo hotel perde soldi su magazzino e sprechi',
+    privacyDescription: 'Come il sito di Tyll tratta i dati personali: cosa viene raccolto quando visiti, prenoti una chiamata o invii un modulo, i cookie e i tuoi diritti.',
+    homeTitle: 'Tyll | Scorte, acquisti e controllo delle perdite in hotel',
     homeDescription:
-      'Scopri dove il tuo hotel perde denaro. Ogni notte Tyll confronta conti e comande, fatture e consegne, aggiorna il magazzino e prepara la lista d’ordine.',
+      'Tyll dice agli hotel cosa ordinare prima che le scorte finiscano, prepara e invia gli ordini e ogni mattina mostra cosa si è perso in sprechi e conti.',
   },
 };
 

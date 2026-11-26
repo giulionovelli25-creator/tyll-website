@@ -13,7 +13,7 @@ const t = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it 
 export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
   takes: {
     key: 'takes',
-    icon: 'takes',
+    icon: 'scan-barcode',
     tone: 'violet',
     mark: t('more than we sold', 'mehr verbraucht', 'أكثر مما بعنا', 'più di quanto venduto'),
     pagePhoto: pageTakes,
@@ -24,7 +24,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
     intro: t('Count the storeroom in Tyll. It explains every gap, in the kitchen and at the bar.', 'Zählen Sie das Lager in Tyll. Es erklärt jede Lücke, in der Küche und an der Bar.', 'اجرد المخزن في Tyll. يفسّر كل فرق، في المطبخ وفي البار.', 'Conta il magazzino in Tyll. Spiega ogni scarto, in cucina e al bar.'),
     see: [
       { title: t('Stock count review', 'Prüfung der Inventur', 'مراجعة الجرد', 'Revisione dell’inventario'), text: t('Every difference with its value, before anything moves.', 'Jede Abweichung mit ihrem Wert, bevor sich etwas ändert.', 'كل فرق بقيمته، قبل أن يتغير أي شيء.', 'Ogni differenza con il suo valore, prima che cambi qualcosa.') },
-      { title: t('Approve it or send it back', 'Freigeben oder zurückschicken', 'اعتمده أو أعده', 'Approvarlo o rimandarlo'), text: t('Stock only changes once the count is approved.', 'Der Bestand ändert sich erst, wenn die Inventur freigegeben ist.', 'لا يتغير المخزون إلا بعد اعتماد الجرد.', 'Le scorte cambiano solo dopo l’approvazione dell’inventario.') },
+      { title: t('Approve it or reject it', 'Freigeben oder ablehnen', 'اعتمده أو ارفضه', 'Approvarlo o rifiutarlo'), text: t('Stock only changes once the count is approved.', 'Der Bestand ändert sich erst, wenn die Inventur freigegeben ist.', 'لا يتغير المخزون إلا بعد اعتماد الجرد.', 'Le scorte cambiano solo dopo l’approvazione dell’inventario.') },
       { title: t('Bought against used', 'Gekauft gegen verbraucht', 'المشتريات مقابل الاستخدام', 'Acquistato contro usato'), text: t('What was bought in 30 days but never used. An estimate.', 'Was in 30 Tagen gekauft, aber nie verbraucht wurde. Eine Schätzung.', 'ما اشتُري خلال 30 يومًا ولم يُستخدم. تقدير.', 'Cosa è stato comprato in 30 giorni ma mai usato. Una stima.') },
     ],
     more: [
@@ -49,7 +49,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
     rows: [
       {
         id: 'missing-stock',
-        icon: 'takes',
+        icon: 'package-search',
         film: 'takes-missing',
         name: t('Missing stock', 'Fehlender Bestand', 'المخزون المفقود', 'Scorte mancanti'),
         line: t('Used against sold, with the possible causes.', 'Verbraucht gegen verkauft, mit den möglichen Ursachen.', 'المستهلك مقابل المبيع، مع الأسباب المحتملة.', 'Usato contro venduto, con le possibili cause.'),
@@ -61,7 +61,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'bought',
-        icon: 'stock',
+        icon: 'shopping-bag',
         film: 'takes-bought',
         name: t('Bought against used', 'Gekauft gegen verbraucht', 'المشتريات مقابل الاستخدام', 'Acquistato contro usato'),
         line: t('What came in, against what sales and waste explain.', 'Was hereinkam, gegen das, was Verkäufe und Abfall erklären.', 'ما دخل، مقابل ما تفسّره المبيعات والهدر.', 'Cosa è entrato, contro cosa spiegano vendite e sprechi.'),
@@ -72,7 +72,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'month-end',
-        icon: 'reports',
+        icon: 'calendar-check',
         film: 'takes-month-end',
         name: t('Month-end report', 'Monatsabschluss', 'تقرير نهاية الشهر', 'Report di fine mese'),
         line: t('Approved stock takes and the variance, for accounting.', 'Freigegebene Inventuren und die Abweichung, für die Buchhaltung.', 'الجرود المعتمدة والفروق، للمحاسبة.', 'Inventari approvati e la varianza, per la contabilità.'),
@@ -82,7 +82,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'blind',
-        icon: 'takes',
+        icon: 'eye-off',
         film: 'takes-blind',
         name: t('Blind counts', 'Blindzählung', 'العدّ دون عرض الكمية', 'Conteggio alla cieca'),
         line: t('For audits, the expected quantity is hidden.', 'Für Prüfungen wird die erwartete Menge ausgeblendet.', 'للتدقيق، تُخفى الكمية المتوقعة.', 'Per le verifiche, la quantità attesa è nascosta.'),
@@ -95,7 +95,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
 
   pour: {
     key: 'pour',
-    icon: 'pour',
+    icon: 'glass-water',
     tone: 'violet',
     mark: t('unbilled', 'unberechnet', 'دون فاتورة', 'non battute'),
     pagePhoto: pagePour,
@@ -132,7 +132,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
     rows: [
       {
         id: 'patterns',
-        icon: 'pour',
+        icon: 'activity',
         film: 'pour-patterns',
         name: t('All patterns', 'Alle Muster', 'كل الأنماط', 'Tutti gli schemi'),
         line: t('By outlet, shift and item, from closed days only.', 'Pro Outlet, Schicht und Artikel, nur aus abgeschlossenen Tagen.', 'لكل منفذ ووردية وصنف، من الأيام المغلقة فقط.', 'Per punto vendita, turno e articolo, solo da giorni chiusi.'),
@@ -143,7 +143,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'missing-drinks',
-        icon: 'takes',
+        icon: 'cup-soda',
         film: 'pour-missing',
         name: t('Missing drinks', 'Fehlende Getränke', 'المشروبات المفقودة', 'Bevande mancanti'),
         line: t('Used, not sold, between two counts.', 'Verbraucht, nicht verkauft, zwischen zwei Zählungen.', 'مستهلكة وغير مبيعة، بين جردين.', 'Usate, non vendute, tra due conteggi.'),
@@ -156,7 +156,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
 
   finance: {
     key: 'finance',
-    icon: 'finance',
+    icon: 'flag',
     tone: 'violet',
     mark: t('missing', 'Geld verloren', 'يُفقد المال', 'si perde denaro'),
     pagePhoto: pageFlags,
@@ -192,7 +192,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
     rows: [
       {
         id: 'room-charges',
-        icon: 'finance',
+        icon: 'bed-double',
         film: 'finance-rooms',
         name: t('Room charges', 'Zimmerbelastungen', 'قيود الغرف', 'Addebiti in camera'),
         line: t('Charges to a room against the guest bill.', 'Belastungen aufs Zimmer gegen die Gästerechnung.', 'القيود على الغرفة مقابل فاتورة النزيل.', 'Addebiti in camera contro il conto dell’ospite.'),
@@ -202,7 +202,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'bills',
-        icon: 'cash',
+        icon: 'receipt',
         film: 'finance-bills',
         name: t('Bills', 'Rechnungen', 'الفواتير', 'Conti'),
         line: t('Bills against what the kitchen and bar received.', 'Rechnungen gegen das, was Küche und Bar erhielten.', 'الفواتير مقابل ما وصل إلى المطبخ والبار.', 'Conti contro ciò che hanno ricevuto cucina e bar.'),
@@ -214,7 +214,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'covers',
-        icon: 'revenue',
+        icon: 'users',
         film: 'finance-covers',
         name: t('Tables and guests', 'Tische und Gäste', 'الطاولات والضيوف', 'Tavoli e ospiti'),
         line: t('Booked covers against billed covers.', 'Reservierte gegen abgerechnete Gedecke.', 'الضيوف المحجوزون مقابل المفوترين.', 'Coperti prenotati contro coperti fatturati.'),
@@ -225,7 +225,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'stock-checks',
-        icon: 'takes',
+        icon: 'package-check',
         film: 'finance-stock',
         name: t('Stock checks', 'Bestandsprüfungen', 'فحوص المخزون', 'Controlli sulle scorte'),
         line: t('Stock used beyond what sales explain.', 'Verbrauch über das hinaus, was Verkäufe erklären.', 'مخزون استُهلك بما يتجاوز ما تفسّره المبيعات.', 'Scorte usate oltre ciò che spiegano le vendite.'),
@@ -235,7 +235,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'waiters',
-        icon: 'pour',
+        icon: 'user-search',
         film: 'finance-waiters',
         name: t('Drinks per guest by waiter', 'Getränke pro Gast je Servicekraft', 'المشروبات لكل ضيف حسب النادل', 'Bevande per ospite per cameriere'),
         line: t('Each waiter against colleagues on the same shift.', 'Jede Servicekraft gegen Kollegen derselben Schicht.', 'كل نادل مقارنة بزملائه في الوردية نفسها.', 'Ogni cameriere contro i colleghi dello stesso turno.'),
@@ -245,7 +245,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'cash',
-        icon: 'cash',
+        icon: 'banknote',
         film: 'finance-cash',
         name: t('Cash per shift', 'Bargeld je Schicht', 'النقد لكل وردية', 'Contanti per turno'),
         line: t('Cash in the drawer against cash sales.', 'Bargeld in der Kasse gegen Barverkäufe.', 'النقد في الدرج مقابل المبيعات النقدية.', 'Contanti nel cassetto contro vendite in contanti.'),
@@ -258,7 +258,7 @@ export const reconciliation: Record<'takes' | 'pour' | 'finance', Solution> = {
       },
       {
         id: 'cases',
-        icon: 'cases',
+        icon: 'hand-coins',
         film: 'finance-cases',
         name: t('Cases', 'Fälle', 'الحالات', 'Casi'),
         line: t('Every flag, followed up to an outcome.', 'Jede Markierung, verfolgt bis zu einem Ergebnis.', 'كل تنبيه يُتابَع حتى نتيجة.', 'Ogni segnalazione, seguita fino a un esito.'),

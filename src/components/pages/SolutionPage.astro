@@ -9,6 +9,7 @@ import SilverWave from '../SilverWave.astro';
 import SolutionIcon from '../SolutionIcon.astro';
 import { solutions, sectionOf, moreKeys } from '../../content/solutions';
 import { solutionSeo } from '../../content/seo';
+import { demoHref, demoRoutes } from '../../config/demo';
 import { t, href, type Locale, type SolutionKey } from '../../i18n';
 
 interface Props {
@@ -28,6 +29,9 @@ const section = sectionOf(solution);
 const others = (section ? section.keys : moreKeys).filter((k) => k !== solution);
 const othersHead = section ? p.inSection.replace('{name}', section.name[lang]) : p.moreInTyll.title;
 const othersHref = href('solutions', lang, section ? `#${section.id}` : '#more-in-tyll');
+// Under the film: the same story in the demo, in the visitor's language, in a new tab
+const tryRoute = demoRoutes[solution];
+const tryHref = tryRoute ? demoHref(lang, tryRoute) : undefined;
 
 // Search title and description: from seo.ts where the language has one, otherwise the page's own name and lines
 const seo = solutionSeo[solution]?.[lang];
@@ -75,6 +79,16 @@ const say =
       </div>
     </div>
     <div class="wrap sol__rest">
+      {
+        tryHref && (
+          <p class="sol__try">
+            <a href={tryHref} target="_blank" rel="noopener" data-track="demo_click" data-track-from={`${solution}-film`}>
+              {p.tryHere}
+              <span class="visually-hidden"> {d.cta.newTab}</span>
+            </a>
+          </p>
+        )
+      }
       {p.demoEnglish && <p class="sol__note">{p.demoEnglish}</p>}
       {
         (s.more.length > 0 || s.rows?.length) && (
@@ -243,8 +257,19 @@ const say =
 
   <nav class="wrap others" aria-label={othersHead}>
     <p class="others__head"><a href={othersHref}>{othersHead}</a></p>
-    <ul>
-      {others.map((k) => <li><a href={href(k, lang)}>{solutions[k].name[lang]}</a></li>)}
+    <ul role="list">
+      {
+        others.map((k) => (
+          <li>
+            <a href={href(k, lang)} data-accent={solutions[k].tone}>
+              <span class="others__icon">
+                <SolutionIcon name={solutions[k].icon} />
+              </span>
+              {solutions[k].name[lang]}
+            </a>
+          </li>
+        ))
+      }
       <li><a class="others__all" href={href('solutions', lang)}>{d.cta.allSolutions}</a></li>
     </ul>
   </nav>
@@ -626,14 +651,46 @@ const say =
     font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
   }
 
-  /* The other four pages of the section and All solutions: one row on desktop, three columns on tablets, two on phones */
+  /* Try this in the demo: a quiet text link under the film, on the film's side */
+  .sol__try {
+    max-width: none;
+    margin: 0;
+    text-align: end;
+  }
+
+  .sol__try a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: rgb(var(--acc-rgb) / 0.5);
+    text-underline-offset: 4px;
+  }
+
+  .sol__try a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  @media (max-width: 1023px) {
+    .sol__try {
+      text-align: start;
+    }
+  }
+
+  /* More in <section> (round 5): on the page's left edge, the same edge as the footer under it. Desktop: one row,
+     each page with its icon on a faint square of its colour. Phones: one per row, See all solutions last. */
+  .others {
+    padding-block: var(--intro-gap);
+  }
+
   .others__head {
     max-width: none;
     margin: 0;
-    padding-top: var(--intro-gap);
     font-size: var(--fs-small);
     font-weight: 600;
-    text-align: center;
   }
 
   .others__head a {
@@ -643,36 +700,19 @@ const say =
   }
 
   .others ul {
-    display: grid;
-    grid-template-columns: repeat(5, auto);
-    justify-content: center;
-    justify-items: center;
-    gap: 0.5rem var(--s-4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem var(--s-4);
     margin: 0;
-    padding: var(--s-2) 0 var(--intro-gap);
+    padding: var(--s-2) 0 0;
     list-style: none;
-    text-align: center;
-  }
-
-  @media (max-width: 1100px) {
-    .others ul {
-      grid-template-columns: repeat(3, minmax(0, 14rem));
-    }
-  }
-
-  @media (max-width: 760px) {
-    .others ul {
-      grid-template-columns: repeat(2, minmax(0, 14rem));
-    }
-
-    .soon ul {
-      grid-template-columns: minmax(0, 1fr);
-    }
   }
 
   .others a {
     display: inline-flex;
     align-items: center;
+    gap: 0.75rem;
     min-height: 44px;
     color: var(--ink);
     font-size: var(--fs-body);
@@ -684,8 +724,35 @@ const say =
     text-underline-offset: 4px;
   }
 
-  .others__all {
+  .others__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 10px;
+    background: rgb(var(--acc-rgb) / 0.1);
+    color: var(--acc);
+  }
+
+  .others__icon :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .others a.others__all {
     color: var(--steel);
+  }
+
+  @media (max-width: 760px) {
+    .others ul {
+      display: grid;
+      gap: 0;
+    }
+
+    .soon ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   /* Tablets and phones: the question, then the film under it */

@@ -1,0 +1,464 @@
+---
+// The sustainability calculator (round 5, 25 Nov 2026, the owner's brief). Three inputs, a slider and a number field
+// each: covers per day and food cost per cover (euros; dirhams on the Arabic page), over a full year. Three results
+// that follow every change with a short count: food bought (covers × cost × 365), what is likely thrown away (18%,
+// WRAP's UK hospitality and food service average of food purchased) and what a first-year cut of 21% would keep (the
+// Champions 12.3 hotels' average). Rounded to thousands, tabular numbers, results in an aria-live region. Built here
+// with no library. Without JavaScript the defaults' results show, worked out at build time.
+import { sustainability } from '../../content/sustainability';
+import { href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const c = sustainability[lang].calc;
+// Number formats per language; Arabic keeps Western digits, as the rest of the site does
+const locale = { en: 'en-IE', de: 'de-DE', it: 'it-IT', ar: 'ar-AE-u-nu-latn' }[lang];
+const WASTE = 0.18;
+const CUT = 0.21;
+// A full year: the days-open slider was dropped at the owner's request (25 Nov 2026)
+const DAYS = 365;
+const defaults = { covers: 300, cost: c.cost.value, days: DAYS };
+const money = (n: number) =>
+  new Intl.NumberFormat(locale, { style: 'currency', currency: c.currency, currencyDisplay: c.currency === 'AED' ? 'code' : 'symbol', maximumFractionDigits: 0 }).format(Math.round(n / 1000) * 1000);
+const bought = defaults.covers * defaults.cost * defaults.days;
+const fields = [
+  { id: 'covers', label: c.covers, value: defaults.covers, min: 20, max: 2000, step: 10, unit: '' },
+  { id: 'cost', label: c.costLabel, value: c.cost.value, min: c.cost.min, max: c.cost.max, step: c.cost.step, unit: c.currency === 'AED' ? 'AED' : '€' },
+];
+---
+
+<section class="calc" id="calculator" aria-labelledby="calc-title">
+  <div class="wrap calc__grid">
+    <div class="calc__copy">
+      <h2 id="calc-title" class="display">{c.title}</h2>
+      <p class="calc__lead">{c.lead}</p>
+      <div class="calc__foot">
+        <p class="calc__note">{c.note}</p>
+        <a class="calc__cta" href={href('book', lang)} data-track="book_demo_click" data-track-from="sustainability-calculator">{c.measure}</a>
+      </div>
+    </div>
+
+    <div class="calc__box" data-calc data-locale={locale} data-currency={c.currency} data-waste={WASTE} data-cut={CUT} data-days={DAYS}>
+      <div class="calc__inputs">
+        {
+          fields.map((f) => (
+            <div class="calc__field">
+              <label for={`calc-${f.id}`}>{f.label}</label>
+              {f.id === 'covers' && <p class="calc__help" id="calc-covers-help">{c.coverHelp}</p>}
+              <div class="calc__pair">
+                <input type="range" id={`calc-${f.id}-range`} min={f.min} max={f.max} step={f.step} value={f.value} aria-label={f.label} aria-describedby={f.id === 'covers' ? 'calc-covers-help' : undefined} data-range={f.id} />
+                <span class="calc__num">
+                  {f.unit && <span class="calc__unit" aria-hidden="true">{f.unit}</span>}
+                  <input type="number" id={`calc-${f.id}`} min={f.min} max={f.max} step={f.step} value={f.value} inputmode="decimal" dir="ltr" aria-describedby={f.id === 'covers' ? 'calc-covers-help' : undefined} data-num={f.id} />
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <dl class="calc__out" aria-live="polite" aria-atomic="true">
+        <div class="calc__row">
+          <dt>{c.bought} <span class="calc__per">{c.perYear}</span></dt>
+          <dd data-out="bought">{money(bought)}</dd>
+        </div>
+        <div class="calc__row calc__row--waste">
+          <dt>
+            {c.wasted}
+            <span class="calc__why">{c.wastedNote}</span>
+          </dt>
+          <dd data-out="wasted">{money(bought * WASTE)}</dd>
+        </div>
+        <div class="calc__row calc__row--kept">
+          <dt>
+            {c.kept}
+            <span class="calc__why">{c.keptNote}</span>
+          </dt>
+          <dd data-out="kept">{money(bought * WASTE * CUT)}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <p class="calc__target">{c.target.text}</p>
+  </div>
+</section>
+
+<style>
+  .calc {
+    padding-block: var(--band-y);
+    background: var(--page-deep);
+    scroll-margin-top: var(--header-h);
+  }
+
+  /* The words and links at the start, the calculator beside them; the target line under both */
+  .calc__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+    gap: var(--s-3) var(--s-5);
+    align-items: start;
+  }
+
+  .calc__target {
+    grid-column: 1 / -1;
+  }
+
+  .calc h2 {
+    max-width: 18ch;
+    margin: 0;
+    font-size: clamp(1.875rem, 1.4rem + 1.4vw, 2.625rem);
+  }
+
+  .calc__lead {
+    margin: var(--s-2) 0 0;
+    color: var(--graphite);
+  }
+
+  /* The inputs at the start, the three results at the end, on one white card */
+  .calc__box {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--s-5);
+    padding: clamp(1.25rem, 0.8rem + 1.5vw, 2rem);
+    border: 1px solid var(--sand-300);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    box-shadow: var(--shadow-1);
+  }
+
+  .calc__inputs {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+
+  .calc__field label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--graphite);
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+
+  .calc__help {
+    max-width: 34ch;
+    margin: -0.15rem 0 0.35rem;
+    color: var(--steel);
+    font-size: var(--fs-small);
+    line-height: 1.45;
+  }
+
+  .calc__pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7.5rem;
+    gap: var(--s-2);
+    align-items: center;
+  }
+
+  /* The slider: a thin silver track that fills in ink up to the thumb */
+  .calc input[type='range'] {
+    --fill: 50%;
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    background: transparent;
+    accent-color: var(--ink);
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .calc input[type='range']::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--ink) var(--fill), var(--sand-500) var(--fill));
+  }
+
+  :global([dir='rtl']) .calc input[type='range']::-webkit-slider-runnable-track {
+    background: linear-gradient(to left, var(--ink) var(--fill), var(--sand-500) var(--fill));
+  }
+
+  .calc input[type='range']::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--sand-500);
+  }
+
+  .calc input[type='range']::-moz-range-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+
+  .calc input[type='range']::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+    margin-top: -9px;
+    border: 2px solid var(--paper);
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 1px 4px rgb(var(--ink-rgb) / 0.3);
+    appearance: none;
+  }
+
+  .calc input[type='range']::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--paper);
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 1px 4px rgb(var(--ink-rgb) / 0.3);
+  }
+
+  .calc input[type='range']:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .calc__num {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 44px;
+    padding: 0 0.7rem;
+    border: 1px solid var(--sand-600);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+  }
+
+  .calc__num:focus-within {
+    border-color: var(--ink);
+  }
+
+  .calc__unit {
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  .calc input[type='number'] {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    outline: none;
+    appearance: textfield;
+  }
+
+  .calc input[type='number']::-webkit-inner-spin-button {
+    opacity: 1;
+  }
+
+  .calc__out {
+    display: grid;
+    gap: 0;
+    margin: 0;
+  }
+
+  /* Each result: the number on top, its label under it, so a longer or shorter number never moves the words */
+  .calc__row {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: var(--s-2);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .calc__row:last-child {
+    border-bottom: 0;
+  }
+
+  .calc__row dt {
+    color: var(--graphite);
+    font-weight: 600;
+  }
+
+  .calc__per {
+    color: var(--steel);
+    font-weight: 400;
+  }
+
+  .calc__why {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 400;
+  }
+
+  .calc__row dd {
+    order: -1;
+    margin: 0;
+    line-height: 1.05;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-weight: 300;
+    white-space: nowrap;
+  }
+
+  .calc__row--kept dd {
+    font-size: clamp(2rem, 1.5rem + 1.8vw, 3.25rem);
+    font-weight: 400;
+  }
+
+  .calc__foot {
+    display: grid;
+    gap: var(--s-2);
+    margin-top: var(--s-3);
+  }
+
+  .calc__note {
+    max-width: 52ch;
+    margin: 0;
+    color: var(--graphite);
+  }
+
+  .calc__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    min-height: 44px;
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--sand-600);
+    text-underline-offset: 4px;
+  }
+
+  .calc__cta:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .calc__target {
+    max-width: 70ch;
+    margin: var(--s-3) 0 0;
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  @media (max-width: 1100px) {
+    .calc__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .calc h2 {
+      max-width: 24ch;
+    }
+
+    /* Stacked: the title and lead, the calculator, then the note and links under it */
+    .calc__copy {
+      display: contents;
+    }
+
+    .calc__lead {
+      margin-top: calc(var(--s-2) - var(--s-3));
+    }
+
+    .calc__box {
+      order: 1;
+    }
+
+    .calc__foot {
+      order: 2;
+      margin-top: 0;
+    }
+
+    .calc__target {
+      order: 3;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .calc__box {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .calc__pair {
+      grid-template-columns: minmax(0, 1fr) 6.25rem;
+    }
+  }
+</style>
+
+<script>
+  // Keeps each slider and its number field together, works out the three results and counts them to their new
+  // values in about 0.3 s (at once with reduced motion). Typed numbers are kept in range when the field is left.
+  for (const box of document.querySelectorAll<HTMLElement>('[data-calc]')) {
+    const ds = box.dataset;
+    const fmt = new Intl.NumberFormat(ds.locale, {
+      style: 'currency',
+      currency: ds.currency,
+      currencyDisplay: ds.currency === 'AED' ? 'code' : 'symbol',
+      maximumFractionDigits: 0,
+    });
+    const show = (n: number) => fmt.format(Math.round(n / 1000) * 1000);
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ranges = Object.fromEntries([...box.querySelectorAll<HTMLInputElement>('[data-range]')].map((i) => [i.dataset.range!, i]));
+    const nums = Object.fromEntries([...box.querySelectorAll<HTMLInputElement>('[data-num]')].map((i) => [i.dataset.num!, i]));
+    const outs = Object.fromEntries([...box.querySelectorAll<HTMLElement>('[data-out]')].map((o) => [o.dataset.out!, o]));
+    const shown: Record<string, number> = {};
+    let frame = 0;
+    const paint = (range: HTMLInputElement) => {
+      const p = ((+range.value - +range.min) / (+range.max - +range.min)) * 100;
+      range.style.setProperty('--fill', `${p}%`);
+    };
+    const update = () => {
+      const v = (k: string) => {
+        const n = parseFloat(nums[k].value.replace(',', '.'));
+        return Number.isFinite(n) ? Math.min(Math.max(n, +nums[k].min), +nums[k].max) : +ranges[k].value;
+      };
+      const bought = v('covers') * v('cost') * +ds.days!;
+      const target = { bought, wasted: bought * +ds.waste!, kept: bought * +ds.waste! * +ds.cut! };
+      cancelAnimationFrame(frame);
+      const from = { ...shown };
+      const start = performance.now();
+      const step = (now: number) => {
+        const k = still ? 1 : Math.min((now - start) / 300, 1);
+        const e = 1 - Math.pow(1 - k, 3);
+        for (const [key, to] of Object.entries(target)) {
+          const val = (from[key] ?? to) + (to - (from[key] ?? to)) * e;
+          shown[key] = val;
+          outs[key].textContent = show(val);
+        }
+        if (k < 1) frame = requestAnimationFrame(step);
+      };
+      frame = requestAnimationFrame(step);
+    };
+    for (const key of Object.keys(ranges)) {
+      const range = ranges[key];
+      const num = nums[key];
+      paint(range);
+      range.addEventListener('input', () => {
+        num.value = range.value;
+        paint(range);
+        update();
+      });
+      num.addEventListener('input', () => {
+        const n = parseFloat(num.value.replace(',', '.'));
+        if (Number.isFinite(n)) {
+          range.value = String(n);
+          paint(range);
+        }
+        update();
+      });
+      num.addEventListener('change', () => {
+        const n = parseFloat(num.value.replace(',', '.'));
+        const ok = Number.isFinite(n) ? Math.min(Math.max(n, +num.min), +num.max) : +range.value;
+        num.value = String(ok);
+        range.value = String(ok);
+        paint(range);
+        update();
+      });
+    }
+    // The starting values, so the first change counts from what is on screen
+    const b0 = +nums.covers.value * +nums.cost.value * +ds.days!;
+    Object.assign(shown, { bought: b0, wasted: b0 * +ds.waste!, kept: b0 * +ds.waste! * +ds.cut! });
+  }
+</script>

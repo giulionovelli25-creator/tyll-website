@@ -1,5 +1,6 @@
-// The site's browser tests (20 Nov 2026; round 4, 24 Nov 2026). Run against the dev server: `npx playwright test`
-// (config in playwright.config.ts: Chromium and WebKit at 375, 768, 1280 × 720, 1440 × 900 and 1920 × 1080). Whole-site
+// The site's browser tests (20 Nov 2026; round 4, 24 Nov 2026; round 5, 25 Nov 2026, with tests/round5.spec.ts). Run
+// against the dev server: `npx playwright test` (config in playwright.config.ts: Chromium and WebKit at 390 × 844,
+// 768 × 1024, 1280 × 720, 1440 × 900 and 1920 × 1080). Whole-site
 // sweeps that do not depend on the window (every link, every page's language switch) run once per browser at 1280 px;
 // everything that a visitor sees or clicks runs in all ten. Strings come from the site's own language files and
 // content, so a changed word never breaks a test.
@@ -27,7 +28,6 @@ const height = (p: { project: { metadata: { height?: number } } }) => p.project.
 const gone = ['Money Back List', 'Bill and cash checks', 'Coming next', 'Tyll never sends', 'Usually nobody stands out', 'Rückholliste', 'Lista recuperi', 'قائمة استرداد الأموال', 'Rechnungs- und Bargeldprüfung', 'Controlli su conti e contanti', 'تدقيق الفواتير والنقد'];
 const allPages = Object.keys(pages) as PageKey[];
 const DEMO = 'https://demo.tyll.ai/';
-const tryLabels = locales.map((l) => dict[l].cta.demo.replace(/\s*[→←]$/, ''));
 
 /** Visible text of the page, without hidden elements */
 const visibleText = (page: Page) => page.evaluate(() => document.body.innerText);
@@ -97,7 +97,6 @@ test.describe('every page', () => {
         const dir = await page.getAttribute('html', 'dir');
         expect(dir, pages[key][lang]).toBe(lang === 'ar' ? 'rtl' : 'ltr');
         const text = await visibleText(page);
-        for (const t of tryLabels) expect(text, `${pages[key][lang]} has "${t}"`).not.toContain(t);
         for (const g of gone) expect(text, `${pages[key][lang]} still says "${g}"`).not.toContain(g);
         if (lang !== 'en') for (const w of english) expect(text, `${pages[key][lang]} shows English "${w}"`).not.toContain(w);
       }
@@ -107,7 +106,8 @@ test.describe('every page', () => {
 // ── 2. The header ──
 for (const lang of locales) {
   test.describe(`header ${lang}`, () => {
-    test('holds exactly logo, Solutions, How it works, Sustainability, languages and Book a demo', async ({ page }, info) => {
+    test('holds exactly Solutions, How it works, Sustainability, About us, languages and Book a demo', async ({ page }, info) => {
+      // 25 Nov 2026, the owner after round 5: the bar as before; Hotel groups only in the footer, no Try the demo
       const d = dict[lang];
       await page.goto(pages.solutions[lang]);
       const header = page.locator('#site-header');
@@ -118,24 +118,25 @@ for (const lang of locales) {
       await expect(header.locator('.header__logo')).toBeVisible();
       if (desktop(info)) {
         const nav = bar.locator('.header__nav > :visible');
-        await expect(nav).toHaveCount(3);
-        await expect(nav.nth(0)).toHaveText(d.nav.solutions);
-        await expect(nav.nth(1)).toHaveText(d.nav.how);
-        await expect(nav.nth(2)).toHaveText(d.nav.sustainability);
+        await expect(nav).toHaveCount(4);
+        expect((await nav.allInnerTexts()).map((x) => x.trim())).toEqual([d.nav.solutions, d.nav.how, d.nav.sustainability, d.nav.about]);
+        await expect(nav.nth(3)).toHaveAttribute('href', pages.about[lang]);
         await expect(nav.nth(2)).toHaveAttribute('href', pages.sustainability[lang]);
         await expect(bar.locator('[data-langdrop]')).toBeVisible();
         await expect(bar.locator('.header__end > :visible')).toHaveCount(2);
+        for (const el of await nav.all()) expect(await el.evaluate((e) => e.getClientRects().length), await el.innerText()).toBe(1);
       } else {
         await bar.locator('.header__burger').click();
         const menu = header.locator('#mobile-menu');
         await expect(menu).toBeVisible();
         const order = await menu.locator('nav > :visible').evaluateAll((els) => els.map((e) => e.className.split(' ')[0]));
-        expect(order).toEqual(['mobile-menu__group', 'mobile-menu__how', 'mobile-menu__how', 'lang', 'mobile-menu__actions']);
+        expect(order).toEqual(['mobile-menu__group', 'mobile-menu__how', 'mobile-menu__how', 'mobile-menu__how', 'lang', 'mobile-menu__actions']);
       }
-      // FAQ lives in the Solutions menu and the footer, never in the bar itself
-      const all = await bar.innerText();
-      for (const no of [d.nav.faqShort, d.nav.report, ...tryLabels]) expect(all).not.toContain(no);
+      // FAQ and Hotel groups live in the footer; the header never links to the demo
+      expect(await bar.innerText()).not.toContain(d.nav.faqShort);
+      expect(await header.locator(`a[href="${pages.faq[lang]}"], a[href="${pages.groups[lang]}"]`).count()).toBe(0);
       expect(await header.locator('a[href*="#report"], a[href*="#sustainability"], a[href*="demo.tyll.ai"]').count()).toBe(0);
+      await expect(page.locator(`.footer a[href="${pages.groups[lang]}"]`)).toHaveCount(1);
     });
 
     // ── 4. The Solutions menu, desktop and phone ──
@@ -166,13 +167,13 @@ for (const lang of locales) {
           await expect(col.locator('[data-solution]')).toHaveCount(3);
           await expect(col.locator('[data-solution] .panel__icon svg')).toHaveCount(3);
         }
-        await expect(panel.locator('a')).toHaveCount(11);
+        await expect(panel.locator('a')).toHaveCount(10);
         // the nine names, column by column, as in the demo's menu
         const names = await panel.locator('[data-solution]').evaluateAll((as) => as.map((a) => (a.querySelector('.panel__name') ?? a).textContent!.trim()));
         const want = sections.flatMap((sec) => sec.keys.map((k) => solutions[k].name[lang]));
         for (const n of want) expect(names.some((x) => x.startsWith(n)), n).toBe(true);
         for (const k of moreKeys) expect(names.some((x) => x.startsWith(solutions[k].name[lang])), `${k} not in the menu`).toBe(false);
-        await expect(panel.locator('.panel__faq')).toHaveAttribute('href', pages.faq[lang]);
+        await expect(panel.locator('.panel__faq')).toHaveCount(0);
         for (const href of await panel.locator('a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) expect((await request.get(href)).status(), href).toBe(200);
         await panel.locator('.panel__all').click();
         await expect(page).toHaveURL(new RegExp(`${pages.solutions[lang]}$`));
@@ -196,7 +197,11 @@ for (const lang of locales) {
       await expect(links).toHaveCount(1);
       await expect(links).toHaveAttribute('href', `${DEMO}?lang=${lang}`);
       await expect(links).toHaveAttribute('target', '_blank');
-      expect(await page.locator('a[href*="demo.tyll.ai"]').count()).toBe(1);
+      // every demo link on the page opens in a new tab, in this language
+      for (const a of await page.locator('a[href*="demo.tyll.ai"]').all()) {
+        await expect(a).toHaveAttribute('target', '_blank');
+        expect(await a.getAttribute('href')).toContain(`lang=${lang}`);
+      }
     });
   });
 }
@@ -264,60 +269,7 @@ test.describe('films with reduced motion', () => {
     });
 });
 
-// ── 7. The sustainability page (round 4): numbers wall, where we work, timeline ──
-for (const lang of locales)
-  test.describe(`sustainability ${lang}`, () => {
-    test('the numbers count up to their figures; the right countries for the language; every source opens in a new tab', async ({ page }) => {
-      const c = sustainability[lang];
-      await page.goto(pages.sustainability[lang]);
-      const figs = page.locator('[data-wall] [data-count]');
-      await expect(figs).toHaveCount(4);
-      const final = await figs.evaluateAll((els) => els.map((e) => e.getAttribute('data-final')));
-      await page.locator('[data-wall]').scrollIntoViewIfNeeded();
-      await page.waitForTimeout(1800);
-      expect(await figs.allInnerTexts()).toEqual(final);
-      const places = await page.locator('.place').evaluateAll((els) => els.map((e) => e.id));
-      expect(places).toEqual(c.local.cards.map((x) => `place-${x.id}`));
-      if (lang === 'ar') {
-        expect(places[0]).toBe('place-ae');
-        expect(places).not.toContain('place-eu');
-      } else expect(places).toContain('place-eu');
-      await expect(page.locator('.timeline__step')).toHaveCount(3);
-      const text = await visibleText(page);
-      expect(text).toContain(c.note);
-      expect(text).not.toMatch(/CO2|CO₂/);
-      for (const a of await page.locator('[data-sus] .source a').all()) {
-        await expect(a).toHaveAttribute('target', '_blank');
-        await expect(a.locator('.visually-hidden')).toHaveText(dict[lang].cta.newTab);
-      }
-    });
-
-    test('the where-we-work column stays put while the cards pass', async ({ page }, info) => {
-      test.skip(width(info) < 861, 'phones and tablets get the stacked version');
-      await page.goto(pages.sustainability[lang]);
-      const head = page.locator('.local__head');
-      // a little into the section, so the column is already stuck under the header
-      await page.locator('.local').evaluate((el) => scrollTo(0, el.getBoundingClientRect().top + scrollY + 260));
-      await page.waitForTimeout(400);
-      const top1 = await head.evaluate((e) => Math.round(e.getBoundingClientRect().top));
-      await page.mouse.move(400, 400);
-      await page.mouse.wheel(0, 300);
-      await page.waitForTimeout(700);
-      const top2 = await head.evaluate((e) => Math.round(e.getBoundingClientRect().top));
-      expect(top2).toBe(top1);
-    });
-
-    test.describe('reduced motion', () => {
-      test.use({ reducedMotion: 'reduce' });
-      test('figures show at once and the headline does not move', async ({ page }) => {
-        await page.goto(pages.sustainability[lang]);
-        const figs = page.locator('[data-wall] [data-count]');
-        const final = await figs.evaluateAll((els) => els.map((e) => e.getAttribute('data-final')));
-        expect(await figs.allInnerTexts()).toEqual(final);
-        expect(await page.locator('.hero__inner').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
-      });
-    });
-  });
+// ── 7. The sustainability page: see tests/round5.spec.ts ──
 
 // ── 8. The homepage's story, number carousel and free report form ──
 for (const lang of locales)

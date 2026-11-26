@@ -11,7 +11,7 @@ const t = (en: string, de: string, ar: string, it: string) => ({ en, de, ar, it 
 export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
   revenue: {
     key: 'revenue',
-    icon: 'revenue',
+    icon: 'chart-column-increasing',
     tone: 'violet',
     mark: t('money', 'Geld', 'المال', 'guadagnare'),
     pagePhoto: pageRevenue,
@@ -39,23 +39,23 @@ export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
     tilePoints: [
       t('Revenue and estimated contribution per outlet.', 'Umsatz und geschätzter Beitrag je Outlet.', 'الإيرادات والمساهمة التقديرية لكل منفذ.', 'Ricavi e contributo stimato per punto vendita.'),
       t('What each dish sells and earns.', 'Was jedes Gericht verkauft und einbringt.', 'ما يبيعه كل طبق وما يكسبه.', 'Cosa vende e quanto rende ogni piatto.'),
-      t('Budget against actual, and every report as PDF or CSV.', 'Budget gegen Ist, und jeder Bericht als PDF oder CSV.', 'الميزانية مقابل الفعلي، وكل تقرير بصيغة PDF أو CSV.', 'Budget contro consuntivo, e ogni report in PDF o CSV.'),
+      t('Budget against actual. The management report as PDF; reports and cases as CSV.', 'Budget gegen Ist. Der Management-Bericht als PDF, Berichte und Fälle als CSV.', 'الميزانية مقابل الفعلي. تقرير الإدارة بصيغة PDF، والتقارير والحالات بصيغة CSV.', 'Budget contro consuntivo. Il report di gestione in PDF, report e casi in CSV.'),
     ],
     rows: [
       {
         id: 'outlets',
-        icon: 'revenue',
+        icon: 'store',
         film: 'revenue-outlets',
         name: t('Revenue by outlet', 'Umsatz pro Outlet', 'الإيرادات لكل منفذ', 'Ricavi per punto vendita'),
         line: t('Revenue and estimated contribution, outlet by outlet.', 'Umsatz und geschätzter Deckungsbeitrag, Outlet für Outlet.', 'الإيرادات والمساهمة التقديرية، منفذًا بمنفذ.', 'Ricavi e contributo stimato, punto vendita per punto vendita.'),
         points: [
           t('Revenue, estimated cost, estimated operating contribution and gross margin per outlet.', 'Umsatz, geschätzte Kosten, geschätzter Betriebsbeitrag und Bruttomarge je Outlet.', 'الإيرادات والتكلفة التقديرية والمساهمة التشغيلية التقديرية وهامش الربح الإجمالي لكل منفذ.', 'Ricavi, costi stimati, contributo operativo stimato e margine lordo per punto vendita.'),
-          t('Guests and average bill.', 'Gäste und durchschnittliche Rechnung.', 'عدد الضيوف ومتوسط الفاتورة.', 'Ospiti e conto medio.'),
+          t('Guests and average bill for the outlets you select.', 'Gäste und durchschnittliche Rechnung für die gewählten Outlets.', 'عدد الضيوف ومتوسط الفاتورة للمنافذ التي تختارها.', 'Ospiti e conto medio per i punti vendita scelti.'),
         ],
       },
       {
         id: 'menu',
-        icon: 'revenue',
+        icon: 'utensils-crossed',
         film: 'revenue-menu',
         name: t('Menu performance', 'Menüleistung', 'أداء القائمة', 'Rendimento del menu'),
         line: t('What each dish sells and earns.', 'Was jedes Gericht verkauft und einbringt.', 'ما يبيعه كل طبق وما يكسبه.', 'Cosa vende e quanto rende ogni piatto.'),
@@ -66,14 +66,14 @@ export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
       },
       {
         id: 'reports',
-        icon: 'reports',
+        icon: 'file-text',
         film: 'revenue-reports',
         name: t('Budgets and reports', 'Budgets und Berichte', 'الميزانيات والتقارير', 'Budget e report'),
         line: t('Budget against actual, and every report.', 'Budget gegen Ist, und jeder Bericht.', 'الميزانية مقابل الفعلي، وكل تقرير.', 'Budget contro consuntivo, e ogni report.'),
         points: [
           t('Department spending: where the money went, by department and category.', 'Ausgaben je Abteilung: wohin das Geld ging, nach Abteilung und Kategorie.', 'إنفاق الأقسام: أين ذهب المال، حسب القسم والفئة.', 'Spesa per reparto: dove sono andati i soldi, per reparto e categoria.'),
           t('Sales and operational summary: revenue, direct costs and estimated contribution.', 'Umsatz- und Betriebsübersicht: Umsatz, direkte Kosten und geschätzter Beitrag.', 'ملخص المبيعات والتشغيل: الإيرادات والتكاليف المباشرة والمساهمة التقديرية.', 'Riepilogo vendite e operativo: ricavi, costi diretti e contributo stimato.'),
-          t('Recipes and costs, item history and the Cases, ready to print.', 'Rezepte und Kosten, Artikelhistorie und die Fälle, druckfertig.', 'الوصفات والتكاليف وسجل الأصناف والحالات، جاهزة للطباعة.', 'Ricette e costi, storico articoli e la Casi, pronti da stampare.'),
+          t('The management report ready to print or save as PDF; recipes and costs, item history and the Cases a click away.', 'Der Management-Bericht druckfertig oder als PDF; Rezepte und Kosten, Artikelhistorie und die Fälle mit einem Klick.', 'تقرير الإدارة جاهز للطباعة أو الحفظ بصيغة PDF؛ والوصفات والتكاليف وسجل الأصناف والحالات بنقرة واحدة.', 'Il report di gestione pronto da stampare o salvare in PDF; ricette e costi, storico articoli e i Casi a un clic.'),
           t('Each hotel is shown in its own currency.', 'Jedes Hotel wird in seiner eigenen Währung gezeigt.', 'يُعرض كل فندق بعملته الخاصة.', 'Ogni hotel è mostrato nella sua valuta.'),
         ],
       },
@@ -82,7 +82,7 @@ export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
 
   suppliers: {
     key: 'suppliers',
-    icon: 'suppliers',
+    icon: 'handshake',
     tone: 'blue',
     mark: t('on what terms', 'zu welchen Bedingungen', 'بأي شروط', 'a quali condizioni'),
     pagePhoto: pageSuppliers,
@@ -100,7 +100,7 @@ export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
       {
         points: [
           t('Every supplier with contact, delivery days, lead time, order cut-off, minimum order and payment terms.', 'Jeder Lieferant mit Kontakt, Liefertagen, Vorlaufzeit, Bestellschluss, Mindestbestellwert und Zahlungsbedingungen.', 'كل مورد مع جهة الاتصال وأيام التوريد ومدة التجهيز وموعد إغلاق الطلبات والحد الأدنى للطلب وشروط الدفع.', 'Ogni fornitore con contatto, giorni di consegna, tempi di consegna, orario limite per gli ordini, ordine minimo e condizioni di pagamento.'),
-          t('Suppliers are kept per hotel, so the same company can deliver to two hotels on different days, terms and prices.', 'Lieferanten werden je Hotel geführt, so kann dieselbe Firma zwei Hotels an verschiedenen Tagen, zu anderen Konditionen und Preisen beliefern.', 'يُحفظ الموردون لكل فندق، فيمكن لنفس الشركة أن تورّد لفندقين في أيام وبشروط وأسعار مختلفة.', 'I fornitori sono tenuti per hotel, così la stessa azienda può servire due hotel in giorni, condizioni e prezzi diversi.'),
+          t('Suppliers are kept per hotel, so in a group the same company can deliver to two hotels on different days, terms and prices. The demo shows one hotel.', 'Lieferanten werden je Hotel geführt, so kann dieselbe Firma zwei Hotels an verschiedenen Tagen, zu anderen Konditionen und Preisen beliefern. Die Demo zeigt ein Hotel.', 'يُحفظ الموردون لكل فندق، فيمكن لنفس الشركة أن تورّد لفندقين في أيام وبشروط وأسعار مختلفة. ويعرض العرض التوضيحي فندقًا واحدًا.', 'I fornitori sono tenuti per hotel, così la stessa azienda può servire due hotel in giorni, condizioni e prezzi diversi. La demo mostra un solo hotel.'),
           t('What you bought from each supplier in the last 30 days, and their open orders.', 'Was Sie in den letzten 30 Tagen bei jedem Lieferanten gekauft haben, und seine offenen Bestellungen.', 'ما اشتريته من كل مورد في آخر 30 يومًا، وطلباته المفتوحة.', 'Quanto hai acquistato da ogni fornitore negli ultimi 30 giorni, e i suoi ordini aperti.'),
         ],
       },
@@ -115,7 +115,7 @@ export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
     rows: [
       {
         id: 'catalogue',
-        icon: 'suppliers',
+        icon: 'book-open',
         film: 'suppliers-catalogue',
         name: t('Catalogue and agreed prices', 'Katalog und vereinbarte Preise', 'الكتالوج والأسعار المتفق عليها', 'Catalogo e prezzi concordati'),
         line: t('A second supplier for most items.', 'Ein zweiter Lieferant für die meisten Artikel.', 'مورّد ثانٍ لمعظم الأصناف.', 'Un secondo fornitore per la maggior parte degli articoli.'),
@@ -125,7 +125,7 @@ export const moreInTyll: Record<'revenue' | 'suppliers', Solution> = {
       },
       {
         id: 'reliability',
-        icon: 'deliveries',
+        icon: 'clock-alert',
         film: 'deliveries-reliability',
         name: t('Supplier reliability', 'Lieferantenzuverlässigkeit', 'موثوقية الموردين', 'Affidabilità dei fornitori'),
         line: t('Who delivers on time, and on which days they don’t.', 'Wer pünktlich liefert, und an welchen Tagen nicht.', 'من يسلّم في الوقت، وفي أي أيام يتأخر.', 'Chi consegna in orario, e in quali giorni no.'),

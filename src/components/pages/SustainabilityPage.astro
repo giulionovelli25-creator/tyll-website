@@ -1,22 +1,28 @@
 ---
-// The Sustainability page (round 4, 24 Nov 2026, the owner's brief).
-// 1. A photo hero at about half the screen, the headline over it, dropping in from slightly above once (600 ms; still
-//    with reduced motion).
-// 2. The numbers wall: the global figures count up together when the wall comes into view, each with its source.
-// 3. "What this means where we work": a sticky column at the start, the country cards passing at the end (Arabic puts
-//    the UAE first and has no EU card). Stacked on phones.
-// 4. "What hotels got back": a horizontal timeline, year one, year two, overall (stacked on phones).
-// 5. Two photo bands, produce arriving and kitchen trimmings, then how Tyll helps and the dark closing band.
-// No figure here is a Tyll result. Copy: src/content/sustainability.ts.
+// The Sustainability page (round 5, 25 Nov 2026, the owner's brief). About four screens on a desktop, each section
+// shaped differently and each with one moment of motion at most:
+// 1. Hero: the photograph fills the screen under the header, the headline and its line in the lower third over a dark
+//    gradient (white text, AA contrast), rising into place once in 600 ms.
+// 2. One sentence of the world's numbers, set large on a dark band; it lights up word by word as it scrolls in, each
+//    figure counting up with a silver underline, and five plates under it lose the fifth to the bin. The real figures
+//    are in the HTML; only an aria-hidden copy counts, so search engines, previews and screen readers always get the
+//    final numbers.
+// 3. The calculator (SusCalculator.astro), with the EU's 2030 target under it (the UAE's on the Arabic page).
+// 4. What hotels got back: a timeline whose line draws from the start edge as you scroll, each milestone appearing as
+//    the line reaches it; four milestones, one figure each. Vertical on phones.
+// 5. (The three cities moved to the About page on 25 Nov 2026, the owner: they belong with our story.)
+// 6. Where Tyll helps: three cards, each with its solution page's film, loaded only when it scrolls into view.
+// 7. The dark closing band.
+// Under reduced motion nothing moves; without JavaScript everything shows in its final state. Copy:
+// src/content/sustainability.ts. No figure here is a Tyll result.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
+import SusCalculator from './SusCalculator.astro';
 import { sustainability } from '../../content/sustainability';
 import { solutions } from '../../content/solutions';
 import { t, href, type Locale } from '../../i18n';
 import heroPhoto from '../../assets/photos/sales-buffet.jpg';
-import bandProduce from '../../assets/photos/predictions-delivery.jpg';
-import bandWaste from '../../assets/photos/waste-bin.jpg';
 
 interface Props {
   lang: Locale;
@@ -25,17 +31,14 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const c = sustainability[lang];
-const waste = d.home.why.cards[0];
 const tab = d.cta.newTab;
 const fwd = lang === 'ar' ? '←' : '→';
-// The wall: the three global figures, then the homepage's 18%
-const wall = [...c.wall.stats, { figure: waste.figure, text: waste.title, source: { name: waste.sourceName, url: waste.sourceUrl } }];
-// How Tyll helps: a page, or the row on a page that holds a feature
-const act = c.act.items.map((it) => {
-  const s = solutions[it.page];
-  const row = it.row ? s.rows?.find((r) => r.id === it.row) : undefined;
-  return { href: href(it.page, lang, row ? `#${row.id}` : ''), name: (row ?? s).name[lang], text: it.text };
-});
+// The sentence, split into plain text and {figures}
+const parts = c.sentence.text.split(/(\{[^}]+\})/).filter(Boolean).map((p) => (p.startsWith('{') ? { fig: p.slice(1, -1) } : { text: p }));
+// Each figure's place in the sentence: the second one is "about one fifth", which sends the fifth plate to the bin
+const figs = parts.flatMap((p) => ('fig' in p ? [p.fig] : []));
+const figIndex = (f: string) => figs.indexOf(f);
+const act = c.act.items.map((it) => ({ ...it, s: solutions[it.page] }));
 ---
 
 <Base lang={lang} page="sustainability" title={c.metaTitle} description={c.metaDescription} overHero>
@@ -48,129 +51,110 @@ const act = c.act.items.map((it) => {
     </div>
   </section>
 
-  <div class="sus" data-sus>
-    <section class="wall" aria-labelledby="sus-wall" data-wall>
-      <div class="wrap">
-        <h2 id="sus-wall" class="display sus__title">{c.wall.title}</h2>
-        <ul class="wall__grid" role="list">
-          {
-            wall.map((st) => (
-              <li class="wall__stat">
-                <p class="figure" data-count data-final={st.figure} dir="auto">
-                  {st.figure}
-                </p>
-                <p class="wall__text">{st.text}</p>
-                <p class="source">
-                  <a href={st.source.url} target="_blank" rel="noopener">
-                    {st.source.name}
-                    <span class="visually-hidden"> {tab}</span>
-                  </a>
-                </p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </section>
+  <section class="line on-dark" data-dark aria-label={c.sentence.source.name} data-line>
+    <div class="wrap">
+      <p class="line__text">
+        {
+          parts.map((p) =>
+            'fig' in p ? (
+              <strong class="line__fig w" data-fig={figIndex(p.fig)}>
+                <span class="visually-hidden">{p.fig}</span>
+                <span aria-hidden="true" data-count>{p.fig}</span>
+              </strong>
+            ) : (
+              p.text.split(/(\s+)/).map((w) => (/^\s+$/.test(w) || !w ? w : <span class="w">{w}</span>))
+            ),
+          )
+        }
+      </p>
+      <!-- Five plates, one of them going in the bin: "about one fifth" as a picture -->
+      <svg class="line__plates" viewBox="0 0 400 72" aria-hidden="true">
+        {
+          [0, 1, 2, 3, 4].map((i) => (
+            <g class:list={['plate', i === 4 && 'plate--bin']} transform={`translate(${40 + i * 80} 36)`}>
+              <circle r="30" />
+              <circle class="plate__well" r="19" />
+            </g>
+          ))
+        }
+      </svg>
+      <p class="source line__source">
+        <a href={c.sentence.source.url} target="_blank" rel="noopener">
+          {c.sentence.source.name}
+          <span class="visually-hidden"> {tab}</span>
+        </a>
+      </p>
+    </div>
+  </section>
 
-    <figure class="band" aria-hidden="true">
-      <Picture src={bandProduce} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" decoding="async" style="object-position: 50% 45%" />
-    </figure>
+  <SusCalculator lang={lang} />
 
-    <section class="local" aria-labelledby="sus-local">
-      <div class="wrap local__grid">
-        <div class="local__head">
-          <h2 id="sus-local" class="display sus__title">{c.local.title}</h2>
-          <p class="local__lead">{c.local.lead}</p>
-        </div>
-        <div class="local__cards">
+  <section class="back" aria-labelledby="sus-back" data-back>
+    <div class="wrap">
+      <h2 id="sus-back" class="display sus__title">{c.back.title}</h2>
+      <div class="timeline">
+        <span class="timeline__track" aria-hidden="true"><span class="timeline__fill"></span></span>
+        <ol class="timeline__steps" role="list">
           {
-            c.local.cards.map((card) => (
-              <article class="place" id={`place-${card.id}`} aria-labelledby={`place-${card.id}-name`}>
-                <h3 id={`place-${card.id}-name`} class="place__name">{card.place}</h3>
-                <ul class="place__stats" role="list">
-                  {card.stats.map((st) => (
-                    <li>
-                      <p class="place__figure" dir="auto">{st.figure}</p>
-                      <p class="place__text">{st.text}</p>
-                    </li>
-                  ))}
-                </ul>
-                <ul class="place__sources" role="list">
-                  {card.sources.map((src) => (
-                    <li class="source">
-                      <a href={src.url} target="_blank" rel="noopener">
-                        {src.name}
-                        <span class="visually-hidden"> {tab}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))
-          }
-        </div>
-      </div>
-    </section>
-
-    <section class="back" aria-labelledby="sus-back">
-      <div class="wrap">
-        <h2 id="sus-back" class="display sus__title">{c.back.title}</h2>
-        <ol class="timeline" role="list">
-          {
-            c.back.steps.map((step) => (
-              <li class="timeline__step">
+            c.back.steps.map((step, i) => (
+              <li class="timeline__step" style={`--at:${i / (c.back.steps.length - 1)}`} data-step>
+                <span class="timeline__dot" aria-hidden="true" />
                 <p class="timeline__when">{step.when}</p>
                 {step.stats.map((st) => (
-                  <div class="timeline__stat">
-                    <p class="timeline__figure" dir="auto">{st.figure}</p>
-                    <p class="timeline__text">{st.text}</p>
-                  </div>
+                  <p class="timeline__stat">
+                    <span class="timeline__figure" dir="ltr">{st.figure}</span>
+                    <span class="timeline__text">{st.text}</span>
+                  </p>
                 ))}
               </li>
             ))
           }
         </ol>
-        <div class="back__foot">
-          <p class="source">
-            <a href={c.back.source.url} target="_blank" rel="noopener">
-              {c.back.source.name}
-              <span class="visually-hidden"> {tab}</span>
-            </a>
-          </p>
-          <p class="note">{c.note}</p>
-        </div>
       </div>
-    </section>
-
-    <figure class="band" aria-hidden="true">
-      <Picture src={bandWaste} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" decoding="async" style="object-position: 50% 28%" />
-    </figure>
-
-    <section class="act" aria-labelledby="sus-act">
-      <div class="wrap act__grid">
-        <div class="act__head">
-          <h2 id="sus-act" class="display">{c.act.title}</h2>
-          <p class="act__lead">{c.act.lead}</p>
-          <p class="act__offer">{c.act.offer}</p>
-        </div>
-        <ul class="act__list" role="list">
-          {
-            act.map((it) => (
-              <li>
-                <a class="act__item" href={it.href}>
-                  <span class="act__name">
-                    {it.name} <span class="act__go" aria-hidden="true">{fwd}</span>
-                  </span>
-                  <span class="act__text">{it.text}</span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="back__foot">
+        <p class="source">
+          <a href={c.back.source.url} target="_blank" rel="noopener">
+            {c.back.source.name}
+            <span class="visually-hidden"> {tab}</span>
+          </a>
+        </p>
+        <p class="note">{c.note}</p>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+
+  <section class="act" aria-labelledby="sus-act">
+    <div class="wrap">
+      <h2 id="sus-act" class="display sus__title">{c.act.title}</h2>
+      <ul class="act__list" role="list">
+        {
+          act.map((it) => (
+            <li>
+              <a class="act__card" href={href(it.page, lang)} data-accent={it.s.tone}>
+                <video
+                  class="act__clip"
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  aria-hidden="true"
+                  tabindex="-1"
+                  poster={`/media/film/${lang}/${it.page}-desk.jpg`}
+                  data-src={`/media/film/${lang}/${it.page}-desk.mp4`}
+                  data-clip
+                />
+                <span class="act__name">
+                  {it.s.name[lang]} <span class="act__go" aria-hidden="true">{fwd}</span>
+                </span>
+                <span class="act__text">{it.text}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="act__offer">{c.act.offer}</p>
+    </div>
+  </section>
 
   <section class="close on-dark" data-dark aria-labelledby="sus-final">
     <SilverWave phase={0.4} move tone="dark" />
@@ -185,18 +169,13 @@ const act = c.act.items.map((it) => {
 </Base>
 
 <style>
-  .sus {
-    --g: var(--demo-teal);
-    --pad: clamp(112px, 16vh, 200px);
-  }
-
-  /* Hero: a photograph at about half the screen under a dark shade, the headline in white over it */
+  /* 1. The hero fills the screen under the header; the words sit in its lower third */
   .hero {
     position: relative;
     display: grid;
     align-items: end;
-    min-height: clamp(26rem, 53svh, 42rem);
-    padding-block: calc(var(--header-h) + var(--s-5)) var(--s-6);
+    min-height: 100svh;
+    padding-block: calc(var(--header-h) + var(--s-5)) clamp(3rem, 12svh, 8rem);
     overflow: hidden;
     background: var(--ink);
     color: var(--on-dark);
@@ -209,13 +188,17 @@ const act = c.act.items.map((it) => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 50% 40%;
     filter: var(--photo-grade);
   }
 
+  /* Light at the top so the photograph reads, deep behind the words */
   .hero__shade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, rgb(var(--shade-rgb) / 0.86) 0%, rgb(var(--shade-rgb) / 0.55) 55%, rgb(var(--shade-rgb) / 0.45) 100%);
+    background:
+      linear-gradient(to bottom, rgb(var(--shade-rgb) / 0.45) 0%, rgb(var(--shade-rgb) / 0) 22%),
+      linear-gradient(to top, rgb(var(--shade-rgb) / 0.9) 0%, rgb(var(--shade-rgb) / 0.72) 32%, rgb(var(--shade-rgb) / 0.12) 68%);
   }
 
   .hero__inner {
@@ -223,67 +206,53 @@ const act = c.act.items.map((it) => {
     z-index: 1;
   }
 
-  /* The headline drops in from slightly above, once, as the page opens */
+  /* Rises into place once, fully visible throughout: it moves, it never fades */
   @media (prefers-reduced-motion: no-preference) {
     .hero__inner {
-      animation: sus-drop 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      animation: sus-rise 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
     }
   }
 
-  @keyframes sus-drop {
+  @keyframes sus-rise {
     from {
-      opacity: 0;
-      transform: translateY(-18px);
+      transform: translateY(18px);
     }
   }
 
   .hero h1 {
     max-width: 16ch;
+    color: rgb(var(--on-dark-rgb));
     font-size: clamp(2.5rem, 1.7rem + 3.4vw, 4.75rem);
     line-height: 1.04;
-    text-shadow: 0 1px 16px rgb(var(--night-rgb) / 0.4);
+    text-shadow: 0 1px 18px rgb(var(--night-rgb) / 0.5);
   }
 
   .hero__text {
     max-width: 34rem;
     margin: var(--s-3) 0 0;
-    color: var(--on-dark-muted);
+    color: rgb(var(--on-dark-rgb) / 0.92);
     font-size: var(--fs-lead);
     line-height: 1.5;
+    text-shadow: 0 1px 14px rgb(var(--night-rgb) / 0.5);
   }
 
   .sus__title {
-    max-width: 20ch;
+    max-width: 30ch;
     margin: 0;
     font-size: var(--fs-h2);
   }
 
-  .figure {
+  .source {
     max-width: none;
     margin: 0;
-    color: var(--g);
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 1.9rem + 2.6vw, 4.5rem);
-    font-weight: 300;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .source {
-    max-width: 60ch;
-    margin: var(--s-3) 0 0;
-    font-size: 0.875rem;
-    line-height: 1.45;
+    color: var(--steel);
+    font-size: var(--fs-small);
   }
 
   .source a {
-    display: inline-block;
-    padding-block: 0.6rem;
-    margin-block: -0.6rem;
-    color: var(--steel);
+    color: inherit;
     text-decoration: underline;
-    text-decoration-thickness: 1px;
+    text-decoration-color: var(--sand-600);
     text-underline-offset: 3px;
   }
 
@@ -291,324 +260,282 @@ const act = c.act.items.map((it) => {
     color: var(--ink);
   }
 
-  .note {
-    max-width: 60ch;
-    margin: 0.5rem 0 0;
-    color: var(--graphite);
-    font-size: var(--fs-small);
+  /* 2. One sentence on a dark band, set like a headline. As it scrolls up the screen its words light up one by one;
+     each figure counts up and is underlined in silver as it lights; at "one fifth" the last of five plates goes in
+     the bin. [data-reveal] is set by the script only when motion is allowed, so without it everything simply shows. */
+  .line {
+    padding-block: var(--band-y);
+    background: var(--night-1);
+    color: rgb(var(--on-dark-rgb));
   }
 
-  /* The numbers wall: four figures in a row, two by two on tablets, one under another on phones */
-  .wall {
-    padding-block: var(--pad);
-  }
-
-  .wall__grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--s-5) clamp(1.5rem, 0.5rem + 2vw, 3rem);
-    margin: var(--s-6) 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .wall__stat {
-    padding-top: var(--s-3);
-    border-top: 2px solid var(--g);
-  }
-
-  .wall__text {
-    max-width: 26ch;
-    margin: var(--s-2) 0 0;
-    color: var(--ink);
-    font-size: var(--fs-lead);
-    line-height: 1.4;
-  }
-
-  /* Where we work: the title stays put at the start while the country cards pass at the end */
-  .local {
-    padding-block: var(--pad);
-    background: var(--page-deep);
-  }
-
-  .local__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: var(--s-5) clamp(2rem, 1rem + 4vw, 6rem);
-    align-items: start;
-  }
-
-  .local__head {
-    position: sticky;
-    top: calc(var(--header-h) + var(--s-5));
-  }
-
-  .local__lead {
-    max-width: 30rem;
-    margin: var(--s-3) 0 0;
-    color: var(--steel);
-    font-size: var(--fs-lead);
-    line-height: 1.45;
-  }
-
-  .local__cards {
-    display: grid;
-    gap: var(--s-4);
-  }
-
-  .place {
-    padding: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    background: var(--paper);
-  }
-
-  .place__name {
-    margin: 0 0 var(--s-3);
-    font-family: var(--font);
-    font-size: var(--fs-h3);
-    font-weight: 600;
-    letter-spacing: 0;
-  }
-
-  .place__stats {
-    display: grid;
-    gap: var(--s-3);
+  .line__text {
+    max-width: 34ch;
     margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .place__figure {
-    margin: 0;
-    color: var(--g);
     font-family: var(--font-display);
-    font-size: clamp(2rem, 1.6rem + 1.4vw, 3rem);
+    font-size: clamp(1.75rem, 1.1rem + 2.2vw, 3.25rem);
     font-weight: 300;
-    line-height: 1.05;
+    line-height: 1.22;
+    text-wrap: pretty;
   }
 
-  .place__text {
-    max-width: 40ch;
-    margin: 0.3rem 0 0;
-    color: var(--graphite);
-    line-height: 1.45;
+  .line[data-reveal] .w {
+    opacity: 0.26;
+    transition: opacity 0.45s var(--ease);
   }
 
-  .place__sources {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 1.25rem;
-    margin: var(--s-3) 0 0;
-    padding: 0;
-    list-style: none;
+  .line[data-reveal] .w.is-on {
+    opacity: 1;
   }
 
-  .place__sources .source {
-    margin: 0;
+  .line__fig {
+    position: relative;
+    font-weight: 400;
+    font-variant-numeric: lining-nums tabular-nums;
+    white-space: nowrap;
   }
 
-  /* What hotels got back: three steps on one line, joined by a rule */
+  /* The silver line under a figure: drawn from the start edge as the figure lights */
+  .line__fig::after {
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.06em;
+    height: 2px;
+    background: linear-gradient(90deg, var(--silver-deep), var(--silver-light), var(--silver));
+    transform-origin: left center;
+    content: '';
+  }
+
+  :global([dir='rtl']) .line__fig::after {
+    transform-origin: right center;
+  }
+
+  .line[data-reveal] .line__fig::after {
+    transform: scaleX(0);
+    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.1s;
+  }
+
+  .line[data-reveal] .line__fig.is-on::after {
+    transform: scaleX(1);
+  }
+
+  /* The plates, seen from above: silver rims; the fifth turns to a dashed outline and drops, as if cleared away */
+  .line__plates {
+    display: block;
+    width: clamp(15rem, 10rem + 18vw, 25rem);
+    height: auto;
+    margin-top: var(--s-4);
+    overflow: visible;
+    fill: none;
+    stroke: var(--silver);
+    stroke-width: 1.5;
+  }
+
+  .line__plates :global(*) {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .plate .plate__well {
+    stroke: rgb(var(--on-dark-rgb) / 0.35);
+  }
+
+  .plate--bin {
+    stroke-dasharray: 3 5;
+    opacity: 0.45;
+    translate: 0 10px;
+    transition:
+      opacity 0.6s var(--ease),
+      translate 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .line[data-reveal]:not(.is-fifth) .plate--bin {
+    stroke-dasharray: none;
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .line__source {
+    margin-top: var(--s-3);
+    color: rgb(var(--on-dark-rgb) / 0.7);
+  }
+
+  .line__source a:hover {
+    color: rgb(var(--on-dark-rgb));
+  }
+
+  .line__source a {
+    text-decoration-color: rgb(var(--on-dark-rgb) / 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plate--bin {
+      transition: none;
+    }
+  }
+
+  /* 4. The timeline: a line that fills from the start edge, the milestones arriving as it reaches them. --p is
+     the drawn share, 1 by default (no JavaScript, reduced motion) and set from the scroll otherwise. */
   .back {
-    padding-block: var(--pad);
+    --p: 1;
+    padding-block: var(--band-y);
   }
 
   .timeline {
+    position: relative;
+    margin-top: var(--s-4);
+  }
+
+  .timeline__track {
+    position: absolute;
+    top: 7px;
+    inset-inline: 0;
+    height: 2px;
+    background: var(--sand-300);
+  }
+
+  .timeline__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: calc(var(--p) * 100%);
+    background: var(--ink);
+  }
+
+  .timeline__steps {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin: var(--s-6) 0 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .timeline__step {
+    --on: clamp(0, (var(--p) - var(--at) * 0.92) * 12, 1);
     position: relative;
-    padding-block-start: var(--s-4);
-    padding-inline-end: clamp(1rem, 0.5rem + 2vw, 3rem);
-    border-top: 2px solid var(--hair);
+    padding-top: var(--s-4);
+    opacity: calc(0.12 + var(--on) * 0.88);
+    transform: translateY(calc((1 - var(--on)) * 10px));
   }
 
-  /* each step's dot on the line */
-  .timeline__step::before {
+  .timeline__dot {
     position: absolute;
-    top: -7px;
+    top: 0;
     inset-inline-start: 0;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--ink);
     border-radius: 50%;
-    background: var(--g);
-    content: '';
+    background: var(--paper);
   }
 
   .timeline__when {
-    margin: 0 0 var(--s-3);
+    margin: 0 0 var(--s-2);
     color: var(--steel);
     font-size: var(--fs-small);
     font-weight: 600;
   }
 
-  .timeline__stat + .timeline__stat {
-    margin-top: var(--s-3);
+  .timeline__stat {
+    display: grid;
+    gap: 0.25rem;
+    max-width: 26ch;
+    margin: 0 0 var(--s-2);
   }
 
   .timeline__figure {
-    margin: 0;
-    color: var(--g);
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 1.8rem + 2.4vw, 4rem);
+    font-size: clamp(2.25rem, 1.7rem + 1.8vw, 3.25rem);
+    font-variant-numeric: lining-nums tabular-nums;
     font-weight: 300;
     line-height: 1;
+    text-align: start;
+  }
+
+  :global([dir='rtl']) .timeline__figure {
+    text-align: right;
   }
 
   .timeline__text {
-    max-width: 28ch;
-    margin: 0.4rem 0 0;
     color: var(--graphite);
-    line-height: 1.45;
   }
 
   .back__foot {
-    margin-top: var(--s-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem var(--s-4);
+    margin-top: var(--s-3);
   }
 
-  @media (max-width: 1100px) {
-    .wall__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 860px) {
-    .local__grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .local__head {
-      position: static;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .wall__grid,
-    .timeline {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .timeline__step {
-      padding-block: 0 var(--s-5);
-      padding-inline: var(--s-4) 0;
-      border-top: 0;
-      border-inline-start: 2px solid var(--hair);
-    }
-
-    .timeline__step::before {
-      top: 0.2rem;
-      inset-inline-start: -7px;
-    }
-  }
-
-  .band {
-    height: clamp(16rem, 40vw, 32rem);
+  .note {
     margin: 0;
-    overflow: hidden;
+    color: var(--steel);
+    font-size: var(--fs-small);
   }
 
-  .band :global(picture),
-  .band :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: var(--photo-grade);
-  }
-
-  /* How Tyll helps */
+  /* 6. Where Tyll helps: three cards with the solution pages' films */
   .act {
-    padding-block: var(--pad);
-  }
-
-  .act__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: var(--s-5) clamp(2rem, 1rem + 4vw, 5rem);
-    align-items: start;
-  }
-
-  .act h2 {
-    max-width: 16ch;
-    font-size: var(--fs-h2);
-  }
-
-  .act__lead {
-    max-width: 60ch;
-    margin: var(--s-3) 0 0;
-    color: var(--graphite);
-    font-size: var(--fs-lead);
-    line-height: 1.5;
-  }
-
-  .act__offer {
-    max-width: 60ch;
-    margin: var(--s-3) 0 0;
-    font-weight: 600;
-    line-height: 1.5;
+    padding-block: 0 var(--band-y);
   }
 
   .act__list {
     display: grid;
-    margin: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-3);
+    margin: var(--s-4) 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .act__item {
-    display: block;
-    padding: 1.25rem 0;
-    border-top: 1px solid var(--line);
+  .act__card {
+    display: grid;
+    gap: 0.5rem;
+    height: 100%;
+    padding-bottom: var(--s-2);
     color: var(--ink);
     text-decoration: none;
   }
 
-  .act__list li:last-child .act__item {
-    border-bottom: 1px solid var(--line);
+  .act__clip {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--sand-300);
+    border-radius: var(--radius-md);
+    background: var(--page-deep);
+    object-fit: cover;
+    object-position: 0 0;
   }
 
   .act__name {
-    display: block;
-    color: var(--g);
+    color: var(--acc);
     font-weight: 600;
   }
 
   .act__go {
     display: inline-block;
-    transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform 0.2s var(--ease);
   }
 
-  .act__item:focus-visible .act__go {
-    transform: translateX(4px);
+  .act__card:hover .act__go {
+    transform: translateX(3px);
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    .act__item:hover .act__go {
-      transform: translateX(4px);
-    }
-
-    :global([dir='rtl']) .act__item:hover .act__go {
-      transform: translateX(-4px);
-    }
-  }
-
-  :global([dir='rtl']) .act__item:focus-visible .act__go {
-    transform: translateX(-4px);
+  :global([dir='rtl']) .act__card:hover .act__go {
+    transform: translateX(-3px);
   }
 
   .act__text {
-    display: block;
-    max-width: 60ch;
-    margin-top: 0.3rem;
     color: var(--graphite);
-    line-height: 1.5;
   }
 
+  .act__offer {
+    max-width: 60ch;
+    margin: var(--s-4) 0 0;
+    color: var(--ink);
+  }
+
+  /* 7. The dark close */
   .close {
     position: relative;
     overflow: hidden;
@@ -638,8 +565,32 @@ const act = c.act.items.map((it) => {
   }
 
   @media (max-width: 900px) {
-    .act__grid {
+    .act__list {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* The timeline runs down the start edge on phones */
+    .timeline__track {
+      top: 0;
+      bottom: 0;
+      inset-inline: 7px auto;
+      width: 2px;
+      height: auto;
+    }
+
+    .timeline__fill {
+      inset-inline: 0;
+      width: auto;
+      height: calc(var(--p) * 100%);
+    }
+
+    .timeline__steps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .timeline__step {
+      padding-top: 0;
+      padding-inline-start: var(--s-4);
     }
   }
 
@@ -648,40 +599,122 @@ const act = c.act.items.map((it) => {
       flex: 1 1 100%;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .act__go {
+      transition: none;
+    }
+  }
 </style>
 
 <script>
-  // The numbers wall counts up once, all four figures together, when it comes into view. Each number in a figure
-  // keeps its decimals and its separator (1.05, 1,05). With reduced motion, or without JavaScript, the figures simply
-  // show. The page scrolls as it always does.
-  const wall = document.querySelector<HTMLElement>('[data-wall]');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (wall && !still && 'IntersectionObserver' in window) {
-    const NUM = /\d+(?:[.,]\d+)?/g;
-    const figures = [...wall.querySelectorAll<HTMLElement>('[data-count]')];
-    const at = (final: string, e: number) =>
-      final.replace(NUM, (m) => {
-        const sep = m.match(/[.,]/)?.[0];
-        const places = sep ? m.split(sep)[1].length : 0;
-        const v = (Number(m.replace(',', '.')) * e).toFixed(places);
-        return sep ? v.replace('.', sep) : v;
-      });
-    figures.forEach((el) => (el.textContent = at(el.dataset.final ?? '', 0)));
+  const NUM = /\d+(?:[.,]\d+)?/g;
+
+  // 2. The sentence lights up word by word as it moves up the screen (from when its top is near the bottom of the
+  //    screen until its end is a little below the middle). Lit words stay lit. A figure counts up once, when it lights;
+  //    only its aria-hidden copy changes, keeping decimals and separator (1.05, 1,05). At the second figure ("one
+  //    fifth") the fifth plate goes in the bin. A reader who lands with the line already passed sees it all at once.
+  const line = document.querySelector<HTMLElement>('[data-line]');
+  if (line && !still) {
+    const text = line.querySelector<HTMLElement>('.line__text')!;
+    const words = [...line.querySelectorAll<HTMLElement>('.w')];
+    const count = (el: HTMLElement) => {
+      const final = el.textContent ?? '';
+      if (!/\d/.test(final)) return;
+      const start = performance.now();
+      const step = (now: number) => {
+        const k = Math.min((now - start) / 900, 1);
+        const e = 1 - Math.pow(1 - k, 3);
+        el.textContent = final.replace(NUM, (m) => {
+          const sep = m.includes(',') ? ',' : '.';
+          const dec = (m.split(/[.,]/)[1] ?? '').length;
+          return (parseFloat(m.replace(',', '.')) * e).toFixed(dec).replace('.', sep);
+        });
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    let lit = 0;
+    const light = (n: number, animate: boolean) => {
+      for (; lit < n; lit++) {
+        const w = words[lit];
+        w.classList.add('is-on');
+        if (w.dataset.fig !== undefined) {
+          if (animate) count(w.querySelector<HTMLElement>('[data-count]')!);
+          if (Number(w.dataset.fig) >= 1) line.classList.add('is-fifth');
+        }
+      }
+    };
+    const progress = () => {
+      const r = text.getBoundingClientRect();
+      const vh = innerHeight;
+      return Math.min(Math.max((vh * 0.88 - r.top) / (vh * 0.88 - vh * 0.5 + r.height), 0), 1);
+    };
+    const p0 = progress();
+    if (p0 < 1) {
+      line.dataset.reveal = '';
+      light(Math.round(p0 * words.length), false);
+      let queued = false;
+      const tick = () => {
+        queued = false;
+        light(Math.round(progress() * words.length), true);
+        if (lit >= words.length) removeEventListener('scroll', onScroll);
+      };
+      const onScroll = () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(tick);
+        }
+      };
+      addEventListener('scroll', onScroll, { passive: true });
+    } else line.classList.add('is-fifth');
+  } else line?.classList.add('is-fifth');
+
+  // 4. The timeline draws as it moves up the screen: 0 when its top is near the bottom of the screen, 1 when it is
+  //    a little above the middle. One passive scroll listener, one style write per frame.
+  const back = document.querySelector<HTMLElement>('[data-back]');
+  if (back && !still) {
+    const track = back.querySelector<HTMLElement>('.timeline')!;
+    let queued = false;
+    const draw = () => {
+      queued = false;
+      const r = track.getBoundingClientRect();
+      const vh = innerHeight;
+      const p = Math.min(Math.max((vh * 0.92 - r.top) / (vh * 0.5), 0), 1);
+      back.style.setProperty('--p', p.toFixed(3));
+    };
+    draw();
+    addEventListener(
+      'scroll',
+      () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(draw);
+        }
+      },
+      { passive: true },
+    );
+    addEventListener('resize', draw);
+  }
+
+  // 6. Each card's film loads only when it comes into view, and pauses when it leaves. Reduced motion keeps the poster.
+  const clips = [...document.querySelectorAll<HTMLVideoElement>('[data-clip]')];
+  if (clips.length && !still && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver(
       (entries) => {
-        if (!entries.some((e) => e.isIntersecting)) return;
-        io.disconnect();
-        const start = performance.now();
-        const step = (now: number) => {
-          const p = Math.min(1, (now - start) / 1200);
-          const e = 1 - Math.pow(1 - p, 3);
-          figures.forEach((el) => (el.textContent = p < 1 ? at(el.dataset.final ?? '', e) : (el.dataset.final ?? '')));
-          if (p < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) {
+            if (!v.src && v.dataset.src) v.src = v.dataset.src;
+            v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        }
       },
       { threshold: 0.35 },
     );
-    io.observe(wall.querySelector('.wall__grid')!);
+    clips.forEach((v) => io.observe(v));
   }
 </script>
