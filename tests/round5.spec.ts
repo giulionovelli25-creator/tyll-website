@@ -232,6 +232,27 @@ for (const lang of locales)
       await expect(page.locator('[data-stat]').nth(3).locator('[data-count]')).toHaveText(c.back.three.figure);
     });
 
+    test('the hero fills the first screen, the tree on its bottom edge', async ({ page }) => {
+      await page.goto(pages.sustainability[lang]);
+      const r = await page.evaluate(() => {
+        const hero = document.querySelector('section.hero')!.getBoundingClientRect();
+        const tree = document.querySelector('.hero__tree')!.getBoundingClientRect();
+        return { top: hero.top, height: hero.height, vh: innerHeight, treeGap: hero.bottom - tree.bottom };
+      });
+      expect(r.top).toBe(0);
+      expect(r.height).toBeGreaterThanOrEqual(r.vh - 1);
+      expect(Math.abs(r.treeGap)).toBeLessThanOrEqual(1);
+    });
+
+    test('every drawing ends as solid lines once drawn', async ({ page }) => {
+      await page.goto(pages.sustainability[lang]);
+      for (const sel of ['.cols', '.facts']) {
+        await page.locator(sel).scrollIntoViewIfNeeded();
+        await page.waitForTimeout(400);
+      }
+      await expect.poll(() => page.locator('.art path').evaluateAll((ps) => ps.filter((p) => getComputedStyle(p).strokeDasharray !== 'none').length), { timeout: 5000 }).toBe(0);
+    });
+
     test('the bigger picture counts up to its real figures', async ({ page }) => {
       await page.goto(pages.sustainability[lang]);
       await page.locator('.facts').scrollIntoViewIfNeeded();

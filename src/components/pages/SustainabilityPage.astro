@@ -384,8 +384,13 @@ const flowArt = [
   }
 
   /* 1. The hero */
+  /* the hero fills the first screen exactly (the header lies over it): the words in the middle of what is left, the tree
+     on its bottom edge */
   .hero {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
     overflow: hidden;
     padding-top: calc(var(--header-h) + var(--section));
     background: var(--forest-night);
@@ -396,6 +401,7 @@ const flowArt = [
   .hero__grid {
     position: relative;
     z-index: 1;
+    flex: 1;
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     gap: 3rem;
@@ -403,6 +409,7 @@ const flowArt = [
   }
 
   .hero__copy {
+    align-self: center;
     container-type: inline-size;
     display: grid;
     gap: 1.75rem;
@@ -449,10 +456,12 @@ const flowArt = [
   @media (max-width: 900px) {
     .hero__grid {
       grid-template-columns: minmax(0, 1fr);
+      align-content: space-between;
       gap: 1rem;
     }
 
     .hero__copy {
+      align-self: start;
       padding-bottom: 0;
     }
 
@@ -569,7 +578,6 @@ const flowArt = [
   .art path {
     stroke-linecap: round;
     stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
   }
 
   .art .ink {
@@ -1291,6 +1299,11 @@ const flowArt = [
     fill-opacity: 0;
   }
 
+  /* once drawn, the lines are plain solid lines again, so no browser can leave one part dashed */
+  :global(.sus.is-armed) .is-drawn .art path {
+    stroke-dasharray: none;
+  }
+
   :global(.sus.is-armed) .fact:not(.is-in) .leaf {
     opacity: 0;
     translate: 0 8px;
@@ -1394,6 +1407,8 @@ const flowArt = [
           if (!e.isIntersecting) return;
           e.target.classList.add('is-in');
           e.target.querySelectorAll<HTMLElement>('.fact__big [data-count]').forEach(countUp);
+          // when its drawing has finished, it becomes plain solid lines
+          setTimeout(() => e.target.classList.add('is-drawn'), 2000);
           io.unobserve(e.target);
         }),
       { threshold: 0.1, rootMargin: '0px 0px -5% 0px' },
