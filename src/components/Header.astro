@@ -1,12 +1,12 @@
 ---
+// The bar (25 Nov 2026, the owner, after round 5: "back like before"): logo, Solutions (three columns of three: a quiet
+// section name, then each page with its tinted icon, title and one grey line), How it works, Sustainability, the
+// language dropdown and one Book a demo button (About us added later the same day, at the owner's request). No Hotel groups and no Try the demo in the bar: Hotel groups is in the
+// footer. FAQ is in the Solutions menu's foot row, bottom right (back on 26 Nov 2026), and the footer. The same items, in the same order, in the phone menu.
 import Logo from './Logo.astro';
 import SolutionIcon from './SolutionIcon.astro';
-import { site } from '../config/site';
-import { demoHref } from '../config/demo';
-import { solutions } from '../content/solutions';
-import { t, href, pages, locales, solutionKeys, type Locale, type PageKey, type SolutionKey } from '../i18n';
-import { parts } from '../config/parts';
-import { isComingSoon } from '../config/products';
+import { solutions, sections } from '../content/solutions';
+import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
 
 interface Props {
   lang: Locale;
@@ -18,11 +18,15 @@ interface Props {
 const { lang, page, overHero = false } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
-const item = (k: SolutionKey) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k, soon: isComingSoon(k) });
-// The menu follows the three parts, so it explains Tyll the same way as the homepage
-const groups = parts.map((keys, i) => ({ name: d.home.parts.cards[i].title, items: keys.map(item) }));
 const fwd = lang === 'ar' ? '←' : '→';
 const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).includes(page);
+const groups = sections.map((sec) => ({
+  id: sec.id,
+  name: sec.name[lang],
+  url: href('solutions', lang, `#${sec.id}`),
+  tone: solutions[sec.keys[0]].tone,
+  items: sec.keys.map((k) => ({ key: k, s: solutions[k], url: href(k, lang), current: page === k })),
+}));
 ---
 
 <header class:list={['header', overHero && 'on-dark']} data-tone={overHero ? 'dark' : 'light'} id="site-header">
@@ -43,36 +47,30 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
       <a class="header__link" href={href('how', lang)} aria-current={page === 'how' ? 'page' : undefined}>{d.nav.how}</a>
+      <a class="header__link" href={href('sustainability', lang)} aria-current={page === 'sustainability' ? 'page' : undefined}>{d.nav.sustainability}</a>
+      <a class="header__link" href={href('about', lang)} aria-current={page === 'about' ? 'page' : undefined}>{d.nav.about}</a>
     </nav>
 
     <div class="header__end">
-      <div class="lang" role="group" aria-label={d.nav.language}>
-        {
-          locales.map((l) => (
-            <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_changed" data-track-to={l}>
-              {
-                // Arabic is named in Arabic; the other languages by their short code
-                l === 'ar' ? (
-                  <span class="lang__ar" dir="rtl">{t(l).langName}</span>
-                ) : (
-                  <>
-                    <span aria-hidden="true">{l.toUpperCase()}</span>
-                    <span class="visually-hidden">{t(l).langName}</span>
-                  </>
-                )
-              }
-            </a>
-          ))
-        }
-      </div>
-      {
-        site.demoUrl && (
-          <a class="btn btn--line btn--sm header__demo" href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="header">
-            {d.cta.demo}
-            <span class="visually-hidden"> {d.cta.newTab}</span>
-          </a>
-        )
-      }
+      <!-- The languages as a small dropdown: the current one shown, the others one click away -->
+      <details class="langdrop" data-langdrop>
+        <summary aria-label={d.nav.language}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" /><path d="M1.75 8h12.5M8 1.75c1.9 2 2.75 4 2.75 6.25S9.9 12.25 8 14.25M8 1.75C6.1 3.75 5.25 5.75 5.25 8S6.1 12.25 8 14.25" /></svg>
+          {lang === 'ar' ? <span class="lang__ar" dir="rtl">{d.langName}</span> : <span>{lang.toUpperCase()}</span>}
+          <svg class="langdrop__chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>
+        </summary>
+        <ul class="langdrop__menu" role="list">
+          {
+            locales.map((l) => (
+              <li>
+                <a href={pages[page][l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-track="language_changed" data-track-to={l}>
+                  {l === 'ar' ? <span class="lang__ar" dir="rtl">{t(l).langName}</span> : t(l).langName}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
       <a class="btn btn--solid header__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="header">
         {d.cta.book}
       </a>
@@ -83,27 +81,23 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     </div>
   </div>
 
-  <!-- Desktop: the Solutions panel -->
+  <!-- Desktop: the Solutions panel, one column per section -->
   <div class="panel" id="solutions-panel" role="region" aria-labelledby="solutions-trigger" hidden>
     <div class="wrap panel__layout">
       <div class="panel__grid">
         {
-          groups.map(({ name, items }) => (
-            <section class="panel__part">
-              <h2 class="panel__head">{name}</h2>
+          groups.map((g) => (
+            <section class="panel__part" data-accent={g.tone}>
+              <h2 class="panel__head">{g.name}</h2>
               <ul>
-                {items.map(({ key, s, url, current, soon }) => (
+                {g.items.map(({ key, s, url, current }) => (
                   <li>
-                    <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key} data-accent={s.tone}>
+                    <a class="panel__item" href={url} aria-current={current ? 'page' : undefined} data-solution={key}>
                       <span class="panel__icon">
                         <SolutionIcon name={s.icon} />
                       </span>
                       <span class="panel__text">
-                        <span class="panel__name">
-                          {s.name[lang]}
-                          {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
-                          {!soon && <span class="panel__arrow" aria-hidden="true">{fwd}</span>}
-                        </span>
+                        <span class="panel__name">{s.name[lang]}</span>
                         <span class="panel__desc">{s.menu[lang]}</span>
                       </span>
                     </a>
@@ -115,51 +109,47 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
         }
       </div>
       <div class="panel__foot">
-        <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions}</a>
-        <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
+        <a href={href('solutions', lang)} class="panel__all">{d.nav.allSolutions} {fwd}</a>
+        <a href={href('faq', lang)} class="panel__faq" aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
       </div>
     </div>
   </div>
 
-  <!-- Mobile: full-screen menu -->
+  <!-- Phones and tablets: the same items in a full-screen menu -->
   <div class="mobile-menu" id="mobile-menu" hidden>
     <nav class="wrap" aria-label={d.nav.label}>
-      <div class="mobile-menu__actions">
-        <a class="btn btn--solid" href={href('book', lang)} data-track="book_demo_click" data-track-from="menu">{d.cta.book}</a>
-        {
-          site.demoUrl && (
-            <a class="btn btn--line" href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="menu">
-              {d.cta.demoLong}
-              <span class="visually-hidden"> {d.cta.newTab}</span>
-            </a>
-          )
-        }
-      </div>
       <details class="mobile-menu__group" open>
         <summary>{d.nav.solutions}</summary>
         <ul>
           {
-            groups.map(({ name, items }) => (
+            groups.map((g) => (
               <Fragment>
-                <li class="mobile-menu__head">{name}</li>
-                {items.map(({ s, url, current, soon }) => (
+                <li class="mobile-menu__head">{g.name}</li>
+                {g.items.map(({ key, s, url, current }) => (
                   <li>
-                    <a href={url} aria-current={current ? 'page' : undefined} data-accent={s.tone}>
+                    <a href={url} aria-current={current ? 'page' : undefined} data-accent={g.tone} data-solution={key}>
                       <SolutionIcon name={s.icon} />
-                      <span>{s.name[lang]}</span>
-                      {soon && <span class="badge-soon">{d.cta.comingSoon}</span>}
+                      <span>
+                        <span class="mobile-menu__name">{s.name[lang]}</span>
+                        <span class="mobile-menu__line">{s.menu[lang]}</span>
+                      </span>
                     </a>
                   </li>
                 ))}
               </Fragment>
             ))
           }
-          <li class="mobile-menu__faq">
-            <a href={href('faq', lang)}>{d.nav.faq}</a>
+          <li class="mobile-menu__all">
+            <a href={href('solutions', lang)}>{d.nav.allSolutions} {fwd}</a>
+          </li>
+          <li class="mobile-menu__all mobile-menu__faq">
+            <a href={href('faq', lang)} aria-current={page === 'faq' ? 'page' : undefined}>{d.nav.faq}</a>
           </li>
         </ul>
       </details>
       <a class="mobile-menu__how" href={href('how', lang)} aria-current={page === 'how' ? 'page' : undefined}>{d.nav.how}</a>
+      <a class="mobile-menu__how" href={href('sustainability', lang)} aria-current={page === 'sustainability' ? 'page' : undefined}>{d.nav.sustainability}</a>
+      <a class="mobile-menu__how" href={href('about', lang)} aria-current={page === 'about' ? 'page' : undefined}>{d.nav.about}</a>
       <div class="lang mobile-menu__lang" role="group" aria-label={d.nav.language}>
         {
           locales.map((l) => (
@@ -168,6 +158,9 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
             </a>
           ))
         }
+      </div>
+      <div class="mobile-menu__actions">
+        <a class="btn btn--solid" href={href('book', lang)} data-track="book_demo_click" data-track-from="menu">{d.cta.book}</a>
       </div>
     </nav>
   </div>
@@ -229,9 +222,12 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     height: var(--header-h);
   }
 
+  /* the mark is 26 px tall; the link around it is a full 44 px tap target */
   .header__logo {
     flex: none;
-    display: block;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
     border-radius: 6px;
   }
 
@@ -253,26 +249,27 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     align-items: center;
     gap: 0.4rem;
     min-height: 42px;
-    padding: 0 1rem;
-    /* A visible button, so nobody misses the menu */
-    border: 1.5px solid currentColor;
-    border-radius: var(--pill);
+    padding: 0 0.6rem;
+    /* plain like the links beside it (20 Nov 2026, the owner: no outline); the arrow says it opens */
+    border: 0;
+    border-radius: 6px;
     background: transparent;
     color: inherit;
     font: inherit;
-    font-size: 1rem;
     font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
     transition: background-color 0.2s var(--ease);
   }
 
   /* How it works: a plain text link beside the Solutions button (9 Nov 2026) */
   .header__link {
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     min-height: 42px;
-    padding: 0 0.85rem;
-    margin-inline-start: 0.35rem;
+    padding: 0 0.6rem;
+    margin-inline-start: 0.15rem;
     color: inherit;
     font-weight: 600;
     text-decoration: none;
@@ -287,7 +284,9 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .header__trigger:hover,
   .header__trigger[aria-expanded='true'] {
-    background: rgb(var(--steel-mid-rgb) / 0.14);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 6px;
   }
 
   .header__trigger svg {
@@ -306,39 +305,95 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     gap: 0.75rem;
   }
 
-  .lang {
-    display: flex;
-    gap: 0.75rem;
-    margin-inline-end: 0.5rem;
+  /* Languages: one small dropdown (19 Nov 2026, the owner: "make the languages a drop down") */
+  .langdrop {
+    position: relative;
   }
 
-  .lang a {
+  .langdrop summary {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 0.55rem;
+    border-radius: var(--pill);
     font-size: 0.9375rem;
-    font-weight: 400;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .langdrop summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .langdrop summary:hover,
+  .langdrop[open] summary {
+    background: rgb(var(--steel-mid-rgb) / 0.14);
+  }
+
+  .langdrop summary svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .langdrop .langdrop__chev {
+    width: 11px;
+    height: 11px;
+    stroke-width: 1.5;
+    transition: transform 0.2s var(--ease);
+  }
+
+  .langdrop[open] .langdrop__chev {
+    transform: rotate(180deg);
+  }
+
+  .langdrop__menu {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    inset-inline-end: 0;
+    z-index: 5;
+    min-width: 10rem;
+    margin: 0;
+    padding: 0.4rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    box-shadow: var(--shadow-2);
+    color: var(--ink);
+    list-style: none;
+  }
+
+  .langdrop__menu a {
+    display: block;
+    padding: 0.55rem 0.75rem;
+    border-radius: 9px;
+    font-size: 0.9375rem;
     text-decoration: none;
   }
 
-  .lang a:not([aria-current]) {
-    opacity: 0.64;
+  .langdrop__menu a:hover {
+    background: var(--page-deep);
   }
 
-  .lang a:hover {
-    opacity: 1;
+  .langdrop__menu a[aria-current] {
+    font-weight: 600;
   }
 
-  .lang a[aria-current] {
-    font-weight: 400;
-  }
-
+  /* Try the demo: a quiet text link beside the one Book a demo button */
   /* A small subset of Noto Sans Arabic with only the letters of العربية, so every page can show the word
      in the brand's Arabic face without loading the full font */
-  .lang :global(.lang__ar),
+  .langdrop :global(.lang__ar),
   .mobile-menu__lang a[hreflang='ar'] {
     font-family: 'Tyll Arabic Label', 'Tyll Arabic', var(--font);
     letter-spacing: 0;
   }
 
-  .lang :global(.lang__ar) {
+  .langdrop :global(.lang__ar) {
     font-size: 1rem;
   }
 
@@ -348,7 +403,8 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     background: var(--paper);
     color: var(--ink);
     box-shadow: 0 40px 60px -40px rgb(var(--ink-rgb) / 0.35);
-    animation: panel-in 0.32s var(--ease);
+    /* a dropdown: quick and decisive (Emil Kowalski's 150 to 250 ms, strong ease-out) */
+    animation: panel-in 0.2s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   @keyframes panel-in {
@@ -382,7 +438,7 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     list-style: none;
   }
 
-  /* Each column is one of the three parts */
+  /* Each column is one of the demo's three sections; its name links to that section of the Solutions page */
   .panel__head {
     margin: 0 1.1rem 0.6rem;
     padding-bottom: 0.6rem;
@@ -393,6 +449,8 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     font-weight: 600;
     letter-spacing: 0;
   }
+
+
 
   .panel__item {
     display: flex;
@@ -427,31 +485,11 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
   }
 
   .panel__name {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
+    display: block;
+    color: var(--ink);
     font-size: 1.0625rem;
     font-weight: 400;
     letter-spacing: 0;
-  }
-
-  .panel__arrow {
-    opacity: 0;
-    transform: translateX(-4px);
-    transition:
-      opacity 0.2s var(--ease),
-      transform 0.25s var(--ease);
-  }
-
-  :global([dir='rtl']) .panel__arrow {
-    transform: translateX(4px);
-  }
-
-  .panel__item:hover .panel__arrow,
-  .panel__item:focus-visible .panel__arrow {
-    opacity: 1;
-    transform: none;
   }
 
   .panel__desc {
@@ -608,14 +646,14 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 
   .mobile-menu__group li a {
     display: flex;
-    align-items: center;
     gap: 0.9rem;
-    padding: 0.8rem 0;
-    font-size: 1.125rem;
+    align-items: center;
+    padding: 0.7rem 0;
+    font-size: 1.0625rem;
     text-decoration: none;
   }
 
-  /* each solution's icon in its own colour, as in the desktop panel */
+  /* each page's icon in its section's tint, as in the desktop panel */
   .mobile-menu__group li a :global(svg) {
     flex: none;
     width: 22px;
@@ -627,6 +665,41 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     font-weight: 400;
   }
 
+
+  .mobile-menu__name {
+    display: block;
+  }
+
+  .mobile-menu__line {
+    display: block;
+    margin-top: 0.1rem;
+    color: var(--steel);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .mobile-menu__all a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .mobile-menu__all.mobile-menu__faq {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .mobile-menu__all {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+
   .mobile-menu__how {
     display: block;
     padding: 0.75rem 0;
@@ -636,17 +709,20 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     text-decoration: none;
   }
 
-  .mobile-menu__faq {
-    margin-top: 0.5rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .mobile-menu__faq a {
-    font-weight: 400;
+  .mobile-menu__lang {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    padding-top: 1.25rem;
   }
 
   .mobile-menu__lang a {
     font-size: 1rem;
+    text-decoration: none;
+  }
+
+  .mobile-menu__lang a:not([aria-current]) {
+    opacity: 0.64;
   }
 
   .header:has(.header__burger[aria-expanded='true']) {
@@ -664,10 +740,11 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
     color: var(--ink);
   }
 
-  @media (max-width: 960px) {
+  /* The bar holds three links, the languages and Book a demo on one line from 1100 px in every language;
+     narrower screens use the menu button */
+  @media (max-width: 1099px) {
     .header__nav,
-    .header__demo,
-    .header__end > .lang,
+    .langdrop,
     .panel {
       display: none;
     }
@@ -702,123 +779,5 @@ const inSolutions = page === 'solutions' || (solutionKeys as readonly string[]).
 </style>
 
 <script>
-  const header = document.getElementById('site-header')!;
-  const trigger = document.getElementById('solutions-trigger') as HTMLButtonElement;
-  const panel = document.getElementById('solutions-panel')!;
-  const burger = header.querySelector<HTMLButtonElement>('.header__burger')!;
-  const menu = document.getElementById('mobile-menu')!;
-  const label = burger.querySelector<HTMLElement>('[data-open-label]')!;
-
-  // White-on-dark while a dark chapter (film, photo, cans section, closing section) sits under the header,
-  // light over everything else. Only the strip behind the header counts.
-  const darks = [...document.querySelectorAll('[data-dark]')];
-  if (darks.length) {
-    const under = new Set<Element>();
-    const setTone = () => {
-      const dark = under.size > 0;
-      header.dataset.tone = dark ? 'dark' : 'light';
-      header.classList.toggle('on-dark', dark);
-    };
-    let io: IntersectionObserver | undefined;
-    const watch = () => {
-      io?.disconnect();
-      under.clear();
-      const h = header.offsetHeight;
-      io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
-          setTone();
-        },
-        // The top pixel is left out: a dark section ending exactly at the top of the window is not under the header
-        { rootMargin: `-1px 0px -${Math.max(0, innerHeight - h)}px 0px` },
-      );
-      darks.forEach((el) => io!.observe(el));
-    };
-    watch();
-    addEventListener('resize', watch);
-  }
-  const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  // ── Solutions panel: click or keyboard; hover on devices with a real pointer ──
-  let closeTimer = 0;
-  let openTimer = 0;
-  const isOpen = () => trigger.getAttribute('aria-expanded') === 'true';
-  const setPanel = (open: boolean, focusFirst = false) => {
-    clearTimeout(closeTimer);
-    clearTimeout(openTimer);
-    trigger.setAttribute('aria-expanded', String(open));
-    panel.hidden = !open;
-    header.classList.toggle('is-open', open);
-    if (open && focusFirst) panel.querySelector<HTMLElement>('a')?.focus();
-  };
-  trigger.addEventListener('click', () => setPanel(!isOpen()));
-  trigger.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setPanel(true, true);
-    }
-  });
-
-  // Arrow keys move between the panel's links
-  panel.addEventListener('keydown', (e) => {
-    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-    e.preventDefault();
-    const links = [...panel.querySelectorAll<HTMLElement>('a')];
-    const i = links.indexOf(document.activeElement as HTMLElement);
-    links[(i + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length]?.focus();
-  });
-
-  // Hover opens after a short pause and closes after a grace period, so moving the pointer
-  // diagonally from the trigger into the panel never closes it.
-  const hoverable = matchMedia('(hover: hover) and (pointer: fine)');
-  const enter = () => {
-    if (!hoverable.matches) return;
-    clearTimeout(closeTimer);
-    if (!isOpen()) openTimer = window.setTimeout(() => setPanel(true), 120);
-  };
-  const leave = () => {
-    if (!hoverable.matches) return;
-    clearTimeout(openTimer);
-    closeTimer = window.setTimeout(() => setPanel(false), 280);
-  };
-  [trigger, panel].forEach((el) => {
-    el.addEventListener('pointerenter', enter);
-    el.addEventListener('pointerleave', leave);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (isOpen() && !header.contains(e.target as Node)) setPanel(false);
-  });
-  header.addEventListener('focusout', (e) => {
-    const to = e.relatedTarget as Node | null;
-    if (isOpen() && to && !panel.contains(to) && to !== trigger) setPanel(false);
-  });
-
-  // ── Mobile menu ──
-  const setMenu = (open: boolean) => {
-    burger.setAttribute('aria-expanded', String(open));
-    menu.hidden = !open;
-    label.textContent = open ? label.dataset.closeLabel! : label.dataset.openLabel!;
-    document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (open) menu.querySelector<HTMLElement>('a, summary')?.focus();
-  };
-  burger.addEventListener('click', () => setMenu(menu.hidden));
-  menu.addEventListener('click', (e) => {
-    if ((e.target as Element).closest('a')) setMenu(false);
-  });
-
-  addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    if (isOpen()) {
-      setPanel(false);
-      trigger.focus();
-    }
-    if (!menu.hidden) {
-      setMenu(false);
-      burger.focus();
-    }
-  });
-  matchMedia('(min-width: 961px)').addEventListener('change', (e) => e.matches && setMenu(false));
+  import '../scripts/header';
 </script>

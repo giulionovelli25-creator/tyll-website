@@ -1,0 +1,639 @@
+---
+// Security (round 5, 25 Nov 2026, the owner: "all the details; read only, we don't store anything, it integrates with
+// everything; less subtle"). Deliberately bolder than the other pages: a dark opening with the promise set large and a
+// picture of the one direction data moves (your systems → Tyll → your morning brief, dots travelling one way, a
+// struck-through arrow back: never writes back); then the seven details as large cards on the same dark ground; then
+// every system Tyll reads, as the makers' own logos, with a filter by kind (PMS, POS, payments), and what comes out of
+// Tyll; then the close. The dots stand still under reduced motion; without JavaScript every logo shows and the filter
+// is hidden. Copy: src/content/security.ts (see its header for why it says "no card numbers or guest data" and
+// "the systems below", not "nothing" and "everything").
+import Base from '../../layouts/Base.astro';
+import SilverWave from '../SilverWave.astro';
+import SolutionIcon from '../SolutionIcon.astro';
+import Logo from '../Logo.astro';
+import { security } from '../../content/security';
+import { logos, logoBox } from '../../config/integrations';
+import { t, href, type Locale } from '../../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const c = security[lang];
+const fwd = lang === 'ar' ? '←' : '→';
+const kinds = [
+  { id: 'all', label: c.connect.all },
+  { id: 'pms', label: c.connect.pms },
+  { id: 'pos', label: c.connect.pos },
+  { id: 'payments', label: c.connect.payments },
+] as const;
+---
+
+<Base lang={lang} page="security" title={c.metaTitle} description={c.metaDescription} overHero>
+  <section class="sec-top on-dark" data-dark aria-labelledby="sec-title">
+    <SilverWave phase={0.3} move tone="dark" />
+    <div class="wrap sec-top__inner">
+      <h1 id="sec-title" class="display">{c.title}</h1>
+      <p class="sec-top__text">{c.text}</p>
+
+      <!-- Data moves one way: from your systems to Tyll, and on to your morning brief -->
+      <div class="flow" dir="ltr" aria-hidden="true">
+        <div class="flow__node">
+          <span class="flow__chips"><i>POS</i><i>PMS</i><i>€</i></span>
+          <span class="flow__name">{c.flow.systems}</span>
+        </div>
+        <div class="flow__wire">
+          <span class="flow__pill">{c.flow.readOnly}</span>
+          <span class="flow__line"><i></i><i></i><i></i></span>
+          <span class="flow__back">{c.flow.never}</span>
+        </div>
+        <div class="flow__node flow__node--tyll">
+          <Logo label="" />
+        </div>
+        <div class="flow__wire flow__wire--short">
+          <span class="flow__line"><i></i><i></i></span>
+        </div>
+        <div class="flow__node">
+          <span class="flow__name">{c.flow.brief}</span>
+          <span class="flow__time">07:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pillars on-dark" data-dark aria-labelledby="pillars-title">
+    <div class="wrap">
+      <h2 id="pillars-title" class="display">{c.pillars.title}</h2>
+      <ul class="pillars__list" role="list">
+        {
+          c.pillars.items.map((it, i) => (
+            <li class:list={['pillar', i === 0 && 'pillar--lead']}>
+              <span class="pillar__icon">
+                <SolutionIcon name={it.icon} />
+              </span>
+              <h3>{it.title}</h3>
+              <p>{it.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="connect" aria-labelledby="connect-title" data-connect>
+    <div class="wrap">
+      <div class="connect__head">
+        <div>
+          <h2 id="connect-title" class="display">{c.connect.title}</h2>
+          <p class="connect__text">{c.connect.text}</p>
+        </div>
+        <div class="connect__filter" role="group" aria-label={c.connect.title} data-filter hidden>
+          {
+            kinds.map((k, i) => (
+              <button type="button" class="connect__chip" aria-pressed={i === 0 ? 'true' : 'false'} data-kind={k.id}>
+                {k.label}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+      <ul class="logos" role="list" aria-live="polite">
+        {
+          logos.map((l) => {
+            const b = logoBox(l);
+            return (
+              <li class="logos__item" data-cat={l.category}>
+                <img
+                  class:list={[l.whiteFile && 'is-white']}
+                  src={`/logos/integrations/${l.file}`}
+                  alt={l.name}
+                  style={`--w:${b.width};--h:${b.height};--mt:${b.top};--mr:${b.right};--mb:${b.bottom};--ml:${b.left}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+                {l.text && <span aria-hidden="true">{l.text}</span>}
+              </li>
+            );
+          })
+        }
+      </ul>
+      <ul class="connect__notes" role="list">
+        <li>{c.connect.start}</li>
+        <li>{c.connect.more}</li>
+        <li>{c.connect.exports}</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="close on-dark" data-dark aria-labelledby="sec-final">
+    <SilverWave phase={0.4} move tone="dark" />
+    <div class="wrap close__inner">
+      <h2 id="sec-final" class="display">{c.close}</h2>
+      <div class="close__actions">
+        <a class="btn btn--line btn--lg" href={href('faq', lang)}>{d.nav.faqShort} {fwd}</a>
+        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="security-final">{d.cta.book}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The dark opening: the promise set large, and the one direction data moves */
+  .sec-top {
+    position: relative;
+    overflow: hidden;
+    padding-block: calc(var(--header-h) + var(--s-6)) var(--section-y);
+    background: var(--night-1);
+    color: rgb(var(--on-dark-rgb));
+  }
+
+  .sec-top__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-top h1 {
+    max-width: 16ch;
+    margin: 0;
+    color: rgb(var(--on-dark-rgb));
+    font-size: clamp(2.75rem, 1.6rem + 4.4vw, 5.5rem);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .sec-top__text {
+    max-width: 40rem;
+    margin: var(--s-3) 0 0;
+    color: rgb(var(--on-dark-rgb) / 0.8);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(6rem, 1.4fr) auto minmax(3rem, 0.6fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 62rem;
+    margin-top: var(--s-6);
+  }
+
+  .flow__node {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    padding: 1.1rem 1rem;
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.18);
+    border-radius: var(--radius-md);
+    background: rgb(var(--on-dark-rgb) / 0.04);
+    text-align: center;
+  }
+
+  .flow__node--tyll {
+    padding: 1.1rem 1.4rem;
+    border-color: rgb(var(--on-dark-rgb) / 0.5);
+    background: rgb(var(--on-dark-rgb) / 0.08);
+    color: rgb(var(--on-dark-rgb));
+  }
+
+  .flow__node--tyll :global(svg) {
+    width: 4.5rem;
+    height: auto;
+  }
+
+  .flow__chips {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .flow__chips i {
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: rgb(var(--on-dark-rgb) / 0.12);
+    color: rgb(var(--on-dark-rgb) / 0.9);
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .flow__name {
+    color: rgb(var(--on-dark-rgb) / 0.9);
+    font-size: var(--fs-small);
+    line-height: 1.35;
+  }
+
+  .flow__time {
+    color: var(--silver);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .flow__wire {
+    position: relative;
+    display: grid;
+    gap: 0.55rem;
+    justify-items: center;
+  }
+
+  .flow__pill {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--silver-light);
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* The wire: a silver line with dots travelling one way along it */
+  .flow__line {
+    position: relative;
+    width: 100%;
+    height: 2px;
+    overflow: hidden;
+    background: rgb(var(--on-dark-rgb) / 0.25);
+  }
+
+  .flow__line i {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--silver-light);
+    animation: sec-dot 2.4s linear infinite;
+  }
+
+  .flow__line i:nth-child(2) {
+    animation-delay: -0.8s;
+  }
+
+  .flow__line i:nth-child(3) {
+    animation-delay: -1.6s;
+  }
+
+  @keyframes sec-dot {
+    from {
+      left: -6px;
+    }
+
+    to {
+      left: 100%;
+    }
+  }
+
+  /* Back the other way: a dashed arrow, struck through */
+  .flow__back {
+    position: relative;
+    padding-top: 0.55rem;
+    color: rgb(var(--on-dark-rgb) / 0.6);
+    font-size: 0.75rem;
+    text-decoration: line-through;
+    text-decoration-color: rgb(var(--on-dark-rgb) / 0.6);
+    white-space: nowrap;
+  }
+
+  .flow__back::before {
+    position: absolute;
+    top: 0;
+    inset-inline: 10%;
+    border-top: 1px dashed rgb(var(--on-dark-rgb) / 0.4);
+    content: '';
+  }
+
+  /* The seven details, large, on the same dark ground */
+  .pillars {
+    padding-block: 0 var(--section-y);
+    background: var(--night-1);
+    color: rgb(var(--on-dark-rgb));
+  }
+
+  .pillars h2 {
+    margin: 0;
+    color: rgb(var(--on-dark-rgb));
+    font-size: var(--fs-h2);
+  }
+
+  .pillars__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-2);
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pillar {
+    padding: var(--s-4) var(--s-3);
+    border: 1px solid rgb(var(--on-dark-rgb) / 0.14);
+    border-radius: var(--radius-lg);
+    background: rgb(var(--on-dark-rgb) / 0.04);
+  }
+
+  /* Read only leads: the full width, set larger, its words beside its icon; the other six follow in two even rows */
+  .pillar--lead {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--s-4);
+    align-items: center;
+    padding: var(--s-5) var(--s-4);
+    background: linear-gradient(160deg, rgb(var(--on-dark-rgb) / 0.12), rgb(var(--on-dark-rgb) / 0.03));
+  }
+
+  .pillar__icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: var(--s-3);
+    border-radius: 12px;
+    background: var(--silver-light);
+    color: var(--ink);
+  }
+
+  .pillar__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pillar h3 {
+    margin: 0;
+    color: rgb(var(--on-dark-rgb));
+    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.625rem);
+    font-weight: 300;
+    line-height: 1.2;
+  }
+
+  .pillar--lead .pillar__icon {
+    grid-row: span 2;
+    width: 4rem;
+    height: 4rem;
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  .pillar--lead .pillar__icon :global(svg) {
+    width: 30px;
+    height: 30px;
+  }
+
+  .pillar--lead h3 {
+    font-size: clamp(2rem, 1.4rem + 2.2vw, 3.5rem);
+    line-height: 1.05;
+  }
+
+  .pillar p {
+    margin: 0.6rem 0 0;
+    color: rgb(var(--on-dark-rgb) / 0.75);
+  }
+
+  .pillar--lead p {
+    max-width: 30rem;
+    font-size: var(--fs-lead);
+  }
+
+  /* Every system Tyll reads, with a filter by kind */
+  .connect {
+    padding-block: var(--section-y);
+    background: var(--page);
+  }
+
+  .connect__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+
+  .connect h2 {
+    max-width: 20ch;
+    margin: 0;
+    font-size: var(--fs-h2);
+  }
+
+  .connect__text {
+    max-width: 36rem;
+    margin: var(--s-2) 0 0;
+    color: var(--text-2);
+  }
+
+  .connect__filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .connect__filter[hidden] {
+    display: none;
+  }
+
+  .connect__chip {
+    min-height: 40px;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--sand-600);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .connect__chip[aria-pressed='true'] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .logos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: var(--s-2);
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A logo per tile, the product name under a company logo; nothing wider than its tile */
+  .logos__item {
+    --logo-scale: 0.62;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 5.5rem;
+    padding: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--sand-300);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+  }
+
+  .logos__item[hidden] {
+    display: none;
+  }
+
+  .logos__item img {
+    flex: none;
+    width: calc(var(--w) * var(--logo-scale) * 1px);
+    max-width: 100%;
+    height: calc(var(--h) * var(--logo-scale) * 1px);
+    margin: calc(var(--mt) * var(--logo-scale) * 1px) calc(var(--mr) * var(--logo-scale) * 1px) calc(var(--mb) * var(--logo-scale) * 1px) calc(var(--ml) * var(--logo-scale) * 1px);
+    object-fit: contain;
+  }
+
+  .logos__item img.is-white {
+    filter: brightness(0);
+  }
+
+  .logos__item span {
+    color: var(--steel);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+
+  .connect__notes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-3);
+    margin: var(--s-4) 0 0;
+    padding: var(--s-3) 0 0;
+    border-top: 1px solid var(--line);
+    color: var(--text-2);
+    list-style: none;
+  }
+
+  .close {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--band-y);
+    background: var(--night-1);
+    color: var(--text-1);
+  }
+
+  .close__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-4);
+    text-align: center;
+  }
+
+  .close h2 {
+    max-width: 24ch;
+    font-size: clamp(2rem, 1.6rem + 2vw, 3.25rem);
+  }
+
+  .close__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    justify-content: center;
+  }
+
+  @media (max-width: 1023px) {
+    .pillars__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .connect__notes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Phones: the picture stands upright, the wires turn down */
+  @media (max-width: 760px) {
+    .flow {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 22rem;
+    }
+
+    .flow__wire {
+      padding-block: 0.25rem;
+    }
+
+    .flow__line {
+      width: 2px;
+      height: 3rem;
+    }
+
+    .flow__line i {
+      top: 0;
+      left: -2px;
+      animation-name: sec-dot-down;
+    }
+
+    .flow__wire--short .flow__line {
+      height: 2rem;
+    }
+
+    .pillars__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pillar--lead {
+      grid-template-columns: minmax(0, 1fr);
+      padding: var(--s-4) var(--s-3);
+    }
+
+    .pillar--lead .pillar__icon {
+      grid-row: auto;
+      margin-bottom: var(--s-3);
+    }
+  }
+
+  @keyframes sec-dot-down {
+    from {
+      top: -6px;
+    }
+
+    to {
+      top: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flow__line i {
+      animation: none;
+      left: 45%;
+    }
+
+    .flow__line i:nth-child(n + 2) {
+      display: none;
+    }
+
+    .connect__chip {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // The filter: one kind at a time (or all), shown by hiding the other logos
+  const root = document.querySelector<HTMLElement>('[data-connect]');
+  if (root) {
+    const filter = root.querySelector<HTMLElement>('[data-filter]')!;
+    const chips = [...filter.querySelectorAll<HTMLButtonElement>('[data-kind]')];
+    const items = [...root.querySelectorAll<HTMLElement>('[data-cat]')];
+    filter.hidden = false;
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        const kind = chip.dataset.kind!;
+        chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        items.forEach((it) => (it.hidden = kind !== 'all' && it.dataset.cat !== kind));
+      }),
+    );
+  }
+</script>

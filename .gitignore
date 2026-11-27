@@ -29,3 +29,7 @@ assets/video/reference-*
 # Reference pack: third-party recordings and screenshots stay local; only the notes are kept in git
 refs/*
 !refs/NOTES.md
+
+# Playwright output
+test-results/
+playwright-report/

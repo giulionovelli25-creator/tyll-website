@@ -1,0 +1,24 @@
+---
+// A page folded into another (round 3, 20 Nov 2026) keeps its old address: this small page sends the visitor to the
+// page that took it in, at the row that holds it. `location.replace` carries the #anchor (a server redirect cannot
+// reliably), with a meta refresh and a canonical link for browsers and search engines without JavaScript.
+interface Props {
+  to: string;
+}
+const { to } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Tyll</title>
+    <link rel="canonical" href={to.split('#')[0]} />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <script is:inline define:vars={{ to }}>location.replace(to);</script>
+  </head>
+  <body>
+    <a href={to}>{to}</a>
+  </body>
+</html>

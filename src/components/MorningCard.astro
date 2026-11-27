@@ -1,7 +1,8 @@
 ---
-// What Tyll shows in the morning, as one example card (fictional data, as the footer says): three lines to check in
-// euros, each with its reason and ticket, and a link to the full list. On the homepage's hero (floating) and as step 4 of
-// the How it works page (still, its link drawn as plain text because the picture there is decorative). Copy: `hero.card`.
+// The morning brief, as one example card (the demo's fictional data, as the footer says), in the demo's own order: what
+// Grand Hotel Lumière lost yesterday and on what, yesterday's revenue and the flags still open, the three things to do
+// today, each with its amount where it has one, then the last 30 days, lost against saved, and a link. Used as step 4 of the
+// How it works page (its link drawn as plain text because the picture there is decorative). Copy: `hero.card`.
 import { href } from '../i18n/routes';
 import { t, type Locale } from '../i18n';
 
@@ -13,45 +14,44 @@ interface Props {
 
 const { lang, float = false, link = true } = Astro.props;
 const h = t(lang).hero;
-const cta = h.card.cta.replace(/\s*→\s*$/, '');
+const cta = h.card.cta.replace(/\s*[→←]\s*$/, '');
+const arrow = lang === 'ar' ? '←' : '→';
 ---
 
 <figure class:list={['morning', float && 'is-float']}>
   <figcaption class="morning__title">{h.card.title}</figcaption>
   <p class="morning__sum">
-    <span>{h.card.count}</span>
-    <b>{h.card.total}</b>
+    <span>{h.card.lost}</span>
+    <b dir="ltr">{h.card.total}</b>
   </p>
-  <ul class="morning__rows">
+  <p class="morning__split">{h.card.split}</p>
+  <ul class="morning__day" role="list">
+    {h.card.yesterday.map((line) => <li>{line}</li>)}
+  </ul>
+  <p class="morning__todo">{h.card.todo}</p>
+  <ol class="morning__rows">
     {
-      h.card.rows.map(([name, reason, amount, ticket]) => (
+      h.card.rows.map(([what, detail, amount], i) => (
         <li>
-          <span class="morning__icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16">
-              <path d="M4 2.5h8v11l-2-1.2-2 1.2-2-1.2-2 1.2Z" />
-              <path d="M6.2 6.2l3.6 3.6M9.8 6.2l-3.6 3.6" />
-            </svg>
-          </span>
+          <span class="morning__icon" aria-hidden="true">{i + 1}</span>
           <span class="morning__what">
-            <b>{name}</b>
-            <span>{reason}</span>
+            <b>{what}</b>
+            <span>{detail}</span>
           </span>
-          <span class="morning__money">
-            <b>{amount}</b>
-            <span dir="ltr">{ticket}</span>
-          </span>
+          <span class="morning__money">{amount && <b dir="ltr">{amount}</b>}</span>
         </li>
       ))
     }
-  </ul>
+  </ol>
+  <p class="morning__month">{h.card.month}</p>
   {
     link ? (
       <a class="morning__cta" href={href('finance', lang)}>
-        {cta} <span class="flip-rtl" aria-hidden="true">→</span>
+        {cta} <span aria-hidden="true">{arrow}</span>
       </a>
     ) : (
       <span class="morning__cta">
-        {cta} <span class="flip-rtl" aria-hidden="true">→</span>
+        {cta} <span aria-hidden="true">{arrow}</span>
       </span>
     )
   }
@@ -104,9 +104,49 @@ const cta = h.card.cta.replace(/\s*→\s*$/, '');
     font-weight: 400;
   }
 
+  .morning__split {
+    max-width: none;
+    margin: 0.3rem 0 0;
+    color: var(--steel);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .morning__day {
+    display: grid;
+    gap: 0.2rem;
+    margin: 0.7rem 0 0;
+    padding: 0.7rem 0 0;
+    border-top: 1px solid rgb(var(--ink-rgb) / 0.08);
+    color: var(--graphite);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    list-style: none;
+  }
+
+  .morning__month {
+    max-width: none;
+    margin: 0.2rem 0 0;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgb(var(--ink-rgb) / 0.08);
+    color: var(--graphite);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .morning__todo {
+    max-width: none;
+    margin: 1.1rem 0 0;
+    color: var(--steel);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
   .morning__rows {
     display: grid;
-    margin: 1rem 0 0;
+    margin: 0.5rem 0 0;
     padding: 0;
     list-style: none;
   }
@@ -127,6 +167,8 @@ const cta = h.card.cta.replace(/\s*→\s*$/, '');
     height: 2.25rem;
     border-radius: 0.6rem;
     background: var(--mist);
+    font-size: 0.875rem;
+    font-weight: 600;
   }
 
   .morning__icon svg {

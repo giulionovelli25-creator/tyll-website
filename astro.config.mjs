@@ -27,6 +27,10 @@ export default defineConfig({
     '/it/soluzioni/eventi-personale/': '/it/soluzioni/',
     '/it/soluzioni/camere-ospiti/': '/it/soluzioni/',
     '/it/soluzioni/vendite-performance/': '/it/soluzioni/',
+    // The stock count guide was withdrawn on 19 Nov 2026 (Tyll no longer sells a manual count). On Railway the
+    // Caddyfile answers these with a 301; these pages are the fallback anywhere else.
+    '/en/guides/restaurant-stock-count/': { status: 301, destination: '/en/' },
+    '/de/ratgeber/inventur-gastronomie/': { status: 301, destination: '/de/' },
   },
   devToolbar: { enabled: false },
   build: { format: 'directory' },

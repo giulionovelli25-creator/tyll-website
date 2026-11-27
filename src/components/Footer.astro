@@ -1,8 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../config/site';
-import { demoHref } from '../config/demo';
-import { solutions } from '../content/solutions';
+import { sections, solutions, moreKeys } from '../content/solutions';
 import { t, href, pages, locales, solutionKeys, type Locale, type PageKey } from '../i18n';
 
 interface Props {
@@ -14,6 +13,7 @@ const { lang, page } = Astro.props;
 const d = t(lang);
 const home = href('home', lang);
 const year = new Date().getFullYear();
+const investorMail = `mailto:${site.email}?subject=${encodeURIComponent(d.home.investors.subject)}`;
 // "Book a Demo →": the arrow is set apart so it can move on hover
 const [, bookText = d.cta.book, bookArrow = ''] = d.cta.book.match(/^(.*?)\s*([→←])$/) ?? [];
 // The social accounts that are set, in this order, each with its monochrome mark (Simple Icons, CC0)
@@ -33,7 +33,9 @@ const socials = [
   <div class="wrap footer__top">
     <div class="footer__brand">
       <a href={home} class="footer__logo" aria-label="Tyll home">
-        <Logo label="Tyll" />
+        <!-- the tick draws, holds and retracts while the footer is on screen, as on the live tyll.ai (back at the
+             owner's request, 26 Nov 2026); full and still without JavaScript or with reduced motion -->
+        <Logo anim="loop" label="Tyll" />
       </a>
       {
         socials.length > 0 && (
@@ -43,7 +45,7 @@ const socials = [
               {socials.map((x) => (
                 <li>
                   <a href={x.url} target="_blank" rel="noopener" data-track={`${x.key}_click`}>
-                    <svg viewBox="0 0 24 24" aria-hidden="true" width="20" height="20">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
                       <path fill="currentColor" d={x.icon} />
                     </svg>
                     <span class="visually-hidden">
@@ -62,7 +64,11 @@ const socials = [
       <div>
         <h2>{d.footer.solutions}</h2>
         <ul>
-          {solutionKeys.map((k) => <li><a href={href(k, lang)}>{solutions[k].name[lang]}</a></li>)}
+          {sections.map((sec) => <li><a href={href('solutions', lang, `#${sec.id}`)}>{sec.name[lang]}</a></li>)}
+          {/* More in Tyll (round 4): the two pages outside the nine */}
+          {moreKeys.map((k) => <li><a href={href(k, lang)} aria-current={page === k ? 'page' : undefined}>{solutions[k].name[lang]}</a></li>)}
+          <li><a href={href('solutions', lang)}>{d.nav.allSolutions}</a></li>
+          <li><a href={href('sustainability', lang)} aria-current={page === 'sustainability' ? 'page' : undefined}>{d.nav.sustainability}</a></li>
         </ul>
       </div>
       <div>
@@ -73,15 +79,10 @@ const socials = [
               <span class="footer__book-text">{bookText}</span>{bookArrow && <span class="footer__arrow" aria-hidden="true">{bookArrow}</span>}
             </a>
           </li>
-          {
-            site.demoUrl && (
-              <li>
-                <a href={demoHref(lang)} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="footer">
-                  {d.cta.demo.replace(/\s+([→←])$/, '\u00a0$1')}<span class="visually-hidden"> {d.cta.newTab}</span>
-                </a>
-              </li>
-            )
-          }
+          <li><a href={href('groups', lang)} aria-current={page === 'groups' ? 'page' : undefined}>{d.nav.groups}</a></li>
+          {/* Investor enquiries (the owner, 25 Nov 2026: a small link, not a section): an email with the subject filled in.
+              TODO(Fynn): a dedicated investor address, if you want one. */}
+          <li><a href={investorMail} data-track="investor_email_click">{d.footer.investors}</a></li>
           <li><a href={href('faq', lang)}>{d.nav.faqShort}</a></li>
           <li><a href={`mailto:${site.email}`} data-track="email_click">{site.email}</a></li>
         </ul>
@@ -89,6 +90,8 @@ const socials = [
       <div>
         <h2>{d.footer.company}</h2>
         <ul>
+          <li><a href={href('about', lang)} aria-current={page === 'about' ? 'page' : undefined}>{d.nav.about}</a></li>
+          <li><a href={href('security', lang)} aria-current={page === 'security' ? 'page' : undefined}>{d.nav.security}</a></li>
           <li><a href={href('legal', lang)}>{d.footer.legal}</a></li>
           <li><a href={href('privacy', lang)}>{d.footer.privacy}</a></li>
           <li><button type="button" class="footer__linkbtn" data-consent-open>{d.footer.cookies}</button></li>
@@ -177,9 +180,11 @@ const socials = [
     list-style: none;
   }
 
-  .footer__follow a {
+  /* The mark centred in its circle at every width (round 5: a phone rule used to push it to one side) */
+  .footer .footer__follow a {
     display: grid;
     place-items: center;
+    padding: 0;
     width: 2.75rem;
     height: 2.75rem;
     border: 1px solid var(--line);
@@ -188,6 +193,10 @@ const socials = [
     transition:
       border-color 0.2s var(--ease),
       background-color 0.2s var(--ease);
+  }
+
+  .footer__follow svg {
+    display: block;
   }
 
   .footer__follow a:hover {
@@ -332,7 +341,7 @@ const socials = [
       gap: 0;
     }
 
-    .footer li > a,
+    .footer__cols li > a,
     .footer a.footer__book,
     .footer__linkbtn,
     .footer__lang a {

@@ -1,28 +1,38 @@
 ---
 // The Tyll silver wave, wherever it appears: one ribbon of fine lines from `src/scripts/wave.ts`. Still by default;
 // `move` lets it drift like the homepage's closing wave, only while on screen and never with reduced motion.
+// `tone="sage"` draws it in light sage instead of silver, for the Sustainability page's dark sections (26 Nov 2026).
+// `stroke` (any colour, best a token such as 'var(--accent)') and `opacity` (0 to 1) set one colour and strength for
+// the whole ribbon, over the tone (the About page, 27 Nov 2026); the ribbon still fades out at both ends.
 import { ribbon } from '../scripts/wave';
 
 interface Props {
   phase?: number;
   move?: boolean;
-  tone?: 'light' | 'dark';
+  tone?: 'light' | 'dark' | 'sage';
+  stroke?: string;
+  opacity?: number;
   class?: string;
 }
 
-const { phase = 0.3, move = false, tone = 'light', class: cls } = Astro.props;
+const { phase = 0.3, move = false, tone = 'light', stroke, opacity, class: cls } = Astro.props;
 const id = `wave-${Math.random().toString(36).slice(2, 8)}`;
 const lines = ribbon(phase);
+// the gradient's colours: silver, or light sage
+const sage = tone === 'sage';
+const edge = stroke ?? (sage ? 'var(--sage)' : 'var(--silver)');
+const peak = stroke ?? (sage ? 'var(--sage-light)' : tone === 'dark' ? 'var(--silver-light)' : 'var(--silver-deep)');
+const tail = stroke ?? (sage ? 'var(--sage)' : 'var(--silver-deep)');
 ---
 
-<svg class:list={['wave', `wave--${tone}`, cls]} viewBox="0 0 1440 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true" data-wave={move ? 'move' : 'still'} data-phase={phase}>
+<svg class:list={['wave', `wave--${tone}`, cls]} viewBox="0 0 1440 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true" data-wave={move ? 'move' : 'still'} data-phase={phase} style={opacity === undefined ? undefined : `opacity: ${opacity}`}>
   <defs>
     <linearGradient id={id} x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="var(--silver)" stop-opacity="0" />
-      <stop offset="0.3" stop-color="var(--silver)" stop-opacity="0.35" />
-      <stop offset="0.6" stop-color={tone === 'dark' ? 'var(--silver-light)' : 'var(--silver-deep)'} stop-opacity="0.85" />
-      <stop offset="0.85" stop-color="var(--silver-deep)" stop-opacity="0.45" />
-      <stop offset="1" stop-color="var(--silver)" stop-opacity="0" />
+      <stop offset="0" stop-color={edge} stop-opacity="0" />
+      <stop offset="0.3" stop-color={edge} stop-opacity="0.35" />
+      <stop offset="0.6" stop-color={peak} stop-opacity="0.85" />
+      <stop offset="0.85" stop-color={tail} stop-opacity="0.45" />
+      <stop offset="1" stop-color={edge} stop-opacity="0" />
     </linearGradient>
   </defs>
   <g fill="none" stroke={`url(#${id})`} stroke-width="1">
@@ -46,6 +56,10 @@ const lines = ribbon(phase);
 
   .wave--dark {
     opacity: 0.8;
+  }
+
+  .wave--sage {
+    opacity: 0.7;
   }
 
   :global([dir='rtl']) .wave {

@@ -1,0 +1,1170 @@
+---
+// About us, rebuilt 27 Nov 2026 to the owner's brief, in seven sections:
+// 1. Hero on white (the owner, 27 Nov 2026: no grey or beige grounds) with the indigo wave: label, headline, line, Book a demo and Meet the team, three credentials,
+//    and the four cities' skyline drawn in fine indigo lines, standing on the credentials' rule (AboutSkyline.astro).
+// 2. The story on ink: where Tyll comes from, and the 45 to 60 minutes a night as one large figure.
+// 3. The team (#team): the four founders, each a card with a round photo (src/assets/team/<id>.jpg, cut from the
+//    owner's partner deck; a grey circle for anyone without one), role, name and one line (27 Nov 2026).
+// 4. Milestones on deep indigo with the lilac wave: a timeline that moves with the scroll (27 Nov 2026, the owner): on
+//    tablets and laptops (from 761 px wide and 640 px tall) the band holds still while each step lights up in turn and
+//    the line fills to it; on phones each step lights up as it passes 60% of the screen's height. Without JavaScript or
+//    with reduced motion: all four, filled to 76%.
+// 5. Where we are: Zürich, Berlin, Singapore and Dubai, each with its photograph.
+// 6. How we work: four cards with line icons, and the way to the Security page.
+// 7. The dark close with the silver wave: Book a demo and the investors' email.
+// Motion: the hero rises in on load (CSS); the figure, the steps and every card rise in once as they come into view;
+// cards lift on hover; the milestones follow the scroll; the founders' photos link to their LinkedIn. None of it under reduced motion; without JavaScript everything
+// shows. Copy: src/content/about.ts. Colours are tokens (global.css); no food waste figures, no "live in hotels".
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import SilverWave from '../SilverWave.astro';
+import SolutionIcon from '../SolutionIcon.astro';
+import Skyline from '../AboutSkyline.astro';
+import { about, linkedin, type PersonId, type PlaceId } from '../../content/about';
+import { t, href, type Locale } from '../../i18n';
+import { site } from '../../config/site';
+import zurich from '../../assets/photos/sus-zurich.jpg';
+import berlin from '../../assets/photos/sus-berlin.jpg';
+import dubai from '../../assets/photos/sus-dubai.jpg';
+import singapore from '../../assets/photos/sus-singapore.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+const c = about[lang];
+const investorMail = `mailto:${site.email}?subject=${encodeURIComponent(d.home.investors.subject)}`;
+// Team photos, whichever have been added to src/assets/team/ (named after the person: giulio, fynn, pawel, besher)
+const teamFiles = import.meta.glob<{ default: ImageMetadata }>('../../assets/team/*.{jpg,jpeg,png,webp}', { eager: true });
+const teamPhoto = (id: PersonId) => Object.entries(teamFiles).find(([path]) => path.split('/').pop()!.split('.')[0] === id)?.[1].default;
+const placePhoto: Partial<Record<PlaceId, { src: ImageMetadata; focus: string }>> = {
+  zurich: { src: zurich, focus: '50% 55%' },
+  berlin: { src: berlin, focus: '45% 50%' },
+  singapore: { src: singapore, focus: '45% 45%' },
+  dubai: { src: dubai, focus: '55% 60%' },
+};
+// LinkedIn's mark (Simple Icons, CC0), the same one the footer uses
+const linkedinMark = 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z';
+---
+
+<Base lang={lang} page="about" title={c.metaTitle} description={c.metaDescription}>
+  <div class="about" data-about>
+    <!-- 1. Hero -->
+    <section class="hero" aria-labelledby="about-title">
+      <SilverWave phase={0.25} move stroke="var(--accent)" opacity={0.35} />
+      <div class="wrap hero__inner">
+        <p class="label label--accent rise" style="--i:0">{c.hero.label}</p>
+        <h1 id="about-title" class="h1 rise" style="--i:1">{c.hero.title}</h1>
+        <p class="hero__text rise" style="--i:2">{c.hero.text}</p>
+        <div class="actions rise" style="--i:3">
+          <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="about-hero">{d.cta.book}</a>
+          <a class="btn btn--line btn--lg btn--white" href="#team">{c.hero.team}</a>
+        </div>
+        <div class="hero__foot rise" style="--i:4">
+          <div class="hero__skyline" aria-hidden="true">
+            <Skyline />
+          </div>
+          <dl class="creds">
+            {
+              c.hero.creds.map((cr) => (
+                <div class="cred">
+                  <dt class="label">{cr.label}</dt>
+                  <dd>{cr.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. The story -->
+    <section class="story on-dark" data-dark aria-labelledby="about-story">
+      <div class="wrap story__grid">
+        <div class="story__copy">
+          <p class="label label--lilac">{c.story.label}</p>
+          <h2 id="about-story" class="h2 h2--big">{c.story.title}</h2>
+          <p class="story__text">{c.story.text}</p>
+          <p class="story__turn">{c.story.turn}</p>
+        </div>
+        <div class="story__figure reveal">
+          <p class="story__num">{c.story.from} <span class="story__to">{c.story.to}</span> {c.story.until}</p>
+          <p class="story__caption">{c.story.caption}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. The team -->
+    <section id="team" class="team" aria-labelledby="about-team">
+      <div class="wrap">
+        <div class="head">
+          <div class="head__title">
+            <p class="label label--accent">{c.team.label}</p>
+            <h2 id="about-team" class="h2">{c.team.title}</h2>
+          </div>
+          <p class="head__text">{c.team.text}</p>
+        </div>
+        <ul class="people" role="list">
+          {
+            c.team.people.map((p, i) => {
+              const photo = teamPhoto(p.id);
+              return (
+                <li class="card person reveal" style={`--i:${i}`}>
+                  <a class="person__link" href={linkedin[p.id]} target="_blank" rel="noopener" aria-label={`${c.team.linkedin.replace('{name}', p.name)} ${d.cta.newTab}`} data-track="linkedin_click" data-track-from={`about-${p.id}`}>
+                    {photo ? (
+                      <Picture class="person__photo" src={photo} alt={p.name} formats={['avif', 'webp']} fallbackFormat="jpg" widths={[120, 240]} sizes="120px" loading="lazy" decoding="async" />
+                    ) : (
+                      <span class="person__photo person__photo--empty" aria-hidden="true" />
+                    )}
+                    <span class="person__badge" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d={linkedinMark} /></svg>
+                    </span>
+                  </a>
+                  <p class="label label--accent person__role">{p.role}</p>
+                  <h3 class="person__name">{p.name}</h3>
+                  <p class="person__bio">{p.bio}</p>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. Milestones -->
+    <section class="miles on-dark" data-dark aria-labelledby="about-miles" data-miles>
+      <div class="miles__pin">
+      <SilverWave phase={0.6} move stroke="var(--lilac)" opacity={0.4} />
+      <div class="wrap miles__inner">
+        <div class="head head--miles">
+          <h2 id="about-miles" class="h2 h2--big">{c.milestones.title}</h2>
+          <p class="label label--lilac">{c.milestones.started}</p>
+        </div>
+        <div class="miles__body">
+          <div class="track" aria-hidden="true"><span class="track__fill" data-fill></span></div>
+          <ol class="steps" role="list">
+            {
+              c.milestones.steps.map((s, i) => (
+                <li class="step" style={`--i:${i}`} data-step>
+                  <span class:list={['diamond', !s.done && 'diamond--open']} aria-hidden="true" data-diamond />
+                  <p class="label step__label">{s.label}</p>
+                  <p class="step__value">{s.value}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- 5. Where we are -->
+    <section class="places" aria-labelledby="about-places">
+      <div class="wrap">
+        <h2 id="about-places" class="h2 places__title">{c.places.title}</h2>
+        <ul class="cities" role="list">
+          {
+            c.places.cards.map((p, i) => {
+              const photo = placePhoto[p.id];
+              return (
+                <li class="card city reveal" style={`--i:${i}`}>
+                  {photo ? (
+                    <Picture class="city__photo" src={photo.src} alt={p.alt} formats={['avif', 'webp']} fallbackFormat="jpg" widths={[400, 640, 900]} sizes="(max-width: 700px) 92vw, (max-width: 1100px) 45vw, 280px" loading="lazy" decoding="async" style={`object-position: ${photo.focus}`} />
+                  ) : (
+                    <span class="city__photo city__photo--empty" aria-hidden="true" />
+                  )}
+                  <div class="city__body">
+                    <p class="label label--accent city__status">
+                      <span class:list={['diamond', 'diamond--small', p.next && 'diamond--open']} aria-hidden="true" />
+                      {p.status}
+                    </p>
+                    <h3 class="city__name">{p.city}</h3>
+                    <p class="city__line">{p.line}</p>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. How we work -->
+    <section class="ways" aria-labelledby="about-ways">
+      <div class="wrap">
+        <h2 id="about-ways" class="h2 ways__title">{c.ways.title}</h2>
+        <ul class="ways__list" role="list">
+          {
+            c.ways.items.map((w, i) => (
+              <li class="card card--small way reveal" style={`--i:${i}`}>
+                <span class="way__icon">
+                  <SolutionIcon name={w.icon} />
+                </span>
+                <h3 class="way__title">{w.title}</h3>
+                <p class="way__text">{w.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="more" href={href('security', lang)}>{c.ways.security}</a>
+      </div>
+    </section>
+
+    <!-- 7. The close -->
+    <section class="close on-dark" data-dark aria-labelledby="about-close">
+      <SilverWave phase={0.4} move stroke="var(--silver)" opacity={0.8} />
+      <div class="wrap close__inner">
+        <h2 id="about-close" class="h2 h2--big">{c.close.title}</h2>
+        <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="about-final">{d.cta.book}</a>
+        <p class="close__investors">
+          {c.close.investors}
+          <a href={investorMail} data-track="email_click" data-track-from="about">{c.close.investorsLink}</a>
+        </p>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .about {
+    --rise: cubic-bezier(0.22, 1, 0.36, 1);
+    --section: clamp(4rem, 8vw, 7.5rem);
+    --dark-muted: rgb(var(--on-dark-rgb) / 0.74);
+    --dark-faint: rgb(var(--on-dark-rgb) / 0.6);
+    --dark-hair: rgb(var(--on-dark-rgb) / 0.16);
+  }
+
+  /* Type */
+  .h1 {
+    max-width: 21ch;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.875rem, 6.4vw, 5.75rem);
+    font-weight: 300;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.125rem, 3.8vw, 3.25rem);
+    font-weight: 300;
+    line-height: 1.08;
+  }
+
+  .h2--big {
+    font-size: clamp(2.125rem, 4.3vw, 3.75rem);
+  }
+
+  /* Small labels: IBM Plex Mono in capitals (Arabic has no capitals and Plex no Arabic, so body type there) */
+  .label {
+    margin: 0;
+    color: var(--steel);
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .label--accent {
+    color: var(--accent);
+  }
+
+  .label--lilac {
+    color: var(--lilac);
+  }
+
+  :global([dir='rtl']) .label {
+    font-family: var(--font);
+    font-size: 0.9375rem;
+    letter-spacing: 0;
+  }
+
+  /* Links and buttons */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .btn--white {
+    background: var(--paper);
+  }
+
+  .more,
+  .close__investors a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+  }
+
+  .more:hover {
+    color: var(--accent-hover);
+  }
+
+  /* Cards */
+  .card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    box-shadow: var(--shadow-1);
+    transition:
+      opacity 0.9s var(--rise) calc(var(--i, 0) * 120ms),
+      translate 0.9s var(--rise) calc(var(--i, 0) * 120ms),
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+
+  .card--small {
+    border-radius: 20px;
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-3);
+    transform: translateY(-6px);
+  }
+
+  /* Section heads: the title on the start side, a line on the other */
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 3rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  }
+
+  .head__title {
+    display: grid;
+    gap: 1rem;
+    max-width: 38rem;
+  }
+
+  .head__text {
+    max-width: 26rem;
+    margin: 0;
+    color: var(--steel);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  /* 1. Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: calc(var(--header-h) + var(--section)) var(--section);
+    background: var(--page);
+    color: var(--ink);
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+  }
+
+  .hero__text {
+    max-width: 38rem;
+    margin: 0;
+    color: var(--steel);
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
+    line-height: 1.55;
+  }
+
+  /* The four cities' skyline stands on the credentials' rule like a horizon. On wide screens it sits right of the
+     words, its feet on the rule; it is only as wide as leaves the longest line of the text (38rem) clear of the
+     Zürich churches near its start. Below 1280 px it stands in the flow, above the rule, under the buttons. */
+  .hero__foot {
+    position: relative;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .hero__skyline {
+    pointer-events: none;
+  }
+
+  @media (min-width: 1280px) {
+    .hero__skyline {
+      position: absolute;
+      bottom: 100%;
+      inset-inline-end: 0;
+      width: min(660px, calc((100% - 39rem) / 0.916));
+    }
+  }
+
+  @media (max-width: 1279px) {
+    .hero__skyline {
+      width: min(100%, 640px);
+      margin-inline-start: auto;
+      margin-bottom: -1px;
+    }
+  }
+
+  :global([dir='rtl']) .hero__skyline {
+    transform: scaleX(-1);
+  }
+
+  .creds {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem 2rem;
+    width: 100%;
+    margin: 0;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--silver);
+  }
+
+  .cred {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+
+  .cred dd {
+    margin: 0;
+    color: var(--ink);
+    font-size: 1.125rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 700px) {
+    .creds {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* 2. The story */
+  .story {
+    padding-block: var(--section);
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .story__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(2.5rem, 2rem + 3vw, 5rem);
+    align-items: center;
+  }
+
+  .story__copy {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  .story__text {
+    max-width: 30rem;
+    margin: 0;
+    color: var(--dark-muted);
+    font-size: 1.25rem;
+    line-height: 1.55;
+  }
+
+  .story__turn {
+    margin: 0.5rem 0 0;
+    color: var(--lilac);
+    font-family: var(--font-display);
+    font-size: 2.125rem;
+    font-weight: 300;
+    line-height: 1.15;
+  }
+
+  /* the figure is sized against its own column (cqi), so "45 to 60" never runs past it in any language */
+  .story__figure {
+    container-type: inline-size;
+    padding-block: 1rem;
+    padding-inline-start: clamp(1.5rem, 1rem + 2vw, 3rem);
+    border-inline-start: 1px solid var(--dark-hair);
+  }
+
+  .story__num {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: min(clamp(6rem, 11vw, 10.5rem), 25cqi);
+    font-weight: 300;
+    line-height: 0.95;
+    white-space: nowrap;
+  }
+
+  .story__to {
+    color: rgb(var(--on-dark-rgb) / 0.35);
+  }
+
+  /* Arabic: إلى and the Arabic display type run wider, so the figure is set a size smaller to stay in its column */
+  :global([dir='rtl']) .story__num {
+    font-size: min(clamp(3.5rem, 8vw, 7.5rem), 22cqi);
+  }
+
+  .story__caption {
+    max-width: 22rem;
+    margin: 1.25rem 0 0;
+    color: var(--dark-muted);
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    .story__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* stacked: the hairline goes above the figure instead of beside it */
+    .story__figure {
+      padding-top: 2rem;
+      padding-inline-start: 0;
+      border-top: 1px solid var(--dark-hair);
+      border-inline-start: 0;
+    }
+  }
+
+  /* Phones: the figure follows the screen's width so "45 to 60" stays on one line without overflowing (the brief's
+     96 px floor is wider than a 390 px screen in German) */
+  @media (max-width: 600px) {
+    .story__num {
+      font-size: min(clamp(3.5rem, 18vw, 6rem), 25cqi);
+    }
+  }
+
+  /* 3. The team */
+  .team {
+    padding-block: var(--section);
+    background: var(--page);
+    color: var(--ink);
+    scroll-margin-top: var(--header-h);
+  }
+
+  .people {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .person {
+    display: grid;
+    gap: 0.625rem;
+    align-content: start;
+    padding: 1.75rem 1.5rem 2rem;
+  }
+
+  .person__photo,
+  .person :global(.person__photo) {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 0.875rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .person__photo--empty {
+    background: var(--sand-300);
+  }
+
+  /* each photo opens that person's LinkedIn; a small badge says so, and the photo rings on hover and focus */
+  .person__link {
+    position: relative;
+    justify-self: start;
+    display: block;
+    width: 120px;
+    margin-bottom: 0.875rem;
+    border-radius: 50%;
+  }
+
+  .person__link .person__photo,
+  .person__link :global(.person__photo) {
+    margin-bottom: 0;
+    transition: box-shadow 0.3s var(--ease);
+  }
+
+  .person__link:hover :global(.person__photo),
+  .person__link:hover .person__photo {
+    box-shadow:
+      0 0 0 3px var(--paper),
+      0 0 0 5px var(--accent);
+  }
+
+  .person__link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .person__badge {
+    position: absolute;
+    bottom: 2px;
+    inset-inline-end: 2px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--accent);
+    box-shadow: var(--shadow-1);
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .person__link:hover .person__badge {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  .person__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .person__bio {
+    margin: 0;
+    color: var(--steel);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 1100px) {
+    .people {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .people {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* 4. Milestones */
+  .miles {
+    background: var(--indigo-night);
+    color: var(--on-dark);
+  }
+
+  .miles__pin {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--section);
+  }
+
+  .miles__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .head--miles {
+    align-items: baseline;
+  }
+
+  .head--miles .h2 {
+    max-width: 40rem;
+  }
+
+  .miles__body {
+    position: relative;
+  }
+
+  /* the track runs through the diamonds, filled to 76% */
+  .track {
+    position: absolute;
+    top: 6px;
+    inset-inline: 0;
+    height: 2px;
+    background: var(--dark-hair);
+  }
+
+  .track__fill {
+    display: block;
+    width: 76%;
+    height: 100%;
+    background: var(--lilac);
+    transform-origin: left center;
+  }
+
+  :global([dir='rtl']) .track__fill {
+    transform-origin: right center;
+  }
+
+  .steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    transition:
+      opacity 0.9s var(--rise) calc(var(--i, 0) * 120ms),
+      translate 0.9s var(--rise) calc(var(--i, 0) * 120ms);
+  }
+
+  .diamond {
+    display: block;
+    width: 14px;
+    height: 14px;
+    margin-bottom: 1rem;
+    background: var(--lilac);
+    transform: rotate(45deg);
+  }
+
+  .diamond--open {
+    border: 1.5px solid var(--on-dark);
+    background: var(--indigo-night);
+  }
+
+  .step__label {
+    color: var(--dark-muted);
+  }
+
+  .step__value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 300;
+    line-height: 1.15;
+  }
+
+  /* Phones and small tablets: the steps stack along a track down the start side */
+  @media (max-width: 760px) {
+    .track {
+      top: 6px;
+      bottom: 0;
+      inset-inline: 6px auto;
+      width: 2px;
+      height: auto;
+    }
+
+    .track__fill {
+      width: 100%;
+      height: 76%;
+      transform-origin: center top;
+    }
+
+    :global([dir='rtl']) .track__fill {
+      transform-origin: center top;
+    }
+
+    .steps {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.25rem;
+    }
+
+    .step {
+      grid-template-columns: 14px minmax(0, 1fr);
+      column-gap: 1.25rem;
+    }
+
+    .step .diamond {
+      grid-row: 1 / span 2;
+      margin: 0;
+    }
+
+    .step__label,
+    .step__value {
+      grid-column: 2;
+    }
+  }
+
+  /* The timeline that moves with the scroll (only with JavaScript and without reduced motion): steps not yet reached
+     are quieter (still 5:1 contrast), the current one is lilac with a halo, and the line fills up to it. On laptops the
+     band is tall and its frame holds still under the header while that happens. */
+  .miles.is-live .track__fill {
+    width: 100%;
+    transform: scaleX(var(--fill, 0));
+    transition: transform 0.4s var(--rise);
+  }
+
+  .miles.is-live .step {
+    transition:
+      opacity 0.45s var(--rise),
+      translate 0.6s var(--rise);
+  }
+
+  .miles.is-live .step[data-state='future'] {
+    opacity: 0.55;
+    translate: 0 8px;
+  }
+
+  .miles.is-live .step[data-state='future'] .diamond:not(.diamond--open) {
+    border: 1.5px solid var(--lilac);
+    background: var(--indigo-night);
+  }
+
+  .miles.is-live .step[data-state='current'] .step__value {
+    color: var(--lilac);
+  }
+
+  .miles.is-live .diamond {
+    transition:
+      background-color 0.3s var(--ease),
+      box-shadow 0.3s var(--ease);
+  }
+
+  .miles.is-live .step[data-state='current'] .diamond {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--lilac) 24%, transparent);
+  }
+
+  .miles.is-scroll {
+    height: 280svh;
+  }
+
+  .miles.is-scroll .miles__pin {
+    position: sticky;
+    top: var(--header-h);
+    display: grid;
+    align-content: center;
+    height: calc(100svh - var(--header-h));
+    padding-block: 2rem;
+  }
+
+  @media (max-width: 760px) {
+    .miles.is-live .track__fill {
+      height: 100%;
+      transform: scaleY(var(--fill, 0));
+    }
+  }
+
+  /* 5. Where we are */
+  .places {
+    padding-block: var(--section);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .places__title,
+  .ways__title {
+    margin-bottom: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  }
+
+  .cities {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .city {
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+
+  .city__photo,
+  .city :global(.city__photo) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .city__photo--empty {
+    background: var(--sand-300);
+  }
+
+  .city__body {
+    display: grid;
+    gap: 0.625rem;
+    padding: 1.5rem 1.5rem 1.75rem;
+  }
+
+  .city__status {
+    display: flex;
+    gap: 0.625rem;
+    align-items: center;
+  }
+
+  .diamond--small {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin: 0;
+    background: var(--accent);
+  }
+
+  .diamond--small.diamond--open {
+    border: 1.5px solid var(--accent);
+    background: var(--paper);
+  }
+
+  .city__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .city__line {
+    margin: 0;
+    color: var(--steel);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 1100px) {
+    .cities {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .cities {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* 6. How we work */
+  .ways {
+    padding-block: var(--section);
+    background: var(--page);
+    color: var(--ink);
+  }
+
+  .ways__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .way {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .way__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 0.5rem;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .way__icon :global(svg) {
+    width: 28px;
+    height: 28px;
+  }
+
+  .way__title {
+    margin: 0;
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .way__text {
+    margin: 0;
+    color: var(--steel);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 1100px) {
+    .ways__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ways__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* 7. The close */
+  .close {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--section);
+    background: var(--night-1);
+    color: var(--on-dark);
+  }
+
+  .close__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1.75rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .close__investors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: var(--dark-muted);
+    font-size: 1rem;
+  }
+
+  .close__investors a {
+    color: var(--on-dark);
+  }
+
+  .close__investors a:hover {
+    color: var(--lilac);
+  }
+
+  /* Motion. The hero rises in on load. Below it, parts wait out of view only once the script has armed the page, so
+     without JavaScript nothing is hidden; they rise in once as they come into view. */
+  .rise {
+    animation: rise 0.9s var(--rise) both;
+    animation-delay: calc(var(--i, 0) * 120ms);
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 24px;
+    }
+  }
+
+  .story__figure {
+    transition:
+      opacity 0.9s var(--rise),
+      translate 0.9s var(--rise);
+  }
+
+  :global(.about.is-armed) .reveal:not(.is-in) {
+    opacity: 0;
+    translate: 0 24px;
+  }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise {
+      animation: none;
+    }
+
+    .card,
+    .step,
+    .story__figure,
+    .track__fill {
+      transition: none;
+    }
+
+    .card:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Arm the page (parts wait out of view) and let each part rise in once as it comes into view. Nothing under
+  // reduced motion.
+  const root = document.querySelector<HTMLElement>('[data-about]');
+  if (root && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    root.classList.add('is-armed');
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }),
+      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' },
+    );
+    root.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  }
+
+  // The milestones as a timeline that moves with the scroll. On tablets and laptops the band holds still (sticky) and
+  // the page's scroll through it walks the four steps; on phones each step lights up as it passes 60% of the screen. The
+  // line fills to the step reached, and heads for the last one without reaching it (that market is next).
+  const miles = root?.querySelector<HTMLElement>('[data-miles]');
+  if (miles && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const steps = [...miles.querySelectorAll<HTMLElement>('[data-step]')];
+    const diamonds = [...miles.querySelectorAll<HTMLElement>('[data-diamond]')];
+    const track = miles.querySelector<HTMLElement>('.track')!;
+    const pinned = matchMedia('(min-width: 761px) and (min-height: 640px)');
+    const narrow = matchMedia('(max-width: 760px)');
+    const rtl = document.documentElement.dir === 'rtl';
+    const clamp = (v: number) => Math.min(1, Math.max(0, v));
+    miles.classList.add('is-live');
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      miles.classList.toggle('is-scroll', pinned.matches);
+      const vertical = narrow.matches;
+      const t = track.getBoundingClientRect();
+      // where each diamond sits along the line, from 0 to 1
+      const at = diamonds.map((dm) => {
+        const r = dm.getBoundingClientRect();
+        if (vertical) return clamp((r.top + r.height / 2 - t.top) / t.height);
+        const x = r.left + r.width / 2;
+        return clamp(rtl ? (t.right - x) / t.width : (x - t.left) / t.width);
+      });
+      const targets = [at[0], at[1], at[2], at[2] + (at[3] - at[2]) * 0.45];
+      // pos: how far along the four steps the reader is, 0 to 3 (below 0: not there yet)
+      let pos: number;
+      if (pinned.matches) {
+        const r = miles.getBoundingClientRect();
+        const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
+        const run = r.height - (innerHeight - header);
+        pos = Math.min(3, Math.max(0, clamp((header - r.top) / run) * 3.4 - 0.2));
+      } else if (vertical) {
+        // phones: a step lights up as its diamond passes 60% of the screen's height
+        const mid = innerHeight * 0.6;
+        const tops = diamonds.map((dm) => dm.getBoundingClientRect().top);
+        pos = -1;
+        tops.forEach((top, i) => {
+          if (top <= mid) pos = i + (i < tops.length - 1 ? clamp((mid - top) / (tops[i + 1] - top)) : 0);
+        });
+      } else {
+        // a row on a screen too short to pin it: the steps walk as the line rises from 60% to 30% of the screen
+        const p = (innerHeight * 0.6 - t.top) / (innerHeight * 0.3);
+        pos = p < 0 ? -1 : Math.min(3, Math.max(0, p * 3.4 - 0.2));
+      }
+      const active = pos < 0 ? -1 : Math.floor(pos + 1e-4);
+      const k = Math.max(0, Math.min(2, Math.floor(pos)));
+      const fill = pos < 0 ? 0 : pos >= 3 ? targets[3] : targets[k] + (targets[k + 1] - targets[k]) * (pos - k);
+      track.style.setProperty('--fill', fill.toFixed(4));
+      steps.forEach((step, i) => (step.dataset.state = i < active ? 'past' : i === active ? 'current' : 'future'));
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', schedule);
+    update();
+  }
+</script>

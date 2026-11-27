@@ -1,0 +1,15 @@
+Tyll print files for Unicon Berlin, November 2026
+
+1. Tyll banner 850x2060 mm - berlindisplay.pdf (and .jpg, the same banner as an image)
+   Roll-up banner. Page exactly 850 x 2060 mm, no bleed (the size berlindisplay.de checks for).
+   The extra 60 mm at the foot winds into the stand's cassette.
+
+2. Tyll pamphlet A4 folded to DIN long.pdf
+   Two pages: outside, then inside. A4 landscape, 297 x 210 mm trim plus 3 mm bleed (page 303 x 216 mm).
+   Print double-sided, flipped on the short edge, then letter fold ("Wickelfalz, 6-seitig, DIN lang")
+   to 100 x 210 mm. Outside page folds at 97 mm and 197 mm from the left; inside page at 100 mm and 200 mm.
+   The 97 mm panel is the flap that tucks in.
+
+All files: fonts embedded, photographs at 300 dpi on the pamphlet and about 100 dpi on the banner
+(for viewing from a metre or more). Colour is RGB; please convert to your CMYK profile, or tell us if you
+need CMYK files. No crop marks; bleed is included.

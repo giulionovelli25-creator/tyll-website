@@ -1,33 +1,18 @@
 ---
-// How it works (9 Nov 2026; black, white and greys only since 10 Nov 2026, never beige): four steps, then
-// every morning a report of what the hotel lost. The Solutions page's frame (header, silver wave banner), then four steps that alternate sides
-// of one line, each numbered on the line itself: the call (a booking card with three times, one chosen), the free count
-// (a phone counting a shelf), reading the POS (the makers' own logos for SumUp, Oracle Simphony and Lightspeed, in grey,
-// joined to Tyll, read only) and the daily report (the example card, `MorningCard.astro`). The pictures are HTML and
-// CSS, decorative, with fictional data. Then three reassurances and a black closing band. Copy: `howPage`.
-// Scrolling snaps (10 Nov 2026, the owner: "so it is clear what you are supposed to read"): each step fills the screen
-// under the header and the page stops on the banner, on each step, on the reassurances and at the end of the footer; a
-// step is never skipped (`scroll-snap-stop: always`). Only on screens at least 640 px tall and never under reduced
-// motion; elsewhere the page scrolls freely. Condensed the same evening (the owner's brief, then "the same scroll
-// feature, just with less space"): one step per screen as before, but each step's content is compact and centred,
-// the pictures at most 380 px wide and drawn at 86%; the closing band carries the moving silver wave.
-// Photographs and rhythm (11 Nov 2026, the owner's brief: warmer, less like the demo): one large rounded photograph
-// beside the title (under it on tablets and phones), and the steps are full-width bands that alternate light grey and
-// white, then the reassurances on a slightly deeper grey and the dark band. Greys, not cream: the palette rule stands.
-// Later the same day (the owner: still a little too much empty space, a bit cold): each step's picture is drawn at full
-// size on a photograph of that moment (a lobby, a storeroom shelf, a kitchen pass, a manager's desk), in place of the small
-// grey panel and the photographs under the text of steps 2 and 3.
+// How it works. Round 5 (25 Nov 2026, the owner: "cleaner and flow better"): the title beside one photograph, then
+// the four steps in one column joined by a line that fills as you read; on desktops a single picture beside them
+// stays in the middle of the screen and changes to each step's picture (HowVisual.astro: the booking card, the free
+// purchasing report, three POS systems joined to Tyll read only, the morning brief, each on a photograph of that
+// moment). The step being read is in full ink, the others dimmed. No scroll snapping, no zigzag, no alternating bands
+// (all three before round 5). Then three reassurances, where Tyll comes from, and the dark closing band. Copy: `howPage`.
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SilverWave from '../SilverWave.astro';
-import Logo from '../Logo.astro';
-import MorningCard from '../MorningCard.astro';
+import HowVisual from './HowVisual.astro';
 import { t, href, type Locale } from '../../i18n';
-import { demoHref } from '../../config/demo';
-import { logos } from '../../config/integrations';
 import heroPhoto from '../../assets/photos/events-banquet.jpg';
 import callPhoto from '../../assets/photos/book-lobby.jpg';
-import countPhoto from '../../assets/photos/how-count-jars.jpg';
+import shelfPhoto from '../../assets/photos/how-count-jars.jpg';
 import passPhoto from '../../assets/photos/problem/problem-stock.jpg';
 import deskPhoto from '../../assets/photos/problem/problem-finance.jpg';
 
@@ -38,13 +23,10 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const p = d.howPage;
-const demo = demoHref(lang);
-const chosen = 1; // the booked time
-const systems = ['SumUp', 'Oracle MICROS Simphony', 'Lightspeed'].map((name) => logos.find((l) => l.name === name)!);
 // The photograph behind each step's picture, and the part of it to keep in view
 const stepPhotos: { src: ImageMetadata; focus: string }[] = [
   { src: callPhoto, focus: '45% 55%' },
-  { src: countPhoto, focus: '60% 55%' },
+  { src: shelfPhoto, focus: '60% 55%' },
   { src: passPhoto, focus: '60% 30%' },
   { src: deskPhoto, focus: '62% 40%' },
 ];
@@ -55,8 +37,7 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     <SilverWave phase={0.7} />
     <div class="wrap how-top__grid">
       <header class="intro">
-        <p class="eyebrow">{p.eyebrow}</p>
-        <h1>{p.title}</h1>
+        <h1>{p.h1}</h1>
         <p class="intro__sub">{p.sub}</p>
         <a class="btn btn--solid btn--lg" href={href('book', lang)} data-track="book_demo_click" data-track-from="how">{d.cta.book}</a>
       </header>
@@ -66,97 +47,37 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     </div>
   </div>
 
-  <section class="steps-wrap" aria-labelledby="steps-title">
+  <section class="flow" aria-labelledby="steps-title" data-flow>
     <h2 id="steps-title" class="visually-hidden">{p.eyebrow}</h2>
-    <ol class="steps">
-      {
-        p.steps.map(([title, text], i) => (
-          <li class:list={['step', i % 2 === 1 && 'step--flip']}>
-           <div class="wrap step__grid">
-            <span class="step__num" aria-hidden="true">
-              {i + 1}
-            </span>
-            <div class="step__text">
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </div>
-            <div class="step__visual" aria-hidden="true">
-              <div class="step__bg">
-                <Picture src={stepPhotos[i].src} alt="" formats={['avif', 'webp']} fallbackFormat="jpg" widths={[480, 720, 1040, 1400]} sizes="(max-width: 860px) 92vw, 540px" loading="lazy" decoding="async" style={`object-position: ${stepPhotos[i].focus}`} />
+    <div class="wrap flow__grid">
+      <ol class="flow__steps" role="list">
+        {
+          p.steps.map(([title, text], i) => (
+            <li class:list={['fstep', i === 0 && 'is-on']} data-step={i}>
+              <span class="fstep__num" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div class="fstep__text">
+                <h3>{title}</h3>
+                <p>{text}</p>
               </div>
-              {i === 0 && (
-                <div class="cal">
-                  <p class="cal__head">
-                    <svg viewBox="0 0 24 24">
-                      <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
-                      <path d="M3.5 10h17M8 3v4M16 3v4" />
-                    </svg>
-                    {p.call.title}
-                  </p>
-                  <p class="cal__day">{p.call.day}</p>
-                  <ul class="cal__slots" dir="ltr">
-                    {p.call.slots.map((slot, k) => (
-                      <li class:list={[k === chosen && 'is-on']}>{slot}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {i === 1 && (
-                <div class="phone">
-                  <div class="phone__screen">
-                    <p class="phone__title">{p.count.title}</p>
-                    <ul class="phone__rows">
-                      {p.count.items.map(([name, qty], k) => (
-                        <li class:list={[k === 1 && 'is-on']}>
-                          <span class="phone__name">{name}</span>
-                          <span class="phone__ctl" dir="ltr">
-                            <span class="phone__btn">−</span>
-                            <b>{qty}</b>
-                            <span class="phone__btn">+</span>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-              {i === 2 && (
-                <div class="pos">
-                  <ul class="pos__from">
-                    {systems.map((l) => (
-                      <li>
-                        <span class="pos__logo">
-                          <img src={`/logos/integrations/${l.file}`} alt="" height={Math.round(l.height * 0.75)} width={Math.round(l.height * 0.75 * l.aspect)} loading="lazy" decoding="async" />
-                          {l.text && <small>{l.text}</small>}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div class="pos__lines">
-                    <svg viewBox="0 0 100 120" preserveAspectRatio="none">
-                      <path d="M0 20 C50 20 50 60 100 60 M0 60 H100 M0 100 C50 100 50 60 100 60" />
-                    </svg>
-                    <span class="pos__pill">
-                      <span class="pos__dot" />
-                      {p.readOnly}
-                    </span>
-                  </div>
-                  <div class="pos__tyll">
-                    <Logo label="" />
-                  </div>
-                </div>
-              )}
-              {i === 3 && (
-                <div class="list">
-                  <MorningCard lang={lang} link={false} />
-                </div>
-              )}
+              <div class="fstep__inline">
+                <HowVisual lang={lang} i={i} title={title} photo={stepPhotos[i]} />
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="flow__stage" aria-hidden="true">
+        {
+          p.steps.map(([title], i) => (
+            <div class:list={['flow__frame', i === 0 && 'is-on']} data-frame={i}>
+              <HowVisual lang={lang} i={i} title={title} photo={stepPhotos[i]} />
             </div>
-           </div>
-          </li>
-        ))
-      }
-    </ol>
+          ))
+        }
+      </div>
+    </div>
   </section>
 
   <section class="assure" aria-label={p.eyebrow}>
@@ -186,24 +107,61 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     </ul>
   </section>
 
+  <!-- Where Tyll comes from lives on About us (the owner, 25 Nov 2026: no repeat here, only the way there) -->
+  <p class="wrap origin">
+    <a href={href('about', lang)}>{p.story.title} {lang === 'ar' ? '←' : '→'}</a>
+  </p>
+
   <section class="final" aria-labelledby="final-title">
     <SilverWave phase={0.4} move tone="dark" />
     <div class="wrap final__inner">
       <h2 id="final-title">{p.final}</h2>
       <div class="final__actions">
         <a class="btn btn--lg final__book" href={href('book', lang)} data-track="book_demo_click" data-track-from="how-final">{d.cta.book}</a>
-        {
-          demo && (
-            <a class="btn btn--lg final__try" href={demo} target="_blank" rel="noopener" data-track="explore_demo_click" data-track-from="how-final">
-              {d.cta.demo}
-              <span class="visually-hidden"> {d.cta.newTab}</span>
-            </a>
-          )
-        }
       </div>
     </div>
   </section>
 </Base>
+
+<script>
+  // The step being read is the one crossing the middle of the screen: it is drawn in full ink and its picture shows in
+  // the stage; the line beside the numbers fills as far as the reader has come. Desktops only, and only with
+  // JavaScript: without it the steps keep their pictures under them.
+  const flow = document.querySelector<HTMLElement>('[data-flow]');
+  if (flow && 'IntersectionObserver' in window) {
+    const steps = [...flow.querySelectorAll<HTMLElement>('[data-step]')];
+    const frames = [...flow.querySelectorAll<HTMLElement>('[data-frame]')];
+    const list = flow.querySelector<HTMLElement>('.flow__steps')!;
+    flow.dataset.ready = '';
+    const show = (i: number) => {
+      steps.forEach((s, k) => s.classList.toggle('is-on', k === i));
+      frames.forEach((f, k) => f.classList.toggle('is-on', k === i));
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) show(Number((e.target as HTMLElement).dataset.step));
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    steps.forEach((s) => io.observe(s));
+    let queued = false;
+    const fill = () => {
+      queued = false;
+      const r = list.getBoundingClientRect();
+      const mid = innerHeight / 2;
+      const p = Math.min(Math.max((mid - r.top) / r.height, 0), 1);
+      flow.style.setProperty('--p', p.toFixed(3));
+    };
+    fill();
+    addEventListener('scroll', () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(fill);
+      }
+    }, { passive: true });
+    addEventListener('resize', fill);
+  }
+</script>
 
 <style>
   /* The banner, as on the Solutions page */
@@ -244,18 +202,9 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     filter: var(--photo-grade);
   }
 
-  .eyebrow {
-    margin: 0;
-    color: var(--steel);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
   h1 {
     max-width: 28ch;
-    margin: var(--s-2) 0 0;
+    margin: 0;
     color: var(--ink);
     font-size: var(--fs-display);
     line-height: 1.08;
@@ -269,220 +218,184 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     line-height: 1.55;
   }
 
-  /* The four steps: text and picture alternate sides of one line, the step's number sits on the line */
-  /* Each step is a band the full width of the page, light grey and white in turn. The room the snapping leaves
-     above the first step and below the last takes the colour of the band beside it (grey above, white below). */
-  .steps-wrap {
-    background: linear-gradient(to bottom, var(--page-deep) 50%, var(--paper) 0);
+  /* The four steps (round 5, 25 Nov 2026, the owner: "cleaner and flow better"). One calm column of steps joined by a
+     line that fills as you read; on desktops one picture stays beside them and changes to each step's picture as you
+     reach it, the step being read in full ink and the others dimmed. No snapping, no zigzag, no alternating bands.
+     Without JavaScript, and on tablets and phones, each step shows its picture under it. */
+  .flow {
+    --p: 1;
+    padding-block: var(--intro-gap) var(--section-y);
+    background: var(--paper);
   }
 
-  .steps {
+  .flow__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .flow__steps {
     position: relative;
+    display: grid;
+    gap: var(--s-5);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .steps::before {
+  /* The line down the numbers, filled in ink as far as the reader has come */
+  .flow__steps::before,
+  .flow__steps::after {
     position: absolute;
-    top: 2rem;
-    bottom: 2rem;
-    inset-inline-start: 50%;
-    border-inline-start: 1px solid rgb(var(--ink-rgb) / 0.2);
+    top: 1.375rem;
+    bottom: 1.375rem;
+    inset-inline-start: calc(1.375rem - 1px);
+    width: 2px;
+    background: var(--sand-600);
     content: '';
   }
 
-  .step {
-    --band: var(--page-deep);
-    display: grid;
-    padding-block: var(--intro-gap);
-    background: var(--band);
+  .flow__steps::after {
+    bottom: auto;
+    height: calc(var(--p) * (100% - 2.75rem));
+    background: var(--ink);
   }
 
-  .step--flip {
-    --band: var(--paper);
-  }
-
-  .step__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 4.75rem minmax(0, 1fr);
-    grid-template-areas: 'text num visual';
-    align-items: center;
-  }
-
-  .step--flip .step__grid {
-    grid-template-areas: 'visual num text';
-  }
-
-  /* One step per stop, never skipping one. On desktop each step is about three quarters of the screen (more on laptops)
-     and the page stops with it in the middle: the step reads alone, its neighbours stay out of view, the scroll from
-     one to the next is shorter, and the first step already shows under the title. Phones keep a full screen per step,
-     since there the step itself nearly fills it. */
-  @media (prefers-reduced-motion: no-preference) and (min-height: 640px) {
-    :global(html:has(.steps-wrap)) {
-      scroll-snap-type: y mandatory;
-    }
-
-    .how-top,
-    .step,
-    .assure {
-      scroll-snap-align: start;
-    }
-
-    .how-top {
-      scroll-margin-top: calc(-1 * (var(--header-h) + 16px));
-    }
-
-    :global(html:has(.steps-wrap) .footer) {
-      scroll-snap-align: end;
-    }
-
-    /* (the second height keeps a neighbour's picture out of view on laptop screens: half the screen plus half the
-       tallest step, about 30rem, and the 16px the page stops under the header) */
-    .step {
-      min-height: min(var(--snapport), max(calc(var(--snapport) * 0.76), calc(var(--snapport) * 0.5 + 17rem)));
-      align-content: center;
-      scroll-snap-align: center;
-      scroll-snap-stop: always;
-    }
-
-    /* the screen left above the first step and below the last when they stop in the middle: room enough that the
-       title's button and the reassurances never peek in */
-    .steps-wrap {
-      --snapport: calc(100svh - var(--header-h) - 16px);
-      padding-top: max(0px, calc(var(--snapport) * 0.12 + 16px - var(--intro-gap)));
-      padding-bottom: calc(var(--snapport) * 0.12);
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) and (min-height: 640px) and (max-width: 860px) {
-    .step {
-      min-height: var(--snapport);
-      padding-block: 1.25rem;
-    }
-
-    .steps-wrap {
-      padding-block: 0;
-    }
-  }
-
-  .step__num {
+  .fstep {
     position: relative;
     display: grid;
-    grid-area: num;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: var(--s-2) var(--s-3);
+  }
+
+  .fstep__num {
+    position: relative;
+    z-index: 1;
+    display: grid;
     place-items: center;
-    justify-self: center;
     width: 2.75rem;
     height: 2.75rem;
+    border: 2px solid var(--ink);
     border-radius: 50%;
     background: var(--ink);
     color: var(--paper);
     font-family: var(--font-display);
-    font-size: 1.3125rem;
+    font-size: 1.25rem;
     line-height: 1;
-    box-shadow: 0 0 0 8px var(--band);
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
   }
 
-  .step__text {
-    grid-area: text;
-    width: min(100%, 28rem);
+  .fstep__text {
+    align-self: center;
+    transition: opacity 0.35s var(--ease);
   }
 
-  .step:not(.step--flip) .step__text {
-    justify-self: end;
-  }
-
-  .step h3 {
+  .fstep h3 {
     margin: 0;
     color: var(--ink);
-    font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem);
+    font-size: clamp(1.625rem, 1.3rem + 1.1vw, 2.375rem);
     font-weight: 300;
     line-height: 1.12;
   }
 
-  .step p {
+  .fstep p {
+    max-width: 30rem;
     margin: 0.6rem 0 0;
     color: var(--text-2);
-    font-size: clamp(1.0625rem, 0.95rem + 0.3vw, 1.25rem);
+    font-size: clamp(1.0625rem, 0.95rem + 0.3vw, 1.1875rem);
     line-height: 1.55;
   }
 
-  /* The picture, at full size, on a photograph of that moment; a soft shade keeps the white cards clear of it */
-  .step__visual {
-    position: relative;
-    isolation: isolate;
-    display: grid;
-    grid-area: visual;
-    place-items: center;
-    width: 100%;
+  .fstep__inline {
+    grid-column: 2;
     max-width: 34rem;
-    min-height: 26rem;
-    padding: 2.25rem 2rem;
-    overflow: hidden;
-    border-radius: var(--radius-lg);
-    background: var(--night-2);
-    box-shadow: var(--shadow-2);
   }
 
-  .step__bg {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
+  .flow__stage {
+    display: none;
   }
 
-  .step__bg::after {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgb(var(--black-rgb) / 0.06), rgb(var(--black-rgb) / 0.32));
-    content: '';
-  }
-
-  .step__bg :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: var(--photo-grade);
-  }
-
-  /* small laptops: the two columns are narrow, so the pictures are drawn a little smaller and keep the step short */
-  @media (min-width: 861px) and (max-width: 1100px) {
-    .step__visual {
-      min-height: 22rem;
-      padding: 1.5rem 1.25rem;
+  /* Desktops with JavaScript: the steps on the start side, each about two thirds of a screen tall; the stage on the
+     end side stays in the middle of the screen while they pass */
+  @media (min-width: 1024px) {
+    .flow[data-ready] .flow__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--s-6);
     }
 
-    .step__visual > :not(.step__bg) {
-      zoom: 0.9;
+    .flow[data-ready] .flow__steps {
+      gap: 0;
+    }
+
+    .flow[data-ready] .fstep {
+      min-height: 62svh;
+      align-content: center;
+    }
+
+    .flow[data-ready] .flow__steps::before,
+    .flow[data-ready] .flow__steps::after {
+      top: 31svh;
+      bottom: calc(31svh);
+    }
+
+    .flow[data-ready] .flow__steps::after {
+      bottom: auto;
+      height: calc(var(--p) * (100% - 62svh));
+    }
+
+    .flow[data-ready] .fstep__num {
+      align-self: center;
+    }
+
+    .flow[data-ready] .fstep:not(.is-on) .fstep__num {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .flow[data-ready] .fstep:not(.is-on) .fstep__text {
+      opacity: 0.35;
+    }
+
+    .flow[data-ready] .fstep__inline {
+      display: none;
+    }
+
+    .flow[data-ready] .flow__stage {
+      position: sticky;
+      top: calc(var(--header-h) + (100svh - var(--header-h) - var(--stage-h)) / 2);
+      --stage-h: min(40rem, 78svh);
+      display: block;
+      align-self: start;
+      height: var(--stage-h);
+      margin-block: calc(31svh - var(--stage-h) / 2);
+    }
+
+    .flow__frame {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(12px) scale(0.985);
+      transition:
+        opacity 0.45s var(--ease),
+        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .flow__frame.is-on {
+      opacity: 1;
+      transform: none;
     }
   }
 
-  /* the picture sits against the line, on its own side */
-  .step--flip .step__visual {
-    justify-self: end;
+  @media (prefers-reduced-motion: reduce) {
+    .fstep__num,
+    .fstep__text,
+    .flow__frame {
+      transition: none;
+    }
   }
 
-  /* 1. The booking card */
-  .cal {
-    width: min(100%, 20rem);
-    padding: 1.4rem;
-    border: 1px solid var(--sand-300);
-    border-radius: 16px;
-    background: var(--paper);
-    color: var(--ink);
-    box-shadow: var(--shadow-2);
-  }
-
-  .cal__head {
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-    margin: 0;
-    font-size: 1.0625rem;
-    font-weight: 600;
-  }
-
-  .cal__head svg,
+  /* Three reassurances */
   .assure svg {
     flex: none;
     width: 1.35rem;
@@ -494,247 +407,10 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     stroke-linejoin: round;
   }
 
-  .cal__day {
-    margin: 1.1rem 0 0;
-    color: var(--steel);
-    font-size: 0.9375rem;
-  }
-
-  .cal__slots {
-    display: grid;
-    gap: 0.55rem;
-    margin: 0.65rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .cal__slots li {
-    padding: 0.65rem 1rem;
-    border: 1px solid var(--sand-600);
-    border-radius: 10px;
-    font: 500 1rem/1.3 var(--mono);
-    text-align: center;
-  }
-
-  .cal__slots li.is-on {
-    border-color: var(--ink);
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  /* 2. The phone counting a shelf */
-  .phone {
-    width: min(100%, 16rem);
-    padding: 0.55rem;
-    border-radius: 2.25rem;
-    background: var(--ink);
-    box-shadow: var(--shadow-2);
-  }
-
-  .phone__screen {
-    position: relative;
-    min-height: 19rem;
-    padding: 2.25rem 1rem 1.25rem;
-    border-radius: 1.8rem;
-    background: var(--paper);
-    color: var(--ink);
-  }
-
-  /* the camera */
-  .phone__screen::before {
-    position: absolute;
-    top: 0.65rem;
-    left: 50%;
-    width: 3.5rem;
-    height: 0.6rem;
-    border-radius: 999px;
-    background: var(--ink);
-    transform: translateX(-50%);
-    content: '';
-  }
-
-  .phone__title {
-    margin: 0;
-    font-weight: 600;
-  }
-
-  .phone__rows {
-    display: grid;
-    gap: 0.5rem;
-    margin: 1rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .phone__rows li {
-    display: grid;
-    gap: 0.5rem;
-    padding: 0.7rem 0.75rem;
-    border: 1px solid var(--sand-300);
-    border-radius: 12px;
-  }
-
-  .phone__rows li.is-on {
-    border-color: var(--ink);
-  }
-
-  .phone__name {
-    font-size: 0.875rem;
-  }
-
-  .phone__ctl {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .phone__ctl b {
-    font: 500 1rem/1 var(--mono);
-  }
-
-  .phone__btn {
-    display: grid;
-    place-items: center;
-    width: 1.9rem;
-    height: 1.9rem;
-    border: 1px solid var(--sand-600);
-    border-radius: 50%;
-    line-height: 1;
-  }
-
-  .phone__rows li.is-on .phone__btn {
-    border-color: var(--ink);
-  }
-
-  /* 3. Three systems joined to Tyll, read only */
-  /* on the photograph, the diagram sits on its own white card */
-  .pos {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto minmax(4rem, 1fr) auto;
-    align-items: stretch;
-    width: 100%;
-    max-width: 30rem;
-    padding: 0.9rem 1.1rem;
-    border-radius: 18px;
-    background: var(--paper);
-    color: var(--ink);
-    box-shadow: var(--shadow-2);
-  }
-
-  .pos__from {
-    display: grid;
-    grid-template-rows: repeat(3, 1fr);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .pos__from li {
-    display: grid;
-    align-items: center;
-    padding-block: 0.4rem;
-  }
-
-  .pos__logo {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    justify-content: center;
-    min-width: 9.5rem;
-    min-height: 3.25rem;
-    padding: 0.6rem 0.9rem;
-    border: 1px solid var(--sand-300);
-    border-radius: 12px;
-    background: var(--paper);
-    box-shadow: var(--shadow-1);
-  }
-
-  /* the makers' own logos, in grey to keep the page black and white */
-  .pos__logo img {
-    width: auto;
-    max-width: 7rem;
-    filter: grayscale(1) contrast(1.1);
-  }
-
-  .pos__logo small {
-    color: var(--steel);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    line-height: 1.1;
-  }
-
-  .pos__lines {
-    position: relative;
-  }
-
-  .pos__lines svg {
-    width: 100%;
-    height: 100%;
-    fill: none;
-    stroke: rgb(var(--ink-rgb) / 0.4);
-    stroke-width: 1.5;
-  }
-
-  .pos__lines path {
-    vector-effect: non-scaling-stroke;
-  }
-
-  :global([dir='rtl']) .pos__lines svg {
-    transform: scaleX(-1);
-  }
-
-  .pos__pill {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    display: inline-flex;
-    gap: 0.4rem;
-    align-items: center;
-    padding: 0.3rem 0.7rem;
-    border: 1px solid var(--sand-600);
-    border-radius: 999px;
-    background: var(--paper);
-    font-size: 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
-    transform: translate(-50%, -50%);
-  }
-
-  .pos__dot {
-    width: 0.4rem;
-    height: 0.4rem;
-    border-radius: 50%;
-    background: var(--ink);
-  }
-
-  .pos__tyll {
-    display: grid;
-    place-items: center;
-    align-self: center;
-    padding: 1.1rem 1.25rem;
-    border-radius: 16px;
-    background: var(--ink);
-    color: var(--paper);
-    box-shadow: var(--shadow-2);
-  }
-
-  .pos__tyll :global(svg) {
-    width: 4.5rem;
-    height: auto;
-  }
-
-  /* 4. The daily report */
-  .list {
-    width: min(100%, 26rem);
-  }
-
-  /* Three reassurances */
   .assure {
     padding-block: var(--intro-gap);
     border-top: 1px solid var(--line);
-    background: var(--sand-200);
+    background: var(--page); /* white, never a tint (26 Nov 2026, the owner) */
     color: var(--ink);
   }
 
@@ -756,6 +432,29 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
   }
 
   /* The closing band */
+  .origin {
+    margin: 0;
+    padding-block: var(--band-y);
+    text-align: center;
+  }
+
+  .origin a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 1.15rem + 0.8vw, 1.875rem);
+    font-weight: 300;
+    text-decoration: underline;
+    text-decoration-color: var(--sand-600);
+    text-underline-offset: 6px;
+  }
+
+  .origin a:hover {
+    text-decoration-color: currentColor;
+  }
+
   .final {
     position: relative;
     overflow: hidden;
@@ -797,15 +496,7 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
     background: var(--mist);
   }
 
-  .final__try {
-    border-color: rgb(var(--on-dark-rgb) / 0.4);
-    background: transparent;
-    color: var(--on-dark);
-  }
 
-  .final__try:hover {
-    border-color: var(--on-dark);
-  }
 
   /* Tablets and phones: one column, the line and the numbers down the start edge */
   /* The title over the photograph */
@@ -820,113 +511,9 @@ const stepPhotos: { src: ImageMetadata; focus: string }[] = [
   }
 
   @media (max-width: 860px) {
-    .steps::before {
-      top: 2rem;
-      bottom: 2rem;
-      inset-inline-start: calc(var(--gut) + 1.25rem);
-    }
-
-    .step__grid,
-    .step--flip .step__grid {
-      grid-template-columns: 2.5rem minmax(0, 1fr);
-      grid-template-areas:
-        'num text'
-        'visual visual';
-      column-gap: 1.25rem;
-      row-gap: var(--s-2);
-      align-items: start;
-    }
-
-    .step__num {
-      width: 2.5rem;
-      height: 2.5rem;
-      font-size: 1.25rem;
-      box-shadow: 0 0 0 6px var(--band);
-    }
-
-    /* The text takes the whole row, beside its number; the words keep their measure. (The second selector outweighs
-       the desktop rule that sends odd steps' text to the line.) */
-    .step .step__text,
-    .step:not(.step--flip) .step__text {
-      justify-self: stretch;
-      width: auto;
-    }
-
-    .step__text > h3,
-    .step__text > p {
-      max-width: 27rem;
-    }
-
-    /* the pictures take the full width, over the line, so nothing inside them is cramped */
-    .step__visual,
-    .step--flip .step__visual {
-      position: relative;
-      justify-self: stretch;
-      max-width: none;
-      min-height: 16rem;
-      padding: 1.5rem 1rem;
-    }
-
-    .step__visual > :not(.step__bg) {
-      zoom: 0.92;
-    }
-
-    @media (max-height: 779px) {
-      .step__visual > :not(.step__bg) {
-        zoom: 0.8;
-      }
-    }
-
     .assure__list {
       grid-template-columns: minmax(0, 1fr);
       justify-content: start;
-    }
-  }
-
-  /* Narrow: the "Read only" label moves under the picture, clear of the logos */
-  @media (max-width: 560px) {
-    .pos {
-      padding-bottom: 2.75rem;
-    }
-
-    .pos__lines {
-      position: static;
-    }
-
-    .pos__pill {
-      top: auto;
-      bottom: 0;
-      transform: translateX(-50%);
-    }
-
-    .pos__logo {
-      flex-direction: column;
-      gap: 0.15rem;
-      min-width: 7.5rem;
-      min-height: 2.75rem;
-      padding: 0.5rem 0.6rem;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .pos {
-      grid-template-columns: auto minmax(2rem, 1fr) auto;
-    }
-
-    .pos__logo {
-      min-width: 0;
-    }
-
-    .pos__logo img {
-      max-width: 5.5rem;
-    }
-
-    .pos__tyll {
-      padding: 0.9rem;
-    }
-
-    .pos__tyll :global(svg) {
-      width: 3.25rem;
     }
   }
 </style>

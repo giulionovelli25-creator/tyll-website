@@ -9,7 +9,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | why-chef.jpg | https://unsplash.com/photos/chef-garnishing-a-small-dish-with-fresh-greens-Bq44jpoeFf4 | Unsplash License (no longer used since 18 Oct 2026) |
 | faq-lounge.jpg | https://unsplash.com/photos/modern-lounge-area-with-contemporary-furniture-and-large-windows-yGEohCLnrl0 | Unsplash License |
 | problem/problem-stock.jpg | https://unsplash.com/photos/a-man-standing-in-a-kitchen-preparing-food-hM6MSq__M0Q (also How it works, behind the POS step, since 11 Nov 2026) | Unsplash License |
-| problem/problem-finance.jpg | https://unsplash.com/photos/a-woman-working-at-a-counter-with-a-computer-HVsYPecRjdw (How it works, behind the daily report, since 11 Nov 2026) | Unsplash License |
+| problem/problem-finance.jpg | https://unsplash.com/photos/a-woman-working-at-a-counter-with-a-computer-HVsYPecRjdw (How it works, behind the morning brief, since 11 Nov 2026) | Unsplash License |
 | problem/problem-forecasting.jpg | https://unsplash.com/photos/a-person-in-black-gloves-putting-food-on-a-plate-Rp0KQRcQfDc | Unsplash License |
 | problem/problem-events.jpg | https://unsplash.com/photos/elegant-banquet-hall-set-for-an-event-with-round-tables-cQxEJoQZ_-E | Unsplash License |
 | problem/problem-rooms.jpg | https://unsplash.com/photos/white-and-black-hallway-with-lights-turned-on-in-the-middle-I1bcW_t4mPU | Unsplash License |
@@ -18,7 +18,7 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | stock-chef.jpg | https://unsplash.com/photos/chef-preparing-foods-0sYLBZjgTTw | Unsplash License |
 | forecast-produce.jpg | https://unsplash.com/photos/person-slicing-parsleys-_SC2X6gphkg | Unsplash License |
 | events-ballroom.jpg | https://www.pexels.com/photo/33914525/ (The Visionary Vows; Events & Staffing, added 2 Nov 2026) | Pexels License (free commercial use, no attribution required) |
-| events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww (the Drinks control tile on the Solutions overview, and since 11 Nov 2026 the large photograph beside the How it works title; empty glasses on a set table, no drinks) | Unsplash License |
+| events-banquet.jpg | https://unsplash.com/photos/man-in-white-top-standing-next-to-table-OB7ol699Iww (the Over pouring tile on the Solutions overview, and since 11 Nov 2026 the large photograph beside the How it works title; empty glasses on a set table, no drinks) | Unsplash License |
 | sales-buffet.jpg | https://unsplash.com/photos/man-pick-some-food-at-buffet-table-ZjEEJ-TjJgs (Sales & Performance opening, added 17 Oct 2026) | Unsplash License |
 | problem/problem-sales-frontdesk.jpg | https://unsplash.com/photos/a-woman-is-standing-at-the-front-desk-of-a-restaurant-wOkEwfChQqM (Sales & Performance, added 17 Oct 2026) | Unsplash License |
 | problem/problem-rooms-housekeeping.jpg | https://unsplash.com/photos/person-holding-white-pillow-5-S_JpT7NGQ (Rooms & Guest Experience, added 17 Oct 2026) | Unsplash License |
@@ -31,11 +31,32 @@ Checked 15–16 Oct 2026. Unsplash photos are under the free Unsplash License (h
 | stock-shelf.jpg | https://www.pexels.com/photo/clear-glass-jar-lot-458796/ (beside the question on the Stock page, added 11 Nov 2026; 2000 × 1170) | Pexels License (free commercial use, no attribution required) |
 | predictions-delivery.jpg | https://www.pexels.com/photo/a-person-carrying-a-basket-with-vegetables-7844010/ (beside the question on the Predictions page, added 11 Nov 2026; 2000 × 1335) | Pexels License (free commercial use, no attribution required) |
 | reconciliation-tickets.jpg | https://www.pexels.com/photo/restaurant-kitchen-order-tickets-management-37539842/ (beside the question on the Reconciliation page, added 11 Nov 2026; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
-| drinks-cola.jpg | https://www.pexels.com/photo/refreshing-glass-of-iced-cola-beverage-37925075/ (beside the question on the Drinks control page, added 11 Nov 2026; a soft drink, no label, no alcohol; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
-| how-count-jars.jpg | https://www.pexels.com/photo/close-up-of-jars-with-dry-food-on-a-rack-10560073/ (How it works, behind the stock count, added 11 Nov 2026; 2000 × 2500) | Pexels License (free commercial use, no attribution required) |
+| drinks-cola.jpg | https://www.pexels.com/photo/refreshing-glass-of-iced-cola-beverage-37925075/ (beside the question on the Over pouring page, added 11 Nov 2026; a soft drink, no label, no alcohol; 2000 × 3000) | Pexels License (free commercial use, no attribution required) |
+| how-count-jars.jpg | https://www.pexels.com/photo/close-up-of-jars-with-dry-food-on-a-rack-10560073/ (How it works, behind the free purchasing report step, added 11 Nov 2026; 2000 × 2500) | Pexels License (free commercial use, no attribution required) |
 | tyll-problem-1.jpg | Tyll's own asset from the current website (tyll.ai/bilder/problem-1.jpg) | Tyll |
 | tyll-stats-2.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-2.jpg) | Tyll |
 | tyll-stats-3.jpg | Tyll's own asset from the current website (tyll.ai/bilder/stats-3.jpg) | Tyll |
+
+Round 5 (25 Nov 2026): three new photographs for the Sustainability page's city cards, all from Pexels (Pexels License: free for commercial use, no attribution required; credited here anyway). Downloaded at 2000 px wide from images.pexels.com. Chosen without visible logos, signage text or alcohol.
+
+| File | Source | Licence |
+| --- | --- | --- |
+| sus-berlin.jpg | https://www.pexels.com/photo/museum-island-28376557/ (Mohammed Shaheen; the TV tower over the Spree, Berlin card) | Pexels License |
+| sus-zurich.jpg | https://www.pexels.com/photo/buildings-by-river-in-zurich-switzerland-4857651/ (Yovan Verma; St. Peter and the Limmat, Zürich card) | Pexels License |
+| sus-dubai.jpg | https://www.pexels.com/photo/skyline-of-dubai-with-burj-khalifa-at-golden-hour-19894545/ (Yassen Kounchev; the skyline at golden hour, Dubai card) | Pexels License |
+| sus-singapore.jpg | https://www.pexels.com/photo/36369743/ (the Singapore River with old shophouses in front of the skyline; About page's Singapore card, added 27 Nov 2026; the top 2600 × 1560 of the original, resized to 2000 × 1200) | Pexels License |
+
+- Sustainability page since round 5: sales-buffet.jpg (hero, a hotel buffet under heat lamps) and the three city photographs above. The two stock bands (predictions-delivery.jpg, waste-bin.jpg) are gone from it; both stay in use on other pages.
+- Icons since round 5: Lucide (https://lucide.dev), ISC licence, the set the demo uses; copied into src/config/icons.ts.
+
+Round 4 (24 Nov 2026), where the existing photos are now used. No new photos were downloaded; each is listed above with its source and licence.
+- Solution pages (the photo beside "Also in …"): stock-shelf.jpg (Stock levels), forecast-produce.jpg (Expiring soon), waste-bin.jpg (Waste and breakage), problem/problem-forecasting.jpg (Predictions), problem/problem-stock.jpg (Automatic ordering), predictions-delivery.jpg (Deliveries and invoices), how-count-jars.jpg (Stock takes and missing stock), drinks-cola.jpg (Over pouring), reconciliation-tickets.jpg (Flagged transactions), revenue-payment.jpg (Revenue and reports), stock-chef.jpg (Suppliers).
+- Solutions page cards: stock-chef.jpg, sales-buffet.jpg (Expiring soon), why-chef.jpg, forecast-produce.jpg, problem/problem-stock.jpg, tyll-problem-1.jpg (Deliveries and invoices), how-count-jars.jpg, events-banquet.jpg (Over pouring), reconciliation-reception.jpg (Flagged transactions).
+- Sustainability page: sales-buffet.jpg (hero), predictions-delivery.jpg (produce arriving) and waste-bin.jpg (kitchen trimmings going in the bin) as the two photo bands.
+
+Round 3 (20 Nov 2026), where the existing photos are now used. No new photos were downloaded; each is listed above with its source and licence.
+- Solutions page cards: stock-chef.jpg (Stock levels), how-count-jars.jpg (Stock takes), why-chef.jpg (Log waste), forecast-produce.jpg (Predictions), problem/problem-stock.jpg (Automatic ordering), predictions-delivery.jpg (Suppliers), revenue-payment.jpg (Revenue), reconciliation-reception.jpg (Bill and cash checks), tyll-problem-1.jpg (Invoices and deliveries, Tyll's own asset).
+- Sustainability page: sales-buffet.jpg (hero), waste-bin.jpg and predictions-delivery.jpg (the two photo bands).
 
 Removed on 16 Oct 2026 (no longer used): stock-bar.jpg (a bar with spirits bottles; not suitable for Gulf-market marketing), forecast-kitchen.jpg, events-dining.jpg, why-kitchen.jpg (replaced by the brighter why-chef.jpg).
 
@@ -68,3 +89,7 @@ Removed on 1 Nov 2026 (no longer used): why-lobby.jpg (the homepage statistic no
 Removed on 8 Nov 2026 (no longer used): story/scene-purchasing.jpg (a morning delivery; the Purchasing stage now shows the dry store). A later-dusk variant of the hotel was generated but came back at another crop and aspect, so the result stage tints the original photograph with CSS instead.
 
 On 11 Nov 2026 the solution pages and How it works first used three stills of the homepage hotel film (how-count.jpg, reconciliation-delivery.jpg, drinks-bar.jpg); the owner found generated pictures too obvious there, so they were replaced the same day by the Pexels photographs above and removed.
+
+## Team photos
+
+`src/assets/team/giulio.jpg`, `fynn.jpg`, `pawel.jpg` and `besher.jpg` (234 × 234, black and white): the founders' own portraits, cut from slide 15 of the owner's Tyll Partner Deck v5 (27 Nov 2026), for the About page.
