@@ -128,9 +128,7 @@ const wave = ribbon(0.6);
   /* A pearl ground with soft light from the photograph's side and a faint silver wave low behind the booking side */
   .book-page {
     position: relative;
-    background:
-      radial-gradient(55% 70% at 85% 30%, rgb(var(--paper-rgb) / 0.9), transparent 70%),
-      linear-gradient(180deg, var(--sand-50) 0%, var(--sand-150) 100%);
+    background: var(--page); /* white, never a tint (26 Nov 2026, the owner) */
     overflow: hidden;
     isolation: isolate;
   }

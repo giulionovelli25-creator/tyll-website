@@ -33,7 +33,9 @@ const socials = [
   <div class="wrap footer__top">
     <div class="footer__brand">
       <a href={home} class="footer__logo" aria-label="Tyll home">
-        <Logo label="Tyll" />
+        <!-- the tick draws, holds and retracts while the footer is on screen, as on the live tyll.ai (back at the
+             owner's request, 26 Nov 2026); full and still without JavaScript or with reduced motion -->
+        <Logo anim="loop" label="Tyll" />
       </a>
       {
         socials.length > 0 && (

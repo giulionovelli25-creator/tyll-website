@@ -122,84 +122,145 @@ for (const lang of locales)
     }
   });
 
-// ── 3. The sustainability page ──
+// ── 3. The sustainability page (rebuilt 26 Nov 2026 to the owner's design canvas) ──
+/** Contrast of an element's text against the solid background behind it (its colour's alpha blended in) */
+const textContrast = (page: Page, selector: string) =>
+  page.locator(selector).first().evaluate((el) => {
+    const rgba = (c: string) => (c.match(/[\d.]+/g) ?? []).map(Number);
+    let bg: number[] = [255, 255, 255];
+    for (let n: Element | null = el; n; n = n.parentElement) {
+      const [r, g, b, a = 1] = rgba(getComputedStyle(n).backgroundColor);
+      if (a > 0.99) {
+        bg = [r, g, b];
+        break;
+      }
+    }
+    const [r, g, b, a = 1] = rgba(getComputedStyle(el).color);
+    const fg = [r, g, b].map((c, i) => c * a + bg[i] * (1 - a));
+    const L = ([x, y, z]: number[]) => {
+      const f = (c: number) => ((c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+      return 0.2126 * f(x) + 0.7152 * f(y) + 0.0722 * f(z);
+    };
+    const [hi, lo] = [L(fg), L(bg)].sort((m, k) => k - m);
+    return (hi + 0.05) / (lo + 0.05);
+  });
+
 for (const lang of locales)
   test.describe(`sustainability ${lang}`, () => {
-    test('hero fills the screen, headline readable after 1 s, real numbers in the HTML', async ({ page, request }, info) => {
-      await page.goto(pages.sustainability[lang]);
-      const hero = await page.locator('section.hero').boundingBox();
-      expect(hero!.height).toBeGreaterThanOrEqual(height(info) - 1);
-      const fit = await page.locator('section.hero img').evaluate((i) => getComputedStyle(i).objectFit);
-      expect(fit).toBe('cover');
-      await page.waitForTimeout(1000);
-      expect(await page.locator('.hero h1').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
-      expect(await contrastBehind(page, '.hero h1'), 'headline').toBeGreaterThanOrEqual(3);
-      expect(await contrastBehind(page, '.hero__text'), 'line').toBeGreaterThanOrEqual(4.5);
+    const c = sustainability[lang];
+    test('five sections in order, every figure and source in the HTML, the meta description, no dashes', async ({ page, request }) => {
       const html = await (await request.get(pages.sustainability[lang])).text();
-      for (const st of sustainability[lang].world.stats) expect(html).toContain(st.figure);
-      expect(html).not.toMatch(/>0(?:[.,]00)?\s?(?:%|bn|Mrd|mld)/);
+      for (const f of c.figures) expect(html, f).toContain(f);
+      for (const url of [c.world.source.url, c.back.source.url]) expect(html).toContain(url);
+      await page.goto(pages.sustainability[lang]);
+      expect(await page.locator('meta[name="description"]').getAttribute('content')).toBe(c.metaDescription);
+      const order = await page.locator('main > section, body > section, section.hero, section.less, section.world, section.back, section.close').evaluateAll((els) =>
+        [...new Set(els)].map((e) => e.className.split(' ')[0]).filter((n) => ['hero', 'less', 'world', 'back', 'close'].includes(n)),
+      );
+      expect(order).toEqual(['hero', 'less', 'world', 'back', 'close']);
+      const text = await page.locator('section.hero, section.less, section.world, section.back, section.close').allInnerTexts();
+      expect(text.join('\n')).not.toMatch(/[—–]|\s-\s/);
+      // the three solution pages, by their own names, each with its drawing; the chain's four steps
+      for (const key of ['waste', 'expiry', 'forecasting'] as const)
+        await expect(page.locator(`.cols a[href="${pages[key][lang]}"]`)).toContainText(solutions[key].name[lang]);
+      await expect(page.locator('.col__art svg.art')).toHaveCount(3);
+      await expect(page.locator('.flow li')).toHaveText(c.less.chain);
+      // the bigger picture is three figures, not a paragraph; the hotels' four figures sit on one board
+      await expect(page.locator('.fact')).toHaveCount(3);
+      await expect(page.locator('.world__sentence')).toHaveCount(0);
+      await expect(page.locator('[data-stat]')).toHaveCount(4);
+      // no calculator and no year buttons (the owner, 27 Nov 2026)
+      await expect(page.locator('input[type="range"], [data-calc], [data-years], section.back button')).toHaveCount(0);
+      // the site's own wave, twice, in the brief's light greens: in the hero and behind the close
+      await expect(page.locator('section.hero svg.wave[data-wave="move"]')).toHaveCount(1);
+      await expect(page.locator('section.close svg.wave[data-wave="move"]')).toHaveCount(1);
+      expect(await page.locator('section.hero svg.wave stop').first().getAttribute('stop-color')).toBe('var(--sage-mist)');
+      expect(await page.locator('section.close svg.wave stop').first().getAttribute('stop-color')).toBe('var(--sage-light)');
+      await expect(page.locator('section.hero svg.tree')).toHaveCount(1);
+      // the footer is night on this page only
+      expect(await page.locator('.footer').evaluate((e) => getComputedStyle(e).backgroundColor)).toBe('rgb(14, 18, 25)');
     });
 
-    test('without JavaScript the final numbers show', async ({ browser }) => {
+    test('the headline holds two lines on tablets and desktops', async ({ page }, info) => {
+      test.skip(width(info) < 768, 'phones wrap');
+      await page.goto(pages.sustainability[lang]);
+      const lines = await page.locator('.hero h1 span').evaluateAll((spans) =>
+        spans.map((s) => Math.round(s.getBoundingClientRect().height / (parseFloat(getComputedStyle(s.parentElement!).fontSize) * 1.04))),
+      );
+      expect(lines).toEqual([1, 1]);
+    });
+
+    test('text contrast of at least 4.5:1', async ({ page }) => {
+      await page.goto(pages.sustainability[lang]);
+      for (const sel of ['.hero .label', '.hero h1', '.hero__text', '.head__text', '.col__link', '.col__text', '.flow__label', '.world .label', '.fact__big', '.fact__unit', '.fact__text', '.world__source', '.stat .label', '.stat__big', '.stat__text', '.split__legend', '.back__source', '.close__text'])
+        expect(await textContrast(page, sel), sel).toBeGreaterThanOrEqual(4.5);
+    });
+
+    test('without JavaScript: every figure and drawing shows, one under another', async ({ browser }) => {
       const ctx = await browser.newContext({ javaScriptEnabled: false });
       const page = await ctx.newPage();
       await page.goto(pages.sustainability[lang]);
-      const text = await page.locator('.world').innerText();
-      for (const st of sustainability[lang].world.stats) expect(text).toContain(st.figure);
-      expect(text).not.toMatch(/\b0(?:[.,]00)?\s?%/);
+      for (const stat of await page.locator('[data-stat]').all()) await expect(stat).toBeVisible();
+      await expect(page.locator('[data-stat]').nth(1).locator('.dot--on')).toHaveCount(14);
+      await expect(page.locator('[data-stat]').nth(2).locator('.dot--on')).toHaveCount(19);
+      await expect(page.locator('[data-stat]').nth(3).locator('.ratio__bar')).toHaveCount(2);
+      await expect(page.locator('.steps')).toBeHidden();
+      await expect(page.locator('.fact [data-count]').first()).toHaveText(c.world.facts[0].big);
       await ctx.close();
     });
 
-    test('the world in three stats that count up to their figures; no calculator', async ({ page }) => {
-      const w = sustainability[lang].world;
+    test('the board holds still and the four hotel figures take turns as the page scrolls', async ({ page }) => {
       await page.goto(pages.sustainability[lang]);
-      await expect(page.locator('#calculator, [data-calc]')).toHaveCount(0);
-      await expect(page.locator('.world h2')).toHaveText(w.title);
-      await expect(page.locator('.world__stat')).toHaveCount(3);
-      await page.locator('.world').evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - 80, behavior: 'instant' }));
-      await expect.poll(() => page.locator('.world [data-count]').allInnerTexts(), { timeout: 6000 }).toEqual(w.stats.map((st) => st.figure));
-      expect(await page.locator('.world').innerText()).not.toMatch(/aviation|Luftfahrt|aviazione|الطيران/);
+      test.skip(!(await page.locator('[data-back]').evaluate((e) => e.classList.contains('is-pinned'))), 'stacked on short screens');
+      const seen: number[] = [];
+      for (const f of [0.05, 0.35, 0.6, 0.92]) {
+        await page.locator('.back__track').evaluate((t, f) => {
+          const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
+          const r = t.getBoundingClientRect();
+          scrollTo({ top: r.top + scrollY - header + (r.height - (innerHeight - header)) * f, behavior: 'instant' });
+        }, f);
+        await page.waitForTimeout(250);
+        seen.push(await page.locator('[data-stat]').evaluateAll((els) => els.findIndex((e) => e.classList.contains('is-current'))));
+      }
+      expect(seen).toEqual([0, 1, 2, 3]);
+      await expect(page.locator('[data-stat]').nth(3)).toHaveClass(/is-on/);
+      await expect(page.locator('.steps li').nth(3)).toHaveClass(/is-current/);
+      // the board stays under the header while it holds
+      const top = await page.locator('.back__stage').evaluate((e) => Math.round(e.getBoundingClientRect().top));
+      expect(top).toBeGreaterThan(40);
+      // the figure ends on its real value after counting up
+      await expect(page.locator('[data-stat]').nth(3).locator('[data-count]')).toHaveText(c.back.three.figure);
     });
 
-    test('what hotels got back: industry figures, said at the top, no timeline; the page is short', async ({ page }, info) => {
-      const c = sustainability[lang].back;
+    test('the bigger picture counts up to its real figures', async ({ page }) => {
       await page.goto(pages.sustainability[lang]);
-      const back = page.locator('.back');
-      await expect(back.locator('h2')).toHaveText(c.title);
-      await expect(back.locator('.back__sub')).toHaveText(c.sub);
-      // the disclaimer sits under the heading, before any figure, at body size
-      const subTop = await back.locator('.back__sub').evaluate((e) => e.getBoundingClientRect().top);
-      const figTop = await back.locator('.back__figure').first().evaluate((e) => e.getBoundingClientRect().top);
-      expect(subTop).toBeLessThan(figTop);
-      expect(await back.locator('.back__sub').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(16);
-      await expect(back.locator('.back__lead .back__figure .visually-hidden')).toHaveText(c.lead.figure);
-      await expect(back.locator('.back__list li')).toHaveCount(3);
-      await expect(back.locator('.back__label')).toHaveText(c.returnsLabel);
-      await expect(back.locator('.back__source a')).toHaveAttribute('href', c.source.url);
-      expect(await page.locator('.timeline, .timeline__step, .timeline__dot').count()).toBe(0);
-      // no Tyll claims in this section
-      expect(await back.innerText()).not.toMatch(/with Tyll|mit Tyll|con Tyll|مع Tyll/);
-      if (width(info) >= 1440) {
-        const screens = await page.evaluate(() => document.documentElement.scrollHeight / innerHeight);
-        info.annotations.push({ type: 'screens', description: `${lang} sustainability ${screens.toFixed(2)} screens at ${width(info)} × ${height(info)}` });
-        expect(screens).toBeLessThanOrEqual(6.6);
-      }
-      expect(await page.locator('.city, .place, [data-wall]').count()).toBe(0);
+      await page.locator('.facts').scrollIntoViewIfNeeded();
+      for (const [i, f] of c.world.facts.entries()) await expect(page.locator('.fact [data-count]').nth(i)).toHaveText(f.big, { timeout: 4000 });
+    });
+
+    test('right to left in Arabic: the words on the right, the tree on the left', async ({ page }, info) => {
+      test.skip(lang !== 'ar' || width(info) < 1000, 'Arabic, side by side');
+      await page.goto(pages.sustainability[lang]);
+      const copy = (await page.locator('.hero__copy').boundingBox())!;
+      const tree = (await page.locator('.hero__tree').boundingBox())!;
+      expect(copy.x).toBeGreaterThan(tree.x);
     });
 
     test.describe('reduced motion', () => {
       test.use({ reducedMotion: 'reduce' });
-      test('nothing moves: figures final, no hero animation, clips stay posters', async ({ page }) => {
+      test('nothing waits to animate and the board does not hold', async ({ page }) => {
         await page.goto(pages.sustainability[lang]);
-        expect(await page.locator('.hero__inner').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
-        await page.locator('.world').scrollIntoViewIfNeeded();
-        await page.waitForTimeout(600);
-        const shown = await page.locator('.world [data-count]').allInnerTexts();
-        const want = sustainability[lang].world.stats.map((st) => st.figure);
-        expect(shown).toEqual(want);
-        await page.locator('.act').scrollIntoViewIfNeeded();
-        await page.waitForTimeout(600);
-        for (const v of await page.locator('[data-clip]').all()) expect(await v.evaluate((x: HTMLVideoElement) => x.paused && !x.src)).toBe(true);
+        await expect(page.locator('[data-sus]')).not.toHaveClass(/is-armed/);
+        await expect(page.locator('[data-back]')).not.toHaveClass(/is-pinned/);
+        for (const stat of await page.locator('[data-stat]').all()) await expect(stat).toBeVisible();
+      });
+      test('the waves stand still', async ({ page }) => {
+        await page.goto(pages.sustainability[lang]);
+        const wave = page.locator('section.close svg.wave path').first();
+        await wave.scrollIntoViewIfNeeded();
+        const before = await wave.getAttribute('d');
+        await page.waitForTimeout(700);
+        expect(await wave.getAttribute('d')).toBe(before);
       });
     });
   });
@@ -236,21 +297,123 @@ for (const lang of locales)
     await expect(page.locator('.origin a')).toHaveAttribute('href', pages.about[lang]);
   });
 
-// About us: the story (minutes, pull line, route), the cities with their sources, the investors email
+// About us (rebuilt 27 Nov 2026 to the owner's brief): seven sections, the team, milestones, places, the investors email
+const aboutData = JSON.parse(fs.readFileSync('tests/tmp/content.json', 'utf8'));
+const aboutCopy = aboutData.about as Record<Locale, import('../src/content/about').AboutCopy>;
+const linkedinOf = aboutData.linkedin as Record<string, string>;
 for (const lang of locales)
-  test(`About us (${lang})`, async ({ page }) => {
-    await page.goto(pages.about[lang]);
-    // the story as an editorial piece: the minutes, the pull line, the route Zürich, Berlin, Dubai
-    await expect(page.locator('.story__num .visually-hidden')).toHaveText('45–60');
-    await expect(page.locator('.story__pull')).toHaveCount(1);
-    await expect(page.locator('.route__stop')).toHaveCount(3);
-    await expect(page.locator('.city')).toHaveCount(3);
-    for (const a of await page.locator('.city__source a').all()) await expect(a).toHaveAttribute('target', '_blank');
-    await expect(page.locator(`.investors a`)).toHaveAttribute('href', `mailto:info@tyll.ai?subject=${encodeURIComponent(dict[lang].home.investors.subject)}`);
-    await expect(page.locator('.ways__more')).toHaveAttribute('href', pages.security[lang]);
-    await page.locator('[data-route]').evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - innerHeight * 0.5, behavior: 'instant' }));
-    await expect.poll(() => page.locator('[data-story] [data-count]').innerText(), { timeout: 6000 }).toBe('45–60');
-    await expect(page.locator('.route__stop').last()).toBeVisible();
+  test.describe(`About us (${lang})`, () => {
+    const c = aboutCopy[lang];
+    test('the seven sections, their content and links', async ({ page }) => {
+      await page.goto(pages.about[lang]);
+      expect(await page.locator('meta[name="description"]').getAttribute('content')).toBe(c.metaDescription);
+      const order = await page.locator('[data-about] > section').evaluateAll((els) => els.map((e) => e.className.split(' ')[0]));
+      expect(order).toEqual(['hero', 'story', 'team', 'miles', 'places', 'ways', 'close']);
+      await expect(page.locator('.hero h1')).toHaveText(c.hero.title);
+      await expect(page.locator('.hero .actions a').first()).toHaveAttribute('href', pages.book[lang]);
+      await expect(page.locator('.hero .actions a').nth(1)).toHaveAttribute('href', '#team');
+      await expect(page.locator('.cred')).toHaveCount(3);
+      await expect(page.locator('.story__num')).toHaveText(`${c.story.from} ${c.story.to} ${c.story.until}`);
+      await expect(page.locator('#team .person')).toHaveCount(4);
+      for (const p of c.team.people) await expect(page.locator('#team .person', { hasText: p.name })).toContainText(p.role);
+      // only the four founders, each with a photo named for them
+      await expect(page.locator('.also')).toHaveCount(0);
+      for (const p of c.team.people) await expect(page.locator(`#team .person img[alt="${p.name}"]`)).toHaveCount(1);
+      // each photo opens that person's LinkedIn in a new tab
+      for (const p of c.team.people) {
+        const link = page.locator(`#team .person a[href="${linkedinOf[p.id]}"]`);
+        await expect(link).toHaveCount(1);
+        await expect(link).toHaveAttribute('target', '_blank');
+        await expect(link).toHaveAttribute('aria-label', new RegExp(p.name));
+      }
+      // the four cities' skyline in the hero, and a photo on every city card, Singapore included
+      await expect(page.locator('.hero__skyline svg.skyline')).toHaveCount(1);
+      // it stands on the credentials' rule and no building touches the words
+      const sky = await page.evaluate(() => {
+        const words = [...document.querySelectorAll('.hero h1, .hero__text, .hero .actions a, .creds .cred')].map((e) => e.getBoundingClientRect());
+        let hits = 0;
+        for (const p of document.querySelectorAll('.hero__skyline .b')) {
+          const b = p.getBoundingClientRect();
+          for (const t of words) if (b.left < t.right && b.right > t.left && b.top < t.bottom && b.bottom > t.top) hits++;
+        }
+        const feet = document.querySelector('.hero__skyline')!.getBoundingClientRect().bottom;
+        return { hits, gap: Math.abs(feet - document.querySelector('.creds')!.getBoundingClientRect().top) };
+      });
+      expect(sky.hits).toBe(0);
+      expect(sky.gap).toBeLessThanOrEqual(1.5);
+      await expect(page.locator('.city img')).toHaveCount(4);
+      // no one is called an EHL graduate or alumnus
+      expect((await page.locator('[data-about]').innerText()).toLowerCase()).not.toMatch(/ehl alumn|alumni ehl|absolvent(en)? der ehl|خريج(و)? ehl/);
+      await expect(page.locator('.step')).toHaveCount(4);
+      await expect(page.locator('.step .diamond:not(.diamond--open)')).toHaveCount(3);
+      await expect(page.locator('.city')).toHaveCount(4);
+      for (const img of await page.locator('.city img').all()) expect((await img.getAttribute('alt'))!.length).toBeGreaterThan(10);
+      await expect(page.locator('.way')).toHaveCount(4);
+      await expect(page.locator('.ways .more')).toHaveAttribute('href', pages.security[lang]);
+      await expect(page.locator('.close__investors a')).toHaveAttribute('href', `mailto:info@tyll.ai?subject=${encodeURIComponent(dict[lang].home.investors.subject)}`);
+      // no "live in hotels", no food waste figures, no dashes
+      const text = (await page.locator('[data-about]').innerText()).toLowerCase();
+      expect(text).not.toMatch(/live in hotels|%|tonnes|tonnen|tonnellate|طن/);
+      expect(text).not.toMatch(/[—–]|\s-\s/);
+      // every link and button at least 44 px tall
+      const short = await page.locator('[data-about] a, [data-about] button').evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().height < 44).map((e) => e.textContent));
+      expect(short).toEqual([]);
+    });
+
+    test('without JavaScript everything shows', async ({ browser }) => {
+      const ctx = await browser.newContext({ javaScriptEnabled: false });
+      const page = await ctx.newPage();
+      await page.goto(pages.about[lang]);
+      const hidden = await page.locator('.reveal').evaluateAll((els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
+      expect(hidden).toBe(0);
+      await ctx.close();
+    });
+
+    test('the milestones follow the scroll: steps light up in order and the line fills', async ({ page }) => {
+      await page.goto(pages.about[lang]);
+      const miles = page.locator('[data-miles]');
+      await expect(miles).toHaveClass(/is-live/);
+      const states = () => page.locator('[data-step]').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.state));
+      const fill = () => page.locator('.track').evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue('--fill')) || 0);
+      // the start of the band, then its end
+      await miles.evaluate((e) => scrollTo({ top: e.getBoundingClientRect().top + scrollY - innerHeight * 0.3, behavior: 'instant' }));
+      await page.waitForTimeout(400);
+      const early = await states();
+      const fillEarly = await fill();
+      await miles.evaluate((e) => scrollTo({ top: e.getBoundingClientRect().bottom + scrollY - innerHeight * 0.75, behavior: 'instant' }));
+      await page.waitForTimeout(400);
+      const late = await states();
+      expect(early.filter((s) => s === 'future').length).toBeGreaterThan(late.filter((s) => s === 'future').length);
+      expect(late[3]).toBe('current');
+      expect(await fill()).toBeGreaterThan(fillEarly);
+    });
+
+    test('parts rise in once as they come into view', async ({ page }) => {
+      await page.goto(pages.about[lang]);
+      await expect(page.locator('[data-about]')).toHaveClass(/is-armed/);
+      const card = page.locator('.way').last();
+      await card.scrollIntoViewIfNeeded();
+      await expect(card).toHaveClass(/is-in/);
+      await expect.poll(() => card.evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+    });
+
+    test.describe('reduced motion', () => {
+      test.use({ reducedMotion: 'reduce' });
+      test('nothing moves', async ({ page }) => {
+        await page.goto(pages.about[lang]);
+        expect(await page.locator('.hero h1').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
+        await expect(page.locator('[data-about]')).not.toHaveClass(/is-armed/);
+        await expect(page.locator('[data-miles]')).not.toHaveClass(/is-live/);
+      });
+    });
+
+    test('right to left in Arabic: the story figure sits on the left', async ({ page }, info) => {
+      test.skip(lang !== 'ar' || width(info) < 1000, 'Arabic, side by side');
+      await page.goto(pages.about[lang]);
+      const copy = (await page.locator('.story__copy').boundingBox())!;
+      const fig = (await page.locator('.story__figure').boundingBox())!;
+      expect(copy.x).toBeGreaterThan(fig.x);
+    });
   });
 
 // Security: the seven details, every system's logo, the filter by kind

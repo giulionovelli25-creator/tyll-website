@@ -1,182 +1,314 @@
-// The About page (round 5, 25 Nov 2026, the owner: "an About Us page at the top, where you talk about where the tool
-// comes from, our story; make it nice and interactive"). Everything here is something the site already says (the
-// founder's nights in Zürich from the company deck, live in Berlin and Zürich, Dubai next, read only, the free pilot)
-// or a sourced fact. The three cities moved here from the Sustainability page; their sources were checked on
-// 25 Nov 2026 (see src/content/sustainability.ts). No customers are named and no team members are invented.
+// The About page (rebuilt 27 Nov 2026 to the owner's brief): hero, the story, the team, the milestones, where we are,
+// how we work, and a dark close. Everything here is the owner's own account of the company: the founder's night shift
+// at the Mandarin Oriental Savoy, Zürich; the four founders, their roles and their LinkedIn; the pilots in Berlin and
+// Zürich; the talks with a hotel group, unnamed; Singapore and Dubai; all four now study at CODE University, Berlin.
+// The founder studied two years at EHL and moved to CODE University without graduating there (the owner, 27 Nov 2026),
+// so nothing may call him an EHL graduate or alumnus. No customers are named, nothing is said to be "live in hotels",
+// and the page carries no food waste statistics (those are on the Sustainability page). Copy rules: no dashes as
+// punctuation; placeholders in square brackets stay visible until the owner gives the fact.
 import type { Locale } from '../i18n/routes';
 
-const BMLEH = 'https://www.bmleh.de/DE/themen/ernaehrung/lebensmittelverschwendung/studie-lebensmittelabfaelle-deutschland.html';
-const SWISS = 'https://www.newsd.admin.ch/newsd/message/attachments/71456.pdf';
-const NATIONAL = 'https://www.thenationalnews.com/news/uae/2024/12/08/green-hospitality-how-hotels-are-embracing-new-ideas-to-reduce-waste';
+export type PersonId = 'giulio' | 'fynn' | 'pawel' | 'besher';
+export type PlaceId = 'zurich' | 'berlin' | 'singapore' | 'dubai';
+type Icon = 'eye' | 'plug' | 'sliders-horizontal' | 'shield-check';
 
-type Source = { name: string; url: string };
-export type CityId = 'berlin' | 'zurich' | 'dubai';
 export type AboutCopy = {
   metaTitle: string;
   metaDescription: string;
-  title: string;
-  text: string;
-  /** The story, told as an editorial piece (26 Nov 2026, the owner: the four-dot timeline read as AI): the minutes the
-      CEO spent every night as one large figure, two short paragraphs around one pull line, then the route Zürich,
-      Berlin, Dubai */
-  story: { title: string; figure: string; caption: string; before: string; pull: string; after: string; route: { city: string; note: string }[] };
-  /** How we work: four things the product keeps to */
-  ways: { title: string; items: { icon: 'eye' | 'plug' | 'sliders-horizontal' | 'shield-check'; title: string; text: string }[]; security: string };
-  cities: { title: string; cards: { id: CityId; place: string; line: string; fact: string; source: Source }[] };
-  investors: { text: string; link: string };
+  hero: { label: string; title: string; text: string; team: string; creds: { label: string; value: string }[] };
+  /** The story: the minutes are written as three parts, so "to" can be set apart */
+  story: { label: string; title: string; text: string; turn: string; from: string; to: string; until: string; caption: string };
+  team: {
+    label: string;
+    title: string;
+    text: string;
+    people: { id: PersonId; name: string; role: string; bio: string }[];
+    /** The label of each photo's link to that person's LinkedIn: {name} is replaced */
+    linkedin: string;
+  };
+  /** The milestones: `done` steps have a filled diamond, the last an outlined one */
+  milestones: { title: string; started: string; steps: { label: string; value: string; done: boolean }[] };
+  places: { title: string; cards: { id: PlaceId; city: string; status: string; line: string; next: boolean; alt: string }[] };
+  ways: { title: string; items: { icon: Icon; title: string; text: string }[]; security: string };
+  close: { title: string; investors: string; investorsLink: string };
+};
+
+const names = { giulio: 'Giulio Novelli', fynn: 'Fynn Kopitz', pawel: 'Pawel Gruca', besher: 'Besher Asfari' } as const;
+/** Each founder's own LinkedIn (27 Nov 2026, the owner) */
+export const linkedin: Record<PersonId, string> = {
+  giulio: 'https://www.linkedin.com/in/giulio-novelli-5bb658261/',
+  fynn: 'https://www.linkedin.com/in/fynnkopitz/',
+  pawel: 'https://www.linkedin.com/in/pawel-gruca-544674324/',
+  besher: 'https://www.linkedin.com/in/besher-asfari-40920a398/',
 };
 
 export const about: Record<Locale, AboutCopy> = {
   en: {
     metaTitle: 'About Tyll: Built From a Hotel Night Shift | Tyll',
-    metaDescription: 'Tyll began with six months of closing a Zürich hotel’s night by hand. Built in Berlin, live in hotels in Berlin and Zürich, and heading to Dubai next.',
-    title: 'Built from six months of closing the night by hand.',
-    text: 'Tyll comes from a hotel night shift in Zürich. It is built in Berlin, live in hotels in Berlin and Zürich, and heading to Dubai.',
+    metaDescription: 'Tyll was built by hoteliers, from six months on a Zürich hotel’s night shift. Meet the team, see our pilots and markets, and learn how we work with hotels.',
+    hero: {
+      label: 'About Tyll',
+      title: 'Built by hoteliers, from the night shift up.',
+      text: 'Tyll began with six months of closing a Zürich hotel’s night by hand. Now it checks every line, every night, so nobody has to.',
+      team: 'Meet the team',
+      creds: [
+        { label: 'Studied at', value: 'EHL, TU Delft and CODE University' },
+        { label: 'Experience at', value: 'Mandarin Oriental Savoy, Zürich' },
+        { label: 'On the ground in', value: 'Zürich and Singapore' },
+      ],
+    },
     story: {
-      title: 'Where Tyll comes from',
-      figure: '45–60',
-      caption: 'minutes, every night, for six months',
-      before: 'That is how long our CEO spent closing the night by hand at a luxury hotel in Zürich, comparing totals.',
-      pull: 'What leaks never shows in a total.',
-      after: 'A bill, a delivery or a bottle could go missing while the totals still matched. So we built the check: Tyll reads the systems a hotel already uses and checks every line, every night.',
-      route: [
-        { city: 'Zürich', note: 'Where it started. Live today.' },
-        { city: 'Berlin', note: 'Where it is built. Live today.' },
-        { city: 'Dubai', note: 'Next.' },
+      label: 'Where Tyll comes from',
+      title: 'It started on the night shift.',
+      text: 'Six months at the Mandarin Oriental Savoy, Zürich. What leaked never showed in a total.',
+      turn: 'That became Tyll.',
+      from: '45',
+      to: 'to',
+      until: '60',
+      caption: 'minutes every night, comparing totals by hand.',
+    },
+    team: {
+      label: 'The team',
+      title: 'Hotel people who build software.',
+      text: 'We have run the operations Tyll fixes: nights at the Mandarin Oriental, stock for consumer brands, a café in Berlin and software for stealth startups. Shaped by EHL and TU Delft, and now all four at CODE University, Berlin.',
+      people: [
+        { id: 'giulio', name: names.giulio, role: 'Founder & CEO', bio: 'Closed the night at the Mandarin Oriental Savoy, Zürich, where Tyll was born. Two years at EHL, a world-leading hospitality school, then CODE University.' },
+        { id: 'fynn', name: names.fynn, role: 'CGO', bio: 'Entrepreneurial roots in Bangkok’s startup scene. Ran inventory and stock for direct-to-consumer brands.' },
+        { id: 'pawel', name: names.pawel, role: 'Co-founder & CTO', bio: 'Software engineer and TU Delft alumnus. Shipped working software for stealth startups in electrical engineering.' },
+        { id: 'besher', name: names.besher, role: 'CSO', bio: 'Leads sales and hotel partnerships at Tyll, from the first call to the pilot. Also owns a café in central Berlin.' },
+      ],
+      linkedin: '{name} on LinkedIn',
+    },
+    milestones: {
+      title: 'From one hotel to the next market.',
+      started: 'Started September 2026',
+      steps: [
+        { label: 'The first build', value: 'Hotel hackathon', done: true },
+        { label: 'Pilots', value: 'Berlin and Zürich', done: true },
+        { label: 'In talks', value: 'A major international hotel group', done: true },
+        { label: 'Next', value: 'Middle East and Southeast Asia', done: false },
+      ],
+    },
+    places: {
+      title: 'Where we are.',
+      cards: [
+        { id: 'zurich', city: 'Zürich', status: 'Started here', line: 'Where the night shift happened. Pilot running.', next: false, alt: 'The old town of Zürich along the Limmat, with the tower of St. Peter’s church.' },
+        { id: 'berlin', city: 'Berlin', status: 'Built here', line: 'Where the product is built. Pilot running.', next: false, alt: 'The Spree in Berlin, with a bridge and the TV tower behind it.' },
+        { id: 'singapore', city: 'Singapore', status: 'On the ground', line: 'Our team for Southeast Asia.', next: false, alt: 'The Singapore River, with old shophouses in front of the city’s towers.' },
+        { id: 'dubai', city: 'Dubai', status: 'Next', line: 'Our next market in the Middle East.', next: true, alt: 'The Dubai skyline with the Burj Khalifa at sunset.' },
       ],
     },
     ways: {
-      title: 'How we work',
+      title: 'How we work.',
       items: [
-        { icon: 'eye', title: 'Read only', text: 'Tyll never changes, deletes or posts anything in your systems.' },
-        { icon: 'plug', title: 'Nothing to install', text: 'No visit and no IT project. Read-only access or a sales export is enough.' },
-        { icon: 'sliders-horizontal', title: 'You decide', text: 'Every order can wait for approval, or go out by itself within the limits you set.' },
-        { icon: 'shield-check', title: 'No result, no fee', text: 'A free 30 day pilot on your own data. If it finds no real money, you pay nothing.' },
+        { icon: 'eye', title: 'Read only', text: 'Never changes, deletes or posts anything in your systems.' },
+        { icon: 'plug', title: 'Nothing to install', text: 'Read only access or a sales export is enough.' },
+        { icon: 'sliders-horizontal', title: 'You decide', text: 'Orders wait for your approval, or go out within your limits.' },
+        { icon: 'shield-check', title: 'No result, no fee', text: 'Free 30 day pilot on your own data. No savings found, nothing to pay.' },
       ],
       security: 'How we keep your data safe →',
     },
-    cities: {
-      title: 'Where we work',
-      cards: [
-        { id: 'berlin', place: 'Berlin', line: 'Where Tyll is built, and live in hotels.', fact: 'About 18% of Germany’s food waste in 2022, 2 of 10.8 million tonnes, came from eating out: restaurants, canteens and catering.', source: { name: 'German Federal Ministry of Food and Agriculture, 2022', url: BMLEH } },
-        { id: 'zurich', place: 'Zürich', line: 'Where our CEO closed the night by hand for six months, and where Tyll is live today.', fact: '“Every kilogram of food that is not wasted also saves 24 francs.” Andreas Züllig, President of HotellerieSuisse, 2022 (translated).', source: { name: 'Swiss food waste agreement, testimonials, 2022', url: SWISS } },
-        { id: 'dubai', place: 'Dubai', line: 'Where we are heading next.', fact: 'The UAE’s food waste initiative Ne’ma estimates AED 6 billion of food is wasted in the Emirates each year.', source: { name: 'The National, 8 December 2024', url: NATIONAL } },
-      ],
-    },
-    investors: { text: 'Investing in hospitality or food-waste software?', link: 'Investor enquiries →' },
+    close: { title: 'See it on your hotel.', investors: 'Investing in hospitality software?', investorsLink: 'Investor enquiries →' },
   },
   de: {
-    metaTitle: 'Über Tyll: Entstanden aus der Nachtschicht im Hotel | Tyll',
-    metaDescription: 'Tyll begann mit sechs Monaten, in denen ein Zürcher Hotel die Nacht von Hand abschloss. Gebaut in Berlin, im Einsatz in Berlin und Zürich, bald in Dubai.',
-    title: 'Entstanden aus sechs Monaten Nachtabschluss von Hand.',
-    text: 'Tyll kommt aus einer Hotel-Nachtschicht in Zürich. Gebaut wird es in Berlin, im Einsatz ist es in Hotels in Berlin und Zürich, als Nächstes geht es nach Dubai.',
+    metaTitle: 'Über Tyll: Aus der Nachtschicht eines Hotels | Tyll',
+    metaDescription: 'Tyll wurde von Hoteliers gebaut, aus sechs Monaten Nachtschicht in einem Zürcher Hotel. Lernen Sie das Team kennen, unsere Piloten, Märkte und Arbeitsweise.',
+    hero: {
+      label: 'Über Tyll',
+      title: 'Von Hoteliers gebaut, aus der Nachtschicht heraus.',
+      text: 'Tyll begann mit sechs Monaten, in denen die Nacht eines Zürcher Hotels von Hand abgeschlossen wurde. Heute prüft es jede Zeile, jede Nacht, damit es niemand mehr tun muss.',
+      team: 'Das Team kennenlernen',
+      creds: [
+        { label: 'Studiert an', value: 'EHL, TU Delft und CODE University' },
+        { label: 'Erfahrung bei', value: 'Mandarin Oriental Savoy, Zürich' },
+        { label: 'Vor Ort in', value: 'Zürich und Singapur' },
+      ],
+    },
     story: {
-      title: 'Woher Tyll kommt',
-      figure: '45–60',
-      caption: 'Minuten, jede Nacht, sechs Monate lang',
-      before: 'So lange hat unser CEO in einem Luxushotel in Zürich die Nacht von Hand abgeschlossen und Summen verglichen.',
-      pull: 'Was verloren geht, zeigt sich nie in einer Summe.',
-      after: 'Eine Rechnung, eine Lieferung oder eine Flasche konnte fehlen, während die Summen stimmten. Also haben wir die Prüfung gebaut: Tyll liest die Systeme, die ein Hotel schon nutzt, und prüft jede Zeile, jede Nacht.',
-      route: [
-        { city: 'Zürich', note: 'Hier hat es angefangen. Heute im Einsatz.' },
-        { city: 'Berlin', note: 'Hier wird es gebaut. Heute im Einsatz.' },
-        { city: 'Dubai', note: 'Als Nächstes.' },
+      label: 'Woher Tyll kommt',
+      title: 'Es begann in der Nachtschicht.',
+      text: 'Sechs Monate im Mandarin Oriental Savoy, Zürich. Was verloren ging, zeigte sich nie in einer Summe.',
+      turn: 'Daraus wurde Tyll.',
+      from: '45',
+      to: 'bis',
+      until: '60',
+      caption: 'Minuten jede Nacht, um Summen von Hand zu vergleichen.',
+    },
+    team: {
+      label: 'Das Team',
+      title: 'Hotelleute, die Software bauen.',
+      text: 'Wir kennen den Alltag, den Tyll in Ordnung bringt, aus eigener Arbeit: Nächte im Mandarin Oriental, Bestände für Konsumgütermarken, ein Café in Berlin und Software für Stealth-Startups. Geprägt von EHL und TU Delft, heute alle vier an der CODE University, Berlin.',
+      people: [
+        { id: 'giulio', name: names.giulio, role: 'Gründer & CEO', bio: 'Nachtabschluss im Mandarin Oriental Savoy, Zürich, wo Tyll entstand. Zwei Jahre an der EHL, einer weltweit führenden Hotelhochschule, dann CODE University.' },
+        { id: 'fynn', name: names.fynn, role: 'CGO', bio: 'Unternehmerische Wurzeln in der Startup-Szene von Bangkok. Hat Lager und Bestände für Direct-to-Consumer-Marken verantwortet.' },
+        { id: 'pawel', name: names.pawel, role: 'Mitgründer & CTO', bio: 'Softwareingenieur und Absolvent der TU Delft. Hat Software für Stealth-Startups in der Elektrotechnik gebaut und ausgeliefert.' },
+        { id: 'besher', name: names.besher, role: 'CSO', bio: 'Verantwortet bei Tyll Vertrieb und Hotelpartnerschaften, vom ersten Gespräch bis zum Pilot. Besitzt außerdem ein Café im Zentrum Berlins.' },
+      ],
+      linkedin: '{name} auf LinkedIn',
+    },
+    milestones: {
+      title: 'Von einem Hotel zum nächsten Markt.',
+      started: 'Gestartet im September 2026',
+      steps: [
+        { label: 'Der erste Prototyp', value: 'Hackathon für Hotels', done: true },
+        { label: 'Piloten', value: 'Berlin und Zürich', done: true },
+        { label: 'Im Gespräch', value: 'Eine große internationale Hotelgruppe', done: true },
+        { label: 'Als Nächstes', value: 'Naher Osten und Südostasien', done: false },
+      ],
+    },
+    places: {
+      title: 'Wo wir sind.',
+      cards: [
+        { id: 'zurich', city: 'Zürich', status: 'Hier gestartet', line: 'Wo die Nachtschicht war. Pilot läuft.', next: false, alt: 'Die Altstadt von Zürich an der Limmat, mit dem Turm von St. Peter.' },
+        { id: 'berlin', city: 'Berlin', status: 'Hier gebaut', line: 'Wo das Produkt entsteht. Pilot läuft.', next: false, alt: 'Die Spree in Berlin, mit einer Brücke und dem Fernsehturm dahinter.' },
+        { id: 'singapore', city: 'Singapur', status: 'Vor Ort', line: 'Unser Team für Südostasien.', next: false, alt: 'Der Singapore River mit alten Ladenhäusern vor den Hochhäusern der Stadt.' },
+        { id: 'dubai', city: 'Dubai', status: 'Als Nächstes', line: 'Unser nächster Markt im Nahen Osten.', next: true, alt: 'Die Skyline von Dubai mit dem Burj Khalifa bei Sonnenuntergang.' },
       ],
     },
     ways: {
-      title: 'Wie wir arbeiten',
+      title: 'So arbeiten wir.',
       items: [
-        { icon: 'eye', title: 'Nur lesend', text: 'Tyll ändert, löscht oder bucht nichts in Ihren Systemen.' },
-        { icon: 'plug', title: 'Nichts zu installieren', text: 'Kein Besuch und kein IT-Projekt. Lesezugriff oder ein Verkaufsexport genügt.' },
-        { icon: 'sliders-horizontal', title: 'Sie entscheiden', text: 'Jede Bestellung kann auf Freigabe warten oder im Rahmen Ihrer Limits von selbst rausgehen.' },
-        { icon: 'shield-check', title: 'Kein Ergebnis, keine Kosten', text: 'Ein kostenloser 30-Tage-Pilot mit Ihren eigenen Daten. Findet er kein echtes Geld, zahlen Sie nichts.' },
+        { icon: 'eye', title: 'Nur lesend', text: 'Ändert, löscht oder bucht nie etwas in Ihren Systemen.' },
+        { icon: 'plug', title: 'Nichts zu installieren', text: 'Ein Lesezugriff oder ein Umsatzexport genügt.' },
+        { icon: 'sliders-horizontal', title: 'Sie entscheiden', text: 'Bestellungen warten auf Ihre Freigabe oder gehen innerhalb Ihrer Grenzen raus.' },
+        { icon: 'shield-check', title: 'Kein Ergebnis, keine Gebühr', text: 'Kostenloser Pilot über 30 Tage mit Ihren eigenen Daten. Keine Einsparung, nichts zu zahlen.' },
       ],
       security: 'So schützen wir Ihre Daten →',
     },
-    cities: {
-      title: 'Wo wir arbeiten',
-      cards: [
-        { id: 'berlin', place: 'Berlin', line: 'Hier wird Tyll gebaut, und hier läuft es in Hotels.', fact: 'Rund 18 % der Lebensmittelabfälle in Deutschland 2022, 2 von 10,8 Millionen Tonnen, kamen aus der Außer-Haus-Verpflegung.', source: { name: 'Bundesministerium für Landwirtschaft, Ernährung und Heimat, 2022', url: BMLEH } },
-        { id: 'zurich', place: 'Zürich', line: 'Hier hat unser CEO sechs Monate lang die Nacht von Hand abgeschlossen, und hier läuft Tyll heute.', fact: '„… spart auch 24 Franken pro Kilogramm Lebensmittel, welches nicht verschwendet wurde.“ Andreas Züllig, Präsident von HotellerieSuisse, 2022.', source: { name: 'Branchenvereinbarung Food Waste, Testimonials, 2022', url: SWISS } },
-        { id: 'dubai', place: 'Dubai', line: 'Hierhin gehen wir als Nächstes.', fact: 'Die Initiative Ne’ma der VAE schätzt, dass in den Emiraten jedes Jahr Lebensmittel im Wert von 6 Milliarden AED verschwendet werden.', source: { name: 'The National, 8. Dezember 2024', url: NATIONAL } },
-      ],
-    },
-    investors: { text: 'Sie investieren in Software für Hotellerie oder gegen Lebensmittelabfall?', link: 'Anfragen von Investoren →' },
+    close: { title: 'Sehen Sie es in Ihrem Hotel.', investors: 'Sie investieren in Software für die Hotellerie?', investorsLink: 'Anfragen von Investoren →' },
   },
   it: {
     metaTitle: 'Chi siamo: Tyll nasce da un turno di notte in hotel | Tyll',
-    metaDescription: 'Tyll è nato da sei mesi passati a chiudere a mano la notte di un hotel di Zurigo. Costruito a Berlino, attivo a Berlino e Zurigo, presto a Dubai.',
-    title: 'Nato da sei mesi passati a chiudere la notte a mano.',
-    text: 'Tyll nasce da un turno di notte in un hotel di Zurigo. Lo costruiamo a Berlino, è attivo in hotel a Berlino e Zurigo e la prossima tappa è Dubai.',
+    metaDescription: 'Tyll è stato costruito da albergatori, da sei mesi di turni di notte in un hotel di Zurigo. Conosci il team, i nostri piloti, i mercati e il nostro metodo.',
+    hero: {
+      label: 'Chi siamo',
+      title: 'Costruito da albergatori, a partire dal turno di notte.',
+      text: 'Tyll è nato da sei mesi passati a chiudere a mano la notte di un hotel di Zurigo. Oggi controlla ogni riga, ogni notte, così nessuno deve più farlo.',
+      team: 'Conosci il team',
+      creds: [
+        { label: 'Formazione', value: 'EHL, TU Delft e CODE University' },
+        { label: 'Esperienza al', value: 'Mandarin Oriental Savoy, Zurigo' },
+        { label: 'Presenti a', value: 'Zurigo e Singapore' },
+      ],
+    },
     story: {
-      title: 'Da dove nasce Tyll',
-      figure: '45–60',
-      caption: 'minuti, ogni notte, per sei mesi',
-      before: 'Tanto impiegava il nostro CEO per chiudere a mano la notte in un hotel di lusso a Zurigo, confrontando i totali.',
-      pull: 'Ciò che si perde non si vede mai in un totale.',
-      after: 'Un conto, una consegna o una bottiglia potevano sparire mentre i totali tornavano. Così abbiamo costruito il controllo: Tyll legge i sistemi che l’hotel usa già e controlla ogni riga, ogni notte.',
-      route: [
-        { city: 'Zurigo', note: 'Dove tutto è iniziato. Attivo oggi.' },
-        { city: 'Berlino', note: 'Dove lo costruiamo. Attivo oggi.' },
-        { city: 'Dubai', note: 'La prossima.' },
+      label: 'Da dove viene Tyll',
+      title: 'È iniziato con il turno di notte.',
+      text: 'Sei mesi al Mandarin Oriental Savoy di Zurigo. Ciò che si perdeva non compariva mai in un totale.',
+      turn: 'Così è nato Tyll.',
+      from: '45',
+      to: 'a',
+      until: '60',
+      caption: 'minuti ogni notte, a confrontare i totali a mano.',
+    },
+    team: {
+      label: 'Il team',
+      title: 'Persone d’albergo che costruiscono software.',
+      text: 'Abbiamo gestito in prima persona ciò che Tyll sistema: notti al Mandarin Oriental, scorte per marchi di consumo, un caffè a Berlino e software per startup in stealth. Formati tra EHL e TU Delft, oggi tutti e quattro alla CODE University di Berlino.',
+      people: [
+        { id: 'giulio', name: names.giulio, role: 'Fondatore & CEO', bio: 'Ha chiuso le notti al Mandarin Oriental Savoy di Zurigo, dove è nato Tyll. Due anni all’EHL, scuola di ospitalità di livello mondiale, poi la CODE University.' },
+        { id: 'fynn', name: names.fynn, role: 'CGO', bio: 'Radici imprenditoriali nella scena startup di Bangkok. Ha guidato inventario e scorte per marchi direct-to-consumer.' },
+        { id: 'pawel', name: names.pawel, role: 'Cofondatore & CTO', bio: 'Ingegnere del software e alumnus della TU Delft. Ha rilasciato software funzionante per startup in stealth nell’ingegneria elettrica.' },
+        { id: 'besher', name: names.besher, role: 'CSO', bio: 'Guida vendite e partnership con gli hotel per Tyll, dalla prima chiamata al pilota. Possiede anche un caffè nel centro di Berlino.' },
+      ],
+      linkedin: '{name} su LinkedIn',
+    },
+    milestones: {
+      title: 'Da un hotel al prossimo mercato.',
+      started: 'Iniziato a settembre 2026',
+      steps: [
+        { label: 'Il primo prototipo', value: 'Hackathon per hotel', done: true },
+        { label: 'Progetti pilota', value: 'Berlino e Zurigo', done: true },
+        { label: 'In trattativa', value: 'Un grande gruppo alberghiero internazionale', done: true },
+        { label: 'Prossimo passo', value: 'Medio Oriente e Asia sudorientale', done: false },
+      ],
+    },
+    places: {
+      title: 'Dove siamo.',
+      cards: [
+        { id: 'zurich', city: 'Zurigo', status: 'Qui è iniziato', line: 'Dove c’era il turno di notte. Pilota in corso.', next: false, alt: 'La città vecchia di Zurigo lungo la Limmat, con il campanile di San Pietro.' },
+        { id: 'berlin', city: 'Berlino', status: 'Qui lo costruiamo', line: 'Dove nasce il prodotto. Pilota in corso.', next: false, alt: 'La Sprea a Berlino, con un ponte e la torre della televisione sullo sfondo.' },
+        { id: 'singapore', city: 'Singapore', status: 'Sul posto', line: 'Il nostro team per l’Asia sudorientale.', next: false, alt: 'Il Singapore River, con le vecchie shophouse davanti ai grattacieli della città.' },
+        { id: 'dubai', city: 'Dubai', status: 'Prossimo', line: 'Il nostro prossimo mercato in Medio Oriente.', next: true, alt: 'Lo skyline di Dubai con il Burj Khalifa al tramonto.' },
       ],
     },
     ways: {
-      title: 'Come lavoriamo',
+      title: 'Come lavoriamo.',
       items: [
-        { icon: 'eye', title: 'Sola lettura', text: 'Tyll non cambia, non cancella e non registra nulla nei tuoi sistemi.' },
-        { icon: 'plug', title: 'Niente da installare', text: 'Nessuna visita e nessun progetto IT. Basta un accesso in sola lettura o un export delle vendite.' },
-        { icon: 'sliders-horizontal', title: 'Decidi tu', text: 'Ogni ordine può attendere l’approvazione o partire da solo entro i limiti che imposti.' },
-        { icon: 'shield-check', title: 'Nessun risultato, nessun costo', text: 'Un pilota gratuito di 30 giorni sui tuoi dati. Se non trova soldi veri, non paghi nulla.' },
+        { icon: 'eye', title: 'Solo lettura', text: 'Non modifica, cancella né registra nulla nei tuoi sistemi.' },
+        { icon: 'plug', title: 'Niente da installare', text: 'Basta un accesso in sola lettura o un export delle vendite.' },
+        { icon: 'sliders-horizontal', title: 'Decidi tu', text: 'Gli ordini aspettano la tua approvazione o partono entro i tuoi limiti.' },
+        { icon: 'shield-check', title: 'Nessun risultato, nessun costo', text: 'Pilota gratuito di 30 giorni sui tuoi dati. Nessun risparmio trovato, niente da pagare.' },
       ],
       security: 'Come proteggiamo i tuoi dati →',
     },
-    cities: {
-      title: 'Dove lavoriamo',
-      cards: [
-        { id: 'berlin', place: 'Berlino', line: 'Dove nasce Tyll, ed è attivo in hotel.', fact: 'Circa il 18% dello spreco alimentare in Germania nel 2022, 2 su 10,8 milioni di tonnellate, veniva dalla ristorazione fuori casa.', source: { name: 'Ministero federale tedesco dell’Alimentazione, 2022', url: BMLEH } },
-        { id: 'zurich', place: 'Zurigo', line: 'Dove il nostro CEO ha chiuso la notte a mano per sei mesi, e dove oggi Tyll è attivo.', fact: '«Ogni chilogrammo di cibo non sprecato fa risparmiare anche 24 franchi.» Andreas Züllig, presidente di HotellerieSuisse, 2022 (tradotto).', source: { name: 'Accordo svizzero contro lo spreco alimentare, testimonianze, 2022', url: SWISS } },
-        { id: 'dubai', place: 'Dubai', line: 'Dove andremo dopo.', fact: 'L’iniziativa degli Emirati contro lo spreco, Ne’ma, stima che ogni anno negli Emirati si sprechi cibo per 6 miliardi di AED.', source: { name: 'The National, 8 dicembre 2024', url: NATIONAL } },
-      ],
-    },
-    investors: { text: 'Investi in software per l’ospitalità o contro lo spreco alimentare?', link: 'Richieste degli investitori →' },
+    close: { title: 'Guardalo sul tuo hotel.', investors: 'Investi in software per l’ospitalità?', investorsLink: 'Richieste degli investitori →' },
   },
   ar: {
-    metaTitle: 'من نحن: Tyll وُلد من مناوبة ليلية في فندق | Tyll',
-    metaDescription: 'بدأ Tyll بستة أشهر من إغلاق الحسابات الليلية يدويًا في فندق في زيورخ. يُبنى في برلين، ويعمل في فنادق برلين وزيورخ، ووجهته التالية دبي في الإمارات.',
-    title: 'وُلد من ستة أشهر من إغلاق الحسابات الليلية يدويًا.',
-    text: 'جاء Tyll من مناوبة ليلية في فندق في زيورخ. يُبنى في برلين، ويعمل في فنادق في برلين وزيورخ، ووجهته التالية دبي.',
+    metaTitle: 'عن Tyll: وُلد من مناوبة ليلية في فندق | Tyll',
+    metaDescription: 'بنى Tyll أهلُ فنادق، انطلاقًا من ستة أشهر من المناوبة الليلية في فندق في زيورخ. تعرّف على الفريق وتجاربنا وأسواقنا وطريقة عملنا مع الفنادق خطوة بخطوة.',
+    hero: {
+      label: 'عن Tyll',
+      title: 'بناه أهل الفنادق، انطلاقًا من المناوبة الليلية.',
+      text: 'بدأ Tyll بستة أشهر من إغلاق ليلة فندق في زيورخ يدويًا. اليوم يدقق في كل بند، كل ليلة، كي لا يضطر أحد إلى ذلك.',
+      team: 'تعرّف على الفريق',
+      creds: [
+        { label: 'الدراسة في', value: 'EHL وTU Delft وCODE University' },
+        { label: 'خبرة في', value: 'ماندارين أورينتال سافوي، زيورخ' },
+        { label: 'على الأرض في', value: 'زيورخ وسنغافورة' },
+      ],
+    },
     story: {
-      title: 'من أين جاء Tyll',
-      figure: '45–60',
-      caption: 'دقيقة كل ليلة، لمدة ستة أشهر',
-      before: 'هذا ما كان يقضيه رئيسنا التنفيذي في إغلاق الحسابات الليلية يدويًا في فندق فاخر في زيورخ، يقارن الإجماليات.',
-      pull: 'ما يتسرّب لا يظهر أبدًا في الإجمالي.',
-      after: 'قد تختفي فاتورة أو توريد أو زجاجة بينما تتطابق الإجماليات. فبنينا أداة المراجعة: يقرأ Tyll الأنظمة التي يستخدمها الفندق أصلًا ويراجع كل سطر، كل ليلة.',
-      route: [
-        { city: 'زيورخ', note: 'هنا بدأت القصة. يعمل اليوم.' },
-        { city: 'برلين', note: 'هنا يُبنى. يعمل اليوم.' },
-        { city: 'دبي', note: 'التالية.' },
+      label: 'من أين جاء Tyll',
+      title: 'بدأ كل شيء في المناوبة الليلية.',
+      text: 'ستة أشهر في ماندارين أورينتال سافوي، زيورخ. ما كان يتسرب لم يظهر قط في أي مجموع.',
+      turn: 'ومن هنا وُلد Tyll.',
+      from: '45',
+      to: 'إلى',
+      until: '60',
+      caption: 'دقيقة كل ليلة، لمقارنة المجاميع يدويًا.',
+    },
+    team: {
+      label: 'الفريق',
+      title: 'أهل فنادق يبنون البرمجيات.',
+      text: 'أدرنا بأنفسنا ما يصلحه Tyll: ليالٍ في ماندارين أورينتال، ومخزون لعلامات استهلاكية، ومقهى في برلين، وبرمجيات لشركات ناشئة غير معلنة. تكوّنّا بين EHL وTU Delft، ونحن الأربعة اليوم في CODE University في برلين.',
+      people: [
+        { id: 'giulio', name: names.giulio, role: 'المؤسس وCEO', bio: 'أغلق الليالي في ماندارين أورينتال سافوي، زيورخ، حيث وُلد Tyll. عامان في EHL، إحدى أبرز مدارس الضيافة عالميًا، ثم CODE University.' },
+        { id: 'fynn', name: names.fynn, role: 'CGO', bio: 'جذور ريادية في مشهد الشركات الناشئة في بانكوك. أدار المخزون والبضائع لعلامات تجارية تبيع مباشرة للمستهلك.' },
+        { id: 'pawel', name: names.pawel, role: 'شريك مؤسس وCTO', bio: 'مهندس برمجيات وخريج TU Delft. أطلق برمجيات عاملة لشركات ناشئة غير معلنة في مجال الهندسة الكهربائية.' },
+        { id: 'besher', name: names.besher, role: 'CSO', bio: 'يقود مبيعات Tyll وشراكاته مع الفنادق، من أول مكالمة حتى التجربة. ويملك أيضًا مقهى في وسط برلين.' },
+      ],
+      linkedin: '{name} على LinkedIn',
+    },
+    milestones: {
+      title: 'من فندق واحد إلى السوق التالية.',
+      started: 'بدأنا في سبتمبر 2026',
+      steps: [
+        { label: 'النسخة الأولى', value: 'هاكاثون للفنادق', done: true },
+        { label: 'التجارب', value: 'برلين وزيورخ', done: true },
+        { label: 'في محادثات', value: 'مع مجموعة فندقية دولية كبرى', done: true },
+        { label: 'التالي', value: 'الشرق الأوسط وجنوب شرق آسيا', done: false },
+      ],
+    },
+    places: {
+      title: 'أين نحن.',
+      cards: [
+        { id: 'zurich', city: 'زيورخ', status: 'هنا بدأنا', line: 'حيث كانت المناوبة الليلية. التجربة جارية.', next: false, alt: 'البلدة القديمة في زيورخ على نهر ليمات، مع برج كنيسة القديس بطرس.' },
+        { id: 'berlin', city: 'برلين', status: 'هنا نبني', line: 'حيث يُبنى المنتج. التجربة جارية.', next: false, alt: 'نهر شبريه في برلين، مع جسر وبرج التلفزيون خلفه.' },
+        { id: 'singapore', city: 'سنغافورة', status: 'على الأرض', line: 'فريقنا لجنوب شرق آسيا.', next: false, alt: 'نهر سنغافورة، مع البيوت التجارية القديمة أمام أبراج المدينة.' },
+        { id: 'dubai', city: 'دبي', status: 'التالي', line: 'سوقنا التالية في الشرق الأوسط.', next: true, alt: 'أفق دبي مع برج خليفة عند الغروب.' },
       ],
     },
     ways: {
-      title: 'كيف نعمل',
+      title: 'كيف نعمل.',
       items: [
-        { icon: 'eye', title: 'للقراءة فقط', text: 'لا يغيّر Tyll ولا يحذف ولا يسجّل أي شيء في أنظمتك.' },
-        { icon: 'plug', title: 'لا شيء لتثبيته', text: 'لا زيارة ولا مشروع تقنية معلومات. يكفي وصول للقراءة فقط أو تصدير للمبيعات.' },
-        { icon: 'sliders-horizontal', title: 'القرار لك', text: 'يمكن لكل طلب أن ينتظر الموافقة، أو أن يُرسل تلقائيًا ضمن الحدود التي تضعها.' },
-        { icon: 'shield-check', title: 'لا نتيجة، لا رسوم', text: 'تجربة مجانية لمدة 30 يومًا على بياناتك. إذا لم تجد أموالًا حقيقية، فلن تدفع شيئًا.' },
+        { icon: 'eye', title: 'قراءة فقط', text: 'لا يغيّر ولا يحذف ولا ينشر أي شيء في أنظمتك.' },
+        { icon: 'plug', title: 'لا شيء لتثبيته', text: 'يكفي وصول للقراءة فقط أو تصدير للمبيعات.' },
+        { icon: 'sliders-horizontal', title: 'القرار لك', text: 'تنتظر الطلبات موافقتك، أو تُرسل ضمن الحدود التي تضعها.' },
+        { icon: 'shield-check', title: 'لا نتيجة، لا رسوم', text: 'تجربة مجانية لمدة 30 يومًا على بياناتك. إن لم نجد توفيرًا، فلا تدفع شيئًا.' },
       ],
       security: 'كيف نحمي بياناتك ←',
     },
-    cities: {
-      title: 'أين نعمل',
-      cards: [
-        { id: 'dubai', place: 'دبي', line: 'وجهتنا التالية.', fact: 'تقدّر مبادرة «نعمة» الإماراتية أن طعامًا بقيمة 6 مليارات درهم يُهدر في الإمارات كل عام.', source: { name: 'The National، 8 ديسمبر 2024', url: NATIONAL } },
-        { id: 'berlin', place: 'برلين', line: 'حيث يُبنى Tyll، ويعمل في الفنادق.', fact: 'نحو 18% من هدر الطعام في ألمانيا عام 2022، أي 2 من 10.8 مليون طن، جاء من الأكل خارج المنزل.', source: { name: 'وزارة الأغذية والزراعة الألمانية، 2022', url: BMLEH } },
-        { id: 'zurich', place: 'زيورخ', line: 'حيث أغلق رئيسنا التنفيذي الحسابات الليلية يدويًا لستة أشهر، وحيث يعمل Tyll اليوم.', fact: '«كل كيلوغرام من الطعام لا يُهدر يوفّر أيضًا 24 فرنكًا.» أندرياس تسوليغ، رئيس HotellerieSuisse، 2022 (مترجم).', source: { name: 'الاتفاق السويسري لمكافحة هدر الطعام، شهادات، 2022', url: SWISS } },
-      ],
-    },
-    investors: { text: 'هل تستثمر في برمجيات الضيافة أو الحد من هدر الطعام؟', link: 'استفسارات المستثمرين ←' },
+    close: { title: 'شاهده في فندقك.', investors: 'تستثمر في برمجيات الضيافة؟', investorsLink: 'استفسارات المستثمرين ←' },
   },
 };

@@ -44,6 +44,7 @@ Round 5 (25 Nov 2026): three new photographs for the Sustainability page's city 
 | sus-berlin.jpg | https://www.pexels.com/photo/museum-island-28376557/ (Mohammed Shaheen; the TV tower over the Spree, Berlin card) | Pexels License |
 | sus-zurich.jpg | https://www.pexels.com/photo/buildings-by-river-in-zurich-switzerland-4857651/ (Yovan Verma; St. Peter and the Limmat, Zürich card) | Pexels License |
 | sus-dubai.jpg | https://www.pexels.com/photo/skyline-of-dubai-with-burj-khalifa-at-golden-hour-19894545/ (Yassen Kounchev; the skyline at golden hour, Dubai card) | Pexels License |
+| sus-singapore.jpg | https://www.pexels.com/photo/36369743/ (the Singapore River with old shophouses in front of the skyline; About page's Singapore card, added 27 Nov 2026; the top 2600 × 1560 of the original, resized to 2000 × 1200) | Pexels License |
 
 - Sustainability page since round 5: sales-buffet.jpg (hero, a hotel buffet under heat lamps) and the three city photographs above. The two stock bands (predictions-delivery.jpg, waste-bin.jpg) are gone from it; both stay in use on other pages.
 - Icons since round 5: Lucide (https://lucide.dev), ISC licence, the set the demo uses; copied into src/config/icons.ts.
@@ -88,3 +89,7 @@ Removed on 1 Nov 2026 (no longer used): why-lobby.jpg (the homepage statistic no
 Removed on 8 Nov 2026 (no longer used): story/scene-purchasing.jpg (a morning delivery; the Purchasing stage now shows the dry store). A later-dusk variant of the hotel was generated but came back at another crop and aspect, so the result stage tints the original photograph with CSS instead.
 
 On 11 Nov 2026 the solution pages and How it works first used three stills of the homepage hotel film (how-count.jpg, reconciliation-delivery.jpg, drinks-bar.jpg); the owner found generated pictures too obvious there, so they were replaced the same day by the Pexels photographs above and removed.
+
+## Team photos
+
+`src/assets/team/giulio.jpg`, `fynn.jpg`, `pawel.jpg` and `besher.jpg` (234 × 234, black and white): the founders' own portraits, cut from slide 15 of the owner's Tyll Partner Deck v5 (27 Nov 2026), for the About page.

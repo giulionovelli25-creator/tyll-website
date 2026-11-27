@@ -126,6 +126,11 @@
   --cloud: #fafbfc;
   --accent: #3b3f9c;
   --accent-soft: #ececf8;
+  /* The About page (27 Nov 2026, the owner's brief): the indigo's hover, lilac as its accent on dark (6.9:1 on the
+     band), and the milestone band's deep indigo */
+  --accent-hover: #2a2d73;
+  --lilac: #a5a8f0;
+  --indigo-night: #1c1e4a;
   --on-dark: #f4f5f7;
   --on-dark-muted: rgb(var(--on-dark-rgb) / 0.74);
   --black: #000000;
@@ -181,6 +186,19 @@
      film's progress. 5.5:1 on white. Never on large areas. */
   --demo-teal-rgb: 15 94 88;
   --demo-teal-wash: #f0f6f5;
+  /* The Sustainability page (26 Nov 2026, the owner's design): its dark sections are a forest tinted night, sage is
+     its accent on dark (8.5:1 on the forest night), and the drawn tree's leaves use the two leaf greens. Only there. */
+  --forest-night: #0d1613;
+  --sage: #9db8ab;
+  --sage-light: #c8d6cf;
+  --sage-leaf: #5f8f7c;
+  --forest-leaf: #2c4a40;
+  --teal-hatch: #4f8f86;
+  /* (27 Nov 2026, the owner's second Sustainability brief) the teal's hover on light, the hero wave's light green, and
+     the outline of the one empty leaf on dark */
+  --teal-hover: #0a403c;
+  --sage-mist: #b9d0c4;
+  --leaf-faded: #9299a3;
   /* Each solution's own colour (11 Nov 2026, the owner's brief), taken from the colour that feature has in the
      product (Demo-Tyll, MODULE_TONE): Log waste and Stock teal, Predictions violet, Revenue and Reconciliation blue,
      Over pouring rose. For the solution's name, icons, one word of its headline and a soft tinted block; never on
@@ -647,16 +665,16 @@ html[lang='ar'] .problem__text {
   }
 }
 
-/* "Coming soon": amber like the review marks in the product (menu, overview, solution pages) */
+/* "Coming soon": a white pill with a grey line (no cream or amber anywhere, the owner, 27 Nov 2026) */
 .badge-soon {
   display: inline-flex;
   flex: none;
   align-items: center;
   padding: 0.16rem 0.6rem;
-  border: 1px solid var(--amber-200);
+  border: 1px solid var(--silver);
   border-radius: var(--pill);
-  background: var(--amber-100);
-  color: var(--amber-700);
+  background: var(--paper);
+  color: var(--graphite);
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.4;

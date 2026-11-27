@@ -1,0 +1,197 @@
+---
+// The About page's skyline (27 Nov 2026, the owner: "like the illustration in the pitch deck of Berlin's skyline, but
+// all the cities we operate in"; then "a tiny bit more designed, so you know what the buildings are"): one line
+// drawing on one baseline, in the deck's manner (flat shapes, fine outlines, a pale solid fill, a few lighter details),
+// from left to right:
+// Zürich: old town houses, the Grossmünster (twin towers, octagonal belfries, domed caps, clocks), the Fraumünster's
+//   spire, St. Peter (the great clock);
+// Berlin: the Brandenburg Gate (columns, quadriga), the TV tower (sphere with its window band, antenna), the Reichstag
+//   (corner towers, portico, glass dome);
+// Singapore: the Esplanade's two domes, two Supertrees, Marina Bay Sands (three towers, the SkyPark), the ArtScience
+//   lotus;
+// Dubai: the Burj Al Arab (sail, helipad), the Dubai Frame, the Burj Khalifa (setbacks, spire), the Emirates Towers.
+// Decorative. In the indigo accent; it draws itself once on load, city by city (--c), and simply shows under reduced
+// motion. It has no ground line of its own: the box ends exactly at the buildings' feet (y 392), so the page stands it
+// on a rule (the About hero's credentials line).
+const gateCols = [264, 286, 308, 330, 352, 374];
+// three Marina Bay Sands towers, each a little narrower at the top; floor lines across them
+const mbs = [658, 694, 730];
+---
+
+<svg class="skyline" viewBox="0 50 1000 342" aria-hidden="true" focusable="false">
+
+  <!-- Zürich -->
+  <g style="--c:0">
+    <path class="b" pathLength="1" d="M8 392V336H40V392" />
+    <path class="b" pathLength="1" d="M6 336L24 314L42 336" />
+    <path class="d" pathLength="1" d="M15 346h6v8h-6zM27 346h6v8h-6zM15 362h6v8h-6zM27 362h6v8h-6z" />
+    <path class="b" pathLength="1" d="M44 392V346H74V392" />
+    <path class="b" pathLength="1" d="M42 346L59 326L76 346" />
+    <path class="d" pathLength="1" d="M51 356h5v7h-5zM62 356h5v7h-5zM51 371h5v7h-5zM62 371h5v7h-5z" />
+
+    <path class="b" pathLength="1" d="M84 392V318H174V392" />
+    <path class="d" pathLength="1" d="M122 392V376Q129 366 136 376V392" />
+    <circle class="d" pathLength="1" cx="129" cy="340" r="7" />
+    <path class="b" pathLength="1" d="M90 318V250H114V318" />
+    <path class="b" pathLength="1" d="M92 250V222H112V250" />
+    <path class="b" pathLength="1" d="M92 222Q102 200 112 222" />
+    <path class="b" pathLength="1" d="M100 207h4v-8h-4z" />
+    <path class="d" pathLength="1" d="M102 199V188M96 246V234Q99 228 102 234V246M104 246V234Q107 228 110 234V246" />
+    <circle class="d" pathLength="1" cx="102" cy="282" r="6" />
+    <path class="b" pathLength="1" d="M144 318V250H168V318" />
+    <path class="b" pathLength="1" d="M146 250V222H166V250" />
+    <path class="b" pathLength="1" d="M146 222Q156 200 166 222" />
+    <path class="b" pathLength="1" d="M154 207h4v-8h-4z" />
+    <path class="d" pathLength="1" d="M156 199V188M150 246V234Q153 228 156 234V246M158 246V234Q161 228 164 234V246" />
+    <circle class="d" pathLength="1" cx="156" cy="282" r="6" />
+
+    <path class="b" pathLength="1" d="M186 392V258H204V392" />
+    <path class="b" pathLength="1" d="M186 258L195 170L204 258" />
+    <circle class="d" pathLength="1" cx="195" cy="272" r="5" />
+    <path class="d" pathLength="1" d="M195 170V158M186 258L189 250M204 258L201 250" />
+
+    <path class="b" pathLength="1" d="M214 392V262H242V392" />
+    <path class="b" pathLength="1" d="M214 262L218 252H238L242 262" />
+    <path class="b" pathLength="1" d="M218 252L228 196L238 252" />
+    <circle class="b" pathLength="1" cx="228" cy="284" r="11" />
+    <path class="d" pathLength="1" d="M228 284V276M228 284L234 287M228 196V184M224 189H232M222 330h12v18h-12z" />
+  </g>
+
+  <!-- Berlin -->
+  <g style="--c:1">
+    {gateCols.map((x) => <path class="b" pathLength="1" d={`M${x} 348H${x + 6}V392H${x}Z`} />)}
+    <path class="b" pathLength="1" d="M260 348H390V334H260Z" />
+    <path class="d" pathLength="1" d="M260 341H390" />
+    <path class="b" pathLength="1" d="M290 334V318H360V334" />
+    <path class="b" pathLength="1" d="M310 318V308Q313 302 316 308Q319 300 322 308Q325 302 328 308Q331 300 334 308Q337 302 340 308V318Z" />
+    <path class="d" pathLength="1" d="M325 308V294M321 298H329" />
+
+    <path class="b" pathLength="1" d="M408 392V378L416 372H440L448 378V392" />
+    <path class="b" pathLength="1" d="M421 372L425 296H431L435 372" />
+    <circle class="b" pathLength="1" cx="428" cy="282" r="14" />
+    <path class="d" pathLength="1" d="M414.5 282H441.5M415.5 276H440.5" />
+    <path class="b" pathLength="1" d="M426 268V252H430V268" />
+    <path class="b" pathLength="1" d="M427 252V208H429V252" />
+    <path class="d" pathLength="1" d="M428 208V182M426 240H430M426 226H430M426 214H430" />
+
+    <path class="b" pathLength="1" d="M456 392V342H526V392" />
+    <path class="b" pathLength="1" d="M456 342V328H468V342" />
+    <path class="b" pathLength="1" d="M514 342V328H526V342" />
+    <path class="b" pathLength="1" d="M474 362L491 352L508 362Z" />
+    <path class="d" pathLength="1" d="M478 392V362M484 392V362M490 392V362M496 392V362M502 392V362" />
+    <path class="b" pathLength="1" d="M471 342A20 20 0 0 1 511 342" />
+    <path class="d" pathLength="1" d="M480 327V342M491 322V342M502 327V342M474 334H508" />
+  </g>
+
+  <!-- Singapore -->
+  <g style="--c:2">
+    <path class="b" pathLength="1" d="M538 392V378A16 14 0 0 1 570 378V392" />
+    <path class="b" pathLength="1" d="M566 392V382A12 10 0 0 1 590 382V392" />
+    <path class="d" pathLength="1" d="M543 371L551 379M549 366L559 376M557 365L566 374M570 378L576 384M575 373L582 380M581 373L587 379" />
+
+    <path class="b" pathLength="1" d="M606 392L609 316H613L616 392" />
+    <path class="b" pathLength="1" d="M592 302H630L614 316H608Z" />
+    <path class="d" pathLength="1" d="M598 302L609 316M611 302V316M624 302L613 316M608 340L614 352M614 340L608 352M608 362L614 374M614 362L608 374" />
+    <path class="b" pathLength="1" d="M634 392L636 334H639L641 392" />
+    <path class="b" pathLength="1" d="M624 324H651L640 334H635Z" />
+    <path class="d" pathLength="1" d="M630 324L636 334M645 324L639 334" />
+
+    {
+      mbs.map((x) => (
+        <>
+          <path class="b" pathLength="1" d={`M${x} 392L${x + 4} 226H${x + 26}L${x + 28} 392Z`} />
+          <path class="d" pathLength="1" d={`M${x + 4} 262H${x + 26}M${x + 3} 300H${x + 27}M${x + 2} 338H${x + 27}M${x + 1} 366H${x + 28}`} />
+        </>
+      ))
+    }
+    <path class="b" pathLength="1" d="M648 216L762 210Q776 211 770 220L650 224Q644 222 648 216Z" />
+    <path class="d" pathLength="1" d="M660 217H752" />
+
+    <path class="b" pathLength="1" d="M774 384Q776 360 782 376Q786 352 790 376Q795 360 797 384Z" />
+    <path class="b" pathLength="1" d="M776 384H795V392H776Z" />
+  </g>
+
+  <!-- Dubai -->
+  <g style="--c:3">
+    <path class="d" pathLength="1" d="M808 392V230" />
+    <path class="b" pathLength="1" d="M808 236Q862 288 854 392H808Z" />
+    <path class="b" pathLength="1" d="M808 252H830Q835 255 830 258H808Z" />
+    <path class="d" pathLength="1" d="M808 272Q838 302 836 392M808 312L842 336M808 336L846 312" />
+
+    <path class="b" pathLength="1" d="M862 392V296H894V392" />
+    <path class="d" pathLength="1" d="M869 392V304H887V392" />
+
+    <path
+      class="b"
+      pathLength="1"
+      d="M900 392L904 350H908L911 308H914L916 266H918L920 226H921.5L922.5 186H923.5L924.2 146L925 58L925.8 146L926.5 186H927.5L928.5 226H930L932 266H934L936 308H939L942 350H946L950 392Z"
+    />
+    <path class="d" pathLength="1" d="M925 392V150" />
+
+    <path class="b" pathLength="1" d="M958 392V286L974 266V392Z" />
+    <path class="b" pathLength="1" d="M980 392V306L994 290V392Z" />
+    <path class="d" pathLength="1" d="M966 392V280M987 392V300" />
+  </g>
+</svg>
+
+<style>
+  .skyline {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .b,
+  .d {
+    stroke: var(--accent);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* solid, so the hero's wave passes behind the buildings and each one reads as one shape: a pale indigo tint of the
+     ground it stands on (--sky-ground, the About hero's white by default) */
+  .b {
+    fill: color-mix(in srgb, var(--accent) 6%, var(--sky-ground, var(--page)));
+    stroke-opacity: 0.5;
+    stroke-width: 1.25;
+  }
+
+  .d {
+    fill: none;
+    stroke-opacity: 0.32;
+    stroke-width: 1;
+  }
+
+  /* drawn once on load, one city after another; the faint fill comes in as each outline closes */
+  @media (prefers-reduced-motion: no-preference) {
+    .b,
+    .d {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: draw 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: calc(0.3s + var(--c, 0) * 0.35s);
+    }
+
+    .b {
+      fill-opacity: 0;
+      animation-name: draw, fill;
+      animation-duration: 2.2s, 1.2s;
+      animation-delay: calc(0.3s + var(--c, 0) * 0.35s), calc(1.4s + var(--c, 0) * 0.35s);
+      animation-fill-mode: forwards, forwards;
+    }
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes fill {
+    to {
+      fill-opacity: 1;
+    }
+  }
+</style>

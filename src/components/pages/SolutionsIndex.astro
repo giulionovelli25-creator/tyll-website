@@ -20,11 +20,12 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 const see = (name: string) => d.solutionPage.seeLink.replace('{name}', name);
-// More in Tyll: the two pages outside the nine, then the morning brief (How it works) and Scan (the homepage strip)
+// More in Tyll: the two pages outside the nine, then the morning brief (How it works) and Scan (its FAQ answer, which
+// opens from the address; the homepage's Scan strip was removed on 26 Nov 2026)
 const more = [
   ...moreKeys.map((k) => ({ name: solutions[k].name[lang], text: solutions[k].menu[lang], url: href(k, lang) })),
   { name: d.solutionPage.moreInTyll.items[0][0], text: d.solutionPage.moreInTyll.items[0][1], url: href('how', lang) },
-  { name: d.solutionPage.moreInTyll.items[1][0], text: d.solutionPage.moreInTyll.items[1][1], url: href('home', lang, '#scan') },
+  { name: d.solutionPage.moreInTyll.items[1][0], text: d.solutionPage.moreInTyll.items[1][1], url: href('faq', lang, '#scan') },
 ];
 ---
 

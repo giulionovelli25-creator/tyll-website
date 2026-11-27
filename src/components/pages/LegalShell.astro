@@ -75,9 +75,7 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
     padding-top: calc(var(--header-h) + var(--page-top));
     padding-bottom: var(--intro-gap);
     border-bottom: 1px solid var(--line);
-    background:
-      radial-gradient(60% 120% at 85% 0%, rgb(var(--silver-rgb) / 0.28), transparent 70%),
-      linear-gradient(180deg, var(--sand-100) 0%, var(--sand-50) 100%);
+    background: var(--page); /* white, never a tint (26 Nov 2026, the owner) */
   }
 
   .legal__band-inner {
@@ -126,10 +124,11 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
   .legal__missing {
     margin-top: 0;
     padding: 1.25rem 1.5rem;
-    border: 1px solid var(--amber-300);
+    border: 1px solid var(--line);
+    border-inline-start: 3px solid var(--ink);
     border-radius: var(--radius-sm);
-    background: var(--amber-50);
-    color: var(--amber-900);
+    background: var(--paper);
+    color: var(--graphite);
     font-size: 0.9375rem;
   }
 
@@ -295,8 +294,9 @@ const updated = new Intl.DateTimeFormat(intlLocale[lang], { dateStyle: 'long' })
   .legal__body :global(.missing) {
     padding: 0.05em 0.35em;
     border-radius: 4px;
-    background: var(--amber-150);
-    color: var(--amber-800);
+    border: 1px dashed var(--silver-deep);
+    background: var(--paper);
+    color: var(--ink);
     font-size: 0.9375em;
   }
 </style>
